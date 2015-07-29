@@ -1,0 +1,4 @@
+CanopyLayerBiomassCategories
+>>Age	Layer0	
+MaxCohortAge	Layer0	 
+MAX	1		

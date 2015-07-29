@@ -1,0 +1,48 @@
+LandisData  "PnET Succession"											
+											
+Timestep  1 <<10	
+StartYear	2007										
+										
+SeedingAlgorithm  WardSeedDispersal											
+											
+>>CalibrateMode no <<optional parameter											
+											
+InitialCommunities      initial-communities.txt											
+InitialCommunitiesMap   initial-communities.img
+
+>>climateFileName	Irrigated_BdApache_climate.txt
+>>climateFileName	Drought_BdApache_climate.txt
+climateFileName	Ambient_BdApache_climate3.txt
+>>climateFileName	Ambient_BdApache_longevity.txt
+>>climateFileName	Ambient_BdApache_climate-low-co2.txt
+
+Latitude	34										
+											
+>>CanopyLayerAgeSpan	500 << Set very high to prevent canopy stratification
+CanopyLayerBiomassCategories	CanopyCategories.txt
+
+>>EstablishmentOFF	yes
+
+PNEToutputsites
+9	9
+																						
+SpeciesParameterFile	SpeciesParameters.txt
+
+EstRadSensitivity	EstRadiationTable.txt 
+EstMoistureSensitivity	EstMoistureTable.txt
+										
+>> *****************************											
+   EcoregionParameters											
+>>		AET		WHC	PrecipLossFrac 	LeakageFrac (month-1)					
+>>		(mm/yr)		(mm)	(mm/mm)		(mm/mm)								
+   eco1		740		162	0.65		0.02
+>>   eco1	300		162	0.6		0.0 
+
+>> AET for Sevellita NWR = 740. Cleverly et al J Arid Environments (2002 or 2003). http://www.fws.gov/southwest/mrgbi/Projects/2001/Research/ET/JARENV010802.pdf
+>> WHC calculated from max VWC data on plot 12 (ambient control). Highest VWC=0.280=280 mm/m.  Avg depth to bedrock=57.9 cm. WHC=280*0.579=162	
+>> According to Rob Prangle, 50% PrecipLossFrac is likely not too high.  Since the soil never gets fully saturated, and the trees are very efficient at extracting h2o, maybe 1-5% Leakage Loss is about right.		
+>>  Annual precip is 368 mm/yr	 								
+ 											
+AgeOnlyDisturbances:BiomassParameters  biomass_age-only-disturbances.txt											
+
+<<Runoff LossFrac from Reid et al 1999. 45% of prec from small storms with 14.5% loss. 55% from large storms with 75% loss.  Comes to 63.1% lost.  Added 5% for rocks.

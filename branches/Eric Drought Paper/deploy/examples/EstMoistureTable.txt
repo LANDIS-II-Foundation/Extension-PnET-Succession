@@ -1,0 +1,4 @@
+EstMoistureSensitivity							
+CategoryMin	0		
+pinuedul 	0	 
+junimono  	0	 

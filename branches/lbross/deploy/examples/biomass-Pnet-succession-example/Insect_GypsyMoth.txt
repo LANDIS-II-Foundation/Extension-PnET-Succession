@@ -1,0 +1,67 @@
+LandisData InsectDefoliator															
+															
+InsectName	GypsyMoth														
+															
+MeanDuration	3														
+															
+>>StdDevDuration	1														
+															
+MeanTimeBetweenOutbreaks	7														
+															
+StdDevTimeBetweenOutbreaks	2														
+															
+NeighborhoodSize	250	<< meters													
+															
+>> Lower this number to lower probabilities of patch generation, i.e. start fewer patches.														
+InitialPatchShapeCalibrator	1	<< must be <= 1.0  Higher = Rounder; Lower = tracks host quality closer. 													
+>>InitialAreaCalibrator	0.0005	<< must be > 0.0													
+															
+InitialPatchOutbreakSensitivity	0.0008	 													
+															
+InitialPatchDistribution	Weibull	<<Weibull, Beta, or Gamma													
+															
+>> Patch size distribution should be based on patch radius distribution? patch area distribution? Units?															
+InitialPatchValue1	0.5	<<depends on the distribution, must be > 0.0"													
+InitialPatchValue2	25	<<depends on the distribution, must be > 0.0"													
+															
+SpeciesParameters															
+															
+MortalityEstimate  7Year  << 'Annual' or '7Year'															
+>> Susceptibility class by species (from Liebhold et al... reference here)															
+>> Species	Susceptibility	 Growth Reduction Parameters  		Mortality Parameters											
+>>	Class	 Slope	Intercept	      Slope	Intercept										
+ 															
+abiebals	2	-0.8	1	0.009	7										
+acerrubr	2	-0.8	1	0.009	7										
+acersacc	2	-0.16	1	0.006	5.5										
+betualle	3	-0.16	1	0.006	5.5										
+betupapy	2	-0.8	1	0.006	5.5										
+fraxamer	3	-0.8	1	0.009	7										
+piceglau	3	-0.8	1	0.006	5.5										
+pinubank	3	-0.8	1	0.009	7										
+pinuresi	2	-1	1	0.016	4										
+pinustro	2	-1	1	0.016	4										
+poputrem	3	-1	1	0.016	4										
+querelli	2	-1	1	0.016	4										
+querrubr	2	-1	1	0.016	4										
+thujocci	2	-0.8	1	0.009	7										
+tiliamer	1	-0.16	1	0.006	5.5										
+tsugcana	1	-0.16	1	0.006	5.5										
+															
+															
+															
+															
+															
+															
+															
+															
+															
+   															
+Susceptibilities															
+>> Host	Dist80	S1_80	S2_80	Dist60	S1_60	S2_60	Dist40	S1_40	S2_40	Dist20	S1_20	S2_20	Dist0	S1_0	S2_0
+1	Beta	0.84	0.2	Beta	0.84	0.33	Beta	1.14	1.18	Beta	0.5	2	Beta	0.5	6
+2	Beta	1.27	0.68	Beta	1.14	1.18	Beta	0.7	2	Beta	0.5	3	Beta	0.5	6
+3	Beta	1	1	Beta	0.8	1.68	Beta	0.7	2	Beta	0.5	6	Beta	0.2	6
+															
+MapNames  insects/severity-{timestep}.gis															
+LogFile   insects/log.csv															

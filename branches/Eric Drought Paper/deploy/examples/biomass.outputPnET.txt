@@ -1,0 +1,34 @@
+LandisData  "Output PnET"
+
+Timestep  10
+
+Species	<<none
+	pinuedul 
+	junimono
+	  
+BiomassMapNames	output/biomass/{species}/biom-{timestep}.img
+
+>>LaiMapNames output/LAI/{species}/lai-{species}-{timestep}.img
+
+>>EstMapNames output/EST/{species}/est-{species}-{timestep}.img
+
+>>AnnualTranspirationMapNames	output/Transpiration/Tr-{timestep}.img
+
+>>WaterMapNames output/WATER/water-{timestep}.img
+
+>>SubCanopyPARMapNames output/SCpar/SCpar-{timestep}.img
+
+>>BelowgroundMapNames output/BGB/BGB-{timestep}.img
+
+>>WoodyDebrisMapNames output/WoodyDebris/WoodyDebris-{timestep}.img
+
+>>LitterMapNames	output/NonWoodyDebris/Litter-{timestep}.img
+
+>>AgeDistributionFileNames output/AgeDist/Age-{timestep}.txt
+
+>>DeathAgeDistributionFileNames 	output/DeathAgeDistributions.txt
+
+   
+>>SpeciesSpecEstFileName output/Establishments.txt
+
+CohortDeathFreqFileName	output/CohortDeathFreq.txt

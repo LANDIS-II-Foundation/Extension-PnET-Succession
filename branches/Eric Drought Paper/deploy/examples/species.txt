@@ -1,0 +1,8 @@
+LandisData	Species									
+										
+>>									Seed 			
+>>				Sexual		Shade	Fire		Dispersal Dist  	Vegetative	Sprout	Age	Post-Fire
+>>	Name	Longevity	Maturity	Tol.	Tol.		Effective Maximum	Reprod Prob	Min	Max	Regen		
+>>	----	---------	-------------	----	---------	-----------------	-----------	-----------	--------
+pinuedul	800		25		2	3		1000	12000		0.0		0	0	none
+junimono	800		25		1	2		20	200		0.1		200	400	none

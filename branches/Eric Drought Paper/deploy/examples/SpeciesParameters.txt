@@ -1,0 +1,37 @@
+PnETSpeciesParameters 	
+SpeciesName	FoliageTurnover	FolReten	RootTurnover	WoodTurnover	GDDFolStart	GDDFolEnd	AmaxA	AmaxB	HalfSat	BaseFolRespFrac	GrowthMoistureSensitivity	WiltingPoint	PsnAgeRed	RespQ10	PsnTMin	PsnTOpt	SLWmax	SLWDel	SenescStart	k	FolNCon	DVPD1	DVPD2	WUEConst	MaintResp	DNSC	RootStemRatio
+
+
+
+>>-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+>>SpeciesName	Foliage	FolReten Root	Wood	GDDFol	GDDFol	AmaxA	AmaxB	HalfSat	BaseFol	 Growth		Wilting	PsnAge	RespQ10	PsnTMin	PsnTOpt	SLWmax	SLWDecl	Senesc	k	FolNCon	DVPD1	DVPD2	WUE	Maint	DNSC	RootStm	
+>>		Turnover(to NSC) Trnovr	Trnovr	Start	End				RespFrac MoistSens	point	Red		  *	  *	  *	  	Start*			  *	  *	Constnt	Resp		Ratio	
+>>		(frac)*	(frac)	(frac)	(frac)	(DD)*	(DD)*		  	*	(frac)			(frac)*	(>0.0)	  *	(deg C)	(deg C)	(g/m2)	(frac)	(J day)		(%N)*	(kPA-1)	(kPA-1)		(frac)	(frac)	(frac)
+>>-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+pinuedul	0.167	0.0	0.04	0.03	200	2000	14.3	0.0	800	0.10	0.35		0.14	3	1.7	4	25	242	0.0	275	0.58	1.21	0.05	2	30	0.002	0.1	0.55	<<pinuedul
+junimono	0.167	0.0	0.05	0.04	200	2000	22.3	0.0	950	0.06	0.3		0.07	3	2.2	4	25	490	0.0	275	0.58	1.06	0.05	2	32	0.002	0.1	0.55	<<junimono
+
+>>pinuedul	0.167	0.0	0.04	0.03	200		14.0	35.0	750	0.16(.8	0.3		0.03	0.00	1.7	4	25	242		275	0.58	1.21	0.05	2	31	0.001	0.1	0.3	
+>>junimono	0.167	0.0	0.05	0.04	200		22.0	70.0	800	0.18(.5	0.3		0.01	0.00	2.2	4	25	490		275	0.58	1.06	0.05	2	28	0.001	0.1	0.3	
+	
+
+>> needles live about 6 years for both species;  senesence starts in late September (McDowell pers comm).
+>> GDD.  THe trees can photosynth on and off all winter.  Photosynthesis (both spp) seems to start in earnest at about 100 GDD.  Assumed that new foliage is put on soon after that. Assumed end GDD is about the end of June.
+>> Amax A & AmaxB - default for conifers as used in all PnET papers
+>> half-sat is lower in more shade tolerant species.  JML: pinyon=360-800; juniper=430-950
+>> BaseFolResp-Adams et al seems to show dark respiration is about 10% of mid-day photosynthesis.
+>> growth Moist Sens - tune to get a reasonable water cycle. Assumed juniper is somewhat more drought tolerant than pinyon. 
+>> Wilting Point Estimate from Robert Pangle.  data show pinyon sapflow when VWC is less than 10%; thinks it is in 5-8% range.  juniper will be lower, in the 3-4% range. JUMO died out (simul) if within 5% of PIED
+>> Longevity.  Pinyon=400-800 yr.  Juniper=long.  assume to be the same as pinyon.  Tuned longevity in monoculture.  PsnAgeRed: JUMO=.005=819 yr longevity; PIED=.004=640 yr long.
+>> longevity without AgeRed factor.  PIED: MaintResp=0.002, long=forever.  JUMO: MaintRep=0.002, long=forever.
+>> Q10-Gass dissertation using data from the PJ experiment.  ; Burton et al 2002 - Root Q10 for each species
+>> Pinyon pine: Silvics manual.  Mean July temp in pinyon range ranges 20 to 27C.  Extremes in range vary from -35° C to 44° C
+>> FolN and SLW used is from Jean-Marc Limosin spreadsheet (11/18/13 email).  Data from P-J experiment (ambient). %N: Jumo=0.84-1.28; pied=1.03-1.39. SLW: jumo=454-526; pied=214-270.
+>> k is not known, but this is a one-layer canopy system.
+>> Data on Fol N of Juniper can be found at: Reich et al Oecologia (1998) 114:471-482
+>> Lajtha and Getz (1993). Photosynth & WUE in PJ communities along an elev gradient in N NM. Oecologia 94:95-101.  Assumed WUE is relatively high in this system.
+>> WUE const.  Look @ water cycle and WUE.  The constant may be high 10-40.  WUE output should not exceed 500 g/mm. Jean-Marc: WUE is not stastically different between the species.
+>> Alloc frac: Grier,C.C., Elliott, K.J.and McCullough,D.G.,1992.Biomass distribution and productivity of Pinus edulis-Juniperus monosperma woodlands of north-central Arizona. For.Ecol.Manage.50:331-350. Aboveground: Pinyon (73% fol, 27% stem); Junip (88% fol, 12% stem)
+>> McDowell assumes BelowGround is 30% of AboveGround.  Prangle thinks it might be 30-50%.
+>> http://www.fs.fed.us/database/feis/plants/tree/junmon/all.html
+>>  DNSC - no data available.  Was calibrated to match empirical wood biomass.

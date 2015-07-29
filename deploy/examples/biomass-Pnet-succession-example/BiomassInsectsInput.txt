@@ -1,0 +1,11 @@
+LandisData "Biomass Insects"
+
+Timestep	1
+
+MapNames	Output/Insects/{insectName}-{timestep}.img
+
+LogFile		Output/Insects/Insect-log.csv
+
+InsectInputFiles	Insect_GypsyMoth.txt
+			 
+

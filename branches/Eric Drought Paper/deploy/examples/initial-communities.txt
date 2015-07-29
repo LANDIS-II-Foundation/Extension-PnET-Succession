@@ -1,0 +1,7 @@
+LandisData "Initial Communities"
+
+MapCode    0
+
+MapCode    1
+pinuedul 200 <<150
+junimono 200
