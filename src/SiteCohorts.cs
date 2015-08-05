@@ -302,8 +302,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                       {
 
 
-                          Cohort.UpdateSiteHydrology(SubCanopyCohorts.Count(), this.Ecoregion, CanopyLAI, ref water, ref pressurehead, ref SnowPack, ref interception); // 10s
-                          c.CalculatePhotosynthesis(ref subcanopypar, (ushort)pressurehead, ref CanopyLAI);
+                          c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), this.Ecoregion, CanopyLAI, ref water, ref pressurehead, ref SnowPack, ref interception, ref subcanopypar, (ushort)pressurehead, ref CanopyLAI);
 
                           
 

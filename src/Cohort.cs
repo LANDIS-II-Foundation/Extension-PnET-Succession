@@ -172,7 +172,8 @@ namespace Landis.Extension.Succession.BiomassPnET
              Cohort.addlitter = sitecohorts.AddLitter;
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
         }
-        public static void UpdateSiteHydrology(float nr_of_cohorts, IEcoregion ecoregion, float LAIsum, ref float Water, ref uint pressurehead, ref float SnowPack, ref float interception)
+        
+        public void CalculatePhotosynthesis(float nr_of_cohorts, IEcoregion ecoregion, float LAIsum, ref float Water, ref uint pressurehead, ref float SnowPack, ref float interception, ref float SubCanopyPar, uint PressureHead, ref float CanopyLAI)
         {
             interception = SiteCohorts.monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst() * LAIsum)) / nr_of_cohorts;
 
@@ -195,9 +196,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Water -= (ushort)Hydrology.RunOff;
 
             pressurehead = (ushort)Hydrology.Pressureheadtable[ecoregion, (ushort)Water];
-        }
-        public void CalculatePhotosynthesis(ref float SubCanopyPar, uint PressureHead, ref float CanopyLAI)
-        {
+
             layer = new SubCohortVars();
 
             if (auxpars == null)
