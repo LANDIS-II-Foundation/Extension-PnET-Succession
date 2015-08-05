@@ -172,6 +172,30 @@ namespace Landis.Extension.Succession.BiomassPnET
              Cohort.addlitter = sitecohorts.AddLitter;
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
         }
+        public static void UpdateSiteHydrology(float nr_of_cohorts, IEcoregion ecoregion, float LAIsum, ref float Water, ref uint pressurehead, ref float SnowPack, ref float interception)
+        {
+            interception = SiteCohorts.monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst() * LAIsum)) / nr_of_cohorts;
+
+            Water -= (ushort)Math.Max(Water - Hydrology.FieldCap[ecoregion], 0);
+
+            Hydrology.snowmelt = Math.Min(SnowPack, SiteCohorts.monthdata.Maxmonthlysnowmelt / nr_of_cohorts);
+
+            SnowPack += SiteCohorts.monthdata.Newsnow / nr_of_cohorts - Hydrology.snowmelt;
+
+            Hydrology.WaterIn = SiteCohorts.monthdata.Precin / (float)nr_of_cohorts - interception + Hydrology.snowmelt;//mm  \
+
+            Water += Hydrology.WaterIn - (Hydrology.WaterIn * ecoregion.PrecLossFrac());
+
+            // Leakage 
+            Hydrology.Leakage = Math.Max(ecoregion.LeakageFrac() * (Water - Hydrology.FieldCap[ecoregion]), 0);
+            Water -= (ushort)Hydrology.Leakage;
+
+            // Instantaneous runoff (excess of porosity)
+            Hydrology.RunOff = Math.Max(Water - Hydrology.Porosity[ecoregion] * ecoregion.RootingDepth(), 0);
+            Water -= (ushort)Hydrology.RunOff;
+
+            pressurehead = (ushort)Hydrology.Pressureheadtable[ecoregion, (ushort)Water];
+        }
         public void CalculatePhotosynthesis(ref float SubCanopyPar, uint PressureHead, ref float CanopyLAI)
         {
             layer = new SubCohortVars();

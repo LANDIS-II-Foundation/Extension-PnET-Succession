@@ -10,28 +10,28 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public static IEcoregion ecoregion;
 
-        private static float snowmelt;
-        private static float WaterIn;
+        public static float snowmelt;
+        public static float WaterIn;
         
-        static IPressureHeadTable Pressureheadtable;
+        public static IPressureHeadTable Pressureheadtable;
 
         public static float CalculateWaterContent(IEcoregion ecoregion, ushort water_pressure)
         {
             return Pressureheadtable.CalculateWaterContent(water_pressure, SoilType[ecoregion]) * ecoregion.RootingDepth();
         }
 
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<float> FieldCap { get; private set; }
+        public static Landis.Library.Parameters.Ecoregions.AuxParm<float> FieldCap;
         public static Landis.Library.Parameters.Ecoregions.AuxParm<float> WiltPnt;
         public static Landis.Library.Parameters.Ecoregions.AuxParm<float> Porosity;
         public static Landis.Library.Parameters.Ecoregions.AuxParm<string> SoilType;
 
-        public static float RunOff { get; private set; }
-        public static float Leakage { get; private set; }
-        public static float PET { get; private set; }
-        public static float DeliveryPotential { get; private set; }
-         
-        
-        public static float Evaporation { get; private set; }
+        public static float RunOff;
+        public static float Leakage;
+        public static float PET;
+        public static float DeliveryPotential;
+
+
+        public static float Evaporation;
         
          
         public static void Initialize()
@@ -155,30 +155,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             pressurehead = (ushort)Pressureheadtable[ecoregion, (ushort)Water];
         }
 
-        public static void UpdateSiteHydrology(float nr_of_cohorts, IEcoregion ecoregion, float LAIsum,ref float Water,ref uint pressurehead, ref float SnowPack, ref float interception)
-        {
-            interception = SiteCohorts.monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst() * LAIsum)) / nr_of_cohorts;
-
-            Water -= (ushort)Math.Max(Water - FieldCap[ecoregion], 0);
-
-            snowmelt = Math.Min(SnowPack, SiteCohorts.monthdata.Maxmonthlysnowmelt / nr_of_cohorts);
-
-            SnowPack += SiteCohorts.monthdata.Newsnow / nr_of_cohorts - snowmelt;
-
-            WaterIn =  SiteCohorts.monthdata.Precin / (float)nr_of_cohorts -interception + snowmelt;//mm  \
-
-            Water += WaterIn - (WaterIn * ecoregion.PrecLossFrac());
-           
-            // Leakage 
-            Leakage = Math.Max(ecoregion.LeakageFrac() * (Water - FieldCap[ecoregion]), 0);
-            Water -= (ushort)Leakage;
-
-            // Instantaneous runoff (excess of porosity)
-            RunOff = Math.Max(Water - Porosity[ecoregion] * ecoregion.RootingDepth(), 0);
-            Water -= (ushort)RunOff;
-
-            pressurehead = (ushort)Pressureheadtable[ecoregion, (ushort)Water];
-        }
+       
          
         
     }
