@@ -94,8 +94,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             PctOM  = PlugIn.GetParameter("pctOM");
             DensFactor = PlugIn.GetParameter("densFactor");
             Gravel = PlugIn.GetParameter("gravel");
-            Clay = PlugIn.GetParameter("clay");
-
+            
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions) if (ecoregion.Active)
             {
                 List<ushort> PressureHead = new List<ushort>();

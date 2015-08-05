@@ -96,7 +96,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Tday = (float)0.5 * (Tmax + Tave);
             VPD = Calculate_VPD(Tday, Tmin);
 
-            float snowfraction = CumputeSnowFraction(Tave);
+            float snowfraction =  CumputeSnowFraction(Tave);
             Newsnow = snowfraction * Prec;//mm
             Maxmonthlysnowmelt = 0.15f * Math.Max(0, Tave) * dayspan;
 

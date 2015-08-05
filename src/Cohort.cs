@@ -13,6 +13,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> DeathEvent;
         public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> AgeOnlyDeathEvent;
 
+        public byte Layer;
 
         public delegate void SubtractTranspiration(float transpiration, ISpecies Species);
         public delegate void AddWoodyDebris(float Litter, float KWdLit);
@@ -29,8 +30,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float nsc;
         private ushort age;
          
-
-        
         private ISpecies species;
         private LocalOutput cohortoutput;
         private SubCohortVars canopy;
@@ -193,7 +192,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (SiteCohorts.monthdata.Month == (int)Constants.Months.January)
                 {
-                    layer.MaintenanceRespiration = 0;// (float)Math.Min(NSC, SiteCohorts.monthdata.FTempRespMaintResp[Species] * biomass);//gC //IMAXinverse
+                    layer.MaintenanceRespiration = (float)Math.Min(NSC, species.MaintResp() * SiteCohorts.monthdata.FTempResp[Species] * biomass);//gC //IMAXinverse
                     nsc -= layer.MaintenanceRespiration;
 
                     addwoodydebris(Senescence(), Species.KWdLit());
@@ -243,7 +242,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             layer.FRad = CumputeFrad(SubCanopyPar, species.HalfSat());
 
-            SubCanopyPar += (float)Math.Exp(-species.K() * layer.LAI);
+
+            SubCanopyPar *= (float)Math.Exp(-species.K() * layer.LAI);
 
             layer.FWater = CumputeFWater(Species.H2(), Species.H3(), Species.H4(), PressureHead);
 
@@ -294,21 +294,23 @@ namespace Landis.Extension.Succession.BiomassPnET
             cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + "_" + YearOfBirth + ".csv", OutputHeader, SendMsg);
             canopy = new SubCohortVars();
         }
-       
-        public void UpdateCohortData()
+        
+        public void UpdateCohortData( )
         {
-
+            
+            
+           
             string s = Math.Round(SiteCohorts.monthdata.Year, 2) + "," + 
                         Age + "," +
-                      //  Layer + "," + 
-                       canopy.ConductanceCO2 + "," +
+                        Layer + "," + 
+                       //canopy.ConductanceCO2 + "," +
                        canopy.LAI + "," +
                        canopy.GrossPsn + "," +
                        canopy.FolResp + "," +
                        canopy.MaintenanceRespiration + "," +
                        canopy.NetPsn + "," +                  // Sum over canopy layers
                        canopy.Transpiration + "," +
-                       ((canopy.FolResp > 0) ? canopy.GrossPsn / canopy.FolResp : float.NaN).ToString() + "," +
+                       ((canopy.FolResp > 0) ? canopy.GrossPsn / canopy.FolResp : 0).ToString() + "," +
                        fol + "," + 
                        Root + "," + 
                        Wood + "," + 
@@ -333,8 +335,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 string hdr = OutputHeaders.Time + "," + 
                             OutputHeaders.Age + "," +
-                            OutputHeaders.ConductanceCO2 + "," + 
-                            //OutputHeaders.Layer + "," + 
+                            //OutputHeaders.ConductanceCO2 + "," + 
+                            OutputHeaders.Layer + "," + 
                             OutputHeaders.LAI + "," +
                             OutputHeaders.GrossPsn + "," + 
                             OutputHeaders.FolResp + "," + 
