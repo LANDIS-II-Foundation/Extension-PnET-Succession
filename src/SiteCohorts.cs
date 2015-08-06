@@ -280,19 +280,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             for (int m = 0; m < data.Count(); m++ )
             {
-                if (data[m].AnyLeaf_On) random_range = GetRandomRange(bins);
-
+                //if (data[m].AnyLeaf_On) random_range = GetRandomRange(bins);
                 monthdata = data[m];
-
                 Transpiration = 0;
-                 
-                if (data[m].Month == 12) HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//6s
-                else HeterotrophicRespiration = 0;
-
                 subcanopypar = data[m].PAR0;
                 CanopyLAI = 0;
-
-                 
 
                 if (bins !=null) for (int b = bins.Count()-1; b >=0 ; b--)
                 {
@@ -300,15 +292,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                   {
                       using (Cohort c = SubCanopyCohorts.Values.ElementAt(r)) 
                       {
-
-
                           c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), this.Ecoregion, CanopyLAI, ref water, ref pressurehead, ref SnowPack, ref interception, ref subcanopypar, (ushort)pressurehead, ref CanopyLAI);
 
-                          
-
                           c.Layer = (byte)Math.Max(b, c.Layer);
-                           
-                        
+                          
                       }
                   }
                 }
@@ -346,6 +333,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             RemoveMarkedCohorts();
+
+            HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//6s
+                
         }
 
      

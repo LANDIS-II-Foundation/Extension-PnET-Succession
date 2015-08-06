@@ -201,7 +201,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             bFolResp = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("BFolResp", 0, float.MaxValue);
             kWdLit = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("KWdLit", 0, 1);
             frActWd = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FrActWd", 0, float.MaxValue);
-            kWdLit = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("KWdLit", 0, 1);
             initialNSC = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("InitialNSC", 0, float.MaxValue);
             preventEstablishment = (Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)PlugIn.GetParameter("PreventEstablishment");
             estRad = (Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("EstRad", 0, float.MaxValue);
