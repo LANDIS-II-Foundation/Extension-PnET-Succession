@@ -173,11 +173,20 @@ namespace Landis.Extension.Succession.BiomassPnET
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
         }
         
-        public void CalculatePhotosynthesis(float nr_of_cohorts, IEcoregion ecoregion, float LAIsum, ref float Water, ref uint pressurehead, ref float SnowPack, ref float interception, ref float SubCanopyPar, uint PressureHead, ref float CanopyLAI)
+        public void CalculatePhotosynthesis(float nr_of_cohorts, IEcoregion ecoregion, ref float Water, ref uint pressurehead, ref float SnowPack, ref float interception, ref float SubCanopyPar, uint PressureHead, ref float CanopyLAI)
         {
-            interception = SiteCohorts.monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst() * LAIsum)) / nr_of_cohorts;
+            if (auxpars == null)
+            {
+                auxpars = new CohortAuxiliaryPars();
 
-            Water -= (ushort)Math.Max(Water - Hydrology.FieldCap[ecoregion], 0);
+            }
+            layer = new SubCohortVars();
+
+            layer.LAI = PlugIn.fIMAX * fol / (Species.SLWmax() - species.SLWDel() * auxpars.index * PlugIn.fIMAX * fol);
+
+            interception = SiteCohorts.monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst() * layer.LAI));
+
+            CanopyLAI += layer.LAI;
 
             Hydrology.snowmelt = Math.Min(SnowPack, SiteCohorts.monthdata.Maxmonthlysnowmelt / nr_of_cohorts);
 
@@ -185,10 +194,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             Hydrology.WaterIn = SiteCohorts.monthdata.Precin / (float)nr_of_cohorts - interception + Hydrology.snowmelt;//mm  \
 
-            Water += Hydrology.WaterIn - (Hydrology.WaterIn * ecoregion.PrecLossFrac());
+            Water +=  Hydrology.WaterIn * (1 - ecoregion.PrecLossFrac());
 
             // Leakage 
-            Hydrology.Leakage = Math.Max(ecoregion.LeakageFrac() * (Water - Hydrology.FieldCap[ecoregion]), 0);
+            Hydrology.Leakage = Math.Max(ecoregion.LeakageFrac() / (float)nr_of_cohorts * (Water - Hydrology.FieldCap[ecoregion]), 0);
             Water -= (ushort)Hydrology.Leakage;
 
             // Instantaneous runoff (excess of porosity)
@@ -197,19 +206,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             pressurehead = (ushort)Hydrology.Pressureheadtable[ecoregion, (ushort)Water];
 
-            layer = new SubCohortVars();
-
-            if (auxpars == null)
-            {
-                auxpars = new CohortAuxiliaryPars();
-            }
-
             if (auxpars.index == 0)
             {
                 auxpars.Update(age, Species, biomass);
             }
-             
-            if (auxpars.index == PlugIn.IMAX - 1)
+            else if (auxpars.index == PlugIn.IMAX - 1)
             {
                 auxpars.index = 0;
 
@@ -237,14 +238,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             else auxpars.index++;
 
-            layer.LAI = PlugIn.fIMAX * fol / (Species.SLWmax() - species.SLWDel() * auxpars.index * PlugIn.fIMAX * fol);
-            CanopyLAI += layer.LAI;
-
-            if (SiteCohorts.monthdata.Leaf_On[Species] == false)
-            {
-                return;
-            }
-
+            if (SiteCohorts.monthdata.Leaf_On[Species] == false) return;
+             
             float IdealFol = (Species.FracFol() * FActiveBiom * biomass);
             
             if (IdealFol > fol)
@@ -255,27 +250,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                 nsc -= Folalloc;
             }
 
-            if (Fol == 0)
-            {
-                //running_values.FWater = float.NaN;
-                return;
-            }
-
-
-
+            if (Fol == 0) return;
+            
             layer.FRad = CumputeFrad(SubCanopyPar, species.HalfSat());
-
 
             SubCanopyPar *= (float)Math.Exp(-species.K() * layer.LAI);
 
             layer.FWater = CumputeFWater(Species.H2(), Species.H3(), Species.H4(), PressureHead);
 
-            if (layer.FWater == 0)
-            {
-                //running_values.FRad = 0;
-                return;
-            }
-            
+            if (layer.FWater == 0) return;
+           
             // g/mo
             layer.NetPsn = layer.FWater * layer.FRad * auxpars.fage * SiteCohorts.monthdata.FTempPSNRefNetPsn[species] * PlugIn.fIMAX * fol;
 

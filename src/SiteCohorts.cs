@@ -295,30 +295,30 @@ namespace Landis.Extension.Succession.BiomassPnET
                   {
                       using (Cohort c = Cohorts[r]) 
                       {
-                          c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), this.Ecoregion, CanopyLAI, ref water, ref pressurehead, ref SnowPack, ref interception, ref subcanopypar, (ushort)pressurehead, ref CanopyLAI);
+                          c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), this.Ecoregion,  ref water, ref pressurehead, ref SnowPack, ref interception, ref subcanopypar, (ushort)pressurehead, ref CanopyLAI);
 
                           c.Layer = (byte)Math.Max(b, c.Layer);
                           
                       }
                   }
                 }
-                 
+/*                 
                 canopylaimax = (byte)Math.Max(canopylaimax, CanopyLAI);
                 watermax = (byte)Math.Max(water, watermax);
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
                  Hydrology.SubtractEvaporation(Ecoregion, (ushort)subcanopypar, Transpiration, data[m].Tday, ref water, ref pressurehead, SetAet);
 
-
+*/
                 if (siteoutput != null)
                 {
                     AddSiteOutput(data[m]);
 
-                    
                     AllCohorts.ForEach(a => a.UpdateCohortData());
                 }
-
+/*
                 // Only update Pest when conditions are worse (?) than before 
+                
                 if (PlugIn.ModelCore.CurrentTime > 0 && data[m].AnyLeaf_On)
                 {
                     if ((int)data[m].Year == (int)data[data.Count() - 1].Year)
@@ -326,7 +326,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         pest = EstablishmentProbability.Calculate_Establishment(subcanopypar, pressurehead, pest);
                     }
                 }
-                
+                */
             }
             if (siteoutput != null)
             {
