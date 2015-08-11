@@ -210,7 +210,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 auxpars.Update(age, Species, biomass);
             }
-            else if (auxpars.index == PlugIn.IMAX - 1)
+            if (auxpars.index == PlugIn.IMAX - 1)
             {
                 auxpars.index = 0;
 
