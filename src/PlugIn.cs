@@ -394,6 +394,8 @@ namespace Landis.Extension.Succession.BiomassPnET
            
            
         }
+        
+
         protected override void AgeCohorts(ActiveSite site,
                                             ushort years,
                                             int? successionTimestep
@@ -404,15 +406,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             DateTime EndDate = date.AddYears(years);
             IEcoregion Ecoregion = PlugIn.ModelCore.Ecoregion[site];
 
-            List<EcoregionDateData> data = EcoregionDateData.Get(Ecoregion, date, EndDate);
-             
-            sitecohorts[site].Grow(data);
+
+            EcoregionDateData.UpdateEcoregionVariables(date, EndDate);
+
+
+            sitecohorts[site].Grow(EcoregionDateData.data[Ecoregion]);
 
 
             Date = EndDate;
             
             
-            data =null;
+            
             
 
              

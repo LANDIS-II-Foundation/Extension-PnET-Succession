@@ -191,8 +191,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     //DateTime EndDate = date.AddYears(1);
                     DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
 
-                    List<EcoregionDateData> data = EcoregionDateData.Get(Ecoregion, date, EndDate);
-                    Grow(data);
+                    EcoregionDateData.UpdateEcoregionVariables(date, EndDate);
+
+                    Grow(EcoregionDateData.data[Ecoregion]);
 
                     date = EndDate;
 

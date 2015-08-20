@@ -7,6 +7,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class EcoregionDateData 
     {
+        public static Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionDateData>> data = null;
+
         private static Dictionary<string, SortedDictionary<DateTime, EcoregionDateData>> allstaticdata;
         private static SortedDictionary<string, SortedDictionary<DateTime, EcoregionDateData>> EcoregionsWithIdenticalClimateFile = new SortedDictionary<string, SortedDictionary<DateTime, EcoregionDateData>>();
 
@@ -37,33 +39,62 @@ namespace Landis.Extension.Succession.BiomassPnET
         public Landis.Library.Parameters.Species.AuxParm<float> FTempPSN;
         public Landis.Library.Parameters.Species.AuxParm<float> FTempPSNRefNetPsn;
         public Landis.Library.Parameters.Species.AuxParm<float> WUE_CO2_corr;
-       
-        public static List<EcoregionDateData> Get(IEcoregion Ecoregion, DateTime from, DateTime to)
-        {
-            List<EcoregionDateData> data = new List<EcoregionDateData>();
-            while (from < to)
-            {
-                EcoregionDateData monthdata = null;
 
-                try
+        static DateTime laststartdate;
+        static DateTime lastenddate;
+
+        private static bool IsUptoDate(DateTime from, DateTime to)
+        {
+            if (from != laststartdate || to != lastenddate)
+            {
+                laststartdate = new DateTime(from.Ticks);
+                lastenddate = new DateTime(to.Ticks);
+
+                return false;
+            }
+            
+
+            return true;
+        }
+        public static void UpdateEcoregionVariables(DateTime from, DateTime to)
+        {
+            if (EcoregionDateData.IsUptoDate(from, from))return;
+                    
+            
+            foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+            {
+                if (ecoregion.Active == false) continue;
+
+                data[ecoregion] = new List<EcoregionDateData>();
+
+                while (from < to)
                 {
-                    monthdata = allstaticdata[ClimateFileName[Ecoregion]][from];
-                }
-                catch (System.Exception e)
-                {
-                    if (from < FirstDate[Ecoregion] || from > LastDate[Ecoregion])
+                    EcoregionDateData monthdata = null;
+
+                    try
                     {
-                        throw new System.Exception("No data for month/year " + from.Month + "/" + from.Year + " for ecoregion " + Ecoregion.Name + " in climatefile " + ClimateFileName[Ecoregion]);
+                        monthdata = allstaticdata[ClimateFileName[ecoregion]][from];
+                    }
+                    catch (System.Exception e)
+                    {
+                        if (ClimateFileName[ecoregion] == null)
+                        {
+                            throw new System.Exception("No climate file for ecoregion " + ecoregion.Name);
+                        }
+                        if (from < FirstDate[ecoregion] || from > LastDate[ecoregion])
+                        {
+                            throw new System.Exception("No data for month/year " + from.Month + "/" + from.Year + " for ecoregion " + ecoregion.Name + " in climatefile " + ClimateFileName[ecoregion]);
+                        }
+
+                        throw new System.Exception("No data for month/year " + from.Month + "/" + from.Year + " for ecoregion " + ecoregion.Name + " in climatefile " +ClimateFileName[ecoregion] +" "+ e.Message);
                     }
 
-                    throw new System.Exception("No data for month/year " + from.Month + "/" + from.Year + " for ecoregion " + Ecoregion.Name + " in climatefile " + e.Message);
+
+                    data[ecoregion].Add(monthdata);
+                    from = from.AddMonths(1);
                 }
-
-
-                data.Add(monthdata);
-                from = from.AddMonths(1);
             }
-            return data;
+           
         }
          
         public EcoregionDateData(string[] terms, ColumnNumbers columns)
@@ -206,6 +237,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public static void Initialize()
         {
+            data =  new Library.Parameters.Ecoregions.AuxParm<List<EcoregionDateData>>(PlugIn.ModelCore.Ecoregions);
             FirstDate = new Library.Parameters.Ecoregions.AuxParm<DateTime>(PlugIn.ModelCore.Ecoregions);
             LastDate = new Library.Parameters.Ecoregions.AuxParm<DateTime>(PlugIn.ModelCore.Ecoregions);
 
