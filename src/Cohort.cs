@@ -172,7 +172,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              Cohort.addlitter = sitecohorts.AddLitter;
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
         }
-        
+        bool leaf_on = true;
         public void CalculatePhotosynthesis(float nr_of_cohorts, IEcoregion ecoregion, ref float Water, ref uint pressurehead, ref float SnowPack, ref float interception, ref float SubCanopyPar, uint PressureHead, ref float CanopyLAI)
         {
             if (auxpars == null)
@@ -231,10 +231,12 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
 
-                if (SiteCohorts.monthdata.Leaf_Change[Species])
+                if (leaf_on == true && SiteCohorts.monthdata.Leaf_On[Species] ==false)
                 {
+                    leaf_on = false;
                     addlitter(FoliageSenescence(), Species);
                 }
+                leaf_on = SiteCohorts.monthdata.Leaf_On[Species];
             }
             else auxpars.index++;
 
@@ -390,7 +392,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float FoliageSenescence()
         {
             // If it is fall 
-            ushort Litter = (ushort)(species.TOfol() * fol);
+            float Litter = species.TOfol() * fol;
             fol -= Litter;
 
             return Litter;

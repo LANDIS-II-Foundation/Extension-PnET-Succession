@@ -17,7 +17,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
-       
+
+        public static float Latitude;               
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
         public static DateTime Date { get; private set; }
@@ -82,7 +83,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             
         }
       
-      
         public static int DiscreteUniformRandom(int min, int max)
         {
             ModelCore.ContinuousUniformDistribution.Alpha = min;
@@ -122,9 +122,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
        
-
-       
-
         string PnETDefaultsFolder
         {
             get
@@ -133,10 +130,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         
-    
-
-        //---------------------------------------------------------------------
-
         public PlugIn()
             : base(Names.ExtensionName)
         {
@@ -151,7 +144,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Dictionary<string, Parameter<string>> parameters = Landis.Data.Load<Dictionary<string, Parameter<string>>>(filename, parser);
             return parameters;
         }
-        //---------------------------------------------------------------------
+       
         public override void LoadParameters(string InputParameterFile, ICore mCore)
         {
             ModelCore = mCore;
@@ -276,10 +269,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         }
 
-
-
-        
-        
         public override void Initialize()
         {
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
@@ -292,12 +281,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             Edu.Wisc.Forest.Flel.Util.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
+            Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value;
 
+            ObservedClimate.Initialize();
+            RunningData.Initialize();
             Species.Initialize();
             Ecoregion.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
-            EcoregionDateData.Initialize();
+             
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
@@ -320,11 +312,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             PlugIn.ModelCore.UI.WriteLine("Spinning up biomass");
 
-            
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
             InitializeSites(InitialCommunitiesTXTFile, InitialCommunitiesMapFile, ModelCore);
              
+            // Convert PnET cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
             
             
@@ -394,8 +386,6 @@ namespace Landis.Extension.Succession.BiomassPnET
            
            
         }
-        
-
         protected override void AgeCohorts(ActiveSite site,
                                             ushort years,
                                             int? successionTimestep
@@ -404,35 +394,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             DateTime date = new DateTime(PlugIn.StartDate.Year + PlugIn.ModelCore.CurrentTime - Timestep, 1, 15);
 
             DateTime EndDate = date.AddYears(years);
-            IEcoregion Ecoregion = PlugIn.ModelCore.Ecoregion[site];
 
+            List<DerivedClimate> climate_vars = RunningData.GetData(PlugIn.ModelCore.Ecoregion[site], date, EndDate);
 
-            EcoregionDateData.UpdateEcoregionVariables(date, EndDate);
-
-
-            sitecohorts[site].Grow(EcoregionDateData.data[Ecoregion]);
-
+            sitecohorts[site].Grow(climate_vars);
 
             Date = EndDate;
-            
-            
-            
-            
-
              
         }
-        //---------------------------------------------------------------------
+        public override byte ComputeShade(ActiveSite site)
+        {
+
+
+            return 0;
+        }
         
         public override void Run()
         {
             base.Run();
         }
-        public override byte ComputeShade(ActiveSite site)
-        {
-            
-
-            return 0;
-        }
+        
 
         
         public void AddLittersAndCheckResprouting(object sender, Landis.Library.AgeOnlyCohorts.DeathEventArgs eventArgs)
@@ -451,10 +432,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         }
         
-        
-        
-        
-        //---------------------------------------------------------------------
         public bool SufficientResources(ISpecies species, ActiveSite site)
         {
             return true;

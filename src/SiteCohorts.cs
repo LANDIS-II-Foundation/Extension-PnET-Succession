@@ -52,7 +52,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float CanopyLAI;
         private byte canopylaimax;
 
-        public static EcoregionDateData monthdata;
+        public static DerivedClimate monthdata;
 
         static float[] AET = new float[12]; 
         private float Transpiration;
@@ -173,27 +173,30 @@ namespace Landis.Extension.Succession.BiomassPnET
                 sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
 
                 if (sortedAgeCohorts.Count == 0) return;
-
+                
                 DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age));
 
+                Landis.Library.Parameters.Ecoregions.AuxParm<List<DerivedClimate>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<DerivedClimate>>(PlugIn.ModelCore.Ecoregions);
+
+                 
                 while (date.CompareTo(StartDate) < 0)
                 {
                     //  Add those cohorts that were born at the current year
                     while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == sortedAgeCohorts[0].Age)
                     {
-
                         Cohort cohort = new Cohort(sortedAgeCohorts[0].Species, (ushort)date.Year, SiteOutputName);
 
                         AddNewCohort(cohort);
 
                         sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
                     }
-                    //DateTime EndDate = date.AddYears(1);
+                    
+                    // Simulation time runs untill the next cohort is added
                     DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
 
-                    EcoregionDateData.UpdateEcoregionVariables(date, EndDate);
+                    List<DerivedClimate> climate_vars = RunningData.GetData(Ecoregion, date, EndDate);
 
-                    Grow(EcoregionDateData.data[Ecoregion]);
+                    Grow(climate_vars);
 
                     date = EndDate;
 
@@ -239,7 +242,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return y.CompareTo(x);
             }
         }
-        public void Grow(List<EcoregionDateData> data)
+        public void Grow(List<DerivedClimate> data)
         {
             Cohort.SetSiteAccessFunctions(this);
 
@@ -286,7 +289,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //if (data[m].AnyLeaf_On) random_range = GetRandomRange(bins);
                 monthdata = data[m];
                 Transpiration = 0;
-                subcanopypar = data[m].PAR0;
+                subcanopypar = data[m].obs_clim.PAR0;
                 CanopyLAI = 0;
 
                  
@@ -897,17 +900,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             return s;
         }
-        
-        private void AddSiteOutput(EcoregionDateData monthdata)
+
+        private void AddSiteOutput(DerivedClimate monthdata)
         {
 
             string s = monthdata.Year + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
                         layerstdev.Max() + "," +
                         nlayers + "," +
-                        monthdata.PAR0 + "," +
+                        monthdata.obs_clim.PAR0 + "," +
                         monthdata.Tday + "," +
-                        monthdata.Prec + "," +
+                        monthdata.obs_clim.Prec + "," +
                         Hydrology.RunOff + "," +
                         Hydrology.Leakage + "," +
                         Hydrology.PET + "," +
