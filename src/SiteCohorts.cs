@@ -661,7 +661,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 for (int c =0;c< species_cohort.Count(); c++)
                 {
                     reduction.Add(disturbance.ReduceOrKillMarkedCohort(species_cohort[c]));
-                    if (reduction[reduction.Count()-1] >= species_cohort[c].Biomass) ToRemove.Add(species_cohort[c]);
+                    if (reduction[reduction.Count()-1] >= species_cohort[c].Biomass)
+                        ToRemove.Add(species_cohort[c]);
+                    // Edited by BRM - 090115
+                    else
+                    {
+                        double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;
+                        species_cohort[c].ReduceBiomass(reductionProp);
+                    }
+                    //
                 }
                 
             }
