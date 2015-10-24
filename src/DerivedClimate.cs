@@ -197,9 +197,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             Precin = (1 - snowfraction) * climate_dataset.Prec;
 
-            foreach(IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+            foreach(IEcoregionPNET  ecoregion in PlugIn.ModelCore.Ecoregions)
             {
-                PrecInEffective[ecoregion] = Precin * (1 - ecoregion.PrecLossFrac());
+                PrecInEffective[ecoregion] = Precin * (1 - ecoregion.PrecLossFrac);
 
                 SnowMelt[ecoregion] = Math.Min(SnowPack[ecoregion], Maxmonthlysnowmelt);
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Landis.Extension.Succession.BiomassPnET
 {
-    public class PressureHeadSaxton_Rawls : IPressureHeadTable
+    public class PressureHeadSaxton_Rawls  
     {
         public const string SaxtonAndRawlsParameters = "SaxtonAndRawlsParameters";
 

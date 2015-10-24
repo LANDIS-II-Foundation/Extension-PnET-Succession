@@ -17,17 +17,20 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
+        public static SpeciesDataset Species;
+        public static EcoregionsDataset Ecoregions;
 
         public static float Latitude;               
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
-        public static DateTime Date { get; private set; }
+        public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
-        public static ushort IMAX { get; private set; }
-        public static float fIMAX { get; private set; }
+        public static ushort IMAX;
+        public static float fIMAX;
+        
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
 
@@ -157,7 +160,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //-------------Species parameters
             List<string> SpeciesNames = PlugIn.ModelCore.Species.ToList().Select(x => x.Name).ToList();
-            List<string> SpeciesPars = Species.ParameterNames;
+            List<string> SpeciesPars = SpeciesParameters.ParameterNames;
             SpeciesPars.Add(Names.PnETSpeciesParameters);
             Dictionary<string, Parameter<string>> speciesparameters = LoadTable(Names.PnETSpeciesParameters, SpeciesNames, SpeciesPars);
             foreach (string key in speciesparameters.Keys)
@@ -204,19 +207,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AgeOnlyDisturbancesParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
             }
 
-            //---------------VanGenughtenParameterFile
-            if (parameters.ContainsKey(PressureHeadVanGenuchten.VanGenuchtenParameters) == false)
-            {
-                Parameter<string> VanGenuchtenParameterFile = new Parameter<string>(PressureHeadVanGenuchten.VanGenuchtenParameters, (string)PnETDefaultsFolder + "\\VanGenuchtenParameters.txt");
-                parameters.Add(PressureHeadVanGenuchten.VanGenuchtenParameters, VanGenuchtenParameterFile); 
-            }
-            Dictionary<string, Parameter<string>> VanGenughtenParameters = LoadTable(PressureHeadVanGenuchten.VanGenuchtenParameters, null, PressureHeadVanGenuchten.ParameterNames);
-            foreach (string key in VanGenughtenParameters.Keys)
-            {
-                if (parameters.ContainsKey(key)) throw new System.Exception("Parameter " + key + " was provided twice");
-            }
-            VanGenughtenParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
-
+             
             //---------------SaxtonAndRawlsParameterFile
             if (parameters.ContainsKey(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters) == false)
             {
@@ -234,7 +225,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //----------See if user supplied overwriting default parameters
             List<string> RowLabels = new List<string>(Names.AllNames);
-            RowLabels.AddRange(Species.ParameterNames); 
+            RowLabels.AddRange(SpeciesParameters.ParameterNames); 
 
             if (parameters.ContainsKey(Names.PnETGenericParameters))
             {
@@ -268,6 +259,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
         }
+        public static float FTimeStep;
 
         public override void Initialize()
         {
@@ -281,11 +273,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             Edu.Wisc.Forest.Flel.Util.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
+
+            FTimeStep = 1.0F / Timestep;
+
             Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value;
 
             ObservedClimate.Initialize();
             RunningData.Initialize();
-            Species.Initialize();
+            SpeciesParameters.Initialize();
+            Species = new SpeciesDataset();
             Ecoregion.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
@@ -360,7 +356,8 @@ namespace Landis.Extension.Succession.BiomassPnET
          
         public void AddNewCohort(ISpecies species, ActiveSite site)
         {
-            Cohort cohort = new Cohort(species, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
+            ISpeciesPNET spc = Species.Get(species);
+            Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
             
             sitecohorts[site].AddNewCohort(cohort);
 
@@ -439,7 +436,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public bool Establish(ISpecies species, ActiveSite site)
         {
-            bool Establish =EstablishmentProbability.ComputeEstablishment(Date, sitecohorts[site].Pest, species, sitecohorts[site].establishment_siteoutput);
+            ISpeciesPNET spc = Species.Get(species);
+
+            bool Establish = EstablishmentProbability.ComputeEstablishment(Date, sitecohorts[site].Pest, spc, sitecohorts[site].establishment_siteoutput);
             return Establish;
         }
 

@@ -6,6 +6,13 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts
     {
+
+        int[] NetPsn { get; }
+
+        int[] MaintResp{ get; }
+        
+        int[] GrossPsn{ get; }
+        
         byte CanopyLAImax{get;}
 
         int AverageAge { get; }

@@ -16,7 +16,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float FWater;
         public float MaintenanceRespiration;
         public float ConductanceCO2;
-
+        public float Interception;
 
         public SubCohortVars()
         {

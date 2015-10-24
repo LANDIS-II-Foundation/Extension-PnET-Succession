@@ -10,14 +10,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public static IEcoregion ecoregion;
 
-        public static float snowmelt;
+        
         public static float WaterIn;
         
-        public static IPressureHeadTable Pressureheadtable;
+        public static PressureHeadSaxton_Rawls Pressureheadtable;
 
-        public static float CalculateWaterContent(IEcoregion ecoregion, ushort water_pressure)
+        public static float CalculateWaterContent(IEcoregionPNET ecoregion, ushort water_pressure)
         {
-            return Pressureheadtable.CalculateWaterContent(water_pressure, SoilType[ecoregion]) * ecoregion.RootingDepth();
+            return Pressureheadtable.CalculateWaterContent(water_pressure, SoilType[ecoregion]) * ecoregion.RootingDepth;
         }
 
         public static Landis.Library.Parameters.Ecoregions.AuxParm<float> FieldCap;
@@ -42,13 +42,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 Parameter<string> p = PlugIn.GetParameter(Names.PressureHeadCalculationMethod);
 
-                if (p.Value == Names.VanGenuchten) Pressureheadtable = new PressureHeadVanGenuchten();
-                else if (PlugIn.GetParameter(Names.PressureHeadCalculationMethod).Value == Names.SaxtonAndRawls) Pressureheadtable = new PressureHeadSaxton_Rawls();
-                else
-                {
-                    string msg = "Unknown presciption for calculating pressurehead, value for " + Names.PressureHeadCalculationMethod + " can be "+ Names.VanGenuchten+" or " + Names.SaxtonAndRawls;
-                    throw new System.Exception(msg);
-                }
+                Pressureheadtable = new PressureHeadSaxton_Rawls();
+                 
             }
             else
             {
@@ -63,7 +58,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             SoilType = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)PlugIn.GetParameter(Names.SoilType);
 
             PlugIn.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
-            foreach (IEcoregion eco in PlugIn.ModelCore.Ecoregions) if (eco.Active)
+            foreach (IEcoregionPNET eco in PlugIn.Ecoregions) if (eco.Active)
             {
                 // takes PH (MPa) 
                 // Calculates water content (m3H2O/m3 SOIL)
@@ -71,11 +66,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Water content at field capacity (calculated as an output variable)
                 //  −33 kPa (or −0.33 bar)  
                 // mH2O value =  kPa value x 0.101972
-                FieldCap[eco] = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)3.36, SoilType[eco]) * eco.RootingDepth();
+                FieldCap[eco] = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)3.36, SoilType[eco]) * eco.RootingDepth;
 
-                WiltPnt[eco] = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)150, SoilType[eco]) * eco.RootingDepth();
+                WiltPnt[eco] = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)150, SoilType[eco]) * eco.RootingDepth;
 
-                Porosity[eco] = (float)Hydrology.Pressureheadtable.Porosity(eco.RootingDepth(), SoilType[eco]);
+                Porosity[eco] = (float)Hydrology.Pressureheadtable.Porosity(eco.RootingDepth, SoilType[eco]);
 
                 float f = FieldCap[eco] - WiltPnt[eco];
                 PlugIn.ModelCore.UI.WriteLine(eco.Name + "\t" + SoilType[eco] + "\t" + WiltPnt[eco] + "\t" + FieldCap[eco] + "\t" + f + "\t" + Porosity[eco] );

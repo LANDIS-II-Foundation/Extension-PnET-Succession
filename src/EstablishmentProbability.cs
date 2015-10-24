@@ -16,23 +16,23 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater" +"," + "FRad" +"," + "Est";
             }
         }
-        static List<List<ISpecies>> LumpedSpecies = new List<List<ISpecies>>();
-        static Dictionary<ISpecies, ISpecies> AssociateSpeciesWith = new Dictionary<ISpecies, ISpecies>();
+        static List<List<ISpeciesPNET>> LumpedSpecies = new List<List<ISpeciesPNET>>();
+        static Dictionary<ISpeciesPNET, ISpeciesPNET> AssociateSpeciesWith = new Dictionary<ISpeciesPNET, ISpeciesPNET>();
         static int Timestep;
         public static void Initialize(int timestep)
         {
             Timestep = timestep;
 
-            Dictionary<string, List<ISpecies>> mydict = new Dictionary<string, List<ISpecies>>();
+            Dictionary<string, List<ISpeciesPNET>> mydict = new Dictionary<string, List<ISpeciesPNET>>();
 
-            foreach (ISpecies spc in PlugIn.ModelCore.Species)
+            foreach (ISpeciesPNET spc in PlugIn.Species)
             {
-                string pars = spc.HalfSat().ToString().PadRight(5) + spc.EstRad().ToString().PadRight(5) + spc.EstRad().ToString().PadRight(5)
-                              + spc.H2().ToString().PadRight(5) + spc.H3().ToString().PadRight(5) + spc.H4().ToString().PadRight(5);
+                string pars = spc.HalfSat.ToString().PadRight(5) + spc.EstRad.ToString().PadRight(5) + spc.EstRad.ToString().PadRight(5)
+                              + spc.H2.ToString().PadRight(5) + spc.H3.ToString().PadRight(5) + spc.H4.ToString().PadRight(5);
 
                 if (mydict.ContainsKey(pars) == false)
                 {
-                    mydict.Add(pars, new List<ISpecies>());
+                    mydict.Add(pars, new List<ISpeciesPNET>());
                 }
                 mydict[pars].Add(spc);
                 AssociateSpeciesWith.Add(spc, mydict[pars][0]);
@@ -45,7 +45,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 Dictionary<ISpecies, float[]> Pest = new Dictionary<ISpecies, float[]>();
 
-                foreach (List<ISpecies> spc in LumpedSpecies)
+                foreach (List<ISpeciesPNET> spc in LumpedSpecies)
                 {
                     Pest.Add(spc[0], new float[]{1,1,1});
                 }
@@ -55,12 +55,12 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static Dictionary<ISpecies, float[]> Calculate_Establishment(float PAR, float PressureHead, Dictionary<ISpecies, float[]> Pest)
         {
-            foreach (List<ISpecies> spc in LumpedSpecies)
+            foreach (List<ISpeciesPNET> spc in LumpedSpecies)
             {
                 if (SiteCohorts.monthdata.Leaf_On[spc[0]])
                 {
-                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc[0].HalfSat()), spc[0].EstRad());
-                    float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc[0].H2(), spc[0].H3(), spc[0].H4(), PressureHead), spc[0].EstMoist());
+                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc[0].HalfSat), spc[0].EstRad);
+                    float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc[0].H2, spc[0].H3, spc[0].H4, PressureHead), spc[0].EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
 
@@ -72,7 +72,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             return Pest;
         }
-        public static bool ComputeEstablishment(DateTime date, Dictionary<ISpecies, float[]> Pest, ISpecies Species, LocalOutput establishment_siteoutput)
+        public static bool ComputeEstablishment(DateTime date, Dictionary<ISpecies, float[]> Pest, ISpeciesPNET Species, LocalOutput establishment_siteoutput)
         {
             float pest = Pest[AssociateSpeciesWith[Species]][0];
             
@@ -89,7 +89,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // TODO: win time by reducing calls to write
                 establishment_siteoutput.Write();
             }
-            if (Species.PreventEstablishment()) return false;
+            if (Species.PreventEstablishment) return false;
             return est;
         }
 
