@@ -10,7 +10,7 @@
 // directive.
 
 //-----------------------------------------------------------------------------
-#define DeployFolder AddBackslash("C:\Users\adebruij\Desktop\PnET_Succession\InstallerFolder\PnET_Succession\deploy")
+#define DeployFolder AddBackslash("C:\Users\debruijna\Desktop\PnET-Succession-repo\deploy")
 
 type
   // Information about an installed version of this package.
