@@ -17,9 +17,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
-        public static SpeciesDataset Species;
-        public static EcoregionsDataset Ecoregions;
-
         public static float Latitude;               
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
@@ -160,7 +157,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //-------------Species parameters
             List<string> SpeciesNames = PlugIn.ModelCore.Species.ToList().Select(x => x.Name).ToList();
-            List<string> SpeciesPars = SpeciesParameters.ParameterNames;
+            List<string> SpeciesPars = SpeciesPnET.ParameterNames;
             SpeciesPars.Add(Names.PnETSpeciesParameters);
             Dictionary<string, Parameter<string>> speciesparameters = LoadTable(Names.PnETSpeciesParameters, SpeciesNames, SpeciesPars);
             foreach (string key in speciesparameters.Keys)
@@ -171,7 +168,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //-------------Ecoregion parameters
             List<string> EcoregionNames = PlugIn.ModelCore.Ecoregions.ToList().Select(x => x.Name).ToList();
-            List<string> EcoregionParameters = Ecoregion.ParameterNames;
+            List<string> EcoregionParameters = EcoregionPnET.ParameterNames;
             Dictionary<string, Parameter<string>> ecoregionparameters = LoadTable(Names.EcoregionParameters, EcoregionNames, EcoregionParameters);
             foreach (string key in ecoregionparameters.Keys)
             {
@@ -225,7 +222,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //----------See if user supplied overwriting default parameters
             List<string> RowLabels = new List<string>(Names.AllNames);
-            RowLabels.AddRange(SpeciesParameters.ParameterNames); 
+            RowLabels.AddRange(SpeciesPnET.ParameterNames); 
 
             if (parameters.ContainsKey(Names.PnETGenericParameters))
             {
@@ -279,10 +276,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value;
 
             ObservedClimate.Initialize();
-            RunningData.Initialize();
-            SpeciesParameters.Initialize();
-            Species = new SpeciesDataset();
-            Ecoregion.Initialize();
+            
+            SpeciesPnET.Initialize();
+            EcoregionPnET.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
              
@@ -356,7 +352,7 @@ namespace Landis.Extension.Succession.BiomassPnET
          
         public void AddNewCohort(ISpecies species, ActiveSite site)
         {
-            ISpeciesPNET spc = Species.Get(species);
+            ISpeciesPNET spc = SpeciesPnET.AllSpecies[species];
             Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
             
             sitecohorts[site].AddNewCohort(cohort);
@@ -392,7 +388,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             DateTime EndDate = date.AddYears(years);
 
-            List<DerivedClimate> climate_vars = RunningData.GetData(PlugIn.ModelCore.Ecoregion[site], date, EndDate);
+            IEcoregionPnET ecoregion_pnet = EcoregionPnET.AllEcoregions[PlugIn.ModelCore.Ecoregion[site]];
+
+            List<EcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
 
             sitecohorts[site].Grow(climate_vars);
 
@@ -436,7 +434,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public bool Establish(ISpecies species, ActiveSite site)
         {
-            ISpeciesPNET spc = Species.Get(species);
+            ISpeciesPNET spc = SpeciesPnET.AllSpecies[species];
 
             bool Establish = EstablishmentProbability.ComputeEstablishment(Date, sitecohorts[site].Pest, spc, sitecohorts[site].establishment_siteoutput);
             return Establish;

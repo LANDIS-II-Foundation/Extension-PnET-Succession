@@ -76,12 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Allocation.cs" />
-    <Compile Include="DerivedClimate.cs" />
-    <Compile Include="Ecoregions\EcoregionsDataset.cs" />
-    <Compile Include="Ecoregions\IEcoregionParameters.cs" />
-    <Compile Include="Ecoregions\IEcoregionsPNET.cs" />
-    <Compile Include="Ecoregions\EcoregionParameters.cs" />
     <Compile Include="Ecoregions\EcoregionPnET.cs" />
+    <Compile Include="Ecoregions\EcoregionPnETVariables.cs" />
+    <Compile Include="Ecoregions\IEcoregionPnET.cs" />
     <Compile Include="ObservedClimate.cs" />
     <Compile Include="CohortVars.cs" />
     <Compile Include="Constants.cs" />
@@ -90,25 +87,20 @@
     <Compile Include="MyClock.cs" />
     <Compile Include="OutputHeaders.cs" />
     <Compile Include="AssignOutputFiles.cs" />
-    <Compile Include="Ecoregions\Ecoregion.cs" />
     <Compile Include="PressureHeadSaxton_Rawls.cs" />
     <Compile Include="GetLocations.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Names.cs" />
     <Compile Include="ParameterTableParser.cs" />
-    <Compile Include="RunningData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SiteCohorts.cs" />
     <Compile Include="EstablishmentProbability.cs" />
     <Compile Include="Hydrology.cs" />
     <Compile Include="Cohort.cs" />
     <Compile Include="PlugIn.cs" />
-    <Compile Include="Species\SpeciesDataset.cs" />
     <Compile Include="Species\ISpeciesPNET.cs" />
-    <Compile Include="Species\ISpeciesDataset.cs" />
-    <Compile Include="Species\ISpeciesParameters.cs" />
-    <Compile Include="Species\SpeciesParameters.cs" />
     <Compile Include="Species\SpeciesPnET.cs" />
+    <Compile Include="Species\SpeciesPnETVariables.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

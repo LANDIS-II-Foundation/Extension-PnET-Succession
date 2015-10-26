@@ -15,9 +15,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public byte Layer;
 
-        public delegate void SubtractTranspiration(float transpiration, ISpecies Species);
+        public delegate void SubtractTranspiration(float transpiration, ISpeciesPNET Species);
         public delegate void AddWoodyDebris(float Litter, float KWdLit);
-        public delegate void AddLitter(float AddLitter, ISpecies Species);
+        public delegate void AddLitter(float AddLitter, ISpeciesPNET Species);
 
         public static SubtractTranspiration subtract_transpiration;
         public static AddWoodyDebris addwoodydebris;
@@ -183,39 +183,45 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         bool leaf_on = true;
 
-        public static IEcoregionPNET ecoregion;
+        public static IEcoregionPnET ecoregion;
 
-        public SubCohortVars CalculatePhotosynthesis(float one_over_nr_of_cohorts, float LeakagePerCohort, ref float Water, ref uint PressureHead, ref float SubCanopyPar, ref float CanopyLAI)
+        public static bool LeafOn(float Tmin, float PsnTMin)
+        {
+            bool Leaf_on = Tmin > PsnTMin;
+            return Leaf_on;
+        }
+
+        public SubCohortVars CalculatePhotosynthesis(EcoregionPnETVariables monthdata, float one_over_nr_of_cohorts, float LeakagePerCohort, ref float Water, ref uint PressureHead, ref float SubCanopyPar, ref float CanopyLAI)
         {
             layer = new SubCohortVars();
-
+           
             layer.LAI = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
             CanopyLAI += layer.LAI;
 
-            layer.Interception = SiteCohorts.monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * layer.LAI));
+            layer.Interception = monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * layer.LAI));
 
-            Hydrology.WaterIn = SiteCohorts.monthdata.PrecInEffective[ecoregion] * one_over_nr_of_cohorts - layer.Interception + SiteCohorts.monthdata.SnowMelt[ecoregion];//mm  \
+            Hydrology.WaterIn = monthdata.PrecIntffective * one_over_nr_of_cohorts - layer.Interception + monthdata.SnowMelt;//mm  \
 
             Water +=  Hydrology.WaterIn ;
 
             // Leakage 
-            Hydrology.Leakage = Math.Max(LeakagePerCohort * (Water - Hydrology.FieldCap[ecoregion]), 0);
+            Hydrology.Leakage = Math.Max(LeakagePerCohort * (Water - ecoregion.FieldCap), 0);
             Water -= (ushort)Hydrology.Leakage;
 
             // Instantaneous runoff (excess of porosity)
             Hydrology.RunOff = Math.Max(Water - ecoregion.WaterHoldingCapacity, 0);
             Water -= (ushort)Hydrology.RunOff;
 
-            PressureHead = (ushort)Hydrology.Pressureheadtable[ecoregion, (ushort)Water];
+            PressureHead = (ushort)Hydrology.Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
  
             if (index == PlugIn.IMAX - 1)
             {
                 index = 0;
 
-                layer.MaintenanceRespiration = (float)Math.Min(NSC,   SiteCohorts.monthdata.MaintRespFTempResp[Species] * biomass);//gC //IMAXinverse
+                layer.MaintenanceRespiration = (float)Math.Min(NSC, monthdata[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
                 nsc -= layer.MaintenanceRespiration;
 
-                if (SiteCohorts.monthdata.Month == (int)Constants.Months.January)
+                if (monthdata.Month == (int)Constants.Months.January)
                 {
 
                     addwoodydebris(Senescence(), species.KWdLit);
@@ -229,16 +235,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                     
                 }
 
-                if (leaf_on == true && SiteCohorts.monthdata.Leaf_On[Species] ==false)
+                bool Leaf_on = LeafOn( monthdata.Tmin, SpeciesPNET.PsnTMin);
+
+                if (leaf_on == true && Leaf_on  == false)
                 {
                     leaf_on = false;
-                    addlitter(FoliageSenescence(), Species);
+                    addlitter(FoliageSenescence(), SpeciesPNET);
                 }
-                leaf_on = SiteCohorts.monthdata.Leaf_On[Species];
+                leaf_on = Leaf_on;
             }
             else index++;
 
-            if (SiteCohorts.monthdata.Leaf_On[Species] == false) return layer;
+            if (leaf_on == false) return layer;
 
             float IdealFol = (species.FracFol * FActiveBiom * biomass);
             
@@ -260,20 +268,20 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             if (layer.FWater == 0) return layer;
 
-            if(index ==0)fage = Math.Max(0, 1 - (float)Math.Pow((age / (float)species.Longevity), species.PsnAgeRed));
+            fage = Math.Max(0, 1 - (float)Math.Pow((age / (float)species.Longevity), species.PsnAgeRed));
             
             // g/mo
-            layer.NetPsn = layer.FWater * layer.FRad * fage * SiteCohorts.monthdata.FTempPSNRefNetPsn[species] * fol;
+            layer.NetPsn = layer.FWater * layer.FRad * fage * monthdata[species.Name].FTempPSNRefNetPsn * fol;
 
-            layer.ConductanceCO2 = (SiteCohorts.monthdata.gsInt + (SiteCohorts.monthdata.gsSlope * layer.NetPsn * Constants.MillionOverTwelve));
+            layer.ConductanceCO2 = (monthdata.GsInt + (monthdata.GsSlope * layer.NetPsn * Constants.MillionOverTwelve));
 
-            layer.FolResp = layer.FWater * SiteCohorts.monthdata.FTempRespDayRefResp[species] * fol ;
+            layer.FolResp = layer.FWater * monthdata[species.Name].FTempRespDayRefResp * fol;
 
             layer.GrossPsn = layer.NetPsn + layer.FolResp;
 
-            layer.Transpiration = layer.GrossPsn * Constants.MCO2_MC / SiteCohorts.monthdata.WUE_CO2_corr[Species];
+            layer.Transpiration = layer.GrossPsn * Constants.MCO2_MC / monthdata[Species.Name].WUE_CO2_corr;
 
-            subtract_transpiration(layer.Transpiration, Species);
+            subtract_transpiration(layer.Transpiration, SpeciesPNET);
 
             nsc += layer.NetPsn;
 
@@ -305,12 +313,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             canopy = new SubCohortVars();
         }
         
-        public void UpdateCohortData( )
+        public void UpdateCohortData(EcoregionPnETVariables monthdata )
         {
-            
-            
-           
-            string s = Math.Round(SiteCohorts.monthdata.Year, 2) + "," + 
+
+
+
+            string s = Math.Round(monthdata.Year, 2) + "," + 
                         Age + "," +
                         Layer + "," + 
                        //canopy.ConductanceCO2 + "," +
@@ -328,10 +336,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                        NSCfrac + "," +
                        canopy.FWater + "," +
                        canopy.FRad + "," +
-                       SiteCohorts.monthdata.FTempPSN[Species] + "," +
-                       SiteCohorts.monthdata.FTempResp[Species] + "," +
+                       monthdata[Species.Name].FTempPSN + "," +
+                       monthdata[Species.Name].FTempResp + "," +
                        fage + "," +
-                       SiteCohorts.monthdata.Leaf_On[Species] + "," +
+                       Cohort.LeafOn(monthdata.Tmin,SpeciesPNET.PsnTMin) + "," +
                        FActiveBiom;
              
             cohortoutput.Add(s);

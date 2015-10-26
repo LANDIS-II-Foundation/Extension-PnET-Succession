@@ -15,15 +15,12 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public static PressureHeadSaxton_Rawls Pressureheadtable;
 
-        public static float CalculateWaterContent(IEcoregionPNET ecoregion, ushort water_pressure)
+        public static float CalculateWaterContent(IEcoregionPnET ecoregion, ushort water_pressure)
         {
-            return Pressureheadtable.CalculateWaterContent(water_pressure, SoilType[ecoregion]) * ecoregion.RootingDepth;
+            return Pressureheadtable.CalculateWaterContent(water_pressure, ecoregion.SoilType) * ecoregion.RootingDepth;
         }
 
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<float> FieldCap;
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<float> WiltPnt;
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<float> Porosity;
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<string> SoilType;
+        
 
         public static float RunOff;
         public static float Leakage;
@@ -51,14 +48,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception(msg);
             }
            
-            WiltPnt = new Library.Parameters.Ecoregions.AuxParm<float>(PlugIn.ModelCore.Ecoregions);
-            FieldCap = new Library.Parameters.Ecoregions.AuxParm<float>(PlugIn.ModelCore.Ecoregions);
-            Porosity = new Library.Parameters.Ecoregions.AuxParm<float>(PlugIn.ModelCore.Ecoregions);
-
-            SoilType = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)PlugIn.GetParameter(Names.SoilType);
-
+            
             PlugIn.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
-            foreach (IEcoregionPNET eco in PlugIn.Ecoregions) if (eco.Active)
+            foreach (IEcoregionPnET eco in EcoregionPnET.AllEcoregions.Values) if (eco.Active)
             {
                 // takes PH (MPa) 
                 // Calculates water content (m3H2O/m3 SOIL)
@@ -66,14 +58,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Water content at field capacity (calculated as an output variable)
                 //  −33 kPa (or −0.33 bar)  
                 // mH2O value =  kPa value x 0.101972
-                FieldCap[eco] = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)3.36, SoilType[eco]) * eco.RootingDepth;
+                eco.FieldCap = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)3.36, eco.SoilType) * eco.RootingDepth;
+               
+                eco.WiltPnt = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)150, eco.SoilType) * eco.RootingDepth;
 
-                WiltPnt[eco] = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)150, SoilType[eco]) * eco.RootingDepth;
+                eco.Porosity = (float)Hydrology.Pressureheadtable.Porosity(eco.RootingDepth, eco.SoilType);
 
-                Porosity[eco] = (float)Hydrology.Pressureheadtable.Porosity(eco.RootingDepth, SoilType[eco]);
-
-                float f = FieldCap[eco] - WiltPnt[eco];
-                PlugIn.ModelCore.UI.WriteLine(eco.Name + "\t" + SoilType[eco] + "\t" + WiltPnt[eco] + "\t" + FieldCap[eco] + "\t" + f + "\t" + Porosity[eco] );
+                float f = eco.FieldCap - eco.WiltPnt;
+                PlugIn.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity );
             }
         }
          
@@ -127,27 +119,27 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         
          
-        public static void SubtractEvaporation(IEcoregion ecoregion, ushort SubCanopyRadiation, float Transpiration, float Temp,ref float Water,ref uint pressurehead, Action<float> SetAET)
+        public static void SubtractEvaporation(int Month, IEcoregionPnET ecoregion, ushort SubCanopyRadiation, float Transpiration, float Temp,ref float Water,ref uint pressurehead, Action<float, int> SetAET)
         {
             PET = (float)Calculate_PotentialEvapotranspiration(SubCanopyRadiation, Temp);
 
             DeliveryPotential = Cohort.CumputeFWater(0, 0, 153, pressurehead);
 
             // Per month
-            SetAET(DeliveryPotential * PET);// ();
+            SetAET(DeliveryPotential * PET, Month);// ();
 
             Evaporation = Math.Min(Water, Math.Max(0, DeliveryPotential * PET - Transpiration));
 
             Water -= (ushort)Evaporation;
 
-            pressurehead = (ushort)Pressureheadtable[ecoregion, (ushort)Water];
+            pressurehead = (ushort)Pressureheadtable[(IEcoregion) ecoregion, (ushort)Water];
 
         }
         
-        public static void SubtractTranspiration(IEcoregion ecoregion, float watermin, ushort Cohorttranspiration, ref float Water, ref uint pressurehead)
+        public static void SubtractTranspiration(IEcoregionPnET ecoregion, float watermin, ushort Cohorttranspiration, ref float Water, ref uint pressurehead)
         {
             Water -= Math.Min(Water, Cohorttranspiration);
-            pressurehead = (ushort)Pressureheadtable[ecoregion, (ushort)Water];
+            pressurehead = (ushort)Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
         }
 
        

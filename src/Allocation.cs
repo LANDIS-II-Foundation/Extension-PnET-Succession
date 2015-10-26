@@ -80,7 +80,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             ((SiteCohorts)sitecohorts).AddWoodyDebris((float)((1 - pwoodlost) * cohort.Wood), cohort.SpeciesPNET.KWdLit);
             ((SiteCohorts)sitecohorts).AddWoodyDebris((float)((1 - prootlost) * cohort.Root), cohort.SpeciesPNET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddLitter((float)((1 - pfollost) * cohort.Fol), cohort.Species);
+            ((SiteCohorts)sitecohorts).AddLitter((float)((1 - pfollost) * cohort.Fol), cohort.SpeciesPNET);
 
 
         }
