@@ -14,12 +14,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         
     {
         
-
         private Dictionary<DateTime, EcoregionPnETVariables> variables = new Dictionary<DateTime, EcoregionPnETVariables>();
         
-
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables >> current_data;
-
         public static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
 
         private Landis.Core.IEcoregion ecoregion;
@@ -169,41 +165,59 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Name;
             }
         }
+        public static Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>>();
 
         public static List<EcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
-            // Remove entries before the start date of the simulation step 
-            while (current_data[ecoregion].Count > 0 && current_data[ecoregion][0].Date < start)
-            {
-                current_data[ecoregion].Remove(current_data[ecoregion][0]);
-            }
+            // Monthly simulation data untill but not including end
+            List<EcoregionPnETVariables> data = new List<EcoregionPnETVariables>();
 
             // Date: the last date in the collection of running data
-            DateTime date = current_data[ecoregion].Count > 0 ?
-                            current_data[ecoregion][current_data[ecoregion].Count - 1].Date
-                            : start;
+            DateTime date = new DateTime(start.Ticks);
 
             while (end.Ticks > date.Ticks)
             {
+                if (all_values[ecoregion].ContainsKey(date) == false)
+                {
+                    ObservedClimate.DataSet dataset = ObservedClimate.GetData(ecoregion, date);
+
+                    EcoregionPnETVariables last_month = null;
+
+                    EcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(last_month, ecoregion, dataset, date);
+
+                    all_values[ecoregion].Add(date, ecoregion_variables);
+
+                }
+                data.Add( all_values[ecoregion][date]);
+ 
                 date = date.AddMonths(1);
-
-                ObservedClimate.DataSet dataset = ObservedClimate.GetData(ecoregion, date);
-
-                EcoregionPnETVariables last_month = null;
-
-                EcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(last_month, ecoregion, dataset, date);
-
-                current_data[ecoregion].Add(ecoregion_variables);
             }
-            return current_data[ecoregion];
+            return data;
         }
 
         public static void Initialize()
         {
-            current_data = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
-             
-            Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName = ObservedClimate.ClimateFileName;
+            soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("SoilType");
+            climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("ClimateFileName");
+            rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RootingDepth", 0, 1000);
+            precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
+            preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
 
+            leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
+            AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
+            foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+            {
+                AllEcoregions.Add(ecoregion, new EcoregionPnET(ecoregion));
+            }
+
+            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>>();
+            foreach (IEcoregionPnET ecoregion in EcoregionPnET.AllEcoregions.Values)
+            {
+                all_values[ecoregion] = new Dictionary<DateTime, EcoregionPnETVariables>();
+            }
+             
+           // Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName = ObservedClimate.ClimateFileName;
+            /*
             Dictionary<string, List<EcoregionPnETVariables>> mydata = new Dictionary<string, List<EcoregionPnETVariables>>();
 
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
@@ -212,28 +226,21 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (mydata.ContainsKey(ClimateFileName[ecoregion]))
                 {
-                    current_data[ecoregion] = mydata[ClimateFileName[ecoregion]];
+                    //current_data[ecoregion] = mydata[ClimateFileName[ecoregion]];
                 }
                 else
                 {
                     List<EcoregionPnETVariables> data = new List<EcoregionPnETVariables>();
-                    current_data[ecoregion] = data;
+                    //current_data[ecoregion] = data;
                     mydata.Add(ClimateFileName[ecoregion], data);
                 }
             }
-            AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
-
-            soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("SoilType");
-            climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("ClimateFileName");
-            rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RootingDepth", 0, 1000);
-            precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
-            preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
-            leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
+             */
             
-            foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
-            {
-                AllEcoregions.Add(ecoregion, new EcoregionPnET(ecoregion));
-            }
+
+            
+            
+            
         }
 
 

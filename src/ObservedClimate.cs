@@ -43,20 +43,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static DataSet GetData(IEcoregion ecoregion, DateTime date)
         {
             // get the appropriate values as read in from a climate txt file
-            ObservedClimate o = ClimateData[ClimateFileName[ecoregion]];
+            ObservedClimate observed_climate = ClimateData[ClimateFileName[ecoregion]];
 
-            int index = line_counter + 1;
-            while (index != line_counter)
+            for (int line = 0; line < observed_climate.data_lines.Count; line++)
             {
-                if (index == o.data_lines.Count) index = 0;
-
-                DataSet d = o.data_lines[index];
-
+                DataSet d = observed_climate.data_lines[line];
                 if (d.Year.Length == 4)
                 {
                     if (int.Parse(d.Month) == date.Month && date.Year == int.Parse(d.Year))
                     {
-                        line_counter = index;
                         return d;
                     }
                 }
@@ -66,14 +61,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     if (int.Parse(d.Month) == date.Month && int.Parse(yearExtremes[0]) <= date.Year && date.Year <= int.Parse(yearExtremes[1]))
                     {
-                        line_counter = index;
                         return d;
                     }
                 }
-                index++;
-                
             }
-            throw new System.Exception("Not climate entry for ecoregion " + ecoregion.Name +" date "+ date);
+            throw new System.Exception("No climate entry for ecoregion " + ecoregion.Name +" date "+ date);
         }
          
         public struct DataSet
