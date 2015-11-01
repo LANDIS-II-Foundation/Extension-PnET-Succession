@@ -209,7 +209,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Water -= (ushort)Hydrology.Leakage;
 
             // Instantaneous runoff (excess of porosity)
-            Hydrology.RunOff = Math.Max(Water - ecoregion.WaterHoldingCapacity, 0);
+            Hydrology.RunOff = Math.Max(Water - ecoregion.Porosity, 0);
             Water -= (ushort)Hydrology.RunOff;
 
             PressureHead = (ushort)Hydrology.Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];

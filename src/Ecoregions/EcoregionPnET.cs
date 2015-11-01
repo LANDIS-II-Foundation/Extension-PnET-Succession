@@ -29,14 +29,12 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> waterholdingcapacity;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
        
 
         private float _precintconst;
         private float _preclossfrac;
         private float _rootingdepth;
-        private float _waterholdingcapacity;
         private string _soiltype;
         private float _leakagefrac;
         private float _fieldcap;
@@ -82,12 +80,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 _porosity = value;
             }
         }
-        public float WaterHoldingCapacity
-        {
-            get {
-                return _waterholdingcapacity;
-            }
-        }
+         
         public float LeakageFrac
         {
             get {
@@ -236,8 +229,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
             preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
-            waterholdingcapacity = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WaterHoldingCapacity", 0, 1000);
-
+            
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
             {
                 AllEcoregions.Add(ecoregion, new EcoregionPnET(ecoregion));
@@ -257,7 +249,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._precintconst = precintconst[ecoregion];
             this._preclossfrac = preclossfrac[ecoregion];
             this._leakagefrac = leakagefrac[ecoregion];
-            this._waterholdingcapacity = waterholdingcapacity[ecoregion];
+          
         }
     }
 }

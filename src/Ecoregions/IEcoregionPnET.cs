@@ -15,7 +15,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         float PrecLossFrac { get; }
         string SoilType { get; }
-        float WaterHoldingCapacity { get;   }
+        
         float PrecIntConst { get;  }
         float RootingDepth { get;   }
         float FieldCap { get; set; }
