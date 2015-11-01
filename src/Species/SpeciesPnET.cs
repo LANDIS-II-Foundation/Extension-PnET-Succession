@@ -42,7 +42,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _dvpd2;
         private float _amaxa;
         private float _amaxb;
-        private float _wuecnst;
+        
         private float _maintresp;
         private float _bfolresp;
 
@@ -80,7 +80,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> foln;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
-        private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
+        
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
          
@@ -118,7 +118,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
             amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxa"));
             amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
-            wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("wuecnst"));
+             
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
                      
@@ -165,7 +165,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _dvpd2 = dvpd2[species];
             _amaxa = amaxa[species];
             _amaxb = amaxb[species];
-            _wuecnst = wuecnst[species];
+            
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
             _species = species;
@@ -200,13 +200,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _amaxb;
             }
         }
-        public float WUEcnst
-        {
-            get
-            {
-                return _wuecnst;
-            }
-        }
+       
         public float MaintResp
         {
             get

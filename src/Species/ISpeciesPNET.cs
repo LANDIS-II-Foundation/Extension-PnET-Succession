@@ -39,7 +39,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         float AmaxA { get; }
         float AmaxB { get; }
-        float WUEcnst { get; }
+         
         float MaintResp { get; }
 
            

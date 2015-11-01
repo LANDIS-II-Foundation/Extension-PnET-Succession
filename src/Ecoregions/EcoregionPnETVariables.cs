@@ -323,7 +323,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
                 SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
-                 
+
+
                 float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
                 float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
@@ -334,18 +335,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
                 float delamax = 1 + ((ArelElev - Arel350) / Arel350);
 
-
                 // CO2 effect on photosynthesis
                 // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
-                float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
+                float Ci = climate_dataset.CO2 * (1 - cicaRatio);
+                
+                float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
 
+                float gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
+                float gsInt = (float)((0.4656 * delamax) - 0.9701);
 
-                _gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
-                _gsInt = (float)((0.4656 * delamax) - 0.9701);
+                speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
+             
                 //wue[ecoregion, spc, date] = (Parameters.WUEcnst[spc] / vpd[ecoregion, date]) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-                float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-                speciespnetvars.WUE_CO2_corr = wue / delamax;
+                //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
+
 
                 // NETPSN 
                 float amax = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
