@@ -196,7 +196,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public void SubtractTranspiration(float transpiration, ISpeciesPNET species)
         {
-            float WaterMin = Hydrology.CalculateWaterContent(this.Ecoregion, species.H4);
+            float WaterMin = Hydrology.CalculateWaterContent(this.Ecoregion, species.H4);  // What is this? It doesn't get used
 
             Hydrology.SubtractTranspiration(this.Ecoregion, WaterMin, (ushort)transpiration, ref water, ref pressurehead);
         }
@@ -236,8 +236,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public void Grow(List<EcoregionPnETVariables> data)
         {
-            
-
             Cohort.SetSiteAccessFunctions(this);
 
             canopylaimax = byte.MinValue;
@@ -282,9 +280,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             netpsn = new float[13];
             grosspsn = new float[13];
             maintresp = new float[13];
-
-           
-            
 
             for (int m = 0; m < data.Count(); m++ )
             {

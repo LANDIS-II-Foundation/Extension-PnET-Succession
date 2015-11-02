@@ -7,10 +7,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 {  
     public static class Hydrology  
     {
-        
         public static IEcoregion ecoregion;
 
-        
         public static float WaterIn;
         
         public static PressureHeadSaxton_Rawls Pressureheadtable;
@@ -19,8 +17,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return Pressureheadtable.CalculateWaterContent(water_pressure, ecoregion.SoilType) * ecoregion.RootingDepth;
         }
-
-        
 
         public static float RunOff;
         public static float Leakage;
@@ -40,14 +36,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Parameter<string> p = PlugIn.GetParameter(Names.PressureHeadCalculationMethod);
 
                 Pressureheadtable = new PressureHeadSaxton_Rawls();
-                 
             }
             else
             {
                 string msg = "Missing presciption for calculating pressurehead, expected keyword " + Names.PressureHeadCalculationMethod + " in " + PlugIn.GetParameter(Names.PnETGenericParameters).Value + " or in " + PlugIn.GetParameter(Names.ExtensionName).Value; 
                 throw new System.Exception(msg);
             }
-           
             
             PlugIn.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
             foreach (IEcoregionPnET eco in EcoregionPnET.AllEcoregions.Values) if (eco.Active)
@@ -58,9 +52,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Water content at field capacity (calculated as an output variable)
                 //  −33 kPa (or −0.33 bar)  
                 // mH2O value =  kPa value x 0.101972
-                eco.FieldCap = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)3.36, eco.SoilType) * eco.RootingDepth;
+                eco.FieldCap = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)3.37, eco.SoilType) * eco.RootingDepth;
                
-                eco.WiltPnt = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)150, eco.SoilType) * eco.RootingDepth;
+                eco.WiltPnt = (float)Hydrology.Pressureheadtable.CalculateWaterContent((ushort)153, eco.SoilType) * eco.RootingDepth;
 
                 eco.Porosity = (float)Hydrology.Pressureheadtable.Porosity(eco.RootingDepth, eco.SoilType);
 
@@ -90,9 +84,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             const int sec_per_day = 60*60*24;
             const int JoulesPerMJ = 1000000;
             const int days_per_month = 30;
-             
-            
-           
+                        
 	        // Atmospheric pressure (unit of vapour pressure kPa, depends on altitude)
 	        //http://www.fao.org/docrep/x0490e/x0490e07.htm#TopOfPage
 	        double press = 101.3 * Math.Pow(((293 -0.0065 * Altitude)/293),5.26);
@@ -114,10 +106,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             return PET * days_per_month;
         }
-
-
-
-        
          
         public static void SubtractEvaporation(int Month, IEcoregionPnET ecoregion, ushort SubCanopyRadiation, float Transpiration, float Temp,ref float Water,ref uint pressurehead, Action<float, int> SetAET)
         {
@@ -138,12 +126,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public static void SubtractTranspiration(IEcoregionPnET ecoregion, float watermin, ushort Cohorttranspiration, ref float Water, ref uint pressurehead)
         {
+            // watermin is not being used
             Water -= Math.Min(Water, Cohorttranspiration);
             pressurehead = (ushort)Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
         }
 
-       
-         
-        
     }
  }

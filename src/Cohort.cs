@@ -181,7 +181,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             age = 0; 
            
             this.nsc = (ushort)species.InitialNSC;
-
            
             this.biomass = (uint)(1F / species.DNSC * (ushort)species.InitialNSC);
             biomassmax = biomass;
@@ -193,7 +192,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 InitializeOutput(SiteName, year_of_birth, PlugIn.ModelCore.UI.WriteLine);
             }
-             
         }
         public Cohort(Cohort cohort)
         {
@@ -203,8 +201,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.biomass = cohort.biomass;
             biomassmax = cohort.biomassmax;
             this.fol = cohort.fol;
-          
-
         }
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {
@@ -231,17 +227,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             Interception[index] = monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
 
-            Hydrology.WaterIn = monthdata.PrecIntffective * one_over_nr_of_cohorts - Interception[index] + monthdata.SnowMelt;//mm  \
+            Hydrology.WaterIn = monthdata.PrecIntEffective * one_over_nr_of_cohorts - Interception[index] + (monthdata.SnowMelt * one_over_nr_of_cohorts);//mm  \
 
             Water +=  Hydrology.WaterIn ;
-
-            // Leakage 
-            Hydrology.Leakage = Math.Max(LeakagePerCohort * (Water - ecoregion.FieldCap), 0);
-            Water -= (ushort)Hydrology.Leakage;
 
             // Instantaneous runoff (excess of porosity)
             Hydrology.RunOff = Math.Max(Water - ecoregion.Porosity, 0);
             Water -= (ushort)Hydrology.RunOff;
+
+            // Fast Leakage 
+            Hydrology.Leakage = Math.Max(LeakagePerCohort * (Water - ecoregion.FieldCap), 0);
+            Water -= (ushort)Hydrology.Leakage;
 
             PressureHead = (ushort)Hydrology.Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
  
@@ -263,10 +259,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     nsc -= Allocation;
 
                     age++;
-                    
                 }
-
-               
             }
             else index++;
 
@@ -293,8 +286,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             FWater[index] = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
 
             if (FWater[index] == 0) return;
-
-            
             
             // g/mo
             NetPsn[index] = FWater[index] * FRad[index] * Fage * monthdata[species.Name].FTempPSNRefNetPsn * fol;

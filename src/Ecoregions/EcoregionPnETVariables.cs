@@ -94,13 +94,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return obs_clim.Prec;
             }
         }
-        public float PrecIntffective
-        {
-            get
-            {
-                return _precinteffective;
-            }
-        }
         public float PAR0 {
             get {
                 return obs_clim.PAR0;
