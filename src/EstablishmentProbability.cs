@@ -42,9 +42,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
-                bool LeafOn = Cohort.LeafOn(pnetvars.Tmin, spc.PsnTMin);
-
-                if (LeafOn)
+                if (pnetvars.LeafOn)
                 {
                     float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
                     float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);

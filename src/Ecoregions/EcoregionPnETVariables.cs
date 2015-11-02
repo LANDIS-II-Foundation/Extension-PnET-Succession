@@ -21,7 +21,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _tday;
         private float _gsSlope;
         private float _gsInt;
+        private bool _leafon;
 
+        public bool LeafOn
+        {
+            get
+            {
+                return _leafon;
+            }
+        }
         public float PrecIntEffective
         {
             get
@@ -324,7 +332,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
 
-
+                speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
+                 
                 float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
                 float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
@@ -349,7 +358,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              
                 //wue[ecoregion, spc, date] = (Parameters.WUEcnst[spc] / vpd[ecoregion, date]) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
                 //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-
+                speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
 
                 // NETPSN 
                 float amax = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);

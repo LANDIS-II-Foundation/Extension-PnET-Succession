@@ -185,12 +185,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static IEcoregionPnET ecoregion;
 
-        public static bool LeafOn(float Tmin, float PsnTMin)
-        {
-            bool Leaf_on = Tmin > PsnTMin;
-            return Leaf_on;
-        }
-
+        
         public SubCohortVars CalculatePhotosynthesis(EcoregionPnETVariables monthdata, float one_over_nr_of_cohorts, float LeakagePerCohort, ref float Water, ref uint PressureHead, ref float SubCanopyPar, ref float CanopyLAI)
         {
             layer = new SubCohortVars();
@@ -235,16 +230,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                     
                 }
 
-                bool Leaf_on = LeafOn( monthdata.Tmin, SpeciesPNET.PsnTMin);
-
-                if (leaf_on == true && Leaf_on  == false)
-                {
-                    leaf_on = false;
-                    addlitter(FoliageSenescence(), SpeciesPNET);
-                }
-                leaf_on = Leaf_on;
+               
             }
             else index++;
+
+            bool Leaf_on = monthdata[species.Name].LeafOn;
+
+            if (leaf_on == true && Leaf_on == false)
+            {
+                leaf_on = false;
+                addlitter(FoliageSenescence(), SpeciesPNET);
+            }
+            leaf_on = Leaf_on;
 
             if (leaf_on == false) return layer;
 
@@ -339,7 +336,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempResp + "," +
                        fage + "," +
-                       Cohort.LeafOn(monthdata.Tmin,SpeciesPNET.PsnTMin) + "," +
+                       monthdata[Species.Name].LeafOn + "," +
                        FActiveBiom;
              
             cohortoutput.Add(s);

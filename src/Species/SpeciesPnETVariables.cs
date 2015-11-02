@@ -13,6 +13,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float FTempRespDayRefResp;
         public float FTempPSN;
         public float FTempPSNRefNetPsn;
+        public bool LeafOn;
         public float WUE_CO2_corr;
     }
 }
