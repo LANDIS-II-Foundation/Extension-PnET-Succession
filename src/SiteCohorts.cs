@@ -289,6 +289,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 CanopyLAI = 0;
                 interception = 0;
 
+                AllCohorts.ForEach(x => x.InitializeSubLayers());
                 
                 if (bins !=null) for (int b = bins.Count()-1; b >=0 ; b--)
                 {
@@ -296,16 +297,22 @@ namespace Landis.Extension.Succession.BiomassPnET
                   {
                       using (Cohort c = Cohorts[r]) 
                       {
-                          SubCohortVars layer = c.CalculatePhotosynthesis(data[m], CohortFraction, LeakageFractionPerCohort, ref water, ref pressurehead, ref subcanopypar, ref CanopyLAI);
-                          interception += layer.Interception;
+                          c.CalculatePhotosynthesis(data[m], CohortFraction, LeakageFractionPerCohort, ref water, ref pressurehead, ref subcanopypar, ref CanopyLAI);
+                          interception += c.Interception.Sum();
                           c.Layer = (byte)Math.Max(b, c.Layer);
-                          netpsn[data[m].Month - 1] += layer.NetPsn * PlugIn.FTimeStep;
-                          grosspsn[data[m].Month - 1] += layer.GrossPsn * PlugIn.FTimeStep;
-                          maintresp[data[m].Month - 1] += layer.MaintenanceRespiration * PlugIn.FTimeStep;
+                          
                       }
                   }
                 }
-                 
+                AllCohorts.ForEach(x =>
+                    {
+                        netpsn[data[m].Month - 1] += x.NetPsn.Sum();
+                        grosspsn[data[m].Month - 1] += x.GrossPsn.Sum() * PlugIn.FTimeStep;
+                        maintresp[data[m].Month - 1] += x.MaintenanceRespiration.Sum() * PlugIn.FTimeStep;
+                    }
+                );
+                
+              
                 canopylaimax = (byte)Math.Max(canopylaimax, CanopyLAI);
                 watermax = (byte)Math.Max(water, watermax);
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
@@ -328,7 +335,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         pest = EstablishmentProbability.Calculate_Establishment(data[m], subcanopypar, pressurehead, pest);
                     }
                 }
-                 
+
+                AllCohorts.ForEach(x => x.NullSubLayers());
             }
             if (siteoutput != null)
             {
@@ -944,16 +952,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Hydrology.Leakage + "," +
                         Hydrology.PET + "," +
                         Hydrology.Evaporation + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Canopy.Transpiration)) + "," +
+                        cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +
                         interception + "," +
                         water + "," +
                         this.pressurehead + "," +
                         monthdata.SnowPack + "," +
                         this.CanopyLAI + "," +
                         monthdata.VPD + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Canopy.GrossPsn)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Canopy.NetPsn)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Canopy.MaintenanceRespiration)) + "," +
+                        cohorts.Values.Sum(o => o.Sum(x => x.GrossPsn.Sum())) + "," +
+                        cohorts.Values.Sum(o => o.Sum(x => x.NetPsn.Sum())) + "," +
+                        cohorts.Values.Sum(o => o.Sum(x => x.MaintenanceRespiration.Sum())) + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.Wood)) + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.Root)) + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.Fol)) + "," +
