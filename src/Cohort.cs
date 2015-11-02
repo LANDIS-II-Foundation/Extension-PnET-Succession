@@ -31,7 +31,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float nsc;
         private ushort age;
         
-        public float fage;
+         
         public ushort index;
         
         private ISpeciesPNET species;
@@ -217,13 +217,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static IEcoregionPnET ecoregion;
 
-        
-        public void CalculatePhotosynthesis(EcoregionPnETVariables monthdata, float one_over_nr_of_cohorts, float LeakagePerCohort, ref float Water, ref uint PressureHead, ref float SubCanopyPar, ref float CanopyLAI)
+        float Fage
         {
-           
-
+            get
+            {
+                return Math.Max(0, 1 - (float)Math.Pow((age / (float)species.Longevity), species.PsnAgeRed));
+            }
+        }
+         
+        public void CalculatePhotosynthesis(EcoregionPnETVariables monthdata, float one_over_nr_of_cohorts, float LeakagePerCohort, ref float Water, ref uint PressureHead, ref float SubCanopyPar)
+        {
             LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
-            CanopyLAI += LAI[index];
 
             Interception[index] = monthdata.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
 
@@ -290,10 +294,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             if (FWater[index] == 0) return;
 
-            fage = Math.Max(0, 1 - (float)Math.Pow((age / (float)species.Longevity), species.PsnAgeRed));
+            
             
             // g/mo
-            NetPsn[index] = FWater[index] * FRad[index] * fage * monthdata[species.Name].FTempPSNRefNetPsn * fol;
+            NetPsn[index] = FWater[index] * FRad[index] * Fage * monthdata[species.Name].FTempPSNRefNetPsn * fol;
 
             ConductanceCO2[index] = (monthdata.GsInt + (monthdata.GsSlope * NetPsn[index] * Constants.MillionOverTwelve));
 
@@ -375,7 +379,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        FRad.Average() + "," +
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempResp + "," +
-                       fage + "," +
+                       Fage + "," +
                        monthdata[Species.Name].LeafOn + "," +
                        FActiveBiom;
              

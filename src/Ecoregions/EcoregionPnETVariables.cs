@@ -205,7 +205,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
             // day respiration factor
-            RespTempResponse[0] = ((float)Math.Pow(spc.Q10, (tday - spc.PsnTOpt) / 10));
+            RespTempResponse[0] = ((float)Math.Pow(spc.Q10, ( tday - spc.PsnTOpt) / 10));
 
             float fTempRespNight = ((float)Math.Pow(spc.Q10, (tmin - spc.PsnTOpt) / 10));
 

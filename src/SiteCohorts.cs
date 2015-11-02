@@ -283,23 +283,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             grosspsn = new float[13];
             maintresp = new float[13];
 
-            List<Cohort> SubCohortList = new List<Cohort>();
-            List<int> bin_cnt = new List<int>();
-            if (bins != null)
-            {
-                for (int b = bins.Count() - 1; b >= 0; b--)
-                {
-                    foreach (int r in random_range[b])
-                    {
-                        using (Cohort c = Cohorts[r])
-                        {
-                            SubCohortList.Add(c);
-                            bin_cnt.Add(b);
-                        }
-                    }
-                }
-            }
-
+           
+            
 
             for (int m = 0; m < data.Count(); m++ )
             {
@@ -310,21 +295,32 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
-                if (SubCohortList.Count > 0)
+
+                if (bins != null)
                 {
-                    for (int subcanopy_cnt = 0; subcanopy_cnt < SubCohortList.Count; subcanopy_cnt++)
+                    for (int b = bins.Count() - 1; b >= 0; b--)
                     {
-                        SubCohortList[subcanopy_cnt].CalculatePhotosynthesis(data[m], CohortFraction, LeakageFractionPerCohort, ref water, ref pressurehead, ref subcanopypar, ref CanopyLAI);
-                        interception += SubCohortList[subcanopy_cnt].Interception.Sum();
-                        SubCohortList[subcanopy_cnt].Layer = (byte)Math.Max(bin_cnt[subcanopy_cnt], SubCohortList[subcanopy_cnt].Layer);
+                        foreach (int r in random_range[b])
+                        {
+                            using (Cohort c = Cohorts[r])
+                            {
+                                c.CalculatePhotosynthesis(data[m], CohortFraction, LeakageFractionPerCohort, ref water, ref pressurehead, ref subcanopypar);
+                                interception += c.Interception.Sum();
+                                c.Layer = (byte)Math.Max(b, c.Layer);
+                            }
+                        }
                     }
                 }
+
+
+               
                
                 AllCohorts.ForEach(x =>
                     {
                         netpsn[data[m].Month - 1] += x.NetPsn.Sum();
                         grosspsn[data[m].Month - 1] += x.GrossPsn.Sum() * PlugIn.FTimeStep;
                         maintresp[data[m].Month - 1] += x.MaintenanceRespiration.Sum() * PlugIn.FTimeStep;
+                        CanopyLAI += x.LAI.Sum();
                     }
                 );
                 
