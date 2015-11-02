@@ -1,4 +1,4 @@
-#define DeployFolder AddBackslash("C:\Users\debruijna\Desktop\PnET-Succession-repo\deploy")
+#define DeployFolder AddBackslash("C:\Users\debruijna\Desktop\PnET-Succession\PnET-Succession\deploy")
 
 
 #define PackageName      "PnET_Succession"
@@ -11,7 +11,7 @@
 #define CoreReleaseAbbr  ""
 
 
-#include DeployFolder + "package (Setup section) v6.1.iss"
+#include DeployFolder + "package (Setup section) v6.0.iss"
 
 ;#include AddBackslash(GetEnv("LANDIS_DEPLOY")) + "package (Setup section) v6.0.iss"
 

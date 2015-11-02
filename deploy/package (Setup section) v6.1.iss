@@ -1,4 +1,4 @@
-#define LandisDocDir    "C:\Users\adebruij\Desktop\PnET_Succession\PnET_Succession\PnET_Succession\docs"
+#define LandisDocDir    "C:\Users\adebruij\Desktop\PnET_Succession\InstallerFolder\PnET_Succession\docs"
 
 #ifndef PackageNameLong
   #define PackageNameLong PackageName
