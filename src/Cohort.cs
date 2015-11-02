@@ -234,14 +234,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             else index++;
 
-            bool Leaf_on = monthdata[species.Name].LeafOn;
-
-            if (leaf_on == true && Leaf_on == false)
-            {
-                leaf_on = false;
-                addlitter(FoliageSenescence(), SpeciesPNET);
-            }
-            leaf_on = Leaf_on;
+            leaf_on = GetLeafOn(monthdata);
 
             if (leaf_on == false) return layer;
 
@@ -283,6 +276,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             nsc += layer.NetPsn;
 
             return layer;
+        }
+
+        private bool GetLeafOn(EcoregionPnETVariables monthdata)
+        {
+            bool Leaf_on = monthdata[species.Name].LeafOn;
+
+            if (leaf_on == true && Leaf_on == false)
+            {
+                leaf_on = false;
+                addlitter(FoliageSenescence(), SpeciesPNET);
+            }
+            return Leaf_on;
         }
        
         public static float CumputeFrad(float Radiation, float HalfSat)
