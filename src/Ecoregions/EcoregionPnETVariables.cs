@@ -339,14 +339,18 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // CO2 effect on photosynthesis
                 // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
-                float Ci = climate_dataset.CO2 * (1 - cicaRatio);
-                
-                float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
+                //float Ci = climate_dataset.CO2 * (1 - cicaRatio);
+                //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
+                float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
+
 
                 float gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
                 float gsInt = (float)((0.4656 * delamax) - 0.9701);
 
-                speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
+                float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
+                speciespnetvars.WUE_CO2_corr = wue / delamax;
+
+                //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
              
                 //wue[ecoregion, spc, date] = (Parameters.WUEcnst[spc] / vpd[ecoregion, date]) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance

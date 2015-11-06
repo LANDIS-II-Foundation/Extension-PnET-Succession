@@ -12,6 +12,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static Dictionary<ISpecies, ISpeciesPNET> AllSpecies;
 
         private ISpecies _species;
+        private float _wuecnst;
         private float _cfracbiomass;
         private float _kwdlit;
         private float _dnsc;
@@ -46,6 +47,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _maintresp;
         private float _bfolresp;
 
+        
+        private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
@@ -88,6 +91,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             AllSpecies = new Dictionary<ISpecies, ISpeciesPNET>();
 
+            
+            wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
             cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
             kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("kwdlit"));
@@ -133,7 +138,7 @@ namespace Landis.Extension.Succession.BiomassPnET
        
         public SpeciesPnET(ISpecies species)
         {
-
+            _wuecnst = wuecnst[species];
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _kwdlit = kwdlit[species];
@@ -276,6 +281,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _towood;
+            }
+        }
+
+        public float WUEcnst
+        {
+            get
+            {
+                return _wuecnst;
             }
         }
         public float K

@@ -1,5 +1,5 @@
-#include GetEnv("LANDIS_SDK") + '\packaging\initialize.iss'
-
+;#include GetEnv("LANDIS_SDK") + '\packaging\initialize.iss'
+#include  "C:\Program Files\LANDIS-II\SDK\packaging\initialize.iss"
 #define ExtInfoFile "PnET-Succession.txt"
 
 #include LandisSDK + '\packaging\read-ext-info.iss'
