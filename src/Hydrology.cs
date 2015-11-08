@@ -107,9 +107,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             return PET * days_per_month;
         }
          
-        public static void SubtractEvaporation(int Month, IEcoregionPnET ecoregion, ushort SubCanopyRadiation, float Transpiration, float Temp,ref float Water,ref uint pressurehead, Action<float, int> SetAET)
+        public static void SubtractEvaporation(int Month, IEcoregionPnET ecoregion, ushort SubCanopyRadiation, float Transpiration, float Temp,ref float Water,  Action<float, int> SetAET)
         {
             PET = (float)Calculate_PotentialEvapotranspiration(SubCanopyRadiation, Temp);
+
+            float pressurehead = Pressureheadtable[ecoregion, (int)Water];
 
             DeliveryPotential = Cohort.CumputeFWater(0, 0, 153, pressurehead);
 
@@ -119,16 +121,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             Evaporation = Math.Min(Water, Math.Max(0, DeliveryPotential * PET - Transpiration));
 
             Water -= (ushort)Evaporation;
-
-            pressurehead = (ushort)Pressureheadtable[(IEcoregion) ecoregion, (ushort)Water];
-
+             
         }
         
-        public static void SubtractTranspiration(IEcoregionPnET ecoregion, float watermin, ushort Cohorttranspiration, ref float Water, ref uint pressurehead)
+        public static void SubtractTranspiration(IEcoregionPnET ecoregion, float watermin, ushort Cohorttranspiration, ref float Water)
         {
             // watermin is not being used
             Water -= Math.Min(Water, Cohorttranspiration);
-            pressurehead = (ushort)Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
+       
         }
 
     }

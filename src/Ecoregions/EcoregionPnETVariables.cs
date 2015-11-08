@@ -21,15 +21,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _tday;
         private float _gsSlope;
         private float _gsInt;
-        private bool _leafon;
-
-        public bool LeafOn
-        {
-            get
-            {
-                return _leafon;
-            }
-        }
+        
         public float PrecIntEffective
         {
             get

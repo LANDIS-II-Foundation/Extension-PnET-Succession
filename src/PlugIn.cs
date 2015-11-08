@@ -436,7 +436,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             ISpeciesPNET spc = SpeciesPnET.AllSpecies[species];
 
-            bool Establish = EstablishmentProbability.ComputeEstablishment(Date, sitecohorts[site].Pest, spc, sitecohorts[site].establishment_siteoutput);
+            bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished[spc];// EstablishmentProbability.ComputeEstablishment(Date, sitecohorts[site].Pest, spc, sitecohorts[site].establishment_siteoutput);
             return Establish;
         }
 

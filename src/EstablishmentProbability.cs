@@ -6,10 +6,39 @@ using System.Collections.Generic;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
-    public static class EstablishmentProbability  
+    public class EstablishmentProbability  : IEstablishmentProbability
     {
+        private LocalOutput establishment_siteoutput;
+        private Dictionary<ISpeciesPNET, bool> _hasEstablished;
+        private Dictionary<ISpeciesPNET, float> _pest;
+        private Dictionary<ISpeciesPNET, float> _fwater;
+        private Dictionary<ISpeciesPNET, float> _frad;
+
+        private static int Timestep;
+
+        public Dictionary<ISpeciesPNET, bool> HasEstablished
+        {
+            get
+            {
+                return _hasEstablished;
+            }
+        }
+
+        public Landis.Library.Parameters.Species.AuxParm<byte> Probability
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(PlugIn.ModelCore.Species);
+                foreach (ISpecies spc in PlugIn.ModelCore.Species)
+                {
+                    ISpeciesPNET speciespnet = SpeciesPnET.AllSpecies[spc];
+                    probability[spc] = (byte)(100F * _pest[speciespnet]);
+                }
+                return probability;
+            }
+        }
         
-        public static string Header
+        public string Header
         {
             get
             {
@@ -17,68 +46,72 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         
-        static int Timestep;
+       
         public static void Initialize(int timestep)
         {
             Timestep = timestep;
 
              
         }
-        static public Dictionary<ISpeciesPNET, float[]> InitialPest
-        {
-            get
-            {
-                Dictionary<ISpeciesPNET, float[]> Pest = new Dictionary<ISpeciesPNET, float[]>();
-
-                foreach (ISpeciesPNET spc in  SpeciesPnET.AllSpecies.Values)
-                {
-                    Pest.Add(spc, new float[]{1,1,1});
-                }
-                return Pest;
-            }
-        }
-
-        public static Dictionary<ISpeciesPNET, float[]> Calculate_Establishment(EcoregionPnETVariables pnetvars, float PAR, float PressureHead, Dictionary<ISpeciesPNET, float[]> Pest)
+     
+        public void Calculate_Establishment(EcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, float water)
         {
             foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
-                if (pnetvars.LeafOn)
+                if (pnetvars[spc.Name].LeafOn)
                 {
                     float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
+
+                    float PressureHead = Hydrology.Pressureheadtable[ecoregion, (int)water];
+
                     float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
 
-                    if(pest < Pest[spc][0])
+                    if (pest > _pest[spc])
                     {
-                        Pest[spc] = new float[] { pest, fwater, frad };
+                        _pest[spc] = pest;
+                        _fwater[spc] = fwater;
+                        _frad[spc] = frad;
+                        _hasEstablished[spc] = pest > (float)PlugIn.ContinuousUniformRandom();
+                    }
+                    if (establishment_siteoutput != null)
+                    {
+
+                        establishment_siteoutput.Add(pnetvars.Date.Year.ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + _hasEstablished[spc]);
+
+                        // TODO: win time by reducing calls to write
+                        establishment_siteoutput.Write();
                     }
                 }
             }
-            return Pest;
         }
-        public static bool ComputeEstablishment(DateTime date, Dictionary<ISpeciesPNET, float[]> Pest, ISpeciesPNET Species, LocalOutput establishment_siteoutput)
+        public void ResetPerTimeStep()
         {
-            float pest = Pest[Species][0];
-            
+         
+            _pest = new Dictionary<ISpeciesPNET, float>();
+            _fwater = new Dictionary<ISpeciesPNET, float>();
+            _frad = new Dictionary<ISpeciesPNET, float>();
+            _hasEstablished = new Dictionary<ISpeciesPNET, bool>();
 
-            bool est = pest > (float)PlugIn.ContinuousUniformRandom();
-
-            if (establishment_siteoutput != null)
+            foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
-                float fwater = Pest[Species][1];
-                float frad = Pest[Species][2]; 
-
-                establishment_siteoutput.Add(date.Year.ToString() + "," + Species.Name + "," + pest + "," + fwater + "," + frad + "," + est );
-
-                // TODO: win time by reducing calls to write
-                establishment_siteoutput.Write();
+                _pest.Add(spc, 0);
+                _fwater.Add(spc, 0);
+                _frad.Add(spc, 0);
+                _hasEstablished.Add(spc, false);
             }
-            if (Species.PreventEstablishment) return false;
-            return est;
         }
-
-
+        public EstablishmentProbability(string SiteOutputName, string FileName)
+        {
+            ResetPerTimeStep();
+             
+            if(SiteOutputName!=null && FileName!=null)
+            {
+                establishment_siteoutput = new LocalOutput(SiteOutputName, "Establishment.csv", Header );
+            }
+            
+        }
         
     }
 }

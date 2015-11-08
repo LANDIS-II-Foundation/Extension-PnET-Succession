@@ -190,7 +190,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Then overwrite them if you need stuff for outputs6+
             if (SiteName != null)
             {
-                InitializeOutput(SiteName, year_of_birth, PlugIn.ModelCore.UI.WriteLine);
+                InitializeOutput(SiteName, year_of_birth);
             }
         }
         public Cohort(Cohort cohort)
@@ -221,7 +221,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
          
-        public void CalculatePhotosynthesis(EcoregionPnETVariables monthdata, float one_over_nr_of_cohorts, float LeakagePerCohort, ref float Water, ref uint PressureHead, ref float SubCanopyPar)
+        public void CalculatePhotosynthesis(EcoregionPnETVariables monthdata, float one_over_nr_of_cohorts, float LeakagePerCohort, ref float Water,  ref float SubCanopyPar)
         {
             LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
 
@@ -239,7 +239,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Hydrology.Leakage = Math.Max(LeakagePerCohort * (Water - ecoregion.FieldCap), 0);
             Water -= (ushort)Hydrology.Leakage;
 
-            PressureHead = (ushort)Hydrology.Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
+           
  
             if (index == PlugIn.IMAX - 1)
             {
@@ -282,6 +282,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
 
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
+
+            float PressureHead = (ushort)Hydrology.Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
 
             FWater[index] = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
 
@@ -336,9 +338,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return new Percentage(cohort.fol / (cohort.Wood + cohort.Fol));
         }
-        public void InitializeOutput(string SiteName, ushort YearOfBirth, LocalOutput.SendMsg SendMsg)
+        public void InitializeOutput(string SiteName, ushort YearOfBirth)
         {
-            cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + "_" + YearOfBirth + ".csv", OutputHeader, SendMsg);
+            cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + "_" + YearOfBirth + ".csv", OutputHeader);
        
         }
         public float SumLAI

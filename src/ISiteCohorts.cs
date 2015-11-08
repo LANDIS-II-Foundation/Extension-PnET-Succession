@@ -21,6 +21,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
 
+        IEstablishmentProbability EstablishmentProbability { get; }
+        
         Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
