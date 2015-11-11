@@ -39,6 +39,19 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _newsnow;
         private string _climatefilename;
 
+        EcoregionPnETVariables _variables;
+        public EcoregionPnETVariables Variables
+        { 
+            get
+            {
+                return _variables;
+            }
+            set
+            {
+                _variables = value;
+            }
+        
+        }
         public float NewSnow
         {
             get
@@ -95,9 +108,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _rootingdepth;
             }
         }
-         
-        
-      
         public string ClimateFileName
         {
             get

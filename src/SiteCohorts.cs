@@ -233,8 +233,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             canopylaimax = byte.MinValue;
 
-            //pest =  EstablishmentProbability.InitialPest;
-
             SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
 
             int SiteBiomass = AllCohorts.Sum(a => a.Biomass);
@@ -267,8 +265,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             Cohort[] Cohorts = SubCanopyCohorts.Values.ToArray();
 
-            float CohortFraction = 1.0F / SubCanopyCohorts.Count();
-            float LeakageFractionPerCohort = CohortFraction * Ecoregion.LeakageFrac;
+           
+            float LeakageFractionPerCohort = Ecoregion.LeakageFrac / SubCanopyCohorts.Count();
 
             netpsn = new float[13];
             grosspsn = new float[13];
@@ -276,8 +274,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             for (int m = 0; m < data.Count(); m++ )
             {
+                this.Ecoregion.Variables = data[m];
                 Transpiration = 0;
-                subcanopypar = data[m].PAR0;
+                subcanopypar = this.Ecoregion.Variables.PAR0;
                 CanopyLAI = 0;
                 interception = 0;
 
@@ -292,7 +291,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         {
                             using (Cohort c = Cohorts[r])
                             {
-                                c.CalculatePhotosynthesis(data[m], CohortFraction, LeakageFractionPerCohort, ref water,  ref subcanopypar);
+                                c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort, ref water, ref subcanopypar);
                                 interception += c.Interception.Sum();
                                 c.Layer = (byte)Math.Max(b, c.Layer);
                             }
@@ -305,9 +304,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                
                 AllCohorts.ForEach(x =>
                     {
-                        netpsn[data[m].Month - 1] += x.NetPsn.Sum();
-                        grosspsn[data[m].Month - 1] += x.GrossPsn.Sum() * PlugIn.FTimeStep;
-                        maintresp[data[m].Month - 1] += x.MaintenanceRespiration.Sum() * PlugIn.FTimeStep;
+                        netpsn[this.Ecoregion.Variables.Month - 1] += x.NetPsn.Sum();
+                        grosspsn[this.Ecoregion.Variables.Month - 1] += x.GrossPsn.Sum() * PlugIn.FTimeStep;
+                        maintresp[this.Ecoregion.Variables.Month - 1] += x.MaintenanceRespiration.Sum() * PlugIn.FTimeStep;
                         CanopyLAI += x.LAI.Sum();
                     }
                 );
@@ -317,7 +316,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 watermax = (byte)Math.Max(water, watermax);
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
-                Hydrology.SubtractEvaporation(data[m].Month, Ecoregion, (ushort)subcanopypar, Transpiration, data[m].Tday, ref water,  SetAet);
+                Hydrology.SubtractEvaporation(this.Ecoregion.Variables.Month, Ecoregion, (ushort)subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water, SetAet);
 
                 if (siteoutput != null)
                 {
