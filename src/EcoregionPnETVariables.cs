@@ -8,27 +8,30 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class EcoregionPnETVariables
     {
+        #region private variables
         private DateTime _date;
-        private ObservedClimate.DataSet obs_clim;
-        private float _precinteffective;
+        private ClimateDataSet obs_clim;
         private float _snowfraction;
-        private float _snowmelt;
-        private float _snowpack;
+        public float VPD;
         private float _precin;
         private float _maxmonthlysnowmelt;
         private float _dayspan;
         private float _tave;
         private float _tday;
-        private float _gsSlope;
-        private float _gsInt;
-        
-        public float PrecIntEffective
+        //private float _gsSlope;
+        //private float _gsInt;
+        private float _newsnow;
+        #endregion
+
+        #region public accessors
+        public float NewSnow
         {
             get
             {
-                return _precinteffective;
+                return _newsnow;
             }
         }
+       
         public float SnowFraction
         {
             get
@@ -36,28 +39,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _snowfraction;
             }
         }
-        public float SnowMelt
-        {
-            get
-            {
-                return _snowmelt;
-            }
-            set
-            {
-                _snowmelt = value;
-            }
-        }
-        public float SnowPack
-        {
-            get
-            {
-                return _snowpack;
-            }
-            set
-            {
-                _snowpack = value;
-            }
-        }
+        
         public float Precin
         {
             get
@@ -72,13 +54,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _maxmonthlysnowmelt;
             }
         }
-        public byte Month { get { return (byte)_date.Month; } }
+        public byte Month 
+        { 
+            get 
+            { 
+                return (byte)_date.Month; 
+            } 
+        }
         public float Tday {
-            get {
+            get 
+            {
                 return _tday;
             }
         }
-        public float VPD;
         public float Prec
         {
             get
@@ -103,7 +91,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _dayspan;
             }
         }
-        public float Year { get { return _date.Year + 1F / 12F * (_date.Month - 1); } }
+        public float Year 
+        { 
+            get 
+            { 
+                return _date.Year + 1F / 12F * (_date.Month - 1); 
+            } 
+        }
         public float Tave
         {
             get
@@ -111,25 +105,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _tave;
             }
         }
-        public float GsInt
+        
+        public float Tmin 
         {
-            get { 
-                return _gsInt;
-            }
-        }
-        public float GsSlope
-        {
-            get {
-                return _gsSlope;
-            }
-        }
-        public float Tmin {
-            get {
+            get
+            {
                 return obs_clim.Tmin;
             }
         }
+        # endregion
 
-        public static int Calculate_DaySpan(int Month)
+        #region static computation functions
+        private static int Calculate_DaySpan(int Month)
         {
             if (Month == 1) return 31;
             else if (Month == 2) return 28;
@@ -190,7 +177,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
             // day respiration factor
-            RespTempResponse[0] = ((float)Math.Pow(spc.Q10, ( tday - spc.PsnTOpt) / 10));
+            RespTempResponse[0] = ((float)Math.Pow(spc.Q10, (tday - spc.PsnTOpt) / 10));
 
             float fTempRespNight = ((float)Math.Pow(spc.Q10, (tmin - spc.PsnTOpt) / 10));
 
@@ -256,28 +243,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             return 2 * (h * 24) / (2 * (float)Math.PI);
         }
 
-        private Dictionary<string, SpeciesPnETVariables> _species_variables;
+        #endregion
+
+        private Dictionary<string, SpeciesPnETVariables> speciesVariables;
 
         public SpeciesPnETVariables this[string species]
         {
-            get {
-                return _species_variables[species];
+            get
+            {
+                return speciesVariables[species];
             }
         }
-
-        
-
-        public EcoregionPnETVariables(EcoregionPnETVariables last_month, 
-            IEcoregionPnET ecoregion, 
-            ObservedClimate.DataSet climate_dataset, 
-            DateTime Date 
-            
-            )
+         
+        public EcoregionPnETVariables(ClimateDataSet climate_dataset, DateTime Date, bool Wythers)
         {
+            
+
             this._date = Date;
             this.obs_clim = climate_dataset;
 
-            _species_variables = new Dictionary<string, SpeciesPnETVariables>();
+            speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
              
 
             _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
@@ -290,21 +275,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             _precin = (1 - _snowfraction) * climate_dataset.Prec;
 
-            _precinteffective = Precin * (1 - ecoregion.PrecLossFrac);
-
-            float Newsnow = _snowfraction * climate_dataset.Prec;//mm
-
-            if (last_month == null)
-            {
-                SnowMelt = 0;
-                SnowPack = 0;
-            }
-            else
-            {
-                SnowMelt = Math.Min(last_month.SnowPack, last_month.Maxmonthlysnowmelt);
-                SnowPack = last_month.SnowPack + Newsnow - SnowMelt;
-            }
-              
+            
+            _newsnow = _snowfraction * climate_dataset.Prec;//mm
+             
             float hr = Calculate_hr(Date.DayOfYear, PlugIn.Latitude);
             float daylength = Calculate_DayLength(hr);
             float nightlength = Calculate_NightLength(hr);
@@ -315,76 +288,89 @@ namespace Landis.Extension.Succession.BiomassPnET
              
             foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
-                SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
+                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, daylength, nightlength, spc);
 
-                speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
-                 
-                float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
-
-                float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
-                float ci350 = 350 * cicaRatio;
-                float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
-
-                float ciElev = climate_dataset.CO2 * cicaRatio;
-                float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
-                float delamax = 1 + ((ArelElev - Arel350) / Arel350);
-
-                // CO2 effect on photosynthesis
-                // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
-                //float Ci = climate_dataset.CO2 * (1 - cicaRatio);
-                //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
-                float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
-
-
-                float gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
-                float gsInt = (float)((0.4656 * delamax) - 0.9701);
-
-                float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-                speciespnetvars.WUE_CO2_corr = wue / delamax;
-
-                //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
-
-             
-                //wue[ecoregion, spc, date] = (Parameters.WUEcnst[spc] / vpd[ecoregion, date]) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-                //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-                speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
-
-                // NETPSN 
-                float amax = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
-
-                //Reference net Psn (lab conditions) in gC/timestep
-                float RefNetPsn = _dayspan * (amax * DVPD * daylength * Constants.MC) / Constants.billion;
-
-                //-------------------FTempPSN (public for output file)
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
-
-                // PSN (g/tstep)
-                speciespnetvars.FTempPSNRefNetPsn = PlugIn.fIMAX * speciespnetvars.FTempPSN * RefNetPsn;
-
-                float[] RespTempResponses = EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);
-
-                // Unitless respiration adjustment: public for output file only
-                speciespnetvars.FTempResp = RespTempResponses[1];
-
-                speciespnetvars.MaintRespFTempResp = spc.MaintResp * speciespnetvars.FTempResp;
-
-                float conversion_factors = PlugIn.fIMAX * _dayspan * daylength * Constants.MC / Constants.billion;
-
-                // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
-
-
-                bool Wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
-
-                if (Wythers == true)
-                {
-                    speciespnetvars.FTempRespDayRefResp = (0.14F - 0.002F * Tave) * amax * (3.22F - 0.046F * (float)Math.Pow((0.5F * (Tave + spc.PsnTOpt)), ((Tave - spc.PsnTOpt) / 10))) * conversion_factors;
-                }
-                else speciespnetvars.FTempRespDayRefResp = spc.BFolResp * amax * RespTempResponses[0] * conversion_factors;
-
-                _species_variables.Add(spc.Name, speciespnetvars);
+                speciesVariables.Add(spc.Name, speciespnetvars);
             }
 
         }
+
+        private SpeciesPnETVariables GetSpeciesVariables(ref ClimateDataSet climate_dataset, bool Wythers, float daylength, float nightlength, ISpeciesPNET spc)
+        {
+            SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
+
+            speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
+
+            float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
+
+            float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
+            float ci350 = 350 * cicaRatio;
+            float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
+
+            float ciElev = climate_dataset.CO2 * cicaRatio;
+            float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
+            float delamax = 1 + ((ArelElev - Arel350) / Arel350);
+
+            // CO2 effect on photosynthesis
+            // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
+            //float Ci = climate_dataset.CO2 * (1 - cicaRatio);
+            //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
+            float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
+
+
+            //_gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
+            //_gsInt = (float)((0.4656 * delamax) - 0.9701);
+
+            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
+            speciespnetvars.WUE_CO2_corr = wue / delamax;
+
+            //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
+
+
+            //wue[ecoregion, spc, date] = (Parameters.WUEcnst[spc] / vpd[ecoregion, date]) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
+            //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
+            speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
+
+            // NETPSN 
+            float amax = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
+
+            //Reference net Psn (lab conditions) in gC/timestep
+            float RefNetPsn = _dayspan * (amax * DVPD * daylength * Constants.MC) / Constants.billion;
+
+            //-------------------FTempPSN (public for output file)
+            speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
+
+            // PSN (g/tstep)
+            speciespnetvars.FTempPSNRefNetPsn = PlugIn.fIMAX * speciespnetvars.FTempPSN * RefNetPsn;
+
+            float[] RespTempResponses = EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);
+
+            // Unitless respiration adjustment: public for output file only
+            speciespnetvars.FTempResp = RespTempResponses[1];
+
+            speciespnetvars.MaintRespFTempResp = spc.MaintResp * speciespnetvars.FTempResp;
+
+            float conversion_factors = PlugIn.fIMAX * _dayspan * daylength * Constants.MC / Constants.billion;
+
+            // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
+
+            speciespnetvars.FTempRespDayRefResp = CalculateFTempRespDayRefResp(Wythers, spc, amax, RespTempResponses, conversion_factors);
+            return speciespnetvars;
+        }
+
+        private float CalculateFTempRespDayRefResp(bool Wythers, ISpeciesPNET spc, float amax, float[] RespTempResponses, float conversion_factors)
+        {
+            float FTempRespDayRefResp;
+
+            if (Wythers == true)
+            {
+                FTempRespDayRefResp = (0.14F - 0.002F * Tave) * amax * (3.22F - 0.046F * (float)Math.Pow((0.5F * (Tave + spc.PsnTOpt)), ((Tave - spc.PsnTOpt) / 10))) * conversion_factors;
+            }
+            else FTempRespDayRefResp = spc.BFolResp * amax * RespTempResponses[0] * conversion_factors;
+
+            return FTempRespDayRefResp;
+        }
+
         
         
     }

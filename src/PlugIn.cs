@@ -275,13 +275,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value;
 
+            
             ObservedClimate.Initialize();
             
             SpeciesPnET.Initialize();
             EcoregionPnET.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
-             
+            
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
@@ -388,7 +389,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             DateTime EndDate = date.AddYears(years);
 
-            IEcoregionPnET ecoregion_pnet = EcoregionPnET.AllEcoregions[PlugIn.ModelCore.Ecoregion[site]];
+            IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
             List<EcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
 

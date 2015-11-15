@@ -11,7 +11,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         public static Dictionary<ISpecies, ISpeciesPNET> AllSpecies;
 
-        private ISpecies _species;
+        #region private variables
         private float _wuecnst;
         private float _cfracbiomass;
         private float _kwdlit;
@@ -43,11 +43,25 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _dvpd2;
         private float _amaxa;
         private float _amaxb;
-        
         private float _maintresp;
         private float _bfolresp;
-
+        private string name;
+        private int index;
         
+        private int  maxSproutAge;
+        private int minSproutAge;
+        private Landis.Core.PostFireRegeneration postfireregeneration;
+        private int maxSeedDist;
+        private int effectiveSeedDist;
+        private float  vegReprodProb;
+        private byte fireTolerance;
+        private byte shadeTolerance;
+        int maturity;
+        int longevity;
+
+        # endregion
+
+        #region private static species variables
         private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
@@ -86,7 +100,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
-         
+        
+        #endregion
+
         public static void Initialize()
         {
             AllSpecies = new Dictionary<ISpecies, ISpeciesPNET>();
@@ -135,7 +151,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         }
-       
+        public SpeciesPnET(PostFireRegeneration postFireGeneration)
+        {
+            this.postfireregeneration = postFireGeneration;
+        
+        }
         public SpeciesPnET(ISpecies species)
         {
             _wuecnst = wuecnst[species];
@@ -161,7 +181,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             _estmoist = estmoist[species];
             _follignin = follignin[species];
             _preventestablishment = preventestablishment[species];
-
             _psntopt = psntopt[species];
             _q10 = q10[species]; 
             _psntmin = psntmin[species];
@@ -170,18 +189,33 @@ namespace Landis.Extension.Succession.BiomassPnET
             _dvpd2 = dvpd2[species];
             _amaxa = amaxa[species];
             _amaxb = amaxb[species];
-            
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
-            _species = species;
-            
+            index = species.Index;
+            name = species.Name;
+
+            maxSproutAge = species.MaxSproutAge;
+            minSproutAge = species.MinSproutAge;
+            postfireregeneration = species.PostFireRegeneration;
+            maxSeedDist = species.MaxSeedDist;
+            effectiveSeedDist = species.EffectiveSeedDist;
+            vegReprodProb = species.VegReprodProb;
+            fireTolerance = species.FireTolerance;
+            shadeTolerance = species.ShadeTolerance;
+            maturity = species.Maturity;
+            longevity = species.Longevity;
         
+          
         }
+        
+
+        #region Accessors
+
         public int Index
         {
             get
             {
-                return _species.Index;
+                return index;
             }
         }
         public float BFolResp
@@ -266,15 +300,24 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         public bool PreventEstablishment
         {
-            get { return _preventestablishment; }
+            get 
+            { 
+                return _preventestablishment; 
+            }
         }
         public float FolLignin
         {
-            get { return _follignin; }
+            get 
+            { 
+                return _follignin; 
+            }
         }
         public float EstMoist
         {
-            get { return _estmoist; }
+            get 
+            { 
+                return _estmoist; 
+            }
         }
         public float TOwood
         {
@@ -411,15 +454,90 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _cfracbiomass;
             }
         }
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+        }
 
+     
+        public int MaxSproutAge
+        {
+            get
+            {
+                return maxSproutAge;
+            }
+        }
+        public int MinSproutAge
+        {
+            get
+            {
+                return  minSproutAge;
+            }
+        }
+        public Landis.Core.PostFireRegeneration PostFireRegeneration
+        {
+            get
+            {
+                return postfireregeneration;
+
+            }
+        }
         
+        public int MaxSeedDist
+        {
+            get
+            {
+                return maxSeedDist;
+            }
+        }
+        public int EffectiveSeedDist
+        {
+            get
+            {
+                return effectiveSeedDist;
+            }
+        }
        
-       
+        public float VegReprodProb
+        {
+            get
+            {
+                return vegReprodProb;
+            }
+        }
+        public byte FireTolerance
+        {
+            get
+            {
+                return fireTolerance;
+            }
+        }
+        public byte ShadeTolerance
+        {
+            get
+            {
+                return shadeTolerance;
+            }
+        }
+        public int Maturity
+        {
+            get
+            {
+                return maturity;
+            }
+        }
+        public int Longevity
+        {
+            get
+            {
+                return longevity;
+            }
+        }
+         #endregion
 
-        
-
-
-        
         public static List<string> ParameterNames
         {
             get
@@ -431,89 +549,5 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return names;
             }
         }
-
-
-        public string Name
-        {
-            get
-            {
-                return _species.Name;
-            }
-        }
-
-
-        public int MaxSproutAge
-        {
-            get
-            {
-                return _species.MaxSproutAge;
-            }
-        }
-        public int MinSproutAge
-        {
-            get
-            {
-                return _species.MinSproutAge;
-            }
-        }
-        public Landis.Core.PostFireRegeneration PostFireRegeneration
-        {
-            get
-            {
-                return _species.PostFireRegeneration;
-            }
-        }
-        public int MaxSeedDist
-        {
-            get
-            {
-                return _species.MaxSeedDist;
-            }
-        }
-        public int EffectiveSeedDist
-        {
-            get
-            {
-                return _species.EffectiveSeedDist;
-            }
-        }
-        public float VegReprodProb
-        {
-            get
-            {
-                return _species.VegReprodProb;
-            }
-        }
-        public byte FireTolerance
-        {
-            get
-            {
-                return _species.FireTolerance;
-            }
-        }
-        public byte ShadeTolerance
-        {
-            get
-            {
-                return _species.ShadeTolerance;
-            }
-        }
-        public int Maturity
-        {
-            get
-            {
-                return _species.Maturity;
-            }
-        }
-        public int Longevity
-        {
-            get
-            {
-                return _species.Longevity;
-            }
-        }
-
-
-
     }
 }

@@ -4,7 +4,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     /// <summary>
     /// The information for a tree species (its index and parameters).
     /// </summary>
-    public interface ISpeciesPNET : Landis.Core.ISpecies 
+    public interface ISpeciesPNET : Landis.Core.ISpecies
     {
         float CFracBiomass { get; }
         float DNSC { get; }

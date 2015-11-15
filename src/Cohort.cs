@@ -45,7 +45,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float[] FRad = null;
         public float[] FWater = null;
         public float[] MaintenanceRespiration = null;
-        public float[] ConductanceCO2 = null;
+        //public float[] ConductanceCO2 = null;
         public float[] Interception = null;
 
         public void InitializeSubLayers()
@@ -59,7 +59,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             FRad = new float[PlugIn.IMAX];
             FWater = new float[PlugIn.IMAX];
             MaintenanceRespiration = new float[PlugIn.IMAX];
-            ConductanceCO2 = new float[PlugIn.IMAX];
+            //ConductanceCO2 = new float[PlugIn.IMAX];
             Interception = new float[PlugIn.IMAX];
         }
         public void NullSubLayers()
@@ -72,7 +72,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             FRad = null;
             FWater = null;
             MaintenanceRespiration = null;
-            ConductanceCO2 = null;
+            //ConductanceCO2 = null;
             Interception = null;
         }
        
@@ -221,13 +221,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
          
-        public void CalculatePhotosynthesis(float nr_of_subcanopy_layers, float LeakagePerCohort, ref float Water,  ref float SubCanopyPar)
+        public void CalculatePhotosynthesis(float nr_of_subcanopy_layers, float LeakagePerCohort, ref float SnowPack, ref float Water,  ref float SubCanopyPar)
         {
             LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
 
             Interception[index] = ecoregion.Variables.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
 
-            Hydrology.WaterIn = ecoregion.Variables.PrecIntEffective / nr_of_subcanopy_layers - Interception[index] + (ecoregion.Variables.SnowMelt / nr_of_subcanopy_layers);//mm  \
+            float SnowMelt = Math.Min(SnowPack, ecoregion.Variables.Maxmonthlysnowmelt) / nr_of_subcanopy_layers;
+            SnowPack += (ecoregion.Variables.NewSnow - SnowMelt) / nr_of_subcanopy_layers;
+
+            Hydrology.WaterIn = (ecoregion.Variables.Precin * (1 - ecoregion.PrecLossFrac)) / nr_of_subcanopy_layers - Interception[index] + (SnowMelt / nr_of_subcanopy_layers);//mm  \
 
             Water +=  Hydrology.WaterIn ;
 
@@ -284,19 +287,31 @@ namespace Landis.Extension.Succession.BiomassPnET
             FWater[index] = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
 
             // g/mo
-            NetPsn[index] = FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
+            if (leaf_on)
+            {
+                NetPsn[index] = FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
 
-            ConductanceCO2[index] = (ecoregion.Variables.GsInt + (ecoregion.Variables.GsSlope * NetPsn[index] * Constants.MillionOverTwelve));
+                //ConductanceCO2[index] = (ecoregion.Variables.GsInt + (ecoregion.Variables.GsSlope * NetPsn[index] * Constants.MillionOverTwelve));
 
-            FolResp[index] = FWater[index] * ecoregion.Variables[species.Name].FTempRespDayRefResp * fol;
+                FolResp[index] = FWater[index] * ecoregion.Variables[species.Name].FTempRespDayRefResp * fol;
 
-            GrossPsn[index] = NetPsn[index] + FolResp[index];
+                GrossPsn[index] = NetPsn[index] + FolResp[index];
 
-            Transpiration[index] = GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr;
+                Transpiration[index] = GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr;
 
-            subtract_transpiration(Transpiration[index], SpeciesPNET);
+                subtract_transpiration(Transpiration[index], SpeciesPNET);
 
-            nsc += NetPsn[index];
+                nsc += NetPsn[index];
+            }
+            else
+            {
+                NetPsn[index] = 0;
+                //ConductanceCO2[index] = 0;
+                FolResp[index] = 0;
+                GrossPsn[index] = 0;
+                Transpiration[index] = 0;
+
+            }
 
             if (index < PlugIn.IMAX - 1) index++;
             return;

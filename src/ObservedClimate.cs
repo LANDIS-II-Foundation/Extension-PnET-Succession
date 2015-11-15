@@ -6,22 +6,20 @@ using Landis.Core;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
-    public class ObservedClimate
+    public class ObservedClimate : IObservedClimate
     {
         // One observedclimate object 
-        private static Dictionary<string, ObservedClimate> ClimateData = new Dictionary<string, ObservedClimate>();
+        private static Dictionary<string, IObservedClimate> ClimateData = new Dictionary<string, IObservedClimate>();
 
         public static Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName ;
 
-        List<DataSet> data_lines = new List<DataSet>();
-
-        static int line_counter = 0;
-       
+        List<ClimateDataSet> data_lines = new List<ClimateDataSet>();
+         
         public static void Initialize()
         {
             ClimateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)PlugIn.GetParameter("climateFileName");
 
-            Dictionary<IEcoregion, ObservedClimate> dict = new Dictionary<IEcoregion, ObservedClimate>();
+            Dictionary<IEcoregion, IObservedClimate> dict = new Dictionary<IEcoregion, IObservedClimate>();
 
             foreach(IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
             {
@@ -29,8 +27,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 else
                 {
-                    ObservedClimate obs = new ObservedClimate(ClimateFileName[ecoregion]);
-
                     if (dict.ContainsKey(ecoregion))
                     {
                         ClimateData[ClimateFileName[ecoregion]] = dict[ecoregion];
@@ -39,15 +35,32 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
         }
+        public static IObservedClimate GetClimateData(IEcoregion ecoregion)
+        {
+            return ClimateData[ClimateFileName[ecoregion]];
+        }
 
-        public static DataSet GetData(IEcoregion ecoregion, DateTime date)
+
+        public static ClimateDataSet GetData(IEcoregion ecoregion, DateTime date)
         {
             // get the appropriate values as read in from a climate txt file
-            ObservedClimate observed_climate = ClimateData[ClimateFileName[ecoregion]];
+            IObservedClimate observed_climate = GetClimateData(ecoregion);
 
-            for (int line = 0; line < observed_climate.data_lines.Count; line++)
+            try
             {
-                DataSet d = observed_climate.data_lines[line];
+                return GetData(date, observed_climate);
+            }
+            catch
+            {
+                throw new System.Exception("Can't get climate data for ecoregion "+ ecoregion.Name);
+            }
+            
+        }
+
+        public static ClimateDataSet GetData(DateTime date, IObservedClimate observed_climate)
+        {
+            foreach (ClimateDataSet d in observed_climate)
+            {
                 if (d.Year.Length == 4)
                 {
                     if (int.Parse(d.Month) == date.Month && date.Year == int.Parse(d.Year))
@@ -65,22 +78,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                 }
             }
-            throw new System.Exception("No climate entry for ecoregion " + ecoregion.Name +" date "+ date);
+            throw new System.Exception("No climate entry for ecoregion date " + date);
         }
          
-        public struct DataSet
-        {
-            // One line in a climate file
-            public string Year;
-            public string Month;
-            public float CO2;
-            public string O3;
-            public ushort PAR0;
-            public float Prec;
-            public float Tmin;
-            public float Tmax;
-        }
-
+        
         public struct ColumnNumbers
         {
             public int Year;
@@ -150,7 +151,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              
             foreach (string line in ClimateFileContent)
             {
-                DataSet climate_dataset = new DataSet();
+                ClimateDataSet climate_dataset = new ClimateDataSet();
 
                 string[] terms = line.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
 
@@ -168,6 +169,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 data_lines.Add(climate_dataset);
             }
 
+        }
+        public IEnumerator<ClimateDataSet> GetEnumerator()
+        {
+            return data_lines.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

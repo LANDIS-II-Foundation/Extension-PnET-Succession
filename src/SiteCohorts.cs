@@ -36,7 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public LocalOutput siteoutput;
         
         private float water;
-         
+        private float snowPack;
 
         private float CanopyLAI;
         private byte canopylaimax;
@@ -97,7 +97,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             Cohort.SetSiteAccessFunctions(this);
 
-            this.Ecoregion = EcoregionPnET.AllEcoregions[PlugIn.ModelCore.Ecoregion[site]];//new EcoregionPnET();
+            this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
             uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
@@ -291,7 +291,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         {
                             using (Cohort c = Cohorts[r])
                             {
-                                c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort, ref water, ref subcanopypar);
+                                c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort,ref snowPack, ref water, ref subcanopypar);
                                 interception += c.Interception.Sum();
                                 c.Layer = (byte)Math.Max(b, c.Layer);
                             }
@@ -971,7 +971,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         interception + "," +
                         water + "," +
                         Hydrology.Pressureheadtable[Ecoregion, (int)water] + "," +
-                        monthdata.SnowPack + "," +
+                        snowPack + "," +
                         this.CanopyLAI + "," +
                         monthdata.VPD + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.GrossPsn.Sum())) + "," +

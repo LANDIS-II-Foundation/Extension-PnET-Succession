@@ -71,10 +71,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Allocation.cs" />
-    <Compile Include="Ecoregions\EcoregionPnET.cs" />
-    <Compile Include="Ecoregions\EcoregionPnETVariables.cs" />
-    <Compile Include="Ecoregions\IEcoregionPnET.cs" />
+    <Compile Include="ClimateDataSet.cs" />
+    <Compile Include="EcoregionPnET.cs" />
+    <Compile Include="EcoregionPnETVariables.cs" />
+    <Compile Include="IEcoregionPnET.cs" />
     <Compile Include="IEstablishmentProbability.cs" />
+    <Compile Include="IObservedClimate.cs" />
     <Compile Include="ObservedClimate.cs" />
     <Compile Include="CohortVars.cs" />
     <Compile Include="Constants.cs" />
@@ -94,18 +96,15 @@
     <Compile Include="Hydrology.cs" />
     <Compile Include="Cohort.cs" />
     <Compile Include="PlugIn.cs" />
-    <Compile Include="Species\ISpeciesPNET.cs" />
-    <Compile Include="Species\SpeciesPnET.cs" />
-    <Compile Include="Species\SpeciesPnETVariables.cs" />
+    <Compile Include="ISpeciesPNET.cs" />
+    <Compile Include="SpeciesPnET.cs" />
+    <Compile Include="SpeciesPnETVariables.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -17,7 +17,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return Pressureheadtable.CalculateWaterContent(water_pressure, ecoregion.SoilType) * ecoregion.RootingDepth;
         }
-
+        
         public static float RunOff;
         public static float Leakage;
         public static float PET;
@@ -44,7 +44,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             
             PlugIn.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
-            foreach (IEcoregionPnET eco in EcoregionPnET.AllEcoregions.Values) if (eco.Active)
+            foreach (IEcoregionPnET eco in EcoregionPnET.Ecoregions) if (eco.Active)
             {
                 // takes PH (MPa) 
                 // Calculates water content (m3H2O/m3 SOIL)
