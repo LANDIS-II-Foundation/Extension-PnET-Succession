@@ -105,9 +105,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static void Initialize()
         {
-            AllSpecies = new Dictionary<ISpecies, ISpeciesPNET>();
-
-            
+            #region initialization of private static species variables
             wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
             cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
@@ -139,11 +137,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
             amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxa"));
             amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
-             
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
-                     
+            #endregion
 
+            AllSpecies = new Dictionary<ISpecies, ISpeciesPNET>();
             foreach (ISpecies spc in PlugIn.ModelCore.Species)
             {
                 AllSpecies.Add(spc, new SpeciesPnET(spc));
@@ -151,9 +149,99 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         }
-        public SpeciesPnET(PostFireRegeneration postFireGeneration)
+        public SpeciesPnET(PostFireRegeneration postFireGeneration,
+            float wuecnst, 
+            float dnsc,
+            float cfracbiomass,
+            float kwdlit,
+            float fracbelowg,
+            float fracfol,
+            float fractWd,
+            float psnagered,
+            ushort h2,
+            ushort h3,
+            ushort h4,
+            float slwdel,
+            float slwmax,
+            float tofol,
+            float toroot,
+            float halfsat,
+            float initialnsc,
+            float k,
+            float towood,
+            float estrad,
+            float estmoist,
+            float follignin,
+            bool preventestablishment,
+            float psntopt,
+            float q10,
+            float psntmin,
+            float dvpd1,
+            float dvpd2,
+            float foln,
+            float amaxa,
+            float amaxb,
+            float maintresp,
+            float bfolresp,
+            int Index,
+            string name,
+            int maxSproutAge,
+            int minSproutAge,
+            int maxSeedDist,
+            int effectiveSeedDist,
+            float vegReprodProb,
+            byte fireTolerance,
+            byte shadeTolerance,
+            int maturity,
+            int longevity
+            )
         {
             this.postfireregeneration = postFireGeneration;
+            this._wuecnst = wuecnst;
+            this._dnsc = dnsc;
+            this._cfracbiomass = cfracbiomass;
+            this._kwdlit = kwdlit;
+            this._fracbelowg = fracbelowg;
+            this._fracfol = fracfol;
+            this._fractWd = fractWd;
+            this._psnagered = psnagered;
+            this._h2 = h2;
+            this._h3 = h3;
+            this._h4 = h4;
+            this._slwdel = slwdel;
+            this._slwmax = slwmax;
+            this._tofol = tofol;
+            this._toroot = toroot;
+            this._halfsat = halfsat;
+            this._initialnsc = initialnsc;
+            this._k = k;
+            this._towood = towood;
+            this._estrad = estrad;
+            this._estmoist = estmoist;
+            this._follignin = follignin;
+            this._preventestablishment = preventestablishment;
+            this._psntopt = psntopt;
+            this._q10 = q10;
+            this._psntmin = psntmin;
+            this._dvpd1 = dvpd1;
+            this._foln = foln;
+            this._dvpd2 = dvpd2;
+            this._amaxa = amaxa;
+            this._amaxb = amaxb;
+            this._maintresp = maintresp;
+            this._bfolresp = bfolresp;
+            this.index = Index;
+            this.name = name;
+            this.maxSproutAge = maxSproutAge;
+            this.minSproutAge = minSproutAge;
+            this.postfireregeneration = postFireGeneration;
+            this.maxSeedDist = maxSeedDist;
+            this.effectiveSeedDist = effectiveSeedDist;
+            this.vegReprodProb = vegReprodProb;
+            this.fireTolerance = fireTolerance;
+            this.shadeTolerance = shadeTolerance;
+            this.maturity = maturity;
+            this.longevity = longevity;
         
         }
         public SpeciesPnET(ISpecies species)

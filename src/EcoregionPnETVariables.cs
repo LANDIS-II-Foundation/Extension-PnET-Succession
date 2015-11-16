@@ -10,7 +10,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         #region private variables
         private DateTime _date;
-        private ClimateDataSet obs_clim;
+        private IObservedClimate obs_clim;
         private float _snowfraction;
         public float VPD;
         private float _precin;
@@ -21,9 +21,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         //private float _gsSlope;
         //private float _gsInt;
         private float _newsnow;
+        float _daylength;
+        float _amax;
         #endregion
 
         #region public accessors
+        
+       
         public float NewSnow
         {
             get
@@ -74,8 +78,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return obs_clim.Prec;
             }
         }
+        
         public float PAR0 {
-            get {
+            get 
+            {
                 return obs_clim.PAR0;
             }
         }
@@ -113,6 +119,22 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return obs_clim.Tmin;
             }
         }
+        public float Daylength
+        {
+            get
+            {
+                return _daylength;
+            }
+        }
+        public float Amax
+        {
+            get
+            {
+                return _amax;
+            }
+        }
+       
+
         # endregion
 
         #region static computation functions
@@ -171,21 +193,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return es - emean;
         }
 
-        public static float[] RespTempResponse(ISpeciesPNET spc, float tday, float tmin, float daylength, float nightlength)
-        {
-            float[] RespTempResponse = new float[2];
-
-
-            // day respiration factor
-            RespTempResponse[0] = ((float)Math.Pow(spc.Q10, (tday - spc.PsnTOpt) / 10));
-
-            float fTempRespNight = ((float)Math.Pow(spc.Q10, (tmin - spc.PsnTOpt) / 10));
-
-            //weighted day and night respiration factor
-            RespTempResponse[1] = (float)Math.Min(1.0, (RespTempResponse[0] * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength));
-
-            return RespTempResponse;
-        }
+        
 
         public static float LinearPsnTempResponse(float tday, float PsnTOpt, float PsnTMin)
         {
@@ -254,17 +262,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return speciesVariables[species];
             }
         }
-         
-        public EcoregionPnETVariables(ClimateDataSet climate_dataset, DateTime Date, bool Wythers)
+
+        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, List<ISpeciesPNET> Species)
         {
             
-
             this._date = Date;
             this.obs_clim = climate_dataset;
 
             speciesVariables = new Dictionary<string, SpeciesPnETVariables>();
-             
 
+            
             _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
 
             _dayspan = EcoregionPnETVariables.Calculate_DaySpan(Date.Month);
@@ -279,27 +286,25 @@ namespace Landis.Extension.Succession.BiomassPnET
             _newsnow = _snowfraction * climate_dataset.Prec;//mm
              
             float hr = Calculate_hr(Date.DayOfYear, PlugIn.Latitude);
-            float daylength = Calculate_DayLength(hr);
+            _daylength = Calculate_DayLength(hr);
             float nightlength = Calculate_NightLength(hr);
 
             _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
             VPD = EcoregionPnETVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
 
-             
-            foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
+
+            foreach (ISpeciesPNET spc in Species )
             {
-                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, daylength, nightlength, spc);
+                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, Daylength, nightlength, spc);
 
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
 
         }
 
-        private SpeciesPnETVariables GetSpeciesVariables(ref ClimateDataSet climate_dataset, bool Wythers, float daylength, float nightlength, ISpeciesPNET spc)
+        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, float daylength, float nightlength, ISpeciesPNET spc)
         {
-            SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
-
-            speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
+            
 
             float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
@@ -322,55 +327,68 @@ namespace Landis.Extension.Succession.BiomassPnET
             //_gsInt = (float)((0.4656 * delamax) - 0.9701);
 
             float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
+
+            SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
+
+            speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
+
             speciespnetvars.WUE_CO2_corr = wue / delamax;
 
             //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
-
 
             //wue[ecoregion, spc, date] = (Parameters.WUEcnst[spc] / vpd[ecoregion, date]) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
             //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
             speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
 
             // NETPSN 
-            float amax = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
+            _amax = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
 
             //Reference net Psn (lab conditions) in gC/timestep
-            float RefNetPsn = _dayspan * (amax * DVPD * daylength * Constants.MC) / Constants.billion;
+            float RefNetPsn = _dayspan * (_amax * DVPD * daylength * Constants.MC) / Constants.billion;
 
             //-------------------FTempPSN (public for output file)
             speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
 
             // PSN (g/tstep)
-            speciespnetvars.FTempPSNRefNetPsn = PlugIn.fIMAX * speciespnetvars.FTempPSN * RefNetPsn;
+            speciespnetvars.FTempPSNRefNetPsn =  speciespnetvars.FTempPSN * RefNetPsn;
+ 
+            //EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);
+             
+            // day respiration factor
+            float RespTempDay = CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
 
-            float[] RespTempResponses = EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);
-
+            float fTempRespNight = CalcQ10Factor(spc.Q10, Tmin , spc.PsnTOpt);
+           
+           
+           
             // Unitless respiration adjustment: public for output file only
-            speciespnetvars.FTempResp = RespTempResponses[1];
+            speciespnetvars.FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (RespTempDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
 
-            speciespnetvars.MaintRespFTempResp = spc.MaintResp * speciespnetvars.FTempResp;
-
-            float conversion_factors = PlugIn.fIMAX * _dayspan * daylength * Constants.MC / Constants.billion;
+            speciespnetvars.MaintRespFTempResp = spc.MaintResp * speciespnetvars.FTempRespWeightedDayAndNight;
 
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
+             
+            if (Wythers == true)
+            {
+                speciespnetvars.FTempRespDay = (0.14F - 0.002F * Tave) * (3.22F - 0.046F * (float)Math.Pow((0.5F * (Tave + spc.PsnTOpt)), ((Tave - spc.PsnTOpt) / 10)));
+            }
+            else
+            {
+                speciespnetvars.FTempRespDay = spc.BFolResp * RespTempDay;
+            }
 
-            speciespnetvars.FTempRespDayRefResp = CalculateFTempRespDayRefResp(Wythers, spc, amax, RespTempResponses, conversion_factors);
+            
+            
             return speciespnetvars;
         }
 
-        private float CalculateFTempRespDayRefResp(bool Wythers, ISpeciesPNET spc, float amax, float[] RespTempResponses, float conversion_factors)
+        private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
         {
-            float FTempRespDayRefResp;
-
-            if (Wythers == true)
-            {
-                FTempRespDayRefResp = (0.14F - 0.002F * Tave) * amax * (3.22F - 0.046F * (float)Math.Pow((0.5F * (Tave + spc.PsnTOpt)), ((Tave - spc.PsnTOpt) / 10))) * conversion_factors;
-            }
-            else FTempRespDayRefResp = spc.BFolResp * amax * RespTempResponses[0] * conversion_factors;
-
-            return FTempRespDayRefResp;
+            float RespTempDay = ((float)Math.Pow(Q10, (Tday - PsnTOpt) / 10));
+            return RespTempDay;
         }
 
+         
         
         
     }

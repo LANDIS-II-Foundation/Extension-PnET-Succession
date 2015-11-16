@@ -11,14 +11,33 @@ namespace Landis.Extension.Succession.BiomassPnET
     /// The information for a tree species (its index and parameters).
     /// </summary>
     public class EcoregionPnET : IEcoregionPnET
-        
     {
+        #region private variables
+        private Landis.Core.IEcoregion ecoregion;
+        private float _precintconst;
+        private float _preclossfrac;
+        private float _rootingdepth;
+        private string _soiltype;
+        private float _leakagefrac;
+        private float _fieldcap;
+        private float _wiltpnt;
+        private float _porosity;
+        EcoregionPnETVariables _variables;
+        #endregion
 
+        #region private static variables
         private static bool wythers;
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>>();
-
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
+        #endregion
 
+        #region accessors for private static variables
         public static List<IEcoregionPnET> Ecoregions
         {
             get 
@@ -30,28 +49,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return AllEcoregions[ecoregion];
         }
+        #endregion
 
-        private Landis.Core.IEcoregion ecoregion;
+        #region accessors for private variables
 
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
-       
-
-        private float _precintconst;
-        private float _preclossfrac;
-        private float _rootingdepth;
-        private string _soiltype;
-        private float _leakagefrac;
-        private float _fieldcap;
-        private float _wiltpnt;
-        private float _porosity;
-       
-
-        EcoregionPnETVariables _variables;
         public EcoregionPnETVariables Variables
         { 
             get
@@ -64,7 +65,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         
         }
-        
+
         public float FieldCap
         {
             get
@@ -91,7 +92,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 return _porosity;
             }
-            set {
+            set 
+            {
                 _porosity = value;
             }
         }
@@ -129,17 +131,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _preclossfrac;
             }
         }
-        public static List<string> ParameterNames
-        {
-            get
-            {
-                System.Type type = typeof(EcoregionPnET); // Get type pointer
-                List<string> names = type.GetProperties().Select(x => x.Name).ToList(); // Obtain all fields
-
-
-                return names;
-            }
-        }
+        
         public string Description
         {
             get
@@ -175,7 +167,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Name;
             }
         }
-        
+        #endregion
+
+        public static List<string> ParameterNames
+        {
+            get
+            {
+                System.Type type = typeof(EcoregionPnET); // Get type pointer
+                List<string> names = type.GetProperties().Select(x => x.Name).ToList(); // Obtain all fields
+                names.Add("ClimateFileName");
+
+                return names;
+            }
+        }
+
         public static List<EcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
@@ -184,13 +189,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
 
+             
             while (end.Ticks > date.Ticks)
             {
                 if (all_values[ecoregion].ContainsKey(date) == false)
                 {
-                    ClimateDataSet observedClimate = ObservedClimate.GetData(ecoregion, date);
+                    IObservedClimate observedClimate =  ObservedClimate.GetData(ecoregion, date);
 
-                    EcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers);
+                    List<ISpeciesPNET> species = SpeciesPnET.AllSpecies.Values.ToList();
+
+                    EcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, species);
 
                     all_values[ecoregion].Add(date, ecoregion_variables);
 
@@ -228,9 +236,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             
         }
 
-
-       
-         
         public EcoregionPnET(Landis.Core.IEcoregion ecoregion)
         {
             

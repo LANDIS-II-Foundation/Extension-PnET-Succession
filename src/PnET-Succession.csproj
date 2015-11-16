@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Allocation.cs" />
-    <Compile Include="ClimateDataSet.cs" />
     <Compile Include="EcoregionPnET.cs" />
     <Compile Include="EcoregionPnETVariables.cs" />
     <Compile Include="IEcoregionPnET.cs" />

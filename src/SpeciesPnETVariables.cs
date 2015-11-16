@@ -8,12 +8,13 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class SpeciesPnETVariables
     {
        
-        public float FTempResp;
+        public float FTempRespWeightedDayAndNight;
         public float MaintRespFTempResp;
-        public float FTempRespDayRefResp;
+        public float FTempRespDay;
         public float FTempPSN;
         public float FTempPSNRefNetPsn;
         public bool LeafOn;
         public float WUE_CO2_corr;
+        public float Amax;
     }
 }

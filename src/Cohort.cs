@@ -289,11 +289,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             // g/mo
             if (leaf_on)
             {
-                NetPsn[index] = FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
+                NetPsn[index] = PlugIn.fIMAX * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
 
                 //ConductanceCO2[index] = (ecoregion.Variables.GsInt + (ecoregion.Variables.GsSlope * NetPsn[index] * Constants.MillionOverTwelve));
+               
+                float FTempRespDayRefResp = ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
 
-                FolResp[index] = FWater[index] * ecoregion.Variables[species.Name].FTempRespDayRefResp * fol;
+                FolResp[index] = FWater[index] * ecoregion.Variables[species.Name].FTempRespDay * fol *  PlugIn.fIMAX;
 
                 GrossPsn[index] = NetPsn[index] + FolResp[index];
 
@@ -381,7 +383,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        FWater.Average() + "," +
                        FRad.Average() + "," +
                        monthdata[Species.Name].FTempPSN + "," +
-                       monthdata[Species.Name].FTempResp + "," +
+                       monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        Fage + "," +
                        monthdata[Species.Name].LeafOn + "," +
                        FActiveBiom;

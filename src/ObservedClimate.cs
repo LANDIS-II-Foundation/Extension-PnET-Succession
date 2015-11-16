@@ -8,12 +8,75 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class ObservedClimate : IObservedClimate
     {
+        #region private valiables
+        string year;
+        string month;
+        float  par0;
+        float prec;
+        float tmin;
+        float tmax;
+        float co2;
+        #endregion
+
+        #region public accessors
+        public float CO2
+        {
+            get
+            {
+                return co2;
+            }
+        }
+        public string Year
+        {
+            get
+            {
+                return year;
+            }
+        }
+        public string Month
+        {
+            get
+            {
+                return month;
+            }
+        }
+        public float PAR0
+        {
+            get
+            {
+                return par0;
+            }
+        }
+        public float Prec
+        {
+            get
+            {
+                return prec;
+            }
+        }
+        public float Tmin
+        {
+            get
+            {
+                return tmin;
+            }
+        }
+        public float Tmax
+        {
+            get
+            {
+                return tmax;
+            }
+        }
+
+        #endregion
+
         // One observedclimate object 
         private static Dictionary<string, IObservedClimate> ClimateData = new Dictionary<string, IObservedClimate>();
 
-        public static Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName ;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName ;
 
-        List<ClimateDataSet> data_lines = new List<ClimateDataSet>();
+        List<ObservedClimate> data_lines = new List<ObservedClimate>();
          
         public static void Initialize()
         {
@@ -41,14 +104,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
 
-        public static ClimateDataSet GetData(IEcoregion ecoregion, DateTime date)
+        public static ObservedClimate GetData(IEcoregion ecoregion, DateTime date)
         {
             // get the appropriate values as read in from a climate txt file
             IObservedClimate observed_climate = GetClimateData(ecoregion);
 
             try
             {
-                return GetData(date, observed_climate);
+                return GetData(observed_climate, date);
             }
             catch
             {
@@ -56,10 +119,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             
         }
-
-        public static ClimateDataSet GetData(DateTime date, IObservedClimate observed_climate)
+        
+        public static ObservedClimate GetData(IObservedClimate observed_climate, DateTime date)
         {
-            foreach (ClimateDataSet d in observed_climate)
+            foreach (ObservedClimate d in observed_climate)
             {
                 if (d.Year.Length == 4)
                 {
@@ -142,7 +205,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             return value;
         }
-
+        ObservedClimate()
+        { 
+        
+        }
         public ObservedClimate(string filename)
         {
             List<string> ClimateFileContent = new List<string>(ReadClimateFile(filename));
@@ -151,26 +217,25 @@ namespace Landis.Extension.Succession.BiomassPnET
              
             foreach (string line in ClimateFileContent)
             {
-                ClimateDataSet climate_dataset = new ClimateDataSet();
-
+                ObservedClimate climate = new ObservedClimate();
                 string[] terms = line.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
 
                 // Get one state of static information for the line in the climate file
-                climate_dataset.Tmax = CheckInRange<float>(float.Parse(terms[columns.TMax]), -80, 80, "TMax");
-                climate_dataset.Tmin = CheckInRange<float>(float.Parse(terms[columns.TMin]), -80, climate_dataset.Tmax, "TMin");
-                climate_dataset.CO2 = CheckInRange<float>(float.Parse(terms[columns.CO2]), 0, float.MaxValue, "CO2");
-                climate_dataset.PAR0 = (ushort)CheckInRange<float>(float.Parse(terms[columns.PAR0]), 0, float.MaxValue, "PAR0");
+                climate.tmax = CheckInRange<float>(float.Parse(terms[columns.TMax]), -80, 80, "TMax");
+                climate.tmin = CheckInRange<float>(float.Parse(terms[columns.TMin]), -80, climate.tmax, "TMin");
+                climate.co2 = CheckInRange<float>(float.Parse(terms[columns.CO2]), 0, float.MaxValue, "CO2");
+                climate.par0 = (ushort)CheckInRange<float>(float.Parse(terms[columns.PAR0]), 0, float.MaxValue, "PAR0");
 
-                climate_dataset.Prec = CheckInRange<float>(float.Parse(terms[columns.Prec]), 0, float.MaxValue, "PREC");
+                climate.prec = CheckInRange<float>(float.Parse(terms[columns.Prec]), 0, float.MaxValue, "PREC");
 
-                climate_dataset.Year = terms[columns.Year];
-                climate_dataset.Month = terms[columns.Month];
+                climate.year = terms[columns.Year];
+                climate.month = terms[columns.Month];
 
-                data_lines.Add(climate_dataset);
+                data_lines.Add(climate);
             }
 
         }
-        public IEnumerator<ClimateDataSet> GetEnumerator()
+        public IEnumerator<ObservedClimate> GetEnumerator()
         {
             return data_lines.GetEnumerator();
         }
