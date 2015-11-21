@@ -12,7 +12,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         void Calculate_Establishment(EcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, float water);
 
         void ResetPerTimeStep();
+         
+        
 
-        Dictionary<ISpeciesPNET, bool> HasEstablished { get; }
+        bool HasEstablished(ISpeciesPNET species);
+       
+        
     }
 }

@@ -1,0 +1,432 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Landis.Library.SiteHarvest-v1</name>
+    </assembly>
+    <members>
+        <member name="T:Landis.Library.SiteHarvest.BasicParameterParser`1">
+            <summary>
+            An extended base class for text parsers that need to parse basic
+            harvest parameters -- cohort selectors and species planting list.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.#ctor(Landis.Core.ISpeciesDataset,System.Boolean)">
+            <summary>
+            Initializes a new instance.
+            </summary>
+            <param name="speciesDataset">
+            The dataset of species to look up species' names in.
+            </param>
+            <param name="keywordsEnabled">
+            Are keywords like "Oldest" and "AllExceptYoungest" accepted?
+            </param>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.ReadPreventEstablishment">
+            <summary>
+            Reads the optional "PreventEstablishment" keyword.
+            </summary>
+            <returns>true if keyword was present; false otherwise</returns>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.ReadSpecies(Edu.Wisc.Forest.Flel.Util.StringReader)">
+            <summary>
+            Read a species name from the current input line.
+            </summary>
+            <exception cref="T:Edu.Wisc.Forest.Flel.Util.InputValueException">
+            Thrown if the species name was previously used on an earlier line in
+            the input file.
+            </exception>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.ReadAndValidateSpeciesName(Edu.Wisc.Forest.Flel.Util.StringReader)">
+            <summary>
+            Read a species name from the current input line.
+            </summary>
+            <exception cref="T:Edu.Wisc.Forest.Flel.Util.InputValueException">
+            Thrown if the species name is not valid.
+            </exception>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.ReadSpeciesAndCohorts(System.String[])">
+            <summary>
+            Reads a list of species and their cohorts that should be removed.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.CreateCohortSelectionMethodFor(Landis.Core.ISpecies,System.Collections.Generic.IList{System.UInt16},System.Collections.Generic.IList{Landis.Library.SiteHarvest.AgeRange})">
+            <summary>
+            Creates and stores the cohort selection method for a particular
+            species based on lists of specific ages and age ranges.
+            </summary>
+            <remarks>
+            Derived classes can override this method to perform special
+            handling of ages and ranges (for example, percentages for partial
+            harvesting in biomass extensions).
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.ValidateAgeOrRange(Edu.Wisc.Forest.Flel.Util.InputValue{Landis.Library.SiteHarvest.AgeRange},System.Collections.Generic.List{System.UInt16},System.Collections.Generic.List{Landis.Library.SiteHarvest.AgeRange})">
+            <summary>
+            Validates a cohort age or age range against previous ages and
+            ranges.
+            </summary>
+            <param name="ageOrRange">
+            The age or age range that's being validated.
+            </param>
+            <param name="ages">
+            List of previous ages.
+            </param>
+            <param name="ranges">
+            List of previous ranges.
+            </param>
+            <remarks>
+            If the age or range is validated, it is added to the corresponding
+            list.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.ReadSpeciesToPlant">
+            <summary>
+            Reads the optional "Plant" parameter which specifies one or more
+            tree species to plant at a site.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.BasicParameterParser`1.ReadSpeciesList(Edu.Wisc.Forest.Flel.Util.StringReader,System.Int32@)">
+            <summary>
+            Reads a list of species names from the current input line.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.BasicParameterParser`1.SpeciesLineNumbers">
+            <summary>
+            Line number where each species was found.  Used to check for
+            duplicate names in a list.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.CohortCounts">
+            <summary>
+            Tracks the # of cohorts that have been cut for each species.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.CohortCounts.#ctor">
+            <summary>
+            Creates a new instance with all counts initialized to 0.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.CohortCounts.IncrementCount(Landis.Core.ISpecies)">
+            <summary>
+            Increment the count for a species by 1.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.CohortCounts.IncrementCounts(Landis.Library.SiteHarvest.CohortCounts)">
+            <summary>
+            Increment the counts for all the species.
+            </summary>
+            <param name="increments">
+            The increment for each species.
+            </param>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.CohortCounts.Reset">
+            <summary>
+            Reset all the counts to 0.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.CohortCounts.Item(Landis.Core.ISpecies)">
+            <summary>
+            Current count for a species.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.CohortCounts.AllSpecies">
+            <summary>
+            The current count for all species combined.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.AgeRange">
+            <summary>
+            A range of cohort ages.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgeRange.#ctor(System.UInt16,System.UInt16)">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgeRange.Contains(System.UInt16)">
+            <summary>
+            Does the range contain a particular age?
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgeRange.Overlaps(Landis.Library.SiteHarvest.AgeRange)">
+            <summary>
+            Does the range overlap another range?
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.AgeRange.Start">
+            <summary>
+            The starting age of the range.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.AgeRange.End">
+            <summary>
+            The ending age of the range.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.AgeRangeParsing">
+            <summary>
+            Methods for parsing cohort age ranges.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgeRangeParsing.InitializeClass">
+            <summary>
+            Initialize the class.
+            </summary>
+            <remarks>
+            Client code can use this method to explicitly control when the
+            class' static constructor is invoked.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgeRangeParsing.ParseAgeOrRange(System.String)">
+            <summary>
+            Parses a word for a cohort age or an age range (format: age-age).
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgeRangeParsing.ParseAge(System.String)">
+            <summary>
+            Parses a cohort age from a text value.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.AgesAndRanges">
+            <summary>
+            A set of specific ages and ranges of ages for one species' cohorts.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgesAndRanges.#ctor(System.Collections.Generic.IList{System.UInt16},System.Collections.Generic.IList{Landis.Library.SiteHarvest.AgeRange})">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.AgesAndRanges.Contains(System.UInt16,System.Nullable{Landis.Library.SiteHarvest.AgeRange}@)">
+            <summary>
+            Is a particular age included among the set of specific ages and ranges?
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.ClearCut">
+            <summary>
+            Removes all the cohorts at a site.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.ICohortSelector">
+            <summary>
+            Selects which cohorts at a site are removed by a harvest event.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.ICohortSelector.Harvest(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects which of a species' cohorts are harvested.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.ClearCut.#ctor">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.ClearCut.Harvest(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects which of a species' cohorts are harvested.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.EveryNthCohort">
+            <summary>
+            Selects every Nth cohort among a species' cohorts for harvesting.
+            </summary>
+            <remarks>
+            The cohorts are traversed from youngest to oldest.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.EveryNthCohort.#ctor(System.Int32)">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.EveryNthCohort.SelectCohorts(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects which of a species' cohorts are harvested.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.MultiSpeciesCohortSelector">
+            <summary>
+            Removes certain cohorts of one or more species from a site.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.MultiSpeciesCohortSelector.#ctor">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.MultiSpeciesCohortSelector.Harvest(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects which of a species' cohorts are harvested.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.MultiSpeciesCohortSelector.Item(Landis.Core.ISpecies)">
+            <summary>
+            Gets or sets the selection method for a species.
+            </summary>
+            <remarks>
+            When getting the selection method, if a species has none, null is
+            returned.
+            </remarks>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.SelectCohorts">
+            <summary>
+            Various methods for selecting which of a species' cohorts to harvest.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SelectCohorts.All(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects all of a species' cohorts for harvesting.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SelectCohorts.Oldest(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects the oldest of a species' cohorts for harvesting.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SelectCohorts.Youngest(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects the youngest of a species' cohorts for harvesting.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SelectCohorts.AllExceptOldest(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects all of a species' cohorts for harvesting except the oldest.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SelectCohorts.AllExceptYoungest(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects all of a species' cohorts for harvesting except the
+            youngest.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.SelectCohorts.Method">
+            <summary>
+            A method for selecting which of a species' cohorts to harvest.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.SpecificAgesCohortSelector">
+            <summary>
+            Selects specific ages and ranges of ages among a species' cohorts
+            for harvesting.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SpecificAgesCohortSelector.#ctor(System.Collections.Generic.IList{System.UInt16},System.Collections.Generic.IList{Landis.Library.SiteHarvest.AgeRange})">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SpecificAgesCohortSelector.SelectCohorts(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Selects which of a species' cohorts are harvested.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.ICohortCutter">
+            <summary>
+            Interface for cutting selected cohorts at a site.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.ICohortCutter.Cut(Landis.SpatialModeling.ActiveSite,Landis.Library.SiteHarvest.CohortCounts)">
+            <summary>
+            Cut cohorts at an individual site.
+            </summary>
+            <param name="site">
+            The site where to cut cohorts.
+            </param>
+            <param name="cohortCounts">
+            The number of cohorts cut for each species will be recorded in this
+            parameter for the caller's use.
+            </param>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.ICohortCutter.CohortSelector">
+            <summary>
+            The object responsible for selecting which cohorts to be cut.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.Main">
+            <summary>
+            Main interface for initializing and configuring the library.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.Main.InitializeLib(Landis.Core.ICore)">
+            <summary>
+            Initialize the library for use by client code.
+            </summary>
+            <param name="modelCore">
+            The model's core framework.
+            </param>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.Model.Core">
+            <summary>
+            The model core instance used across the library's internal
+            components.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.ParameterNames">
+            <summary>
+            Constants for known parameter names
+            </summary>
+        </member>
+        <member name="F:Landis.Library.SiteHarvest.ParameterNames.PreventEstablishment">
+            <summary>
+            Parameter for preventing tree establishment (to mimic development).
+            </summary>
+        </member>
+        <member name="F:Landis.Library.SiteHarvest.ParameterNames.Plant">
+            <summary>
+            Paramter for list of species to plant at a site.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.SiteVars">
+            <summary>
+            The library's site variables.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.SiteVars.Initialize">
+            <summary>
+            Initializes the library's site variables.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.SiteVars.Cohorts">
+            <summary>
+            The site variable with cohorts (accessed as age-only cohorts).
+            </summary>
+        </member>
+        <member name="T:Landis.Library.SiteHarvest.WholeCohortCutter">
+            <summary>
+            A disturbance where each selected cohort is completely cut.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.WholeCohortCutter.MarkCohortsForDeath(Landis.Library.AgeOnlyCohorts.ISpeciesCohorts,Landis.Library.AgeOnlyCohorts.ISpeciesCohortBoolArray)">
+            <summary>
+            Mark which cohorts for a species are to be cut (harvested).
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.WholeCohortCutter.Cut(Landis.SpatialModeling.ActiveSite,Landis.Library.SiteHarvest.CohortCounts)">
+            <summary>
+            Cut cohorts at an individual site.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.SiteHarvest.WholeCohortCutter.#ctor(Landis.Library.SiteHarvest.ICohortSelector,Landis.Core.ExtensionType)">
+            <summary>
+            Create a new instance.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.WholeCohortCutter.Type">
+            <summary>
+            What type of disturbance is this.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.WholeCohortCutter.CurrentSite">
+            <summary>
+            The site currently that the disturbance is impacting.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.SiteHarvest.WholeCohortCutter.CohortSelector">
+            <summary>
+            The object responsible for selecting which cohorts to be cut.
+            </summary>
+        </member>
+    </members>
+</doc>

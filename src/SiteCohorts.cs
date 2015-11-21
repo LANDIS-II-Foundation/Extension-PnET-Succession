@@ -289,12 +289,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         foreach (int r in random_range[b])
                         {
-                            using (Cohort c = Cohorts[r])
-                            {
-                                c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort,ref snowPack, ref water, ref subcanopypar);
-                                interception += c.Interception.Sum();
-                                c.Layer = (byte)Math.Max(b, c.Layer);
-                            }
+                            Cohort c = Cohorts[r];
+                            c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort,ref snowPack, ref water, ref subcanopypar);
+                            interception += c.Interception.Sum();
+                            c.Layer = (byte)Math.Max(b, c.Layer);
                         }
                     }
                 }
@@ -712,10 +710,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 for (int c =0;c< species_cohort.Count(); c++)
                 {
-                    reduction.Add(disturbance.ReduceOrKillMarkedCohort(species_cohort[c]));
-                    if (reduction[reduction.Count()-1] >= species_cohort[c].Biomass)
+                    Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[0];
+
+                    int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
+
+                    reduction.Add(_reduction);
+                    if (reduction[reduction.Count() - 1] >= species_cohort[c].Biomass)
+                    {
                         ToRemove.Add(species_cohort[c]);
-                    // Edited by BRM - 090115
+                        // Edited by BRM - 090115
+                    }
                     else
                     {
                         double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;
@@ -862,9 +866,13 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public bool IsMaturePresent(ISpecies species)
         {
-            bool myreturn = (cohorts.ContainsKey(species) && (cohorts[species].Min(o => o.Age) > species.Maturity)) ? true : false;
+            ISpeciesPNET pnetSpecies = SpeciesPnET.AllSpecies[species];
 
-            return myreturn;
+            bool speciesPresent = cohorts.ContainsKey(pnetSpecies);
+
+            bool IsMaturePresent = (speciesPresent && (cohorts[pnetSpecies].Min(o => o.Age) > species.Maturity)) ? true : false;
+
+            return IsMaturePresent;
         }
 
         public void AddNewCohort(Cohort cohort)
@@ -900,7 +908,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 spc.AddNewCohort(cohorts[c].Age, cohorts[c].Biomass);
             }
-
+            
 
             return spc;
         }

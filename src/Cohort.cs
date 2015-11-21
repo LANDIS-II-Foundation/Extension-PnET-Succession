@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Landis.Extension.Succession.BiomassPnET 
 {
-    public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort, IDisposable
+    public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort 
     {
         public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> DeathEvent;
         public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> AgeOnlyDeathEvent;
@@ -45,7 +45,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float[] FRad = null;
         public float[] FWater = null;
         public float[] MaintenanceRespiration = null;
-        //public float[] ConductanceCO2 = null;
         public float[] Interception = null;
 
         public void InitializeSubLayers()
@@ -75,12 +74,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //ConductanceCO2 = null;
             Interception = null;
         }
-       
-        public void Dispose()
-        {
-           
-        }
-
+      
         public ushort Age
         {
             get

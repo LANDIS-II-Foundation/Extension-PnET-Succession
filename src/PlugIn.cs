@@ -361,7 +361,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         public bool MaturePresent(ISpecies species, ActiveSite site)
         {
-            return sitecohorts[site].IsMaturePresent(species);
+            bool IsMaturePresent = sitecohorts[site].IsMaturePresent(species);
+            return IsMaturePresent;
         }
         protected override void InitializeSite(ActiveSite site,
                                                ICommunity initialCommunity)
@@ -437,7 +438,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             ISpeciesPNET spc = SpeciesPnET.AllSpecies[species];
 
-            bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished[spc];// EstablishmentProbability.ComputeEstablishment(Date, sitecohorts[site].Pest, spc, sitecohorts[site].establishment_siteoutput);
+            bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished(spc);
             return Establish;
         }
 

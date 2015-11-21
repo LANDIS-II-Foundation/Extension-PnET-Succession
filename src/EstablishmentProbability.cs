@@ -9,21 +9,19 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class EstablishmentProbability  : IEstablishmentProbability
     {
         private LocalOutput establishment_siteoutput;
-        private Dictionary<ISpeciesPNET, bool> _hasEstablished;
+        private List<ISpeciesPNET> _hasEstablished;
         private Dictionary<ISpeciesPNET, float> _pest;
         private Dictionary<ISpeciesPNET, float> _fwater;
         private Dictionary<ISpeciesPNET, float> _frad;
 
         private static int Timestep;
 
-        public Dictionary<ISpeciesPNET, bool> HasEstablished
+       
+        public bool HasEstablished(ISpeciesPNET species)
         {
-            get
-            {
-                return _hasEstablished;
-            }
+            return _hasEstablished.Contains(species);
         }
-
+       
         public Landis.Library.Parameters.Species.AuxParm<byte> Probability
         {
             get
@@ -73,12 +71,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                         _pest[spc] = pest;
                         _fwater[spc] = fwater;
                         _frad[spc] = frad;
-                        _hasEstablished[spc] = pest > (float)PlugIn.ContinuousUniformRandom();
+
+                        if (pest > (float)PlugIn.ContinuousUniformRandom())
+                        {
+                            if (HasEstablished(spc) == false)
+                            {
+                                _hasEstablished.Add(spc);
+                            }
+                        
+                        }
+                        
                     }
                     if (establishment_siteoutput != null)
                     {
 
-                        establishment_siteoutput.Add(pnetvars.Date.Year.ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + _hasEstablished[spc]);
+                        establishment_siteoutput.Add(pnetvars.Date.Year.ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + HasEstablished(spc));
 
                         // TODO: win time by reducing calls to write
                         establishment_siteoutput.Write();
@@ -92,14 +99,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             _pest = new Dictionary<ISpeciesPNET, float>();
             _fwater = new Dictionary<ISpeciesPNET, float>();
             _frad = new Dictionary<ISpeciesPNET, float>();
-            _hasEstablished = new Dictionary<ISpeciesPNET, bool>();
+            _hasEstablished = new List<ISpeciesPNET>();
 
             foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
                 _pest.Add(spc, 0);
                 _fwater.Add(spc, 0);
                 _frad.Add(spc, 0);
-                _hasEstablished.Add(spc, false);
             }
         }
         public EstablishmentProbability(string SiteOutputName, string FileName)
