@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Landis.Library.BiomassHarvest-v1</name>
+    </assembly>
+    <members>
+        <member name="T:Landis.Library.BiomassHarvest.SiteBiomass">
+            <summary>
+            Records the biomass harvested for each species at the current site.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SiteBiomass.EnableRecordingForHarvest">
+            <summary>
+            Enable the recording of biomass harvested for the extension's
+            execution during current timestep.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SiteBiomass.DisableRecordingForHarvest">
+            <summary>
+            Disable the recording of biomass harvested at the end of the
+            extension's execution during the current timestep.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SiteBiomass.CohortDied(System.Object,Landis.Library.BiomassCohorts.DeathEventArgs)">
+            <summary>
+            Event handler for when a cohort dies because of cutting (i.e., it's
+            completely harvested).
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SiteBiomass.ResetHarvestTotals">
+            <summary>
+            Resets the harvest totals for all species.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SiteBiomass.RecordHarvest(Landis.Core.ISpecies,System.Int32)">
+            <summary>
+            Records an amount of biomass that has been cut for a species.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.BiomassHarvest.SiteBiomass.Harvested">
+            <summary>
+            The biomass harvested for each species at the site currently being
+            cut by a disturbance extension.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.BiomassHarvest.Model.Core">
+            <summary>
+            The model core instance used across the library's internal
+            components.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.SiteVars">
+            <summary>
+            The library's site variables
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SiteVars.Initialize">
+            <summary>
+            Initializes the site variables.
+            </summary>
+        </member>
+        <member name="P:Landis.Library.BiomassHarvest.SiteVars.Cohorts">
+            <summary>
+            Site variable with biomass cohorts
+            </summary>
+        </member>
+        <member name="P:Landis.Library.BiomassHarvest.SiteVars.CohortsPartiallyDamaged">
+            <summary>
+            Site variable counting cohorts partially damaged (not removed)
+            </summary>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.SpecificAgesCohortSelector">
+            <summary>
+            Selects specific ages and ranges of ages among a species' cohorts
+            for harvesting.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SpecificAgesCohortSelector.#ctor(System.Collections.Generic.IList{System.UInt16},System.Collections.Generic.IList{Landis.Library.SiteHarvest.AgeRange},System.Collections.Generic.IDictionary{System.UInt16,Edu.Wisc.Forest.Flel.Util.Percentage})">
+            <summary>
+            Creates a new instance.
+            </summary>
+            <param name="ages">List of individual ages that are selected.</param>
+            <param name="ranges">List of age ranges that are selected.</param>
+            <param name="percentages">The percentages for each age or range.
+            The percentage for a range is indexed by the starting age of the
+            range.
+            </param>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.SpecificAgesCohortSelector.Selects(Landis.Library.BiomassCohorts.ICohort,Edu.Wisc.Forest.Flel.Util.Percentage@)">
+            <summary>
+            Selects which cohorts are harvested.
+            </summary>
+            <returns>
+            true if the given cohort is to be harvested.  The cohort's biomass
+            should be reduced by the percentage returned in the second
+            parameter.
+            </returns>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.PartialCohortCutter">
+            <summary>
+            A disturbance where at least one species is partially thinned (i.e.,
+            a percentage of one or more cohorts are harvested).
+            </summary>
+            <remarks>
+            It is based on its counterpart, WholeCohortCutter, in the Site Harvest
+            library.  The base class is used to handle selectors for species that
+            harvest whole cohorts (i.e., no partial harvesting).  This class
+            handles the cohort selectors for those species that are partially
+            removed (i.e., a percentage was specified for at least one age or age
+            range).
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialCohortCutter.#ctor(Landis.Library.SiteHarvest.ICohortSelector,Landis.Library.BiomassHarvest.PartialCohortSelectors,Landis.Core.ExtensionType)">
+            <summary>
+            Creates a new instance.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialCohortCutter.Cut(Landis.SpatialModeling.ActiveSite,Landis.Library.SiteHarvest.CohortCounts)">
+            <summary>
+            Cuts the cohorts at a site.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialCohortCutter.Record(System.Int32,Landis.Library.BiomassCohorts.ICohort)">
+            <summary>
+            Records the amount a cohort's biomass was cut (reduced).
+            </summary>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.CohortCutterFactory">
+            <summary>
+            A factory for making instances of cohort cutters (WholeCohortCutter
+            and PartialCohortCutter).
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.CohortCutterFactory.CreateCutter(Landis.Library.SiteHarvest.ICohortSelector,Landis.Core.ExtensionType)">
+            <summary>
+            Creates a cohort cutter instance.
+            </summary>
+            <returns>
+            An instance of WholeCohortCutter if no species is partially thinned
+            by the cohort selector.  If the selector has a percentage for at
+            least one species, then an instance of PartialCohortCutter is
+            returned.
+            </returns>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.PartialCohortSelectors">
+            <summary>
+            A set of specific-ages cohort selectors with percentages.
+            </summary>
+            <remarks>
+            A convenience class to improve code readability.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialCohortSelectors.#ctor">
+            <summary>
+            Creates a new instance with no selectors initially.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialCohortSelectors.#ctor(Landis.Library.BiomassHarvest.PartialCohortSelectors)">
+            <summary>
+            Creates a new instance with a set of selectors.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.Main">
+            <summary>
+            Main entry point for initializing and configuring the library.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.Main.InitializeLib(Landis.Core.ICore)">
+            <summary>
+            Initialize the library for use by client code.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.PartialThinning">
+            <summary>
+            Static class for partial thinning.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialThinning.InitializeClass">
+            <summary>
+            Initialize the class.
+            </summary>
+            <remarks>
+            Client code can use this method to explicitly control when the
+            class' static constructor is invoked.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialThinning.MakeInputValueException(System.String,System.String)">
+            <summary>
+            Creates a new InputValueException for an invalid percentage input
+            value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialThinning.ReadPercentage(Edu.Wisc.Forest.Flel.Util.StringReader,System.Int32@)">
+            <summary>
+            Reads a percentage for partial thinning of a cohort age or age
+            range.
+            </summary>
+            <remarks>
+            The percentage is bracketed by parentheses.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialThinning.ReadWhitespace(Edu.Wisc.Forest.Flel.Util.StringReader)">
+            <summary>
+            Reads whitespace from a string reader.
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialThinning.ReadWord(Edu.Wisc.Forest.Flel.Util.StringReader,System.Char)">
+            <summary>
+            Reads a word from a string reader.
+            </summary>
+            <remarks>
+            The word is terminated by whitespace, the end of input, or a
+            particular delimiter character.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialThinning.ReadAgeOrRange(Edu.Wisc.Forest.Flel.Util.StringReader,System.Int32@)">
+            <summary>
+            Reads a cohort age or a range of ages (format: age-age) followed
+            by an optional percentage for partial thinning.
+            </summary>
+            <remarks>
+            The optional percentage is bracketed by parenthesis.
+            </remarks>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.PartialThinning.CreateCohortSelectorFor(Landis.Core.ISpecies,System.Collections.Generic.IList{System.UInt16},System.Collections.Generic.IList{Landis.Library.SiteHarvest.AgeRange})">
+            <summary>
+            Creates and stores a specific-ages cohort selector for a species
+            if at least one percentage was found among the list of ages and
+            ranges that were read.
+            </summary>
+            <returns>
+            True if a selector was created and stored in the CohortSelectors
+            property.  False is returned if no selector was created because
+            there were no percentages read for any age or range.
+            </returns>
+        </member>
+        <member name="P:Landis.Library.BiomassHarvest.PartialThinning.CohortSelectors">
+            <summary>
+            The partial cohort selectors that have been read for each species.
+            </summary>
+        </member>
+        <member name="T:Landis.Library.BiomassHarvest.Debug">
+            <summary>
+            Helper methods for logging debug information
+            </summary>
+        </member>
+        <member name="M:Landis.Library.BiomassHarvest.Debug.WriteSiteCohorts(log4net.ILog,Landis.SpatialModeling.ActiveSite)">
+            <summary>
+            Write the list of cohorts at a site to a log.
+            </summary>
+        </member>
+    </members>
+</doc>

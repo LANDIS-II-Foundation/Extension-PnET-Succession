@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Landis.Library.BiomassHarvest</id>
+    <version>1.1.0</version>
+    <title>LANDIS-II Biomass Harvest</title>
+    <authors>LANDIS-II developers (see Contributors in NOTICE.txt)</authors>
+    <owners>LANDIS-II developers (see Contributors in NOTICE.txt)</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://code.google.com/p/landis-extensions/source/browse/#svn%2Flibs%2Fbiomass-harvest%2Ftrunk</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Code for cutting biomass cohorts.  Includes functionality for partial harvesting.</description>
+    <summary>Code for cutting biomass cohorts.  Includes functionality for partial harvesting.</summary>
+    <releaseNotes>Includes XML documentation file.</releaseNotes>
+    <language>en-US</language>
+    <tags>LANDIS-II harvest biomass</tags>
+    <dependencies>
+      <dependency id="Landis.Library.SiteHarvest" version="[1.0.0, 2.0)" />
+    </dependencies>
+  </metadata>
+</package>

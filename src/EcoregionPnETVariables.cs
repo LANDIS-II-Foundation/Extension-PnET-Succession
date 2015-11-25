@@ -12,7 +12,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private DateTime _date;
         private IObservedClimate obs_clim;
         private float _snowfraction;
-        public float VPD;
+        private float _vpd;
         private float _precin;
         private float _maxmonthlysnowmelt;
         private float _dayspan;
@@ -26,7 +26,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         #endregion
 
         #region public accessors
-        
+
+        public float VPD
+        {
+            get
+            {
+                return _vpd;
+            }
+        }
        
         public float NewSnow
         {
@@ -290,7 +297,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float nightlength = Calculate_NightLength(hr);
 
             _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
-            VPD = EcoregionPnETVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
+            _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
 
 
             foreach (ISpeciesPNET spc in Species )
