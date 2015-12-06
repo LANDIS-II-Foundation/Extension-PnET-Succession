@@ -225,8 +225,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             else if (Tave < -5) return 1;
             else return (Tave - 2) / -7;
         }
-        public void Grow(List<EcoregionPnETVariables> data)
+        public bool Grow(List<EcoregionPnETVariables> data)
         {
+            bool success = true;
+
             establishmentProbability.ResetPerTimeStep();
             Cohort.SetSiteAccessFunctions(this);
 
@@ -322,7 +324,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 watermax = (byte)Math.Max(hydrology.Water, watermax);
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
-                hydrology.SubtractEvaporation(this);
+                float evaporation = hydrology.CalculateEvaporation(this);
+                success = hydrology.AddWater(-1 * evaporation);
+                if (success == false)
+                {
+                    throw new System.Exception("Error adding water, evaporation = " + evaporation + " water = " + hydrology.Water);
+                }
 
                 if (siteoutput != null)
                 {
@@ -348,7 +355,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             RemoveMarkedCohorts();
 
             HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//6s
-                
+
+            return success;
         }
 
         

@@ -124,7 +124,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return PET * days_per_month;
         }
       
-        public bool SubtractEvaporation(SiteCohorts sitecohorts )
+        public float CalculateEvaporation(SiteCohorts sitecohorts )
         {
             // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
             PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, sitecohorts.Ecoregion.Variables.Tday);
@@ -136,16 +136,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Per month
             sitecohorts.SetAet(DeliveryPotential * PET, sitecohorts.Ecoregion.Variables.Month); 
 
-            
-
             Evaporation = (float)Math.Min(Water, Math.Max(0, DeliveryPotential * PET - (double)sitecohorts.Transpiration));
 
-            
-            water -= (ushort)Evaporation;
-
-            if (Water < 0) return false;
-            return true;
-            
+            return Evaporation;
         }
    
          

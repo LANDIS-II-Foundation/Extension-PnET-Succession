@@ -14,7 +14,7 @@ using Landis.SpatialModeling;
         float Water { get; }
         float GetPressureHead(IEcoregionPnET ecoregion);
         bool AddWater(float water);
-        bool SubtractEvaporation(SiteCohorts sitecohorts);
+        float CalculateEvaporation(SiteCohorts sitecohorts);
       
     }
 }
