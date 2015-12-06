@@ -313,14 +313,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private bool GetLeafOn(IEcoregionPnETVariables monthdata)
         {
-            bool Leaf_on = monthdata[species.Name].LeafOn;
+            bool NewLeaf_on = monthdata[species.Name].LeafOn;
 
-            if (leaf_on == true && Leaf_on == false)
+            if (leaf_on == true && NewLeaf_on == false)
             {
                 leaf_on = false;
                 addlitter(FoliageSenescence(), SpeciesPNET);
             }
-            return Leaf_on;
+            return NewLeaf_on;
         }
        
         public static float CumputeFrad(float Radiation, float HalfSat)
