@@ -34,7 +34,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             water += addwater;
 
-            if(water>0)return true;
+            if(water>= 0)return true;
             else return false;
         }
 

@@ -263,10 +263,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<List<int>> bins = GetBins(new List<double>(SubCanopyCohorts.Keys));
 
             List<List<int>> random_range = GetRandomRange(bins);
-
-            Cohort[] Cohorts = SubCanopyCohorts.Values.ToArray();
-
-           
+             
             float LeakageFractionPerCohort = Ecoregion.LeakageFrac / SubCanopyCohorts.Count();
 
             netpsn = new float[13];
@@ -284,17 +281,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
  
                 // mm
-                float snowmelt = 0;// Math.Min(snowPack, 0.15f * Math.Max(0, this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.DaySpan * snowPack);
+                //float snowmelt = Math.Min(snowPack, 0.15f * Math.Max(0, this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.DaySpan * snowPack);
 
-                float snowfraction = CumputeSnowFraction(this.Ecoregion.Variables.Tave); 
-                
-                float newsnow = snowfraction * this.Ecoregion.Variables.Prec;//mm
+                //float snowfraction = CumputeSnowFraction(this.Ecoregion.Variables.Tave); 
 
-                float precin = this.Ecoregion.Variables.Prec - newsnow;
+                //float newsnow = snowfraction * this.Ecoregion.Variables.Prec;//mm
 
-                snowPack += newsnow - snowmelt;
+                float precin = this.Ecoregion.Variables.Prec * (1F - this.Ecoregion.PrecLossFrac);// -newsnow;
 
-                float PrecInByCanopyLayer = precin / AllCohorts.Count();
+                //snowPack += newsnow - snowmelt;
+
+                float PrecInByCanopyLayer =  precin / AllCohorts.Count();
 
                 if (bins != null)
                 {
@@ -302,7 +299,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         foreach (int r in random_range[b])
                         {
-                            Cohort c = Cohorts[r];
+                            Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, LeakageFractionPerCohort, hydrology, ref subcanopypar);
                             if (success == false)
                             {

@@ -217,7 +217,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             bool success = true;
 
             
-            LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
+            //LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
+            LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax );
 
             Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
 
@@ -295,7 +296,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                if (NetPsn[index] < 0) throw new System.Exception("NetPsn = " + NetPsn[index]);
                if (FolResp[index] < 0) throw new System.Exception("FolResp = " + FolResp[index]);
                
-               Transpiration[index] = GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr;
+               Transpiration[index] = Math.Min(hydrology.Water, 10F* GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
                  
               
                success = hydrology.AddWater(-1 * Transpiration[index]);
