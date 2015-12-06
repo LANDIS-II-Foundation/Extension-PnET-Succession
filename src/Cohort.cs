@@ -283,23 +283,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 
                 NetPsn[index] = PlugIn.fIMAX * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
-                
-                float FTempRespDayRefResp = ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
-               
-                FolResp[index] = FWater[index] * ecoregion.Variables[species.Name].FTempRespDay * fol *  PlugIn.fIMAX;
-                
-               GrossPsn[index] = NetPsn[index] + FolResp[index];
 
-               if (NetPsn[index] < 0) throw new System.Exception("NetPsn = " + NetPsn[index]);
-               if (FolResp[index] < 0) throw new System.Exception("FolResp = " + FolResp[index]);
-               
-               Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
+                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
+
+                FolResp[index] = FWater[index] * FTempRespDayRefResp * fol * PlugIn.fIMAX;
+                
+                GrossPsn[index] = NetPsn[index] + FolResp[index];
+
+                Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
                  
-              
-               success = hydrology.AddWater(-1 * Transpiration[index]);
-               if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water);
+                success = hydrology.AddWater(-1 * Transpiration[index]);
+                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water);
 
-               nsc += NetPsn[index];
+                nsc += NetPsn[index];
              
             }
             else

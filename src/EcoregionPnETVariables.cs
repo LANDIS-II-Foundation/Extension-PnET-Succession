@@ -17,7 +17,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _tday;
         
         float _daylength;
-        float _amax;
+         
         #endregion
 
         #region public accessors
@@ -99,14 +99,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _daylength;
             }
         }
-        public float Amax
-        {
-            get
-            {
-                return _amax;
-            }
-        }
-       
+        
 
         # endregion
 
@@ -303,10 +296,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
 
             // NETPSN 
-            _amax = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
+            speciespnetvars.Amax   = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
 
             //Reference net Psn (lab conditions) in gC/timestep
-            float RefNetPsn = _dayspan * (_amax * DVPD * daylength * Constants.MC) / Constants.billion;
+            float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion;
 
             //-------------------FTempPSN (public for output file)
             speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
