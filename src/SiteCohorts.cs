@@ -223,7 +223,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return y.CompareTo(x);
             }
         }
-
+        private static float CumputeSnowFraction(float Tave)
+        {
+            if (Tave > 2) return 0;
+            else if (Tave < -5) return 1;
+            else return (Tave - 2) / -7;
+        }
         public void Grow(List<EcoregionPnETVariables> data)
         {
             establishmentProbability.ResetPerTimeStep();
@@ -279,7 +284,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                 interception = 0;
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
+ 
+                // mm
+                float snowmelt = 0;// Math.Min(snowPack, 0.15f * Math.Max(0, this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.DaySpan * snowPack);
 
+                float snowfraction = CumputeSnowFraction(this.Ecoregion.Variables.Tave); 
+                
+                float newsnow = snowfraction * this.Ecoregion.Variables.Prec;//mm
+
+                float precin = this.Ecoregion.Variables.Prec - newsnow;
+
+                snowPack += newsnow - snowmelt;
+
+                float PrecInByCanopyLayer = precin / AllCohorts.Count();
 
                 if (bins != null)
                 {
@@ -288,16 +305,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                         foreach (int r in random_range[b])
                         {
                             Cohort c = Cohorts[r];
-                            c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort,ref snowPack, hydrology, ref subcanopypar);
+                            c.CalculatePhotosynthesis(PrecInByCanopyLayer, LeakageFractionPerCohort, hydrology, ref subcanopypar);
                             interception += c.Interception.Sum();
                             c.Layer = (byte)Math.Max(b, c.Layer);
                         }
                     }
                 }
 
-
-               
-               
                 AllCohorts.ForEach(x =>
                     {
                         netpsn[this.Ecoregion.Variables.Month - 1] += x.NetPsn.Sum();

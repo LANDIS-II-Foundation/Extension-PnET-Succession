@@ -215,27 +215,30 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public void CalculatePhotosynthesis(float nr_of_subcanopy_layers, float LeakagePerCohort, ref float SnowPack, IHydrology hydrology, ref float SubCanopyPar)
+        public void CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
         {
+            
+            bool success = true;
+
             LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
 
-            Interception[index] = ecoregion.Variables.Precin * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
+            Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
 
-            float SnowMelt = Math.Min(SnowPack, ecoregion.Variables.Maxmonthlysnowmelt) / nr_of_subcanopy_layers;
-            SnowPack += (ecoregion.Variables.NewSnow - SnowMelt) / nr_of_subcanopy_layers;
+            float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
 
-            float waterIn = (ecoregion.Variables.Precin * (1 - ecoregion.PrecLossFrac)) / nr_of_subcanopy_layers - Interception[index] + (SnowMelt / nr_of_subcanopy_layers);//mm  \
-
-            hydrology.AddWater(waterIn);
+            success = hydrology.AddWater(waterIn);
+            if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
            
 
             // Instantaneous runoff (excess of porosity)
             float runoff = Math.Max(hydrology.Water - ecoregion.Porosity, 0);
-            hydrology.AddWater(-1* runoff);
+            success = hydrology.AddWater(-1 * runoff);
+            if (success == false) throw new System.Exception("Error adding water, runoff = " + runoff + " water = " + hydrology.Water);
 
             // Fast Leakage 
             Hydrology.Leakage = Math.Max(LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
-            hydrology.AddWater(-1 * Hydrology.Leakage);
+            success = hydrology.AddWater(-1 * Hydrology.Leakage);
+            if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
 
             MaintenanceRespiration[index] = PlugIn.fIMAX * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
             nsc -= MaintenanceRespiration[index];

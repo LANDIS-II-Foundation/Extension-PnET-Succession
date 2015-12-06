@@ -13,8 +13,8 @@ using Landis.SpatialModeling;
     {
         float Water { get; }
         float GetPressureHead(IEcoregionPnET ecoregion);
-        void AddWater(float water);
-        void SubtractEvaporation(SiteCohorts sitecohorts);
-        void SubtractTranspiration(IEcoregionPnET Ecoregion, ushort transpiration);
+        bool AddWater(float water);
+        bool SubtractEvaporation(SiteCohorts sitecohorts);
+        bool SubtractTranspiration(IEcoregionPnET Ecoregion, ushort transpiration);
     }
 }

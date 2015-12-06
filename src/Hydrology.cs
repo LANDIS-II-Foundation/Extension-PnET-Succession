@@ -29,9 +29,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float Evaporation;
         public static float Leakage;
         public static float RunOff;
-        public void AddWater(float addwater)
+        
+        public bool AddWater(float addwater)
         {
             water += addwater;
+
+            if(water>0)return true;
+            else return false;
         }
 
        
@@ -120,7 +124,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return PET * days_per_month;
         }
       
-        public void SubtractEvaporation(SiteCohorts sitecohorts )
+        public bool SubtractEvaporation(SiteCohorts sitecohorts )
         {
             // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
             PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, sitecohorts.Ecoregion.Variables.Tday);
@@ -132,39 +136,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Per month
             sitecohorts.SetAet(DeliveryPotential * PET, sitecohorts.Ecoregion.Variables.Month); 
 
-            if (Water < 0)
-            {
-                throw new System.Exception("Error: Water = " + Water + " in SubtractEvaporation #1");
-            }
+            
 
             Evaporation = (float)Math.Min(Water, Math.Max(0, DeliveryPotential * PET - (double)sitecohorts.Transpiration));
 
-            if (Evaporation > Water)
-            {
-                throw new System.Exception("Error: Water = " + Water + " Evaporation = " + Evaporation +"#fsdnkkj");
-            }
-           
+            
             water -= (ushort)Evaporation;
 
-            if (Water < 0)
-            {
-                throw new System.Exception("Error: Water = " + Water + " Evaporation = " + Evaporation + "#ertkdfp");
-            }
+            if (Water < 0) return false;
+            return true;
+            
         }
    
-        public void SubtractTranspiration(IEcoregionPnET ecoregion, ushort Cohorttranspiration)
+        public bool SubtractTranspiration(IEcoregionPnET ecoregion, ushort Cohorttranspiration)
         {
-            if (water < 0)
-            {
-                throw new System.Exception("Error: Water = " + water + " Cohorttranspiration = " + Cohorttranspiration + " #1");
-            }
+            
             // watermin is not being used
             water -= Math.Min(Water, Cohorttranspiration);
 
-            if (Water < 0)
-            {
-                throw new System.Exception("Error: Water = " + Water + " Cohorttranspiration = " + Cohorttranspiration + " #2");
-            }
+            if (Water < 0) return false;
+            return true;
         }
 
     }

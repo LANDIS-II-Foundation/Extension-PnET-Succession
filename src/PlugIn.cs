@@ -325,9 +325,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
             ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
-             
-          
-
+            
             ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
               
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)

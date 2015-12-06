@@ -11,16 +11,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         #region private variables
         private DateTime _date;
         private IObservedClimate obs_clim;
-        private float _snowfraction;
         private float _vpd;
-        private float _precin;
-        private float _maxmonthlysnowmelt;
         private float _dayspan;
         private float _tave;
         private float _tday;
-        //private float _gsSlope;
-        //private float _gsInt;
-        private float _newsnow;
+        
         float _daylength;
         float _amax;
         #endregion
@@ -34,37 +29,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _vpd;
             }
         }
-       
-        public float NewSnow
-        {
-            get
-            {
-                return _newsnow;
-            }
-        }
-       
-        public float SnowFraction
-        {
-            get
-            {
-                return _snowfraction;
-            }
-        }
         
-        public float Precin
-        {
-            get
-            {
-                return _precin;
-            }
-        }
-        public float Maxmonthlysnowmelt
-        {
-            get
-            {
-                return _maxmonthlysnowmelt;
-            }
-        }
+       
         public byte Month 
         { 
             get 
@@ -162,12 +128,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             else throw new System.Exception("Cannot calculate DaySpan, month = " + Month);
         }
 
-        private static float CumputeSnowFraction(float Tave)
-        {
-            if (Tave > 2) return 0;
-            else if (Tave < -5) return 1;
-            else return (Tave - 2) / -7;
-        }
+        
 
         private static float Calculate_VP(float a, float b, float c, float T)
         {
@@ -283,14 +244,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             _dayspan = EcoregionPnETVariables.Calculate_DaySpan(Date.Month);
 
-            _maxmonthlysnowmelt = 0.15f * Math.Max(0, Tave) * DaySpan;
-
-            _snowfraction = CumputeSnowFraction(Tave);
-
-            _precin = (1 - _snowfraction) * climate_dataset.Prec;
-
-            
-            _newsnow = _snowfraction * climate_dataset.Prec;//mm
+          
+          
              
             float hr = Calculate_hr(Date.DayOfYear, PlugIn.Latitude);
             _daylength = Calculate_DayLength(hr);
