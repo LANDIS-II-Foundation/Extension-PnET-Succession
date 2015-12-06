@@ -221,9 +221,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         private static float CumputeSnowFraction(float Tave)
         {
-            if (Tave > 2) return 0;
-            else if (Tave < -5) return 1;
-            else return (Tave - 2) / -7;
+            return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
         public bool Grow(List<EcoregionPnETVariables> data)
         {
@@ -281,17 +279,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
  
                 // mm
-                //float snowmelt = Math.Min(snowPack, 0.15f * Math.Max(0, this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.DaySpan * snowPack);
+                float snowmelt = Math.Min(snowPack, 0.15f * Math.Max(0, this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.DaySpan * snowPack);
 
-                //float snowfraction = CumputeSnowFraction(this.Ecoregion.Variables.Tave); 
+                float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec;//mm
 
-                //float newsnow = snowfraction * this.Ecoregion.Variables.Prec;//mm
+                snowPack += newsnow - snowmelt;
 
-                float precin = this.Ecoregion.Variables.Prec * (1F - this.Ecoregion.PrecLossFrac);// -newsnow;
+                float precin = this.Ecoregion.Variables.Prec * (1F - this.Ecoregion.PrecLossFrac) -newsnow + snowmelt;
 
-                //snowPack += newsnow - snowmelt;
-
-                float PrecInByCanopyLayer =  precin / AllCohorts.Count();
+                float PrecInByCanopyLayer = precin / SubCanopyCohorts.Count();
 
                 if (bins != null)
                 {
