@@ -20,7 +20,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public delegate void AddWoodyDebris(float Litter, float KWdLit);
         public delegate void AddLitter(float AddLitter, ISpeciesPNET Species);
 
-        public static SubtractTranspiration subtract_transpiration;
+        
         public static AddWoodyDebris addwoodydebris;
         public static AddLitter addlitter;
         
@@ -129,10 +129,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return biomassmax;
             }
         }
-     
  
-        
-
         public void Accumulate(Cohort c)
         {
             biomass += c.biomass;
@@ -198,7 +195,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {
-             Cohort.subtract_transpiration = sitecohorts.SubtractTranspiration;
              Cohort.addlitter = sitecohorts.AddLitter;
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
              Cohort.ecoregion = sitecohorts.Ecoregion;
@@ -220,6 +216,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             bool success = true;
 
+            
             LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
 
             Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
@@ -243,10 +240,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaintenanceRespiration[index] = PlugIn.fIMAX * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
             nsc -= MaintenanceRespiration[index];
 
-
+ 
             if (index == PlugIn.IMAX - 1)
             {
-                
+              
                 if (ecoregion.Variables.Month == (int)Constants.Months.January)
                 {
 
@@ -260,7 +257,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     age++;
                 }
             }
-             
+          
             leaf_on = GetLeafOn(ecoregion.Variables);
              
             if (leaf_on)
@@ -275,35 +272,37 @@ namespace Landis.Extension.Succession.BiomassPnET
                     nsc -= Folalloc;
                 }
             }
-            
+              
             FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
 
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
 
             float PressureHead = hydrology.GetPressureHead(ecoregion);
-            //Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
-
+            
             FWater[index] = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
-
-            // g/mo
+             // g/mo
             if (leaf_on)
             {
+                
                 NetPsn[index] = PlugIn.fIMAX * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
-
+                
                 float FTempRespDayRefResp = ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
-
+               
                 FolResp[index] = FWater[index] * ecoregion.Variables[species.Name].FTempRespDay * fol *  PlugIn.fIMAX;
+                
+               GrossPsn[index] = NetPsn[index] + FolResp[index];
 
-                GrossPsn[index] = NetPsn[index] + FolResp[index];
-
-                if (NetPsn[index] < 0) throw new System.Exception("NetPsn = " + NetPsn[index]);
-                if (FolResp[index] < 0) throw new System.Exception("FolResp = " + FolResp[index]);
-
-                Transpiration[index] = GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr;
+               if (NetPsn[index] < 0) throw new System.Exception("NetPsn = " + NetPsn[index]);
+               if (FolResp[index] < 0) throw new System.Exception("FolResp = " + FolResp[index]);
+               
+               Transpiration[index] = GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr;
                  
-                subtract_transpiration(Transpiration[index], SpeciesPNET);
+              
+               success = hydrology.AddWater(-1 * Transpiration[index]);
+               if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water);
 
-                nsc += NetPsn[index];
+               nsc += NetPsn[index];
+             
             }
             else
             {
@@ -313,7 +312,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Transpiration[index] = 0;
 
             }
-
+           
             if (index < PlugIn.IMAX - 1) index++;
             return;
         }

@@ -185,11 +185,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         
-        public void SubtractTranspiration(float transpiration, ISpeciesPNET species)
-        {
-            
-            hydrology.SubtractTranspiration(this.Ecoregion, (ushort)transpiration);
-        }
+        
 
         List<List<int>> GetRandomRange(List<List<int>> bins)
         {
@@ -326,7 +322,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 watermax = (byte)Math.Max(hydrology.Water, watermax);
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
-              // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
                 hydrology.SubtractEvaporation(this);
 
                 if (siteoutput != null)

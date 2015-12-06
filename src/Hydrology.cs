@@ -148,15 +148,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             
         }
    
-        public bool SubtractTranspiration(IEcoregionPnET ecoregion, ushort Cohorttranspiration)
-        {
-            
-            // watermin is not being used
-            water -= Math.Min(Water, Cohorttranspiration);
-
-            if (Water < 0) return false;
-            return true;
-        }
+         
 
     }
  }
