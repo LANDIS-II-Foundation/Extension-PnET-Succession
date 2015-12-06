@@ -214,8 +214,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return Math.Max(0, 1 - (float)Math.Pow((age / (float)species.Longevity), species.PsnAgeRed));
             }
         }
-         
-        public void CalculatePhotosynthesis(float nr_of_subcanopy_layers, float LeakagePerCohort, ref float SnowPack, ref float Water,  ref float SubCanopyPar)
+
+        public void CalculatePhotosynthesis(float nr_of_subcanopy_layers, float LeakagePerCohort, ref float SnowPack, IHydrology hydrology, ref float SubCanopyPar)
         {
             LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
 
@@ -224,17 +224,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             float SnowMelt = Math.Min(SnowPack, ecoregion.Variables.Maxmonthlysnowmelt) / nr_of_subcanopy_layers;
             SnowPack += (ecoregion.Variables.NewSnow - SnowMelt) / nr_of_subcanopy_layers;
 
-            Hydrology.WaterIn = (ecoregion.Variables.Precin * (1 - ecoregion.PrecLossFrac)) / nr_of_subcanopy_layers - Interception[index] + (SnowMelt / nr_of_subcanopy_layers);//mm  \
+            float waterIn = (ecoregion.Variables.Precin * (1 - ecoregion.PrecLossFrac)) / nr_of_subcanopy_layers - Interception[index] + (SnowMelt / nr_of_subcanopy_layers);//mm  \
 
-            Water +=  Hydrology.WaterIn ;
+            hydrology.AddWater(waterIn);
+           
 
             // Instantaneous runoff (excess of porosity)
-            Hydrology.RunOff = Math.Max(Water - ecoregion.Porosity, 0);
-            Water -= (ushort)Hydrology.RunOff;
+            float runoff = Math.Max(hydrology.Water - ecoregion.Porosity, 0);
+            hydrology.AddWater(-1* runoff);
 
             // Fast Leakage 
-            Hydrology.Leakage = Math.Max(LeakagePerCohort * (Water - ecoregion.FieldCap), 0);
-            Water -= (ushort)Hydrology.Leakage;
+            Hydrology.Leakage = Math.Max(LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
+            hydrology.AddWater(-1 * Hydrology.Leakage);
 
             MaintenanceRespiration[index] = PlugIn.fIMAX * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
             nsc -= MaintenanceRespiration[index];
@@ -276,7 +277,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
 
-            float PressureHead = (ushort)Hydrology.Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
+            float PressureHead = hydrology.GetPressureHead(ecoregion);
+            //Pressureheadtable[(IEcoregion)ecoregion, (ushort)Water];
 
             FWater[index] = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
 
@@ -285,16 +287,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 NetPsn[index] = PlugIn.fIMAX * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
 
-                //ConductanceCO2[index] = (ecoregion.Variables.GsInt + (ecoregion.Variables.GsSlope * NetPsn[index] * Constants.MillionOverTwelve));
-               
                 float FTempRespDayRefResp = ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
 
                 FolResp[index] = FWater[index] * ecoregion.Variables[species.Name].FTempRespDay * fol *  PlugIn.fIMAX;
 
                 GrossPsn[index] = NetPsn[index] + FolResp[index];
 
-                Transpiration[index] = GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr;
+                if (NetPsn[index] < 0) throw new System.Exception("NetPsn = " + NetPsn[index]);
+                if (FolResp[index] < 0) throw new System.Exception("FolResp = " + FolResp[index]);
 
+                Transpiration[index] = GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr;
+                 
                 subtract_transpiration(Transpiration[index], SpeciesPNET);
 
                 nsc += NetPsn[index];
@@ -302,7 +305,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             else
             {
                 NetPsn[index] = 0;
-                //ConductanceCO2[index] = 0;
                 FolResp[index] = 0;
                 GrossPsn[index] = 0;
                 Transpiration[index] = 0;

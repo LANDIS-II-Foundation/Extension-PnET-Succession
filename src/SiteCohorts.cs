@@ -13,49 +13,48 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class SiteCohorts : ISiteCohorts, Landis.Library.BiomassCohorts.ISiteCohorts, Landis.Library.AgeOnlyCohorts.ISiteCohorts
     {
-        /// <summary>
-        /// Occurs when a site is disturbed by an age-only disturbance.
-        /// </summary>
-        //public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
+        private byte canopylaimax;
+        private ushort watermax;
+        private float snowPack;
+        private float CanopyLAI;
+        private float subcanopypar;
+        private float subcanopyparmax;
 
-        //List<Cohort> cohorts = new List<Cohort>();
-        //  Initial site biomass for each unique pair of initial
-        //  community and ecoregion; Key = 32-bit unsigned integer where
-        //  high 16-bits is the map code of the initial community and the
-        //  low 16-bits is the ecoregion's map code
+        private float[] netpsn = null;
+        private float[] grosspsn = null;
+        private float[] maintresp = null;
+        private float transpiration;
+        private double HeterotrophicRespiration;
+        private ActiveSite Site;
+        private Dictionary<ISpecies, List<Cohort>> cohorts = null;
+        IEstablishmentProbability establishmentProbability = null;
+        private IHydrology hydrology = null;
+
+        public IEcoregionPnET Ecoregion;
+        public LocalOutput siteoutput;
+
+        static float[] AET = new float[12];
         private static IDictionary<uint, SiteCohorts> initialSites;
         private static byte MaxCanopyLayers;
         private static ushort MaxDevLyrAv;
-
-        public Dictionary<ISpecies, List<Cohort>> cohorts = null;
-        IEstablishmentProbability establishmentProbability = null;
-
-        public IEcoregionPnET Ecoregion;
-        private ActiveSite Site;
-       
-        public LocalOutput siteoutput;
-        
-        private float water;
-        private float snowPack;
-
-        private float CanopyLAI;
-        private byte canopylaimax;
-        private float[] netpsn =null;
-        private float[] grosspsn = null;
-        private float[] maintresp = null;
-         
-        static float[] AET = new float[12]; 
-        private float Transpiration;
-        private double HeterotrophicRespiration;
-         
         private static float interception;
         private static byte Timestep;
         private static int nlayers;
 
-        float subcanopypar;
-        ushort watermax;
-        private float subcanopyparmax;
-
+        public float Transpiration
+        {
+            get
+            {
+                return transpiration;
+            }
+        }
+        public float SubcanopyPAR
+        {
+            get
+            {
+                return subcanopypar;
+            }
+        }
         public IEstablishmentProbability EstablishmentProbability 
         {
             get
@@ -95,6 +94,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
             
+
             Cohort.SetSiteAccessFunctions(this);
 
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
@@ -109,8 +109,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 subcanopyparmax = initialSites[key].SubCanopyParMAX;
                 watermax = initialSites[key].watermax;
 
-                water = initialSites[key].water;
-              
+                hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
+
                 PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
                 PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
                 this.canopylaimax = initialSites[key].CanopyLAImax;
@@ -130,9 +130,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     initialSites.Add(key, this);
                 }
-                water = (ushort)Ecoregion.FieldCap;
-
-               
+                hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
+                
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
                 
@@ -188,9 +187,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public void SubtractTranspiration(float transpiration, ISpeciesPNET species)
         {
-            float WaterMin = Hydrology.CalculateWaterContent(this.Ecoregion, species.H4);  // What is this? It doesn't get used
-
-            Hydrology.SubtractTranspiration(this.Ecoregion, WaterMin, (ushort)transpiration, ref water);
+            
+            hydrology.SubtractTranspiration(this.Ecoregion, (ushort)transpiration);
         }
 
         List<List<int>> GetRandomRange(List<List<int>> bins)
@@ -213,7 +211,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return random_range;
         }
 
-        void SetAet(float value, int Month)
+        public void SetAet(float value, int Month)
         {
             AET[Month-1] = value;
         }
@@ -275,7 +273,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             for (int m = 0; m < data.Count(); m++ )
             {
                 this.Ecoregion.Variables = data[m];
-                Transpiration = 0;
+                transpiration = 0;
                 subcanopypar = this.Ecoregion.Variables.PAR0;
                 CanopyLAI = 0;
                 interception = 0;
@@ -290,7 +288,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         foreach (int r in random_range[b])
                         {
                             Cohort c = Cohorts[r];
-                            c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort,ref snowPack, ref water, ref subcanopypar);
+                            c.CalculatePhotosynthesis(SubCanopyCohorts.Count(), LeakageFractionPerCohort,ref snowPack, hydrology, ref subcanopypar);
                             interception += c.Interception.Sum();
                             c.Layer = (byte)Math.Max(b, c.Layer);
                         }
@@ -311,10 +309,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
               
                 canopylaimax = (byte)Math.Max(canopylaimax, CanopyLAI);
-                watermax = (byte)Math.Max(water, watermax);
+                watermax = (byte)Math.Max(hydrology.Water, watermax);
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
-                Hydrology.SubtractEvaporation(this.Ecoregion.Variables.Month, Ecoregion, (ushort)subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water, SetAet);
+              // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
+                hydrology.SubtractEvaporation(this);
 
                 if (siteoutput != null)
                 {
@@ -325,7 +324,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    establishmentProbability.Calculate_Establishment(data[m], Ecoregion, subcanopypar, water);
+                    establishmentProbability.Calculate_Establishment(data[m], Ecoregion, subcanopypar, hydrology);
                 }
 
                 AllCohorts.ForEach(x => x.NullSubLayers());
@@ -343,23 +342,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
         }
 
-        private int[] GetIntArray(float[] float_array)
-        {
-            if (float_array == null) return new int[13];
-
-            int[] int_array = new int[float_array.Length];
-            for (int f = 0; f < float_array.Length; f++)
-            {
-                int_array[f] = (int)float_array[f];
-            }
-            return int_array;
-        }
         
         public int[] MaintResp
         {
             get
             {
-                return GetIntArray(maintresp);
+                return maintresp.Select(r => (int)r).ToArray();
             }
         }
 
@@ -367,7 +355,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return GetIntArray(grosspsn);
+                return grosspsn.Select(psn => (int)psn).ToArray(); 
             }
         }
 
@@ -375,7 +363,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return GetIntArray(netpsn);
+                return netpsn.Select(psn => (int)psn).ToArray();  
             }
         }
 
@@ -977,8 +965,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Hydrology.Evaporation + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +
                         interception + "," +
-                        water + "," +
-                        Hydrology.Pressureheadtable[Ecoregion, (int)water] + "," +
+                        hydrology.Water + "," +
+                         hydrology.GetPressureHead(Ecoregion) + "," +
                         snowPack + "," +
                         this.CanopyLAI + "," +
                         monthdata.VPD + "," +

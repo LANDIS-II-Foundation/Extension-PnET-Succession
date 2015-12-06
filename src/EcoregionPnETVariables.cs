@@ -366,8 +366,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             float fTempRespNight = CalcQ10Factor(spc.Q10, Tmin , spc.PsnTOpt);
            
-           
-           
             // Unitless respiration adjustment: public for output file only
             speciespnetvars.FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (RespTempDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
 
@@ -375,17 +373,31 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
              
+            // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
+            // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species
+            // in relation to plant size and relative growth rate. Global Change Biology. 49:679-691,
+            // and Tjoelker, M.G., Oleksyn, J., Reich, P.B. 2001. Modeling respiration of vegetation:
+            // evidence for a general temperature-dependent Q10. Global Change Biology. 7:223-230.
+            // This set of algorithms resets the veg parameter "BaseFolRespFrac" from
+            // the static vegetation parameter, then recalculates BaseFolResp based on the adjusted
+            // BaseFolRespFrac
+
+            float BaseFolResp;
+            float Q10base;
             if (Wythers == true)
             {
-                speciespnetvars.FTempRespDay = (0.14F - 0.002F * Tave) * (3.22F - 0.046F * (float)Math.Pow((0.5F * (Tave + spc.PsnTOpt)), ((Tave - spc.PsnTOpt) / 10)));
+                
+                BaseFolResp = (0.138071F - 0.0024519F * Tave);          //Computed Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
+                float Tmidpoint=(Tave+ spc.PsnTOpt)/2F;   //Midpoint between Tave and Optimal Temp; this is also species-level
+                Q10base = (3.22F - 0.046F * Tmidpoint);
             }
             else
             {
-                speciespnetvars.FTempRespDay = spc.BFolResp * RespTempDay;
+                BaseFolResp = spc.BFolResp;    //Computed Base foliar respiration; this is species-level
+                Q10base = spc.Q10;
             }
-
-            
-            
+            speciespnetvars.FTempRespDay = BaseFolResp * CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
+              
             return speciespnetvars;
         }
 

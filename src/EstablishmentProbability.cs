@@ -52,16 +52,18 @@ namespace Landis.Extension.Succession.BiomassPnET
              
         }
      
-        public void Calculate_Establishment(EcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, float water)
+        public void Calculate_Establishment(EcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
         {
             foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
+                if (spc.PreventEstablishment) continue;
+
                 if (pnetvars[spc.Name].LeafOn)
                 {
                     float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
 
-                    float PressureHead = Hydrology.Pressureheadtable[ecoregion, (int)water];
-
+                    float PressureHead = hydrology.GetPressureHead(ecoregion);
+                        
                     float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);

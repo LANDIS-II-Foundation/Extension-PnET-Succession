@@ -40,8 +40,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                if (water >= table[ecoregion].Length) return 0;
-                return table[ecoregion][water];
+                try
+                {
+                    if (water >= table[ecoregion].Length) return 0;
+                    return table[ecoregion][water];
+                }
+                catch (System.Exception e)
+                {
+                    throw new System.Exception("Cannot get pressure head for water content " + water);
+                }
             }
         }
         

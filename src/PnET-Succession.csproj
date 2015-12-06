@@ -75,6 +75,7 @@
     <Compile Include="EcoregionPnETVariables.cs" />
     <Compile Include="IEcoregionPnET.cs" />
     <Compile Include="IEstablishmentProbability.cs" />
+    <Compile Include="IHydrology.cs" />
     <Compile Include="IObservedClimate.cs" />
     <Compile Include="ObservedClimate.cs" />
     <Compile Include="CohortVars.cs" />

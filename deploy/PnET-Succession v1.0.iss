@@ -24,9 +24,9 @@
 
 ; The extension's assembly
 Source: {#LandisExtDir}\Landis.Extension.Succession.BiomassPnET.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Extension.Succession.Biomass.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: {#LandisExtDir}\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: {#LandisExtDir}\Landis.Library.BiomassCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.BiomassCohortsPnET.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+ 
 
 ; The user guide
 #define UserGuideSrc "LANDIS-II " + ExtensionName + " vX.Y User Guide.pdf"

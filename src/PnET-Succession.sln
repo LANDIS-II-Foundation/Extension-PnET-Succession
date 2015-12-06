@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "biomass-harvest", "..\..\Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandisUserInterface", "..\..\LUI\src\LandisUserInterface.csproj", "{0E41DB0A-EB3C-44DB-B2E5-23C5DE21115B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PnET-Succession v1.0", "..\..\PnET-Succession - 1.0\src\PnET-Succession v1.0.csproj", "{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,16 @@ Global
 		{0E41DB0A-EB3C-44DB-B2E5-23C5DE21115B}.Release|Mixed Platforms.Build.0 = Release|x86
 		{0E41DB0A-EB3C-44DB-B2E5-23C5DE21115B}.Release|x86.ActiveCfg = Release|x86
 		{0E41DB0A-EB3C-44DB-B2E5-23C5DE21115B}.Release|x86.Build.0 = Release|x86
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{99E65B98-BEAC-4F4C-A37A-5314CAA1BB02}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
