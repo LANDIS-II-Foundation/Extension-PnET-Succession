@@ -23,7 +23,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float Porosity { get; set; }
         
        
-        EcoregionPnETVariables Variables { get; set; }
+        IEcoregionPnETVariables Variables { get; set; }
         
     }
 }

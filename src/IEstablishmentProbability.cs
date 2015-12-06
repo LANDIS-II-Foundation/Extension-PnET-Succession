@@ -9,7 +9,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         Landis.Library.Parameters.Species.AuxParm<byte> Probability { get; }
 
-        void Calculate_Establishment(EcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
+        void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
 
         void ResetPerTimeStep();
          

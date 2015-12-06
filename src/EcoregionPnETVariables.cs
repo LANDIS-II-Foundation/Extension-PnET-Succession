@@ -6,7 +6,7 @@ using Landis.Core;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
-    public class EcoregionPnETVariables
+    public class EcoregionPnETVariables : IEcoregionPnETVariables
     {
         #region private variables
         private DateTime _date;

@@ -22,12 +22,12 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _fieldcap;
         private float _wiltpnt;
         private float _porosity;
-        EcoregionPnETVariables _variables;
+        IEcoregionPnETVariables _variables;
         #endregion
 
         #region private static variables
         private static bool wythers;
-        private static Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>>();
+        private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
@@ -53,7 +53,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         #region accessors for private variables
 
-        public EcoregionPnETVariables Variables
+        public IEcoregionPnETVariables Variables
         { 
             get
             {
@@ -181,10 +181,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public static List<EcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        public static List<IEcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
-            List<EcoregionPnETVariables> data = new List<EcoregionPnETVariables>();
+            List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
 
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
@@ -198,12 +198,12 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     List<ISpeciesPNET> species = SpeciesPnET.AllSpecies.Values.ToList();
 
-                    EcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, species);
+                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, species);
 
                     all_values[ecoregion].Add(date, ecoregion_variables);
 
                 }
-                data.Add( all_values[ecoregion][date]);
+                data.Add(all_values[ecoregion][date]);
  
                 date = date.AddMonths(1);
             }
@@ -227,10 +227,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AllEcoregions.Add(ecoregion, new EcoregionPnET(ecoregion));
             }
 
-            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, EcoregionPnETVariables>>();
+            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
             foreach (IEcoregionPnET ecoregion in EcoregionPnET.AllEcoregions.Values)
             {
-                all_values[ecoregion] = new Dictionary<DateTime, EcoregionPnETVariables>();
+                all_values[ecoregion] = new Dictionary<DateTime, IEcoregionPnETVariables>();
             }
              
             

@@ -390,7 +390,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
-            List<EcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
+            List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
 
             sitecohorts[site].Grow(climate_vars);
 

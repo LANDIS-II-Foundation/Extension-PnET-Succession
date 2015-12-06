@@ -52,7 +52,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              
         }
      
-        public void Calculate_Establishment(EcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
+        public void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
         {
             foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
             {
@@ -87,7 +87,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (establishment_siteoutput != null)
                     {
 
-                        establishment_siteoutput.Add(pnetvars.Date.Year.ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + HasEstablished(spc));
+                        establishment_siteoutput.Add(((int)pnetvars.Year).ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + HasEstablished(spc));
 
                         // TODO: win time by reducing calls to write
                         establishment_siteoutput.Write();

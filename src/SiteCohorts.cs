@@ -174,7 +174,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     // Simulation time runs untill the next cohort is added
                     DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
 
-                    List<EcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, date, EndDate);
+                    List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, date, EndDate);
 
                     Grow(climate_vars);
 
@@ -223,7 +223,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
-        public bool Grow(List<EcoregionPnETVariables> data)
+        public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
 
@@ -963,14 +963,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             return s;
         }
 
-        private void AddSiteOutput(EcoregionPnETVariables monthdata)
+        private void AddSiteOutput(IEcoregionPnETVariables monthdata)
         {
 
             string s = monthdata.Year + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
                         layerstdev.Max() + "," +
                         nlayers + "," +
-                        monthdata.PAR0 + "," +
+                        monthdata.PAR0 + "," + 
                         monthdata.Tday + "," +
                         monthdata.Prec + "," +
                         Hydrology.RunOff + "," +

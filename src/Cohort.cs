@@ -315,7 +315,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return success;
         }
 
-        private bool GetLeafOn(EcoregionPnETVariables monthdata)
+        private bool GetLeafOn(IEcoregionPnETVariables monthdata)
         {
             bool Leaf_on = monthdata[species.Name].LeafOn;
 
@@ -358,7 +358,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
         }
-        public void UpdateCohortData(EcoregionPnETVariables monthdata )
+        public void UpdateCohortData(IEcoregionPnETVariables monthdata )
         {
             string s = Math.Round(monthdata.Year, 2) + "," + 
                         Age + "," +
