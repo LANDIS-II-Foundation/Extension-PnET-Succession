@@ -303,7 +303,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                         foreach (int r in random_range[b])
                         {
                             Cohort c = Cohorts[r];
-                            c.CalculatePhotosynthesis(PrecInByCanopyLayer, LeakageFractionPerCohort, hydrology, ref subcanopypar);
+                            success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, LeakageFractionPerCohort, hydrology, ref subcanopypar);
+                            if (success == false)
+                            {
+                                throw new System.Exception("Error CalculatePhotosynthesis");
+                            }
                             interception += c.Interception.Sum();
                             c.Layer = (byte)Math.Max(b, c.Layer);
                         }

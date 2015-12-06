@@ -211,7 +211,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public void CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
         {
             
             bool success = true;
@@ -314,7 +314,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
            
             if (index < PlugIn.IMAX - 1) index++;
-            return;
+            return success;
         }
 
         private bool GetLeafOn(EcoregionPnETVariables monthdata)
