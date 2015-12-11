@@ -13,8 +13,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         void ResetPerTimeStep();
          
-        
-
         bool HasEstablished(ISpeciesPNET species);
        
         

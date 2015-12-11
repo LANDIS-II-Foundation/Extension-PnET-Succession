@@ -29,7 +29,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(PlugIn.ModelCore.Species);
                 foreach (ISpecies spc in PlugIn.ModelCore.Species)
                 {
-                    ISpeciesPNET speciespnet = SpeciesPnET.AllSpecies[spc];
+                    ISpeciesPNET speciespnet = PlugIn.SpeciesPnET[spc];
                     probability[spc] = (byte)(100F * _pest[speciespnet]);
                 }
                 return probability;
@@ -54,7 +54,7 @@ namespace Landis.Extension.Succession.BiomassPnET
      
         public void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
         {
-            foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
+            foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
                 if (spc.PreventEstablishment) continue;
 
@@ -103,7 +103,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _frad = new Dictionary<ISpeciesPNET, float>();
             _hasEstablished = new List<ISpeciesPNET>();
 
-            foreach (ISpeciesPNET spc in SpeciesPnET.AllSpecies.Values)
+            foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
                 _pest.Add(spc, 0);
                 _fwater.Add(spc, 0);

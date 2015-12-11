@@ -17,6 +17,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
+        public static SpeciesPnET SpeciesPnET;
         public static float Latitude;               
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
@@ -277,8 +278,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             
             ObservedClimate.Initialize();
-            
-            SpeciesPnET.Initialize();
+
+            SpeciesPnET = new SpeciesPnET();
+             
             EcoregionPnET.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
@@ -351,7 +353,7 @@ namespace Landis.Extension.Succession.BiomassPnET
          
         public void AddNewCohort(ISpecies species, ActiveSite site)
         {
-            ISpeciesPNET spc = SpeciesPnET.AllSpecies[species];
+            ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
             Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
             
             sitecohorts[site].AddNewCohort(cohort);
@@ -434,7 +436,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public bool Establish(ISpecies species, ActiveSite site)
         {
-            ISpeciesPNET spc = SpeciesPnET.AllSpecies[species];
+            ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
 
             bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished(spc);
             return Establish;

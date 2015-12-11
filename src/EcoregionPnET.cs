@@ -196,7 +196,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     IObservedClimate observedClimate =  ObservedClimate.GetData(ecoregion, date);
 
-                    List<ISpeciesPNET> species = SpeciesPnET.AllSpecies.Values.ToList();
+                    List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
 
                     IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, species);
 

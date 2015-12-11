@@ -164,7 +164,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     //  Add those cohorts that were born at the current year
                     while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == sortedAgeCohorts[0].Age)
                     {
-                        Cohort cohort = new Cohort(SpeciesPnET.AllSpecies[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
+                        Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
 
                         AddNewCohort(cohort);
 
@@ -218,6 +218,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 return y.CompareTo(x);
             }
+        }
+
+        private static float CumputeSnowMeltFraction(float Tave, float DaySpan)
+        {
+            return 0.15f * Math.Max(0, Tave) * DaySpan;
         }
         private static float CumputeSnowFraction(float Tave)
         {
@@ -277,17 +282,30 @@ namespace Landis.Extension.Succession.BiomassPnET
                 interception = 0;
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
- 
-                // mm
-                float snowmelt = Math.Min(snowPack, 0.15f * Math.Max(0, this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.DaySpan * snowPack);
 
-                float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec;//mm
+                if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
+
+               
+                // mm
+                float snowmelt = Math.Min(snowPack, CumputeSnowMeltFraction(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan) * snowPack);
+                if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt );
+
+                float availablePrecipitation = (1F - this.Ecoregion.PrecLossFrac) * this.Ecoregion.Variables.Prec;
+
+                float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * availablePrecipitation;//mm
+                if (newsnow < 0 || newsnow > this.Ecoregion.Variables.Prec)
+                {
+                    throw new System.Exception("Error, newsnow = " + newsnow + " availablePrecipitation = " + availablePrecipitation);
+                }
 
                 snowPack += newsnow - snowmelt;
+                if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack);
 
-                float precin = this.Ecoregion.Variables.Prec * (1F - this.Ecoregion.PrecLossFrac) -newsnow + snowmelt;
+                float precin = availablePrecipitation - newsnow + snowmelt;
+                if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
 
                 float PrecInByCanopyLayer = precin / SubCanopyCohorts.Count();
+                if (PrecInByCanopyLayer < 0) throw new System.Exception("Error, PrecInByCanopyLayer = " + PrecInByCanopyLayer);
 
                 if (bins != null)
                 {
@@ -868,7 +886,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public bool IsMaturePresent(ISpecies species)
         {
-            ISpeciesPNET pnetSpecies = SpeciesPnET.AllSpecies[species];
+            ISpeciesPNET pnetSpecies = PlugIn.SpeciesPnET[species];
 
             bool speciesPresent = cohorts.ContainsKey(pnetSpecies);
 

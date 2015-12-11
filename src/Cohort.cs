@@ -162,13 +162,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return species;
+                return PlugIn.SpeciesPnET[species];
             }
         }
 
         public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
         {
-            this.species = species;
+            this.species =  species;
             age = 0; 
            
             this.nsc = (ushort)species.InitialNSC;
@@ -219,6 +219,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             LAI[index] = PlugIn.fIMAX * fol / (species.SLWmax - species.SLWDel * index * PlugIn.fIMAX * fol);
             
             Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
+            if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
 
             float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
 

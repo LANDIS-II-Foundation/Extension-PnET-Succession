@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Landis.Core;
+using System;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -9,7 +10,30 @@ namespace Landis.Extension.Succession.BiomassPnET
     /// </summary>
     public class SpeciesPnET : ISpeciesPNET
     {
-        public static Dictionary<ISpecies, ISpeciesPNET> AllSpecies;
+        static List<Tuple<ISpecies, ISpeciesPNET>> SpeciesCombinations;
+
+        public List<ISpeciesPNET> AllSpecies
+        {
+            get
+            {
+                return SpeciesCombinations.Select(combination => combination.Item2).ToList();
+            }
+        }
+
+        public ISpeciesPNET this[ISpecies species]
+        {
+            get
+            {
+                return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2;
+            }
+        }
+        public ISpecies this[ISpeciesPNET species]
+        {
+            get
+            {
+                return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1;
+            }
+        }
 
         #region private variables
         private float _wuecnst;
@@ -103,7 +127,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         #endregion
 
-        public static void Initialize()
+        public SpeciesPnET()
         {
             #region initialization of private static species variables
             wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
@@ -141,15 +165,20 @@ namespace Landis.Extension.Succession.BiomassPnET
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
             #endregion
 
-            AllSpecies = new Dictionary<ISpecies, ISpeciesPNET>();
+            SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
+             
             foreach (ISpecies spc in PlugIn.ModelCore.Species)
             {
-                AllSpecies.Add(spc, new SpeciesPnET(spc));
+                SpeciesPnET species = new SpeciesPnET(spc);
+
+                SpeciesCombinations.Add(new Tuple<ISpecies, ISpeciesPNET>(spc, species));
             }
 
 
         }
-        public SpeciesPnET(PostFireRegeneration postFireGeneration,
+      
+
+        SpeciesPnET(PostFireRegeneration postFireGeneration,
             float wuecnst, 
             float dnsc,
             float cfracbiomass,
@@ -244,7 +273,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.longevity = longevity;
         
         }
-        public SpeciesPnET(ISpecies species)
+       
+        SpeciesPnET(ISpecies species)
         {
             _wuecnst = wuecnst[species];
             _dnsc = dnsc[species];
