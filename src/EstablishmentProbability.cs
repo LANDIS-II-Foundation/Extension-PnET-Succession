@@ -58,7 +58,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 if (spc.PreventEstablishment) continue;
 
-                if (pnetvars[spc.Name].LeafOn)
+                if (pnetvars.Tmin > spc.PsnTMin)
                 {
                     float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
 

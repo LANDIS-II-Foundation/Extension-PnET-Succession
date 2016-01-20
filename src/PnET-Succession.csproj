@@ -81,7 +81,6 @@
     <Compile Include="IHydrology.cs" />
     <Compile Include="IObservedClimate.cs" />
     <Compile Include="ObservedClimate.cs" />
-    <Compile Include="CohortVars.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ISiteCohorts.cs" />
     <Compile Include="LocalOutput.cs" />
@@ -89,7 +88,6 @@
     <Compile Include="OutputHeaders.cs" />
     <Compile Include="AssignOutputFiles.cs" />
     <Compile Include="PressureHeadSaxton_Rawls.cs" />
-    <Compile Include="GetLocations.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Names.cs" />
     <Compile Include="ParameterTableParser.cs" />

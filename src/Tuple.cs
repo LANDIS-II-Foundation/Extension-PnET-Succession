@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
-
+    // Mimicks the functionality of .Net 4 Tuple. 
     class Tuple<T1, T2>
     {
         public T1 Item1 { get; set; }

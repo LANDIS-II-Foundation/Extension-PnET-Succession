@@ -237,9 +237,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             _dayspan = EcoregionPnETVariables.Calculate_DaySpan(Date.Month);
 
-          
-          
-             
             float hr = Calculate_hr(Date.DayOfYear, PlugIn.Latitude);
             _daylength = Calculate_DayLength(hr);
             float nightlength = Calculate_NightLength(hr);
@@ -256,19 +253,30 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
         }
-
+        
         private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, float daylength, float nightlength, ISpeciesPNET spc)
         {
-            
+            // Class that contains species specific PnET variables for a certain month
+            SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
 
+            // Gradient of effect of vapour pressure deficit on growth. 
             float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
+            // Co2 ratio internal to the leave versus external
             float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
+
+            // Reference co2 ratio
             float ci350 = 350 * cicaRatio;
+
+            // Elevated co2 effect
             float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
 
+            // Elevated leaf internal co2 concentration
             float ciElev = climate_dataset.CO2 * cicaRatio;
+
             float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
+
+            // CO2 effect on growth
             float delamax = 1 + ((ArelElev - Arel350) / Arel350);
 
             // CO2 effect on photosynthesis
@@ -277,25 +285,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
             float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
 
-
             //_gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
             //_gsInt = (float)((0.4656 * delamax) - 0.9701);
 
-            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-
-            SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
-
-            speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
-
+            //DWUE determined from CO2 effects on conductance
+            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    
+              
+            // water use efficiency in a co2 enriched atmosphere
             speciespnetvars.WUE_CO2_corr = wue / delamax;
 
             //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
-            //wue[ecoregion, spc, date] = (Parameters.WUEcnst[spc] / vpd[ecoregion, date]) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-            //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    //DWUE determined from CO2 effects on conductance
-            speciespnetvars.LeafOn = Tmin > spc.PsnTMin;
-
-            // NETPSN 
+            // NETPSN net photosynthesis
             speciespnetvars.Amax   = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
 
             //Reference net Psn (lab conditions) in gC/timestep
@@ -304,23 +305,24 @@ namespace Landis.Extension.Succession.BiomassPnET
             //-------------------FTempPSN (public for output file)
             speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
 
-            // PSN (g/tstep)
+            // PSN (g/tstep) reference net psn in a given temperature
             speciespnetvars.FTempPSNRefNetPsn =  speciespnetvars.FTempPSN * RefNetPsn;
  
             //EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);
-             
-            // day respiration factor
-            float RespTempDay = CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
 
+            // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
+            float fTempRespDay = CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
+
+            // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
             float fTempRespNight = CalcQ10Factor(spc.Q10, Tmin , spc.PsnTOpt);
            
             // Unitless respiration adjustment: public for output file only
-            speciespnetvars.FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (RespTempDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
+            speciespnetvars.FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
 
+            // Scaling factor of respiration given day and night temperature and day and night length
             speciespnetvars.MaintRespFTempResp = spc.MaintResp * speciespnetvars.FTempRespWeightedDayAndNight;
 
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
-             
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.
             // Acclimation of respiration to temperature and C02 in seedlings of boreal tree species
             // in relation to plant size and relative growth rate. Global Change Biology. 49:679-691,
@@ -330,29 +332,41 @@ namespace Landis.Extension.Succession.BiomassPnET
             // the static vegetation parameter, then recalculates BaseFolResp based on the adjusted
             // BaseFolRespFrac
 
+            // Base foliage respiration 
             float BaseFolResp;
+
+            // Base parameter in Q10 temperature dependency calculation
             float Q10base;
             if (Wythers == true)
             {
-                
-                BaseFolResp = (0.138071F - 0.0024519F * Tave);          //Computed Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
-                float Tmidpoint=(Tave+ spc.PsnTOpt)/2F;   //Midpoint between Tave and Optimal Temp; this is also species-level
+                //Computed Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
+                BaseFolResp = (0.138071F - 0.0024519F * Tave);
+
+                //Midpoint between Tave and Optimal Temp; this is also species-level
+                float Tmidpoint=(Tave+ spc.PsnTOpt)/2F;
+
+                // Base parameter in Q10 temperature dependency calculation in current temperature
                 Q10base = (3.22F - 0.046F * Tmidpoint);
             }
             else
             {
-                BaseFolResp = spc.BFolResp;    //Computed Base foliar respiration; this is species-level
+                // The default PnET setting is that these 
+                BaseFolResp = spc.BFolResp;   
                 Q10base = spc.Q10;
             }
+
+            // Growth respiration factor
             speciespnetvars.FTempRespDay = BaseFolResp * CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
-              
+             
+          
             return speciespnetvars;
         }
 
         private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
         {
-            float RespTempDay = ((float)Math.Pow(Q10, (Tday - PsnTOpt) / 10));
-            return RespTempDay;
+            // Generic computation for a Q10 reduction factor used for respiration calculations
+            float q10Fact = ((float)Math.Pow(Q10, (Tday - PsnTOpt) / 10));
+            return q10Fact;
         }
 
          

@@ -11,69 +11,42 @@ using Landis.Library.Parameters.Species;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
+    /// <summary>
+    /// Allocates litters that result from disturbanches. 
+    /// Input parameters are fractions of litter that are allocated to different pools
+    /// </summary>
     public class Allocation
     {
-        public struct Disturbances
-        {
-            public const string DisturbanceFire = "disturbance:fire";
-            public const string DisturbanceWind = "disturbance:wind";
-            public const string DisturbanceBDA = "disturbance:bda";
-            public const string DisturbanceHarvest = "disturbance:harvest";
-            public static List<string> AllNames
-            {
-                get
-                {
-                    List<string> Names = new List<string>();
+        // These labels are used as input parameters in the input txt file
+        public static List<string> Disturbances = new List<string>() { "disturbance:fire", "disturbance:wind", "disturbance:bda", "disturbance:harvest" };
 
-                    typeof(Disturbances).GetFields().ToList().ForEach(x => Names.Add(x.GetValue(x).ToString()));
-
-                    return Names;
-                }
-            }
-        } 
-
-        public struct Reductions
-        {
-            public const string WoodReduction = "WoodReduction";
-            public const string FolReduction = "FolReduction";
-            public const string RootReduction = "RootReduction";
-
-            public static List<string> AllNames
-            {
-                get
-                {
-                    List<string> Names = new List<string>();
-
-                    typeof(Reductions).GetFields().ToList().ForEach(x => Names.Add(x.GetValue(x).ToString()));
-
-                    return Names;
-                }
-            }
-        }
-       
+        public static List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction"};
+ 
         public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType)
         {
-            if (sitecohorts == null) return;// Deaths in spinup are not added yet
+            if (sitecohorts == null) return;// Deaths in spinup are not added
 
+            // By default, all material is allocated to the woody debris or the litter pool
             float pwoodlost = 0;
             float prootlost = 0;
             float pfollost = 0;
 
-            Parameter<string> p;
+            Parameter<string> parameter;
 
-            if (disturbanceType != null && PlugIn.TryGetParameter(disturbanceType.Name, out p))
+            if (disturbanceType != null && PlugIn.TryGetParameter(disturbanceType.Name, out parameter))
             {
-                if (p.ContainsKey(Reductions.WoodReduction))
+                // If parameters are available, then set the loss fractions here.
+                if (parameter.ContainsKey("WoodReduction"))
                 {
-                    pwoodlost = float.Parse(p[Reductions.WoodReduction]);
+                    pwoodlost = float.Parse(parameter["WoodReduction"]);
                 }
-                if (p.ContainsKey(Reductions.RootReduction))
+                if (parameter.ContainsKey("RootReduction"))
                 {
-                    prootlost = float.Parse(p[Reductions.RootReduction]);
+                    prootlost = float.Parse(parameter["RootReduction"]);
                 }
-                if (p.ContainsKey(Reductions.FolReduction))
+                if (parameter.ContainsKey("FolReduction"))
                 {
-                    pfollost = float.Parse(p[Reductions.FolReduction]);
+                    pfollost = float.Parse(parameter["FolReduction"]);
                 }
 
             }

@@ -7,10 +7,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface IObservedClimate: IEnumerable<ObservedClimate>  
     {
-        float CO2 { get; }
-        float PAR0 { get; }
-        float Prec { get; }
-        float Tmax { get; }
-        float Tmin { get; }
+
+        float CO2 { get; } // Atmospheric CO2 concentration (ppm)
+        float PAR0 { get; }// Photosynthetically active radiation, average daily during the month (W/m2)
+        float Prec { get; }// Precipitation (mm/mo)
+        float Tmax { get; }// Maximum daily temperature 
+        float Tmin { get; }// Minimum daily temperature
     }
 }

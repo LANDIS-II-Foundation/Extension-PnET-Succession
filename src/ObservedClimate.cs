@@ -8,7 +8,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class ObservedClimate : IObservedClimate
     {
-        #region private valiables
+        #region private variables
         string year;
         string month;
         float  par0;

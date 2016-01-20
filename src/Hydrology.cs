@@ -18,6 +18,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
          
         private static PressureHeadSaxton_Rawls pressureheadtable;
+
         public float GetPressureHead(IEcoregionPnET ecoregion)
         {
             return pressureheadtable[ecoregion, (int)water];

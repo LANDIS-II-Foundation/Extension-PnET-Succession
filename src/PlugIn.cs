@@ -27,7 +27,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
-        public static float fIMAX;
+        
         
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -156,7 +156,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Dictionary<string, Parameter<string>> InputParameters = LoadTable(Names.ExtensionName, Names.AllNames, null, true);
             InputParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
 
-            //-------------Species parameters
+            //-------------Read Species parameters input file
             List<string> SpeciesNames = PlugIn.ModelCore.Species.ToList().Select(x => x.Name).ToList();
             List<string> SpeciesPars = SpeciesPnET.ParameterNames;
             SpeciesPars.Add(Names.PnETSpeciesParameters);
@@ -182,9 +182,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Parameter<string> AgeOnlyDisturbancesParameterFile;
             if (TryGetParameter(Names.AgeOnlyDisturbances, out AgeOnlyDisturbancesParameterFile))
             {
-                List<string> DisturbanceTypes = Allocation.Disturbances.AllNames;
-                List<string> DisturbanceAllocations = Allocation.Reductions.AllNames;
-                Dictionary<string, Parameter<string>> AgeOnlyDisturbancesParameters = LoadTable(Names.AgeOnlyDisturbances, DisturbanceAllocations, DisturbanceTypes);
+                Dictionary<string, Parameter<string>> AgeOnlyDisturbancesParameters = LoadTable(Names.AgeOnlyDisturbances,  Allocation.Reductions, Allocation.Disturbances);
                 foreach (KeyValuePair<string, Parameter<string>> parameter in AgeOnlyDisturbancesParameters)
                 {
                     if (parameters.ContainsKey(parameter.Key)) throw new System.Exception("Parameter " + parameter.Key + " was provided twice");
@@ -196,12 +194,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         if (v > 1 || v < 0) throw new System.Exception("Expecting value for " + parameter.Key + " between 0.0 and 1.0. Found "+ v);
                     }
-                   
-
-                   
-                    
                 }
-                 
                 AgeOnlyDisturbancesParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
             }
 
@@ -288,7 +281,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
-            fIMAX = 1 / (float)PlugIn.IMAX;
+          
 
             // Initialize Reproduction routines:
             Reproduction.SufficientResources = SufficientResources;

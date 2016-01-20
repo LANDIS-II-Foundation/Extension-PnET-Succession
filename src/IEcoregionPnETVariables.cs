@@ -17,6 +17,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         float Daylength { get; }
         byte Month { get; }
         float Tave { get; }
+        float Tmin { get; }
+       
         SpeciesPnETVariables this[string species] { get; }
     }
 }
