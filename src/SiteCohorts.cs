@@ -22,6 +22,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private float[] netpsn = null;
         private float[] grosspsn = null;
+        private float[] folresp = null;
+        
         private float[] maintresp = null;
         private float transpiration;
         private double HeterotrophicRespiration;
@@ -269,6 +271,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              
             float LeakageFractionPerCohort = Ecoregion.LeakageFrac / SubCanopyCohorts.Count();
 
+            folresp = new float[13];
             netpsn = new float[13];
             grosspsn = new float[13];
             maintresp = new float[13];
@@ -327,6 +330,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 AllCohorts.ForEach(x =>
                     {
+                        folresp[this.Ecoregion.Variables.Month - 1] += x.FolResp.Sum();
                         netpsn[this.Ecoregion.Variables.Month - 1] += x.NetPsn.Sum();
                         grosspsn[this.Ecoregion.Variables.Month - 1] += x.GrossPsn.Sum() * PlugIn.FTimeStep;
                         maintresp[this.Ecoregion.Variables.Month - 1] += x.MaintenanceRespiration.Sum() * PlugIn.FTimeStep;
@@ -383,6 +387,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
+        public int[] FolResp
+        {
+            get
+            {
+                return folresp.Select(psn => (int)psn).ToArray(); 
+            }
+        }
         public int[] GrossPsn
         {
             get

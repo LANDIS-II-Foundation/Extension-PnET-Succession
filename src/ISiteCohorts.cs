@@ -12,6 +12,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         int[] MaintResp{ get; }
         
         int[] GrossPsn{ get; }
+
+        int[] FolResp { get; }
+        
         
         byte CanopyLAImax{get;}
 
