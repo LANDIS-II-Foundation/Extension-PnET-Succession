@@ -2,18 +2,21 @@
 using Landis.Core;
 
 
-namespace Landis.Extension.Succession.BiomassPnET 
+namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts
     {
 
         int[] NetPsn { get; }
 
-        int[] MaintResp{ get; }
-        
-        int[] GrossPsn{ get; }
-        
-        byte CanopyLAImax{get;}
+        int[] MaintResp { get; }
+
+        int[] GrossPsn { get; }
+
+        int[] FolResp { get; }
+
+
+        byte CanopyLAImax { get; }
 
         int AverageAge { get; }
 
@@ -22,7 +25,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent { get; }
 
         IEstablishmentProbability EstablishmentProbability { get; }
-        
+
         Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
@@ -33,7 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         float SubCanopyParMAX { get; }
 
-        double Litter{ get; }
+        double Litter { get; }
 
         double WoodyDebris { get; }
 
