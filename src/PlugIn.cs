@@ -182,8 +182,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             Parameter<string> AgeOnlyDisturbancesParameterFile;
             if (TryGetParameter(Names.AgeOnlyDisturbances, out AgeOnlyDisturbancesParameterFile))
             {
-                List<string> DisturbanceTypes = Allocation.Disturbances.AllNames;
-                List<string> DisturbanceAllocations = Allocation.Reductions.AllNames;
+                List<string> DisturbanceTypes = Allocation.Disturbances;
+                List<string> DisturbanceAllocations = Allocation.Reductions;
                 Dictionary<string, Parameter<string>> AgeOnlyDisturbancesParameters = LoadTable(Names.AgeOnlyDisturbances, DisturbanceAllocations, DisturbanceTypes);
                 foreach (KeyValuePair<string, Parameter<string>> parameter in AgeOnlyDisturbancesParameters)
                 {
