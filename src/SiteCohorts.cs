@@ -143,7 +143,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
                 }
-                establishmentProbability = new EstablishmentProbability(null, null);
+                else
+                {
+                    establishmentProbability = new EstablishmentProbability(null, null);
+                }
 
                 List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
                 foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
