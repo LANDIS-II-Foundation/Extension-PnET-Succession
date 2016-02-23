@@ -295,10 +295,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             
             // When LeafOn becomes false for the first time in a year
-            if (leaf_on == true && ecoregion.Variables.Tmin < this.SpeciesPNET.PsnTMin == false)
+            if(ecoregion.Variables.Tmin < this.SpeciesPNET.PsnTMin)
             {
-                leaf_on = false;
-                addlitter(FoliageSenescence(), SpeciesPNET);
+                if (leaf_on == true)
+                {
+                    leaf_on = false;
+                    addlitter(FoliageSenescence(), SpeciesPNET);
+                }
+            }
+            else  
+            {
+                leaf_on = true;
             }
 
             if (leaf_on)
