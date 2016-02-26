@@ -141,11 +141,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return (uint)(species.FracBelowG * biomass);
             }
         }
-        public void ReduceBiomass(double fraction)
-        {
-            biomass *= (float)(1.0 - fraction);
-            fol *= (float)(1.0 - fraction);
-        }
+        
         // Max biomass achived in the cohorts' life time. 
         // This value remains high after the cohort has reached its 
         // peak biomass. It is used to determine canopy layers where
@@ -516,7 +512,16 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             return senescence;
         }
-         
+        public void ReduceFoliage(double fraction)
+        {
+            fol *= (float)(1.0 - fraction);
+        }
+        public void ReduceBiomass(double fraction)
+        {
+            biomass *= (float)(1.0 - fraction);
+            fol *= (float)(1.0 - fraction);
+        }
+
         //---------------------------------------------------------------------
         /// <summary>
         /// Raises a Cohort.AgeOnlyDeathEvent.
