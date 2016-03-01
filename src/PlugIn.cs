@@ -137,7 +137,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             LocalOutput.PNEToutputsites = Names.PNEToutputsites;
         }
 
-        private static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
+        public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
         {
             string filename = GetParameter(label).Value;
             if (System.IO.File.Exists(filename) == false) throw new System.Exception("File not found " + filename);
@@ -178,24 +178,13 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             ecoregionparameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
 
+
+
             //---------------AgeOnlyDisturbancesParameterFile
             Parameter<string> AgeOnlyDisturbancesParameterFile;
             if (TryGetParameter(Names.AgeOnlyDisturbances, out AgeOnlyDisturbancesParameterFile))
             {
-                Dictionary<string, Parameter<string>> AgeOnlyDisturbancesParameters = LoadTable(Names.AgeOnlyDisturbances,  Allocation.Reductions, Allocation.Disturbances);
-                foreach (KeyValuePair<string, Parameter<string>> parameter in AgeOnlyDisturbancesParameters)
-                {
-                    if (parameters.ContainsKey(parameter.Key)) throw new System.Exception("Parameter " + parameter.Key + " was provided twice");
-
-                    foreach (string value in parameter.Value.Values)
-                    {
-                        double v;
-                        if (double.TryParse(value, out v) == false) throw new System.Exception("Expecting digit value for " + parameter.Key);
-
-                        if (v > 1 || v < 0) throw new System.Exception("Expecting value for " + parameter.Key + " between 0.0 and 1.0. Found "+ v);
-                    }
-                }
-                AgeOnlyDisturbancesParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
+                Allocation.Initialize(AgeOnlyDisturbancesParameterFile.Value,  parameters);
             }
 
              

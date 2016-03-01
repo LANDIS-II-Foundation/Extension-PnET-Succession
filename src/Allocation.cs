@@ -18,14 +18,36 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class Allocation
     {
         // These labels are used as input parameters in the input txt file
-        public static List<string> Disturbances = new List<string>() { "disturbance:fire", "disturbance:wind", "disturbance:bda", "disturbance:harvest" };
+        private  static readonly List<string> Disturbances = new List<string>() { "disturbance:fire", "disturbance:wind", "disturbance:bda", "disturbance:harvest" };
 
-        public static List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction"};
- 
+        private static readonly List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction" };
+
+        public static void Initialize(string fn,   SortedDictionary<string, Parameter<string>> parameters)
+        {
+            Dictionary<string, Parameter<string>> AgeOnlyDisturbancesParameters = PlugIn.LoadTable(Names.AgeOnlyDisturbances, Reductions, Disturbances);
+            foreach (KeyValuePair<string, Parameter<string>> parameter in AgeOnlyDisturbancesParameters)
+            {
+                if (parameters.ContainsKey(parameter.Key)) throw new System.Exception("Parameter " + parameter.Key + " was provided twice");
+
+                foreach (string value in parameter.Value.Values)
+                {
+                    double v;
+                    if (double.TryParse(value, out v) == false) throw new System.Exception("Expecting digit value for " + parameter.Key);
+
+                    if (v > 1 || v < 0) throw new System.Exception("Expecting value for " + parameter.Key + " between 0.0 and 1.0. Found " + v);
+                }
+            }
+            AgeOnlyDisturbancesParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
+       
+        }
+
+
         public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType)
         {
-            if (sitecohorts == null) return;// Deaths in spinup are not added
-
+            if (sitecohorts == null)
+            {
+                throw new System.Exception("sitecohorts should not be null");
+            }
             // By default, all material is allocated to the woody debris or the litter pool
             float pwoodlost = 0;
             float prootlost = 0;
