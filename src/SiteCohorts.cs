@@ -136,14 +136,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
-                
+
                 if (SiteOutputName != null)
                 {
                     this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
-                    
+
                     establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
                 }
-                establishmentProbability = new EstablishmentProbability(null, null);
+                else
+                {
+                    establishmentProbability = new EstablishmentProbability(null, null);
+                }
 
                 List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
                 foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
