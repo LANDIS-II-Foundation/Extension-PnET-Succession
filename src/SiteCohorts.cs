@@ -283,54 +283,79 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 this.Ecoregion.Variables = data[m];
                 transpiration = 0;
-                subcanopypar = this.Ecoregion.Variables.PAR0;
-                CanopyLAI = 0;
+                subcanopypar = this.Ecoregion.Variables.PAR0;                
                 interception = 0;
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
-
                
                 // mm
                 float snowmelt = Math.Min(snowPack, CumputeSnowMeltFraction(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan) * snowPack);
                 if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt );
 
-                float availablePrecipitation = (1F - this.Ecoregion.PrecLossFrac) * this.Ecoregion.Variables.Prec;
-
-                float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * availablePrecipitation;//mm
+                float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec;//mm
                 if (newsnow < 0 || newsnow > this.Ecoregion.Variables.Prec)
                 {
-                    throw new System.Exception("Error, newsnow = " + newsnow + " availablePrecipitation = " + availablePrecipitation);
+                    throw new System.Exception("Error, newsnow = " + newsnow + " availablePrecipitation = " + this.Ecoregion.Variables.Prec);
                 }
 
                 snowPack += newsnow - snowmelt;
                 if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack);
 
-                float precin = availablePrecipitation - newsnow + snowmelt;
+                float newrain = this.Ecoregion.Variables.Prec - newsnow;
+
+                interception = newrain * (float)(1 - Math.Exp(-1 * Ecoregion.PrecIntConst * CanopyLAI));
+
+                float availableRain = (1F - this.Ecoregion.PrecLossFrac) * (newrain - interception); //This should be reduced by interception first
+
+                float precin = availableRain + snowmelt;
                 if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
 
-                float PrecInByCanopyLayer = precin / SubCanopyCohorts.Count();
-                if (PrecInByCanopyLayer < 0) throw new System.Exception("Error, PrecInByCanopyLayer = " + PrecInByCanopyLayer);
+                //float PrecInByCanopyLayer = precin / SubCanopyCohorts.Count();                
+                //if (PrecInByCanopyLayer < 0) throw new System.Exception("Error, PrecInByCanopyLayer = " + PrecInByCanopyLayer);
 
+                int numEvents = 4;  // maximum number of precipitation events per month
+                if (numEvents > SubCanopyCohorts.Count())
+                    numEvents = SubCanopyCohorts.Count();
+                float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
+                if (PrecInByEvent < 0) throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent);
+                
+                // Randomly choose which layers will receive the precip events
+                var rnd = new Random();
+                var randomNumbers = Enumerable.Range(1, SubCanopyCohorts.Count()).OrderBy(x => rnd.Next()).Take(numEvents).ToList();
+                
+                float subCanopyPrecip = 0;
+                int subCanopyIndex = 0;
                 if (bins != null)
                 {
                     for (int b = bins.Count() - 1; b >= 0; b--)
                     {
                         foreach (int r in random_range[b])
                         {
+                            subCanopyIndex++;
+                            if(randomNumbers.Contains(subCanopyIndex))
+                            {
+                                subCanopyPrecip = PrecInByEvent;
+                            }
+                            else
+                            {
+                                subCanopyPrecip = 0;
+                            }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                            success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, LeakageFractionPerCohort, hydrology, ref subcanopypar);
+                            //success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
                             if (success == false)
                             {
                                 throw new System.Exception("Error CalculatePhotosynthesis");
                             }
-                            interception += c.Interception.Sum();
+                            //interception += c.Interception.Sum();
                             c.Layer = (byte)Math.Max(b, c.Layer);
                         }
                     }
                 }
 
+                CanopyLAI = 0; // Reset to 0
                 AllCohorts.ForEach(x =>
                     {
                         folresp[this.Ecoregion.Variables.Month - 1] += x.FolResp.Sum();
@@ -338,6 +363,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         grosspsn[this.Ecoregion.Variables.Month - 1] += x.GrossPsn.Sum() * PlugIn.FTimeStep;
                         maintresp[this.Ecoregion.Variables.Month - 1] += x.MaintenanceRespiration.Sum() * PlugIn.FTimeStep;
                         CanopyLAI += x.LAI.Sum();
+                        transpiration += x.Transpiration.Sum();
                     }
                 );
                 

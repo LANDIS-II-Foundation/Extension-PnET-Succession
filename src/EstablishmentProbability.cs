@@ -56,7 +56,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
-                if (spc.PreventEstablishment) continue;
+              
 
                 if (pnetvars.Tmin > spc.PsnTMin)
                 {
@@ -67,22 +67,24 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
-
-                    if (pest > _pest[spc])
+                    if (!spc.PreventEstablishment)
                     {
-                        _pest[spc] = pest;
-                        _fwater[spc] = fwater;
-                        _frad[spc] = frad;
-
-                        if (pest > (float)PlugIn.ContinuousUniformRandom())
+                        if (pest > _pest[spc])
                         {
-                            if (HasEstablished(spc) == false)
+                            _pest[spc] = pest;
+                            _fwater[spc] = fwater;
+                            _frad[spc] = frad;
+
+                            if (pest > (float)PlugIn.ContinuousUniformRandom())
                             {
-                                _hasEstablished.Add(spc);
+                                if (HasEstablished(spc) == false)
+                                {
+                                    _hasEstablished.Add(spc);
+                                }
+
                             }
-                        
+
                         }
-                        
                     }
                     if (establishment_siteoutput != null)
                     {

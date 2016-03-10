@@ -242,11 +242,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
             
             // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
-            Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
-            if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
+            //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
+            //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
 
             // Incoming precipitation
-            float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
+            //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
+            float waterIn = PrecInByCanopyLayer; //mm 
 
             // Add incoming precipitation to soil moisture
             success = hydrology.AddWater(waterIn);
