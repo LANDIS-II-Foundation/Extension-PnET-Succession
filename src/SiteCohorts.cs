@@ -252,7 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 if (defoliation > 0)
                 {
-                    AllCohorts[cohort].ReduceBiomass(defoliation);
+                    AllCohorts[cohort].ReduceFoliage(defoliation);
                 }
                 for (int i = 0; i < PlugIn.IMAX; i++)
                 {
