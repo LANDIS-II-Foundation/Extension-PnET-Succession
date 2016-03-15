@@ -10,32 +10,46 @@ namespace Landis.Extension.Succession.BiomassPnET
     /// </summary>
     public class SpeciesPnET : ISpeciesPNET
     {
-        static List<Tuple<ISpecies, ISpeciesPNET>> SpeciesCombinations;
+        private static List<Tuple<ISpecies, ISpeciesPNET>> SpeciesCombinations;
 
-        public List<ISpeciesPNET> AllSpecies
-        {
-            get
-            {
-                return SpeciesCombinations.Select(combination => combination.Item2).ToList();
-            }
-        }
+        private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
+        private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
+        private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
+        private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fracbelowg;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
+        private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
+        private static Landis.Library.Parameters.Species.AuxParm<ushort> h2;
+        private static Landis.Library.Parameters.Species.AuxParm<ushort> h3;
+        private static Landis.Library.Parameters.Species.AuxParm<ushort> h4;
+        private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
+        private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;
+        private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
+        private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
+        private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
+        private static Landis.Library.Parameters.Species.AuxParm<float> k;
+        private static Landis.Library.Parameters.Species.AuxParm<float> towood;
+        private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
+        private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
+        private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
+        private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
+        private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
+        private static Landis.Library.Parameters.Species.AuxParm<float> q10;
+        private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
+        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
+        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
+        private static Landis.Library.Parameters.Species.AuxParm<float> foln;
+        private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
+        private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
+        private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxfolo3red;
+        private static Landis.Library.Parameters.Species.AuxParm<float> o3_halfsat;
 
-        public ISpeciesPNET this[ISpecies species]
-        {
-            get
-            {
-                return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2;
-            }
-        }
-        public ISpecies this[ISpeciesPNET species]
-        {
-            get
-            {
-                return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1;
-            }
-        }
-
-        #region private variables
+        private float _o3_halfsat;
+        private float _maxfolo3red;
         private float _wuecnst;
         private float _cfracbiomass;
         private float _kwdlit;
@@ -71,7 +85,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _bfolresp;
         private string name;
         private int index;
-        
         private int  maxSproutAge;
         private int minSproutAge;
         private Landis.Core.PostFireRegeneration postfireregeneration;
@@ -80,255 +93,31 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float  vegReprodProb;
         private byte fireTolerance;
         private byte shadeTolerance;
-        int maturity;
-        int longevity;
-
-        # endregion
-
-        #region private static species variables
-        private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
-        private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
-        private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracbelowg;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h2;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h3;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h4;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
-  
-        private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
-        private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
-        private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
-        private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
-        private static Landis.Library.Parameters.Species.AuxParm<float> k;
-        
-        private static Landis.Library.Parameters.Species.AuxParm<float> towood;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
-        private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
-        private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
-
-
-        private static Landis.Library.Parameters.Species.AuxParm<float> q10;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> foln;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
-        
-        private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
-        private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
-        
-        #endregion
-
-        public SpeciesPnET()
+        private int maturity;
+        private int longevity;
+         
+        public List<ISpeciesPNET> AllSpecies
         {
-            #region initialization of private static species variables
-            wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
-            dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
-            cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
-            kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("kwdlit"));
-            fracbelowg = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracbelowg"));
-            fracfol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracfol"));
-            fractWd = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fractWd"));
-            psnagered = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psnagered"));
-            h2 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h2"));
-            h3 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h3"));
-            h4 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h4"));
-            slwdel = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwdel"));
-            slwmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwmax"));
-            tofol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("tofol"));
-            halfsat = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("halfsat"));
-            toroot = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("toroot"));
-            initialnsc = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("initialnsc")); ;
-            k = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("k")); ;
-            towood = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("towood")); ;
-            estrad = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estrad")); ;
-            estmoist = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estmoist"));
-            follignin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("follignin"));
-            preventestablishment = ((Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)PlugIn.GetParameter("preventestablishment"));
-            psntopt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntopt"));
-            q10 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("q10"));
-            psntmin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmin"));
-            dvpd1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd1"));
-            dvpd2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd2"));
-            foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
-            amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxa"));
-            amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
-            maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
-            bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
-            #endregion
-
-            SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
-             
-            foreach (ISpecies spc in PlugIn.ModelCore.Species)
+            get
             {
-                SpeciesPnET species = new SpeciesPnET(spc);
-
-                SpeciesCombinations.Add(new Tuple<ISpecies, ISpeciesPNET>(spc, species));
+                return SpeciesCombinations.Select(combination => combination.Item2).ToList();
             }
-
-
         }
-      
 
-        SpeciesPnET(PostFireRegeneration postFireGeneration,
-            float wuecnst, 
-            float dnsc,
-            float cfracbiomass,
-            float kwdlit,
-            float fracbelowg,
-            float fracfol,
-            float fractWd,
-            float psnagered,
-            ushort h2,
-            ushort h3,
-            ushort h4,
-            float slwdel,
-            float slwmax,
-            float tofol,
-            float toroot,
-            float halfsat,
-            float initialnsc,
-            float k,
-            float towood,
-            float estrad,
-            float estmoist,
-            float follignin,
-            bool preventestablishment,
-            float psntopt,
-            float q10,
-            float psntmin,
-            float dvpd1,
-            float dvpd2,
-            float foln,
-            float amaxa,
-            float amaxb,
-            float maintresp,
-            float bfolresp,
-            int Index,
-            string name,
-            int maxSproutAge,
-            int minSproutAge,
-            int maxSeedDist,
-            int effectiveSeedDist,
-            float vegReprodProb,
-            byte fireTolerance,
-            byte shadeTolerance,
-            int maturity,
-            int longevity
-            )
+        public ISpeciesPNET this[ISpecies species]
         {
-            this.postfireregeneration = postFireGeneration;
-            this._wuecnst = wuecnst;
-            this._dnsc = dnsc;
-            this._cfracbiomass = cfracbiomass;
-            this._kwdlit = kwdlit;
-            this._fracbelowg = fracbelowg;
-            this._fracfol = fracfol;
-            this._fractWd = fractWd;
-            this._psnagered = psnagered;
-            this._h2 = h2;
-            this._h3 = h3;
-            this._h4 = h4;
-            this._slwdel = slwdel;
-            this._slwmax = slwmax;
-            this._tofol = tofol;
-            this._toroot = toroot;
-            this._halfsat = halfsat;
-            this._initialnsc = initialnsc;
-            this._k = k;
-            this._towood = towood;
-            this._estrad = estrad;
-            this._estmoist = estmoist;
-            this._follignin = follignin;
-            this._preventestablishment = preventestablishment;
-            this._psntopt = psntopt;
-            this._q10 = q10;
-            this._psntmin = psntmin;
-            this._dvpd1 = dvpd1;
-            this._foln = foln;
-            this._dvpd2 = dvpd2;
-            this._amaxa = amaxa;
-            this._amaxb = amaxb;
-            this._maintresp = maintresp;
-            this._bfolresp = bfolresp;
-            this.index = Index;
-            this.name = name;
-            this.maxSproutAge = maxSproutAge;
-            this.minSproutAge = minSproutAge;
-            this.postfireregeneration = postFireGeneration;
-            this.maxSeedDist = maxSeedDist;
-            this.effectiveSeedDist = effectiveSeedDist;
-            this.vegReprodProb = vegReprodProb;
-            this.fireTolerance = fireTolerance;
-            this.shadeTolerance = shadeTolerance;
-            this.maturity = maturity;
-            this.longevity = longevity;
-        
+            get
+            {
+                return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2;
+            }
         }
-       
-        SpeciesPnET(ISpecies species)
+        public ISpecies this[ISpeciesPNET species]
         {
-            _wuecnst = wuecnst[species];
-            _dnsc = dnsc[species];
-            _cfracbiomass = cfracbiomass[species];
-            _kwdlit = kwdlit[species];
-            _fracbelowg = fracbelowg[species];
-            _fracfol = fracfol[species];
-            _fractWd = fractWd[species];
-            _psnagered = psnagered[species];
-            _h2 = h2[species];
-            _h3 = h3[species];
-            _h4 = h4[species];
-            _slwdel = slwdel[species];
-            _slwmax = slwmax[species];
-            _tofol = tofol[species];
-            _toroot = toroot[species];
-            _halfsat = halfsat[species];
-            _initialnsc = initialnsc[species];
-            _k = k[species];
-            _towood = towood[species];
-            _estrad = estrad[species];
-            _estmoist = estmoist[species];
-            _follignin = follignin[species];
-            _preventestablishment = preventestablishment[species];
-            _psntopt = psntopt[species];
-            _q10 = q10[species]; 
-            _psntmin = psntmin[species];
-            _dvpd1 = dvpd1[species];
-            _foln = foln[species];
-            _dvpd2 = dvpd2[species];
-            _amaxa = amaxa[species];
-            _amaxb = amaxb[species];
-            _maintresp = maintresp[species];
-            _bfolresp = bfolresp[species];
-            index = species.Index;
-            name = species.Name;
-
-            maxSproutAge = species.MaxSproutAge;
-            minSproutAge = species.MinSproutAge;
-            postfireregeneration = species.PostFireRegeneration;
-            maxSeedDist = species.MaxSeedDist;
-            effectiveSeedDist = species.EffectiveSeedDist;
-            vegReprodProb = species.VegReprodProb;
-            fireTolerance = species.FireTolerance;
-            shadeTolerance = species.ShadeTolerance;
-            maturity = species.Maturity;
-            longevity = species.Longevity;
-        
-          
+            get
+            {
+                return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1;
+            }
         }
-        
-
-        #region Accessors
-
         public int Index
         {
             get
@@ -357,7 +146,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _amaxb;
             }
         }
-       
+
         public float MaintResp
         {
             get
@@ -418,23 +207,23 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         public bool PreventEstablishment
         {
-            get 
-            { 
-                return _preventestablishment; 
+            get
+            {
+                return _preventestablishment;
             }
         }
         public float FolLignin
         {
-            get 
-            { 
-                return _follignin; 
+            get
+            {
+                return _follignin;
             }
         }
         public float EstMoist
         {
-            get 
-            { 
-                return _estmoist; 
+            get
+            {
+                return _estmoist;
             }
         }
         public float TOwood
@@ -580,7 +369,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-     
+
         public int MaxSproutAge
         {
             get
@@ -592,7 +381,21 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return  minSproutAge;
+                return minSproutAge;
+            }
+        }
+        public float MaxFolO3Red
+        {
+            get
+            {
+                return _maxfolo3red;
+            }
+        }
+        public float O3_HalfSat
+        {
+            get
+            {
+                return _o3_halfsat;
             }
         }
         public Landis.Core.PostFireRegeneration PostFireRegeneration
@@ -603,7 +406,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             }
         }
-        
+
         public int MaxSeedDist
         {
             get
@@ -618,7 +421,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return effectiveSeedDist;
             }
         }
-       
+
         public float VegReprodProb
         {
             get
@@ -654,8 +457,208 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return longevity;
             }
         }
-         #endregion
+        public SpeciesPnET()
+        {
+            maxfolo3red = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maxfolo3red"));
+            o3_halfsat = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("o3_halfsat"));
+            wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
+            dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
+            cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
+            kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("kwdlit"));
+            fracbelowg = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracbelowg"));
+            fracfol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracfol"));
+            fractWd = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fractWd"));
+            psnagered = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psnagered"));
+            h2 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h2"));
+            h3 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h3"));
+            h4 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h4"));
+            slwdel = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwdel"));
+            slwmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwmax"));
+            tofol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("tofol"));
+            halfsat = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("halfsat"));
+            toroot = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("toroot"));
+            initialnsc = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("initialnsc")); ;
+            k = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("k")); ;
+            towood = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("towood")); ;
+            estrad = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estrad")); ;
+            estmoist = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estmoist"));
+            follignin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("follignin"));
+            preventestablishment = ((Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)PlugIn.GetParameter("preventestablishment"));
+            psntopt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntopt"));
+            q10 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("q10"));
+            psntmin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmin"));
+            dvpd1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd1"));
+            dvpd2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd2"));
+            foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
+            amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxa"));
+            amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
+            maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
+            bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
+             
 
+            SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
+             
+            foreach (ISpecies spc in PlugIn.ModelCore.Species)
+            {
+                SpeciesPnET species = new SpeciesPnET(spc);
+
+                SpeciesCombinations.Add(new Tuple<ISpecies, ISpeciesPNET>(spc, species));
+            }
+
+
+        }
+      
+
+        SpeciesPnET(PostFireRegeneration postFireGeneration,
+            float wuecnst, 
+            float dnsc,
+            float cfracbiomass,
+            float kwdlit,
+            float fracbelowg,
+            float fracfol,
+            float fractWd,
+            float psnagered,
+            ushort h2,
+            ushort h3,
+            ushort h4,
+            float slwdel,
+            float slwmax,
+            float tofol,
+            float toroot,
+            float halfsat,
+            float initialnsc,
+            float k,
+            float towood,
+            float estrad,
+            float estmoist,
+            float follignin,
+            bool preventestablishment,
+            float psntopt,
+            float q10,
+            float psntmin,
+            float dvpd1,
+            float dvpd2,
+            float foln,
+            float amaxa,
+            float amaxb,
+            float maintresp,
+            float bfolresp,
+            int Index,
+            string name,
+            int maxSproutAge,
+            int minSproutAge,
+            int maxSeedDist,
+            int effectiveSeedDist,
+            float vegReprodProb,
+            byte fireTolerance,
+            byte shadeTolerance,
+            int maturity,
+            int longevity
+            )
+        {
+            this.postfireregeneration = postFireGeneration;
+            this._wuecnst = wuecnst;
+            this._dnsc = dnsc;
+            this._cfracbiomass = cfracbiomass;
+            this._kwdlit = kwdlit;
+            this._fracbelowg = fracbelowg;
+            this._fracfol = fracfol;
+            this._fractWd = fractWd;
+            this._psnagered = psnagered;
+            this._h2 = h2;
+            this._h3 = h3;
+            this._h4 = h4;
+            this._slwdel = slwdel;
+            this._slwmax = slwmax;
+            this._tofol = tofol;
+            this._toroot = toroot;
+            this._halfsat = halfsat;
+            this._initialnsc = initialnsc;
+            this._k = k;
+            this._towood = towood;
+            this._estrad = estrad;
+            this._estmoist = estmoist;
+            this._follignin = follignin;
+            this._preventestablishment = preventestablishment;
+            this._psntopt = psntopt;
+            this._q10 = q10;
+            this._psntmin = psntmin;
+            this._dvpd1 = dvpd1;
+            this._foln = foln;
+            this._dvpd2 = dvpd2;
+            this._amaxa = amaxa;
+            this._amaxb = amaxb;
+            this._maintresp = maintresp;
+            this._bfolresp = bfolresp;
+            this.index = Index;
+            this.name = name;
+            this.maxSproutAge = maxSproutAge;
+            this.minSproutAge = minSproutAge;
+            this.postfireregeneration = postFireGeneration;
+            this.maxSeedDist = maxSeedDist;
+            this.effectiveSeedDist = effectiveSeedDist;
+            this.vegReprodProb = vegReprodProb;
+            this.fireTolerance = fireTolerance;
+            this.shadeTolerance = shadeTolerance;
+            this.maturity = maturity;
+            this.longevity = longevity;
+        
+        }
+       
+        SpeciesPnET(ISpecies species)
+        {
+            _wuecnst = wuecnst[species];
+            _dnsc = dnsc[species];
+            _cfracbiomass = cfracbiomass[species];
+            _kwdlit = kwdlit[species];
+            _fracbelowg = fracbelowg[species];
+            _fracfol = fracfol[species];
+            _fractWd = fractWd[species];
+            _psnagered = psnagered[species];
+            _h2 = h2[species];
+            _h3 = h3[species];
+            _h4 = h4[species];
+            _slwdel = slwdel[species];
+            _slwmax = slwmax[species];
+            _tofol = tofol[species];
+            _toroot = toroot[species];
+            _halfsat = halfsat[species];
+            _initialnsc = initialnsc[species];
+            _k = k[species];
+            _towood = towood[species];
+            _estrad = estrad[species];
+            _estmoist = estmoist[species];
+            _follignin = follignin[species];
+            _preventestablishment = preventestablishment[species];
+            _psntopt = psntopt[species];
+            _q10 = q10[species]; 
+            _psntmin = psntmin[species];
+            _dvpd1 = dvpd1[species];
+            _foln = foln[species];
+            _dvpd2 = dvpd2[species];
+            _amaxa = amaxa[species];
+            _amaxb = amaxb[species];
+            _maintresp = maintresp[species];
+            _bfolresp = bfolresp[species];
+            _maxfolo3red = maxfolo3red[species];
+            _o3_halfsat = o3_halfsat[species];
+            index = species.Index;
+            name = species.Name;
+
+            maxSproutAge = species.MaxSproutAge;
+            minSproutAge = species.MinSproutAge;
+            postfireregeneration = species.PostFireRegeneration;
+            maxSeedDist = species.MaxSeedDist;
+            effectiveSeedDist = species.EffectiveSeedDist;
+            vegReprodProb = species.VegReprodProb;
+            fireTolerance = species.FireTolerance;
+            shadeTolerance = species.ShadeTolerance;
+            maturity = species.Maturity;
+            longevity = species.Longevity;
+        
+          
+        }
+         
         public static List<string> ParameterNames
         {
             get
