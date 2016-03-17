@@ -174,7 +174,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     if (System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(Headers[h], Label, System.Globalization.CompareOptions.IgnoreCase) >= 0) return h;
                 }
-                throw new System.Exception("Cannot find header " + Label);
+                return -1;
             }
 
             public ColumnNumbers(string HeaderLine)

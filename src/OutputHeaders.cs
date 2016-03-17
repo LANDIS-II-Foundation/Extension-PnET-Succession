@@ -15,7 +15,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string MaxLayerStdev = "MaxLayerStdev";  
         public const string layers = "layers";  
         public const string Tday = "Tday(C)";  
-        public const string Precip = "Precip(mm/mo)";  
+        public const string Precip = "Precip(mm/mo)";
+        public const string CO2 = "CO2";
+        public const string O3 = "O3";  
         public const string RunOff = "RunOff(mm/mo)";
         public const string SurfaceRunOff = "SurfaceRunOff(mm/mo)"; 
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";

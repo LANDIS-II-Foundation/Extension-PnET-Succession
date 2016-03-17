@@ -979,6 +979,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                        OutputHeaders.PAR0  + "," + 
                        OutputHeaders.Tday + "," + 
                        OutputHeaders.Precip + "," +
+                        OutputHeaders.CO2 + "," +
+                         OutputHeaders.O3 + "," +
                        OutputHeaders.RunOff + "," + 
                        OutputHeaders.Leakage + "," + 
                        OutputHeaders.PET + "," +
@@ -1008,13 +1010,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
 
             string s = monthdata.Year + "," +
-                        this.Ecoregion + "," +
+                        this.Ecoregion.Name + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
                         layerstdev.Max() + "," +
                         nlayers + "," +
                         monthdata.PAR0 + "," + 
                         monthdata.Tday + "," +
                         monthdata.Prec + "," +
+                        monthdata.CO2 + "," +
+                         monthdata.O3 + "," +
                         Hydrology.RunOff + "," +
                         Hydrology.Leakage + "," +
                         Hydrology.PET + "," +
