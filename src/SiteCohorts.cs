@@ -1087,6 +1087,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                        OutputHeaders.PAR0  + "," + 
                        OutputHeaders.Tday + "," + 
                        OutputHeaders.Precip + "," +
+                        OutputHeaders.CO2 + "," +
+                         OutputHeaders.O3 + "," +
                        OutputHeaders.RunOff + "," + 
                        OutputHeaders.Leakage + "," + 
                        OutputHeaders.PET + "," +
@@ -1123,6 +1125,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         monthdata.PAR0 + "," + 
                         monthdata.Tday + "," +
                         monthdata.Prec + "," +
+                        monthdata.CO2 + "," +
+                         monthdata.O3 + "," +
                         Hydrology.RunOff + "," +
                         Hydrology.Leakage + "," +
                         Hydrology.PET + "," +
@@ -1155,15 +1159,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 yield return this[species];
             }
         }
-        /*
-        public IEnumerator<Landis.Library.BiomassCohorts.ISpeciesCohorts> GetEnumerator()
-        {
-            foreach (Landis.Library.BiomassCohorts.SpeciesCohorts speciesCohorts in Speciescohorts)
-            {
-                yield return speciesCohorts;
-            }
-        }
-         */
+       
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -1186,10 +1182,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 yield return (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)this[species];
             }
 
-            //foreach (Landis.Library.BiomassCohorts.SpeciesCohorts speciesCohort in Speciescohorts)
-            //{
-            //    yield return speciesCohort;
-            //}
+             
         }
        
 
