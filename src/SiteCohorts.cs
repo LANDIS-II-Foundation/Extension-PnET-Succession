@@ -315,7 +315,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //float PrecInByCanopyLayer = precin / SubCanopyCohorts.Count();                
                 //if (PrecInByCanopyLayer < 0) throw new System.Exception("Error, PrecInByCanopyLayer = " + PrecInByCanopyLayer);
 
-                int numEvents = 4;  // maximum number of precipitation events per month
+                int numEvents = 11;  // maximum number of precipitation events per month
                 if (numEvents > SubCanopyCohorts.Count())
                     numEvents = SubCanopyCohorts.Count();
                 float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
