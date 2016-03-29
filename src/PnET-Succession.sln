@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "output-biomass-pnet", "..\.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LANDIS-II Debug Console", "..\..\Tools\Debug_Console_rc3\LANDIS-II Debug Console.csproj", "{742214C0-CBC9-4E06-8205-297A3EAE61B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "succession", "..\..\Library-Succession\succession-library\trunk\src\succession.csproj", "{DE8FD469-F80C-4B11-9E55-F99D001E563F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,16 @@ Global
 		{742214C0-CBC9-4E06-8205-297A3EAE61B8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{742214C0-CBC9-4E06-8205-297A3EAE61B8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{742214C0-CBC9-4E06-8205-297A3EAE61B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

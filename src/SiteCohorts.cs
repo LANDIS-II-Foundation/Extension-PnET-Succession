@@ -279,6 +279,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             grosspsn = new float[13];
             maintresp = new float[13];
 
+            Dictionary<ISpeciesPNET, float> annualEstab = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, float> monthlyEstab = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, int> monthlyCount = new Dictionary<ISpeciesPNET, int>();
+            foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+            {
+                annualEstab[spc] = 0;
+                monthlyCount[spc] = 0;
+            }
+
+
+            int monthCount = 0;
             for (int m = 0; m < data.Count(); m++ )
             {
                 this.Ecoregion.Variables = data[m];
@@ -315,7 +326,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //float PrecInByCanopyLayer = precin / SubCanopyCohorts.Count();                
                 //if (PrecInByCanopyLayer < 0) throw new System.Exception("Error, PrecInByCanopyLayer = " + PrecInByCanopyLayer);
 
-                int numEvents = 11;  // maximum number of precipitation events per month
+                int numEvents = (int) Math.Round(PlugIn.PrecipEvents);  // maximum number of precipitation events per month
                 if (numEvents > SubCanopyCohorts.Count())
                     numEvents = SubCanopyCohorts.Count();
                 float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
@@ -354,6 +365,25 @@ namespace Landis.Extension.Succession.BiomassPnET
                         }
                     }
                 }
+                else // When no cohorts are present
+                {
+                    // Add incoming precipitation to soil moisture
+                    success = hydrology.AddWater(precin);
+                    if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + " water = " + hydrology.Water);
+
+                    // Instantaneous runoff (excess of porosity)
+                    float runoff = Math.Max(hydrology.Water - Ecoregion.Porosity, 0);
+                    success = hydrology.AddWater(-1 * runoff);
+                    if (success == false) throw new System.Exception("Error adding water, runoff = " + runoff + " water = " + hydrology.Water);
+
+                    // Fast Leakage 
+                    Hydrology.Leakage = Math.Max(Ecoregion.LeakageFrac * (hydrology.Water - Ecoregion.FieldCap), 0);
+
+                    // Remove fast leakage
+                    success = hydrology.AddWater(-1 * Hydrology.Leakage);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+
+                }
 
                 CanopyLAI = 0; // Reset to 0
                 AllCohorts.ForEach(x =>
@@ -388,11 +418,44 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    establishmentProbability.Calculate_Establishment(data[m], Ecoregion, subcanopypar, hydrology);
+                    //establishmentProbability.Calculate_Establishment(data[m], Ecoregion, subcanopypar, hydrology);
+                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology);
+
+                    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                    {
+                        if (monthlyEstab.ContainsKey(spc))
+                        {
+                            annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
+                            monthlyCount[spc] = monthlyCount[spc] + 1;
+                        }
+                    }
+
                 }
 
                 AllCohorts.ForEach(x => x.NullSubLayers());
             }
+            if (PlugIn.ModelCore.CurrentTime > 0)
+            {
+                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                {
+                    bool estab = false;
+                    annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
+                    float pest = annualEstab[spc];
+                    if (!spc.PreventEstablishment)
+                    {
+
+                        if (pest > (float)PlugIn.ContinuousUniformRandom())
+                        {
+                            establishmentProbability.EstablishmentTrue(spc);
+                            estab = true;
+
+                        }
+                    }
+                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, estab);
+
+                }
+            }
+
             if (siteoutput != null)
             {
                 siteoutput.Write();
@@ -928,9 +991,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             ISpeciesPNET pnetSpecies = PlugIn.SpeciesPnET[species];
 
-            bool speciesPresent = cohorts.ContainsKey(pnetSpecies);
+            bool speciesPresent = cohorts.ContainsKey(species);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[pnetSpecies].Min(o => o.Age) > species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[species].Min(o => o.Age) > species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }
