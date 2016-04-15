@@ -299,13 +299,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             // NETPSN net photosynthesis
             speciespnetvars.Amax   = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
 
-            //Reference net Psn (lab conditions) in gC/timestep
+            //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
             float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion;
 
             //-------------------FTempPSN (public for output file)
             speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
 
-            // PSN (g/tstep) reference net psn in a given temperature
+            // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
             speciespnetvars.FTempPSNRefNetPsn =  speciespnetvars.FTempPSN * RefNetPsn;
  
             //EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);

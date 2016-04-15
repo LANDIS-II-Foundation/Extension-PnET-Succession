@@ -248,11 +248,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
-                double defoliation = Landis.Library.Biomass.CohortDefoliation.Compute(Site, AllCohorts[cohort].Species, AllCohorts[cohort].Biomass, SiteBiomass);
-                
-                if (defoliation > 0)
+                if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    AllCohorts[cohort].ReduceFoliage(defoliation);
+                    //double defoliation = Landis.Library.Biomass.CohortDefoliation.Compute(Site, AllCohorts[cohort].Species, AllCohorts[cohort].Biomass, SiteBiomass);
+                    AllCohorts[cohort].CalculateDefoliation(Site, SiteBiomass);
+
+                    //if (defoliation > 0)
+                    //{
+                    //    AllCohorts[cohort].ReduceFoliage(defoliation);
+                    //}
                 }
                 for (int i = 0; i < PlugIn.IMAX; i++)
                 {
@@ -272,7 +276,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             List<List<int>> random_range = GetRandomRange(bins);
              
-            float LeakageFractionPerCohort = Ecoregion.LeakageFrac / SubCanopyCohorts.Count();
+            //float LeakageFractionPerCohort = Ecoregion.LeakageFrac / SubCanopyCohorts.Count();
 
             folresp = new float[13];
             netpsn = new float[13];
@@ -399,14 +403,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
               
                 canopylaimax = (byte)Math.Max(canopylaimax, CanopyLAI);
-                watermax = (byte)Math.Max(hydrology.Water, watermax);
+                watermax = (ushort)Math.Max(hydrology.Water, watermax);
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
-                float evaporation = hydrology.CalculateEvaporation(this);
-                success = hydrology.AddWater(-1 * evaporation);
+                Hydrology.Evaporation = hydrology.CalculateEvaporation(this);
+                success = hydrology.AddWater(-1 * Hydrology.Evaporation);
                 if (success == false)
                 {
-                    throw new System.Exception("Error adding water, evaporation = " + evaporation + " water = " + hydrology.Water);
+                    throw new System.Exception("Error adding water, evaporation = " + Hydrology.Evaporation + " water = " + hydrology.Water);
                 }
 
                 if (siteoutput != null)
@@ -1053,6 +1057,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             
             string s = OutputHeaders.Time +  "," + 
+                       OutputHeaders.SoilType +"," +
                        OutputHeaders.NrOfCohorts + "," +
                        OutputHeaders.MaxLayerStdev + "," + 
                        OutputHeaders.layers + "," + 
@@ -1088,6 +1093,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
 
             string s = monthdata.Year + "," +
+                Ecoregion.SoilType + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
                         layerstdev.Max() + "," +
                         nlayers + "," +

@@ -56,6 +56,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Transpiration = "Transpiration(mm)";
         public const string DeliveryPotential = "DeliveryPotential";
         public const string MaxWater = "MaxWater";
+        public const string SoilType = "SoilType";
           
     }
 }
