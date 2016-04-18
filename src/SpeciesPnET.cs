@@ -45,11 +45,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxfolo3red;
-        private static Landis.Library.Parameters.Species.AuxParm<float> o3_halfsat;
+        private static Landis.Library.Parameters.Species.AuxParm<float> o3totalfolloss; 
+        private static Landis.Library.Parameters.Species.AuxParm<float> o3RespPwr;
 
-        private float _o3_halfsat;
-        private float _maxfolo3red;
+        private float _o3RespPwr;//;
+        private float _o3totalfolloss;
         private float _wuecnst;
         private float _cfracbiomass;
         private float _kwdlit;
@@ -384,18 +384,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return minSproutAge;
             }
         }
-        public float MaxFolO3Red
+        public float O3TotalFolLoss
         {
             get
             {
-                return _maxfolo3red;
+                return _o3totalfolloss;
             }
         }
-        public float O3_HalfSat
+        public float O3RespPwr
         {
             get
             {
-                return _o3_halfsat;
+                return _o3RespPwr; 
             }
         }
         public Landis.Core.PostFireRegeneration PostFireRegeneration
@@ -459,8 +459,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         public SpeciesPnET()
         {
-            maxfolo3red = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maxfolo3red"));
-            o3_halfsat = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("o3_halfsat"));
+            o3totalfolloss = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3TotalFolLoss"));
+            o3RespPwr = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3RespPwr"));
             wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
             cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
@@ -640,8 +640,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             _amaxb = amaxb[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
-            _maxfolo3red = maxfolo3red[species];
-            _o3_halfsat = o3_halfsat[species];
+            _o3totalfolloss = o3totalfolloss[species];
+            _o3RespPwr = o3RespPwr[species];
             index = species.Index;
             name = species.Name;
 

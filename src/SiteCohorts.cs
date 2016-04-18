@@ -291,14 +291,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
 
-                if (data[m].Month == 6)
-                {
-                    for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
-                    {
-                        float defoliation = data[0][AllCohorts[cohort].Species.Name].O3_FolRed;
-                        AllCohorts[cohort].ReduceFoliage(defoliation);
-                    }
-                }
+                
                
                 // mm
                 float snowmelt = Math.Min(snowPack, CumputeSnowMeltFraction(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan) * snowPack);
@@ -329,6 +322,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                         {
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, LeakageFractionPerCohort, hydrology, ref subcanopypar);
+
+                            // O3 reduction
+                            c.ReduceFoliage(this.Ecoregion.Variables[c.Species.Name].O3_FolRed);
+                             
                             if (success == false)
                             {
                                 throw new System.Exception("Error CalculatePhotosynthesis");
