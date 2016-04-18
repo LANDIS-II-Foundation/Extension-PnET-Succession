@@ -170,7 +170,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             catch (System.Exception e)
             {
-                throw new System.Exception("Unexpected file format " + this.FileName + " " + e.Message + "\n\nNOTE header line is mandatory");
+                throw new System.Exception("Unexpected file format (dir,file) (" + 
+                    System.IO.Directory.GetCurrentDirectory() +  ","+
+                    this.FileName + ")"+
+                    " " + e.Message + "\n\nNOTE header line is mandatory");
             }
         }
         
