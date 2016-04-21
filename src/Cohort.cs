@@ -381,7 +381,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 GrossPsn[index] = NetPsn[index] + FolResp[index];
 
                 // Transpiration depends on gross psn, water use efficiency (gCO2/mm water) and molecular weight (gC/gCO2)
-                Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
+                Transpiration[index] = Math.Min(hydrology.Water, GrossPsn[index] / ecoregion.Variables[Species.Name].WUE / ecoregion.Variables[Species.Name].DelAmax * Constants.MCO2_MC);
                  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);

@@ -278,6 +278,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // CO2 effect on growth
             float delamax = 1 + ((ArelElev - Arel350) / Arel350);
+            speciespnetvars.DelAmax = delamax;
 
             // CO2 effect on photosynthesis
             // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
@@ -289,15 +290,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             //_gsInt = (float)((0.4656 * delamax) - 0.9701);
 
             //DWUE determined from CO2 effects on conductance
-            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    
+            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);
+            speciespnetvars.WUE = wue;
               
             // water use efficiency in a co2 enriched atmosphere
-            speciespnetvars.WUE_CO2_corr = wue / delamax;
+            //speciespnetvars.WUE_CO2_corr = wue / delamax;
 
             //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
             // NETPSN net photosynthesis
-            speciespnetvars.Amax   = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
+            speciespnetvars.Amax = speciespnetvars.DelAmax * (spc.AmaxA + spc.AmaxB * spc.FolN);
 
             //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
             float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion;
