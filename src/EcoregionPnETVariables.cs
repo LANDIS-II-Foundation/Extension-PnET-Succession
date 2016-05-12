@@ -164,6 +164,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             else return (tday - PsnTMin) / (PsnTOpt - PsnTMin);
         }
 
+        public static float CurvelinearPsnTempResponse(float tday, float PsnTOpt, float PsnTMin)
+        {
+            // Copied from Psn_Resp_Calculations.xlsx[FTempPsn_Mod]
+            //=IF(D2>AA$2,1,MAX(0,(($AA$3-D2)*(D2-$AA$1))/((($AA$3-$AA$1)/2)^2)))
+            //=IF(tday>PsnTOpt,1,MAX(0,((PsnTMax-tday)*(tday-PsnTMin))/(((PsnTMax-PsnTMin)/2)^2)))
+            float PsnTMax = PsnTOpt + (PsnTOpt - PsnTMin);
+            if (tday < PsnTMin) return 0;
+            else if (tday > PsnTOpt) return 1;
+
+            else return ((PsnTMax-tday)*(tday-PsnTMin))/(float)Math.Pow(((PsnTMax-PsnTMin)/2),2);
+        }
+
         public static float Calculate_NightLength(float hr)
         {
             return 60 * 60 * (24 - hr);
@@ -305,7 +317,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion;
 
             //-------------------FTempPSN (public for output file)
-            speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
+            //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
+            speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
 
             // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
             speciespnetvars.FTempPSNRefNetPsn =  speciespnetvars.FTempPSN * RefNetPsn;
