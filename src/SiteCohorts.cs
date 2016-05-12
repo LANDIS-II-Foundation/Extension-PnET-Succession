@@ -603,6 +603,23 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
+        public float FoliageSum
+        {
+            get
+            {
+                return AllCohorts.Sum(o => o.Fol);
+            }
+
+        }
+
+        public float NSCSum
+        {
+            get
+            {
+                return AllCohorts.Sum(o => o.NSC);
+            }
+
+        }
         public int CohortCount
         {
             get
