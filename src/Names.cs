@@ -33,6 +33,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
         public const string PrecipEvents = "PrecipEvents";
+        public const string DTemp = "DTemp";
        
         public const string LeakageFrac = "LeakageFrac";
         public const string PrecLossFrac = "PrecLossFrac";
