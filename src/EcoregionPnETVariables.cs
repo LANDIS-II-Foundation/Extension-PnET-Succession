@@ -279,9 +279,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             // CO2 effect on growth
             float delamax = 1 + ((ArelElev - Arel350) / Arel350);
 
-            // Foliar reduction due to ozone pollution
-            speciespnetvars.O3_FolRed = climate_dataset.O3 > 0 ? spc.MaxFolO3Red * climate_dataset.O3 / (spc.O3_HalfSat + climate_dataset.O3) : 0;
-
             // CO2 effect on photosynthesis
             // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
             //float Ci = climate_dataset.CO2 * (1 - cicaRatio);

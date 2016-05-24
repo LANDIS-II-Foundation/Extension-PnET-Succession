@@ -291,14 +291,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
 
-                if (data[m].Month == 6)
-                {
-                    for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
-                    {
-                        float defoliation = data[0][AllCohorts[cohort].Species.Name].O3_FolRed;
-                        AllCohorts[cohort].ReduceFoliage(defoliation);
-                    }
-                }
                
                 // mm
                 float snowmelt = Math.Min(snowPack, CumputeSnowMeltFraction(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan) * snowPack);
@@ -1045,7 +1037,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 yield return this[species];
             }
         }
-       
+        /*
+        public IEnumerator<Landis.Library.BiomassCohorts.ISpeciesCohorts> GetEnumerator()
+        {
+            foreach (Landis.Library.BiomassCohorts.SpeciesCohorts speciesCohorts in Speciescohorts)
+            {
+                yield return speciesCohorts;
+            }
+        }
+         */
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -1068,7 +1068,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 yield return (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)this[species];
             }
 
-             
+            //foreach (Landis.Library.BiomassCohorts.SpeciesCohorts speciesCohort in Speciescohorts)
+            //{
+            //    yield return speciesCohort;
+            //}
         }
        
 

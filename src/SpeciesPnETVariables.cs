@@ -16,6 +16,5 @@ namespace Landis.Extension.Succession.BiomassPnET
        
         public float WUE_CO2_corr;
         public float Amax;
-        public float O3_FolRed;
     }
 }

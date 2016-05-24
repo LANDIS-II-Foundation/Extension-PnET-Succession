@@ -104,12 +104,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         // Referece maintenance respiration 
         float MaintResp { get; }
-
-        // Maximul fraction of foliage loss (per WHAT TIME UNIT) due to O3 pollution
-        float MaxFolO3Red { get; }
-
-        // O3 half saturation concentration (units)
-        float O3_HalfSat { get; }
-
+         
     }
 }
