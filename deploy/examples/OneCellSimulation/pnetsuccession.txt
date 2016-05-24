@@ -18,6 +18,6 @@ PnETSpeciesParameters	SpeciesParameters.txt
 											
 EcoregionParameters	EcoregionParameters.txt	
    								
-	 
+PnETGenericParameters		PnETGenericParameters.txt
  											
  										

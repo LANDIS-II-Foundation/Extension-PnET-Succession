@@ -14,7 +14,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float FTempPSN;
         public float FTempPSNRefNetPsn;
        
-        public float WUE_CO2_corr;
+        //public float WUE_CO2_corr;
+        public float WUE;
+        public float DelAmax;
         public float Amax;
     }
 }

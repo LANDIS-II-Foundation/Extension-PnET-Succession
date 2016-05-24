@@ -164,6 +164,32 @@ namespace Landis.Extension.Succession.BiomassPnET
             else return (tday - PsnTMin) / (PsnTOpt - PsnTMin);
         }
 
+        public static float CurvelinearPsnTempResponse(float tday, float PsnTOpt, float PsnTMin)
+        {
+            // Copied from Psn_Resp_Calculations.xlsx[FTempPsn_Mod]
+            //=IF(D2>AA$2,1,MAX(0,(($AA$3-D2)*(D2-$AA$1))/((($AA$3-$AA$1)/2)^2)))
+            //=IF(tday>PsnTOpt,1,MAX(0,((PsnTMax-tday)*(tday-PsnTMin))/(((PsnTMax-PsnTMin)/2)^2)))
+            float PsnTMax = PsnTOpt + (PsnTOpt - PsnTMin);
+            if (tday < PsnTMin) return 0;
+            else if (tday > PsnTOpt) return 1;
+
+            else return ((PsnTMax-tday)*(tday-PsnTMin))/(float)Math.Pow(((PsnTMax-PsnTMin)/2),2);
+        }
+
+        public static float DTempResponse(float tday, float PsnTOpt, float PsnTMin)
+        {
+            // Copied from Psn_Resp_Calculations.xlsx[DTemp]
+            //=MAX(0,(($Y$3-D2)*(D2-$Y$1))/((($Y$3-$Y$1)/2)^2))
+            //=MAX(0,((PsnTMax-tday)*(tday-PsnTMin))/(((PsnTMax-PsnTMin)/2)^2))
+            float PsnTMax = PsnTOpt + (PsnTOpt - PsnTMin);
+            if (tday < PsnTMin)
+                return 0;
+            else{
+                return ((PsnTMax-tday)*(tday-PsnTMin))/(float)Math.Pow(((PsnTMax-PsnTMin)/2),2);
+            }
+
+        }
+
         public static float Calculate_NightLength(float hr)
         {
             return 60 * 60 * (24 - hr);
@@ -224,7 +250,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, List<ISpeciesPNET> Species)
+        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPNET> Species)
         {
             
             this._date = Date;
@@ -247,14 +273,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ISpeciesPNET spc in Species )
             {
-                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, Daylength, nightlength, spc);
+                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc);
 
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
 
         }
         
-        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, float daylength, float nightlength, ISpeciesPNET spc)
+        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float daylength, float nightlength, ISpeciesPNET spc)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
@@ -278,6 +304,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // CO2 effect on growth
             float delamax = 1 + ((ArelElev - Arel350) / Arel350);
+            speciespnetvars.DelAmax = delamax;
 
             // CO2 effect on photosynthesis
             // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
@@ -289,23 +316,33 @@ namespace Landis.Extension.Succession.BiomassPnET
             //_gsInt = (float)((0.4656 * delamax) - 0.9701);
 
             //DWUE determined from CO2 effects on conductance
-            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    
+            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);
+            speciespnetvars.WUE = wue;
               
             // water use efficiency in a co2 enriched atmosphere
-            speciespnetvars.WUE_CO2_corr = wue / delamax;
+            //speciespnetvars.WUE_CO2_corr = wue / delamax;
 
             //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
             // NETPSN net photosynthesis
-            speciespnetvars.Amax   = delamax * (spc.AmaxA + spc.AmaxB * spc.FolN);
+            speciespnetvars.Amax = speciespnetvars.DelAmax * (spc.AmaxA + spc.AmaxB * spc.FolN);
 
-            //Reference net Psn (lab conditions) in gC/timestep
+            //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
             float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion;
 
+           
             //-------------------FTempPSN (public for output file)
-            speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin);
+            if (DTemp)
+            {
+                speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); 
+            }
+            else
+            {
+                //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
+                speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Modified 051216(BRM)
+            }
 
-            // PSN (g/tstep) reference net psn in a given temperature
+            // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
             speciespnetvars.FTempPSNRefNetPsn =  speciespnetvars.FTempPSN * RefNetPsn;
  
             //EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);

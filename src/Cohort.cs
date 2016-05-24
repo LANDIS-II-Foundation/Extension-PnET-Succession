@@ -33,6 +33,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float fol;
         private float nsc;
         private ushort age;
+        private float defolProp; //BRM
          
         public ushort index;
         
@@ -193,6 +194,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return PlugIn.SpeciesPnET[species];
             }
         }
+        // Defoliation proportion - BRM
+        public float DefolProp
+        {
+            get
+            {
+                return defolProp;
+            }
+        }
         // Constructor
         public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
         {
@@ -230,23 +239,28 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         
 
-        
+        public void CalculateDefoliation(ActiveSite site, int SiteBiomass)
+        {
+            defolProp = (float) Landis.Library.Biomass.CohortDefoliation.Compute(site, species, (int)biomass, SiteBiomass);
+        }
 
         public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
         {
             
             bool success = true;
 
+
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
             LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
             
             // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
-            Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
-            if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
+            //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
+            //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
 
             // Incoming precipitation
-            float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
+            //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
+            float waterIn = PrecInByCanopyLayer; //mm 
 
             // Add incoming precipitation to soil moisture
             success = hydrology.AddWater(waterIn);
@@ -323,7 +337,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                     nsc -= Folalloc;
                 }
             }
+
+            //  Apply defoliation in month of june
+            if ((PlugIn.ModelCore.CurrentTime > 0) && (ecoregion.Variables.Month == (int)Constants.Months.June))
+            {
+                if (DefolProp > 0)
+                {
+                    //Adjust defol prop for foliage longevity - defol only affects current foliage
+                    float adjDefol = DefolProp * species.TOfol;
+                    ReduceFoliage(adjDefol);
+                    // Update LAI after defoliation
+                    LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+                }
             
+            }
+
             // Reduction factor for radiation on photosynthesis
             FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
             
@@ -344,7 +372,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 NetPsn[index] = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
 
                 // Net foliage respiration depends on reference psn (AMAX)
-                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
+                //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
+                //Subistitute 24 hours in place of DayLength because foliar respiration does occur at night.  FTempRespDay uses Tave temps reflecting both day and night temperatures.
+                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
                 
                 // Actal foliage respiration (growth respiration) 
                 FolResp[index] = FWater[index] * FTempRespDayRefResp * fol / (float)PlugIn.IMAX;
@@ -353,7 +383,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 GrossPsn[index] = NetPsn[index] + FolResp[index];
 
                 // Transpiration depends on gross psn, water use efficiency (gCO2/mm water) and molecular weight (gC/gCO2)
-                Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
+                Transpiration[index] = Math.Min(hydrology.Water, GrossPsn[index] / ecoregion.Variables[Species.Name].WUE / ecoregion.Variables[Species.Name].DelAmax * Constants.MCO2_MC);
                  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);

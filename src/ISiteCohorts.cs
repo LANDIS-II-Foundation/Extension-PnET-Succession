@@ -45,5 +45,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         ushort WaterMax { get; }
 
         uint BelowGroundBiomass { get; }
+
+        float FoliageSum { get; }
+
+        float NSCSum { get; }
     }
 }
