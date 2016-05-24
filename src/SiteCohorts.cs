@@ -971,8 +971,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         string Header(Landis.SpatialModeling.ActiveSite site)
         {
             
-            string s = OutputHeaders.Time +  "," +
-                        OutputHeaders.Ecoregion + "," + 
+            string s = OutputHeaders.Time +  "," + 
                        OutputHeaders.NrOfCohorts + "," +
                        OutputHeaders.MaxLayerStdev + "," + 
                        OutputHeaders.layers + "," + 
@@ -1008,7 +1007,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
 
             string s = monthdata.Year + "," +
-                        this.Ecoregion + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
                         layerstdev.Max() + "," +
                         nlayers + "," +
