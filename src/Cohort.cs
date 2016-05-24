@@ -352,8 +352,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Gross psn depends on net psn and foliage respiration
                 GrossPsn[index] = NetPsn[index] + FolResp[index];
 
+                // Old method
                 // Transpiration depends on gross psn, water use efficiency (gCO2/mm water) and molecular weight (gC/gCO2)
-                Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
+                //Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
+
+                // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
+                Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (ecoregion.Variables[Species.Name].JCO2 / ecoregion.Variables[Species.Name].JH2O)));
                  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
@@ -411,6 +415,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         public void UpdateCohortData(IEcoregionPnETVariables monthdata )
         {
+            float netPsnSum = NetPsn.Sum();
+            float transpirationSum = Transpiration.Sum();
+            float JCO2_JH2O = (float) (0.01227 * (netPsnSum / transpirationSum));
+            float WUE = JCO2_JH2O * ((float)44 / (float)18); //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
+
             // Cohort output file
             string s = Math.Round(monthdata.Year, 2) + "," + 
                         Age + "," +
@@ -422,7 +431,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        MaintenanceRespiration.Sum() + "," +
                        NetPsn.Sum() + "," +                  // Sum over canopy layers
                        Transpiration.Sum() + "," +
-                       ((Transpiration.Sum() > 0) ? NetPsn.Sum() / Transpiration.Sum() : 0).ToString() + "," +
+                       WUE.ToString() + "," +
                        fol + "," + 
                        Root + "," + 
                        Wood + "," + 

@@ -299,17 +299,25 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
             //float Ci = climate_dataset.CO2 * (1 - cicaRatio);
             //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
-            float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
+            //float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
 
             //_gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
             //_gsInt = (float)((0.4656 * delamax) - 0.9701);
 
             //DWUE determined from CO2 effects on conductance
-            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    
-              
-            // water use efficiency in a co2 enriched atmosphere
-            speciespnetvars.WUE_CO2_corr = wue / delamax;
+            //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    
 
+            // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
+            float V = (float)(8314.47*(climate_dataset.Tmin+273)/101.3);
+            float JCO2 = (float)(0.139 * ((climate_dataset.CO2 - ciElev) / V) * 0.00001);
+            speciespnetvars.JCO2 = JCO2;
+            float JH2O = (float) (0.239 *((VPD/(8314.47 *(climate_dataset.Tmin + 273)))));
+            speciespnetvars.JH2O = JH2O;
+
+            float wue = (JCO2/ JH2O)*(44/18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
+
+            // water use efficiency in a co2 enriched atmosphere
+            //speciespnetvars.WUE_CO2_corr = wue / delamax;
             //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
             // NETPSN net photosynthesis
