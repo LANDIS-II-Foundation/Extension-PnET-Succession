@@ -27,6 +27,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         #region private static variables
         private static bool wythers;
+        private static bool dtemp;
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
@@ -198,7 +199,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
 
-                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, species);
+                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species);
 
                     all_values[ecoregion].Add(date, ecoregion_variables);
 
@@ -219,6 +220,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
+            dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
+
 
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();

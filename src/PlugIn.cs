@@ -27,6 +27,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
+        public static float PrecipEvents;
         
         
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
@@ -270,6 +271,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
+            PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;
           
 
             // Initialize Reproduction routines:

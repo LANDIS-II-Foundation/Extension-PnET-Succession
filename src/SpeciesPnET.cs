@@ -10,44 +10,35 @@ namespace Landis.Extension.Succession.BiomassPnET
     /// </summary>
     public class SpeciesPnET : ISpeciesPNET
     {
-        private static List<Tuple<ISpecies, ISpeciesPNET>> SpeciesCombinations;
+        static List<Tuple<ISpecies, ISpeciesPNET>> SpeciesCombinations;
 
-        private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
-        private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
-        private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracbelowg;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h2;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h3;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h4;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;
-        private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
-        private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
-        private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
-        private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
-        private static Landis.Library.Parameters.Species.AuxParm<float> k;
-        private static Landis.Library.Parameters.Species.AuxParm<float> towood;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
-        private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
-        private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
-        private static Landis.Library.Parameters.Species.AuxParm<float> q10;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> foln;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
-        private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
-        private static Landis.Library.Parameters.Species.AuxParm<float> o3totalfolloss; 
-        private static Landis.Library.Parameters.Species.AuxParm<float> o3RespPwr;
+         
+         public List<ISpeciesPNET> AllSpecies 
+         { 
+             get
+             { 
+                 return SpeciesCombinations.Select(combination => combination.Item2).ToList(); 
+             } 
+         } 
+ 
+ 
+         public ISpeciesPNET this[ISpecies species] 
+         { 
+             get
+             { 
+                 return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2; 
+             } 
+         } 
+         public ISpecies this[ISpeciesPNET species] 
+         { 
+             get
+             { 
+                 return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1; 
+             } 
+         } 
 
+
+        #region private variables
         private float _o3RespPwr;//;
         private float _o3totalfolloss;
         private float _wuecnst;
@@ -85,6 +76,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _bfolresp;
         private string name;
         private int index;
+        
         private int  maxSproutAge;
         private int minSproutAge;
         private Landis.Core.PostFireRegeneration postfireregeneration;
@@ -93,372 +85,58 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float  vegReprodProb;
         private byte fireTolerance;
         private byte shadeTolerance;
-        private int maturity;
-        private int longevity;
-         
-        public List<ISpeciesPNET> AllSpecies
-        {
-            get
-            {
-                return SpeciesCombinations.Select(combination => combination.Item2).ToList();
-            }
-        }
-
-        public ISpeciesPNET this[ISpecies species]
-        {
-            get
-            {
-                return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2;
-            }
-        }
-        public ISpecies this[ISpeciesPNET species]
-        {
-            get
-            {
-                return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1;
-            }
-        }
-        public int Index
-        {
-            get
-            {
-                return index;
-            }
-        }
-        public float BFolResp
-        {
-            get
-            {
-                return _bfolresp;
-            }
-        }
-        public float AmaxA
-        {
-            get
-            {
-                return _amaxa;
-            }
-        }
-        public float AmaxB
-        {
-            get
-            {
-                return _amaxb;
-            }
-        }
-
-        public float MaintResp
-        {
-            get
-            {
-                return _maintresp;
-            }
-        }
-
-        public float PsnTMin
-        {
-            get
-            {
-                return _psntmin;
-            }
-        }
-        public float DVPD1
-        {
-            get
-            {
-                return _dvpd1;
-            }
-        }
-        public float FolN
-        {
-            get
-            {
-                return _foln;
-            }
-        }
-        public float DVPD2
-        {
-            get
-            {
-                return _dvpd2;
-            }
-
-        }
-        public float PsnTOpt
-        {
-            get
-            {
-                return _psntopt;
-            }
-        }
-        public float Q10
-        {
-            get
-            {
-                return _q10;
-            }
-        }
-        public float EstRad
-        {
-            get
-            {
-                return _estrad;
-            }
-        }
-        public bool PreventEstablishment
-        {
-            get
-            {
-                return _preventestablishment;
-            }
-        }
-        public float FolLignin
-        {
-            get
-            {
-                return _follignin;
-            }
-        }
-        public float EstMoist
-        {
-            get
-            {
-                return _estmoist;
-            }
-        }
-        public float TOwood
-        {
-            get
-            {
-                return _towood;
-            }
-        }
-
-        public float WUEcnst
-        {
-            get
-            {
-                return _wuecnst;
-            }
-        }
-        public float K
-        {
-            get
-            {
-                return _k;
-            }
-        }
-        public float InitialNSC
-        {
-            get
-            {
-                return _initialnsc;
-            }
-        }
-        public float HalfSat
-        {
-            get
-            {
-                return _halfsat;
-            }
-        }
-        public float TOroot
-        {
-            get
-            {
-                return _toroot;
-            }
-        }
-        public float TOfol
-        {
-            get
-            {
-                return _tofol;
-            }
-        }
-        public float SLWDel
-        {
-            get
-            {
-                return _slwdel;
-            }
-        }
-        public float SLWmax
-        {
-            get
-            {
-                return _slwmax;
-            }
-        }
-        public ushort H4
-        {
-            get
-            {
-                return _h4;
-            }
-        }
-        public ushort H3
-        {
-            get
-            {
-                return _h3;
-            }
-        }
-        public ushort H2
-        {
-            get
-            {
-                return _h2;
-            }
-        }
-        public float PsnAgeRed
-        {
-            get
-            {
-                return _psnagered;
-            }
-        }
-        public float KWdLit
-        {
-            get
-            {
-                return _kwdlit;
-            }
-        }
-        public float FrActWd
-        {
-            get
-            {
-                return _fractWd;
-            }
-        }
-        public float FracFol
-        {
-            get
-            {
-                return _fracfol;
-            }
-        }
-        public float FracBelowG
-        {
-            get
-            {
-                return _fracbelowg;
-            }
-        }
-        public float DNSC
-        {
-            get
-            {
-                return _dnsc;
-            }
-        }
-
-        public float CFracBiomass
-        {
-            get
-            {
-                return _cfracbiomass;
-            }
-        }
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-        }
+        int maturity;
+        int longevity;
+        # endregion
 
 
-        public int MaxSproutAge
-        {
-            get
-            {
-                return maxSproutAge;
-            }
-        }
-        public int MinSproutAge
-        {
-            get
-            {
-                return minSproutAge;
-            }
-        }
-        public float O3TotalFolLoss
-        {
-            get
-            {
-                return _o3totalfolloss;
-            }
-        }
-        public float O3RespPwr
-        {
-            get
-            {
-                return _o3RespPwr; 
-            }
-        }
-        public Landis.Core.PostFireRegeneration PostFireRegeneration
-        {
-            get
-            {
-                return postfireregeneration;
+        #region private static species variables
+        private static Landis.Library.Parameters.Species.AuxParm<float> o3totalfolloss;
+        private static Landis.Library.Parameters.Species.AuxParm<float> o3RespPwr;
+        private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
+        private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
+        private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
+        private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fracbelowg;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
+        private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
+        private static Landis.Library.Parameters.Species.AuxParm<ushort> h2;
+        private static Landis.Library.Parameters.Species.AuxParm<ushort> h3;
+        private static Landis.Library.Parameters.Species.AuxParm<ushort> h4;
+        private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
+        private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
+  
+        private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
+        private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
+        private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
+        private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
+        private static Landis.Library.Parameters.Species.AuxParm<float> k;
+        
+        private static Landis.Library.Parameters.Species.AuxParm<float> towood;
+        private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
+        private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
+        private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
+        private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
+        private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
 
-            }
-        }
 
-        public int MaxSeedDist
-        {
-            get
-            {
-                return maxSeedDist;
-            }
-        }
-        public int EffectiveSeedDist
-        {
-            get
-            {
-                return effectiveSeedDist;
-            }
-        }
+        private static Landis.Library.Parameters.Species.AuxParm<float> q10;
+        private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
+        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
+        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
+        private static Landis.Library.Parameters.Species.AuxParm<float> foln;
+        private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
+        private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
+        
+        private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
+        private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
+        
+        #endregion
 
-        public float VegReprodProb
-        {
-            get
-            {
-                return vegReprodProb;
-            }
-        }
-        public byte FireTolerance
-        {
-            get
-            {
-                return fireTolerance;
-            }
-        }
-        public byte ShadeTolerance
-        {
-            get
-            {
-                return shadeTolerance;
-            }
-        }
-        public int Maturity
-        {
-            get
-            {
-                return maturity;
-            }
-        }
-        public int Longevity
-        {
-            get
-            {
-                return longevity;
-            }
-        }
         public SpeciesPnET()
         {
+            #region initialization of private static species variables
             o3totalfolloss = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3TotalFolLoss"));
             o3RespPwr = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3RespPwr"));
             wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
@@ -494,7 +172,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
-             
+            #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
              
@@ -658,7 +336,351 @@ namespace Landis.Extension.Succession.BiomassPnET
         
           
         }
-         
+        
+
+        #region Accessors
+
+        public int Index
+        {
+            get
+            {
+                return index;
+            }
+        }
+        public float BFolResp
+        {
+            get
+            {
+                return _bfolresp;
+            }
+        }
+        public float AmaxA
+        {
+            get
+            {
+                return _amaxa;
+            }
+        }
+        public float AmaxB
+        {
+            get
+            {
+                return _amaxb;
+            }
+        }
+       
+        public float MaintResp
+        {
+            get
+            {
+                return _maintresp;
+            }
+        }
+
+        public float PsnTMin
+        {
+            get
+            {
+                return _psntmin;
+            }
+        }
+        public float DVPD1
+        {
+            get
+            {
+                return _dvpd1;
+            }
+        }
+        public float FolN
+        {
+            get
+            {
+                return _foln;
+            }
+        }
+        public float DVPD2
+        {
+            get
+            {
+                return _dvpd2;
+            }
+
+        }
+        public float PsnTOpt
+        {
+            get
+            {
+                return _psntopt;
+            }
+        }
+        public float Q10
+        {
+            get
+            {
+                return _q10;
+            }
+        }
+        public float EstRad
+        {
+            get
+            {
+                return _estrad;
+            }
+        }
+        public bool PreventEstablishment
+        {
+            get 
+            { 
+                return _preventestablishment; 
+            }
+        }
+        public float FolLignin
+        {
+            get 
+            { 
+                return _follignin; 
+            }
+        }
+        public float EstMoist
+        {
+            get 
+            { 
+                return _estmoist; 
+            }
+        }
+        public float TOwood
+        {
+            get
+            {
+                return _towood;
+            }
+        }
+
+        public float WUEcnst
+        {
+            get
+            {
+                return _wuecnst;
+            }
+        }
+        public float K
+        {
+            get
+            {
+                return _k;
+            }
+        }
+        public float InitialNSC
+        {
+            get
+            {
+                return _initialnsc;
+            }
+        }
+        public float HalfSat
+        {
+            get
+            {
+                return _halfsat;
+            }
+        }
+        public float TOroot
+        {
+            get
+            {
+                return _toroot;
+            }
+        }
+        public float TOfol
+        {
+            get
+            {
+                return _tofol;
+            }
+        }
+        public float SLWDel
+        {
+            get
+            {
+                return _slwdel;
+            }
+        }
+        public float SLWmax
+        {
+            get
+            {
+                return _slwmax;
+            }
+        }
+        public ushort H4
+        {
+            get
+            {
+                return _h4;
+            }
+        }
+        public ushort H3
+        {
+            get
+            {
+                return _h3;
+            }
+        }
+        public ushort H2
+        {
+            get
+            {
+                return _h2;
+            }
+        }
+        public float PsnAgeRed
+        {
+            get
+            {
+                return _psnagered;
+            }
+        }
+        public float KWdLit
+        {
+            get
+            {
+                return _kwdlit;
+            }
+        }
+        public float FrActWd
+        {
+            get
+            {
+                return _fractWd;
+            }
+        }
+        public float FracFol
+        {
+            get
+            {
+                return _fracfol;
+            }
+        }
+        public float FracBelowG
+        {
+            get
+            {
+                return _fracbelowg;
+            }
+        }
+        public float DNSC
+        {
+            get
+            {
+                return _dnsc;
+            }
+        }
+
+        public float CFracBiomass
+        {
+            get
+            {
+                return _cfracbiomass;
+            }
+        }
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+        }
+
+     
+        public int MaxSproutAge
+        {
+            get
+            {
+                return maxSproutAge;
+            }
+        }
+        public int MinSproutAge
+        {
+            get
+            {
+                return  minSproutAge;
+            }
+        }
+        public float O3TotalFolLoss
+        {
+            get
+            {
+                return _o3totalfolloss;
+            }
+        }
+        public float O3RespPwr
+        {
+            get
+            {
+                return _o3RespPwr; 
+            }
+        }
+        public Landis.Core.PostFireRegeneration PostFireRegeneration
+        {
+            get
+            {
+                return postfireregeneration;
+
+            }
+        }
+        
+        public int MaxSeedDist
+        {
+            get
+            {
+                return maxSeedDist;
+            }
+        }
+        public int EffectiveSeedDist
+        {
+            get
+            {
+                return effectiveSeedDist;
+            }
+        }
+       
+        public float VegReprodProb
+        {
+            get
+            {
+                return vegReprodProb;
+            }
+        }
+        public byte FireTolerance
+        {
+            get
+            {
+                return fireTolerance;
+            }
+        }
+        public byte ShadeTolerance
+        {
+            get
+            {
+                return shadeTolerance;
+            }
+        }
+        public int Maturity
+        {
+            get
+            {
+                return maturity;
+            }
+        }
+        public int Longevity
+        {
+            get
+            {
+                return longevity;
+            }
+        }
+        # endregion
+        
         public static List<string> ParameterNames
         {
             get
@@ -670,5 +692,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return names;
             }
         }
+       
     }
 }
