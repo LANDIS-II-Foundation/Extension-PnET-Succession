@@ -292,9 +292,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             float delamax = 1 + ((ArelElev - Arel350) / Arel350);
 
             // Foliar reduction due to ozone pollution
-            //DocumentO3FolRed(spc);
-            speciespnetvars.O3_FolRed = FolO3Red(climate_dataset.O3, spc.O3TotalFolLoss, spc.O3RespPwr);
-             
+            speciespnetvars.O3_FolRed = climate_dataset.O3 > 0 ? spc.MaxFolO3Red * climate_dataset.O3 / (spc.O3_HalfSat + climate_dataset.O3) : 0;
+
             // CO2 effect on photosynthesis
             // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
             //float Ci = climate_dataset.CO2 * (1 - cicaRatio);
@@ -377,31 +376,6 @@ namespace Landis.Extension.Succession.BiomassPnET
           
             return speciespnetvars;
         }
-
-        private static void DocumentO3FolRed(ISpeciesPNET spc)
-        {
-            IList<float> O3RespPwr = new List<float>() { 0.3F, 0.5F, 1, 4 };
-            IList<string> outputfilecontent = new List<string>() { "O3/O3TotalFolLoss" + "\t" + O3RespPwr.Select(o3 => o3.ToString()).Aggregate((i, j) => i + "\t" + "o3RespPwr=" + j) };
-            float MyO3 = 0;
-            while (MyO3 < spc.O3TotalFolLoss)
-            {
-                string line = MyO3 / spc.O3TotalFolLoss + "\t";
-                foreach (float o3RespPwr in O3RespPwr)
-                {
-                    line += FolO3Red(MyO3, spc.O3TotalFolLoss, o3RespPwr) + "\t";
-                }
-                outputfilecontent.Add(line);
-                MyO3 += 0.1F;
-            }
-            System.IO.File.WriteAllLines(@"C:\Users\Arjan\Desktop\o3red.txt", outputfilecontent.ToArray());
-        }
-
-        private static float FolO3Red(float o3, float O3TotalFolLoss, float O3RespPwr)
-        {
-            return Math.Max(0, 1 - (float)Math.Pow((o3 / (float)O3TotalFolLoss), O3RespPwr));
-        }
-
-       
 
         private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
         {
