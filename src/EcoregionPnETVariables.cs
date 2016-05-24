@@ -8,18 +8,19 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public class EcoregionPnETVariables : IEcoregionPnETVariables
     {
-         
+        #region private variables
         private DateTime _date;
         private IObservedClimate obs_clim;
         private float _vpd;
         private float _dayspan;
         private float _tave;
         private float _tday;
-        private float _daylength;
-         
         
+        float _daylength;
+         
+        #endregion
 
- 
+        #region public accessors
 
         public float VPD
         {
@@ -50,20 +51,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return obs_clim.Prec;
             }
         }
-        public float O3
-        {
-            get
-            {
-                return obs_clim.O3;
-            }
-
-        }
-        public float CO2 {
-            get {
-                return obs_clim.CO2;
-            }
         
-        }
         public float PAR0 {
             get 
             {
@@ -113,7 +101,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         
 
-       
+        # endregion
 
         #region static computation functions
         private static int Calculate_DaySpan(int Month)
