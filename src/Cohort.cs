@@ -372,7 +372,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 NetPsn[index] = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
 
                 // Net foliage respiration depends on reference psn (AMAX)
-                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
+                //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
+                //Subistitute 24 hours in place of DayLength because foliar respiration does occur at night.  FTempRespDay uses Tave temps reflecting both day and night temperatures.
+                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
                 
                 // Actal foliage respiration (growth respiration) 
                 FolResp[index] = FWater[index] * FTempRespDayRefResp * fol / (float)PlugIn.IMAX;
