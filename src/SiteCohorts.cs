@@ -361,10 +361,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             //success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.O3);
 
                             // O3 reduction
-                            c.ReduceFoliage(this.Ecoregion.Variables[c.Species.Name].O3_FolRed);
+                            //c.ReduceFoliage(this.Ecoregion.Variables[c.Species.Name].O3_FolRed);
                              
                             if (success == false)
                             {
@@ -1079,7 +1079,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         string Header(Landis.SpatialModeling.ActiveSite site)
         {
             
-            string s = OutputHeaders.Time +  "," + 
+            string s = OutputHeaders.Time +  "," +
+                       OutputHeaders.Ecoregion + "," + 
                        OutputHeaders.SoilType +"," +
                        OutputHeaders.NrOfCohorts + "," +
                        OutputHeaders.MaxLayerStdev + "," + 
@@ -1118,7 +1119,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
 
             string s = monthdata.Year + "," +
-                Ecoregion.SoilType + "," +
+                        Ecoregion.Name + "," +
+                        Ecoregion.SoilType + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
                         layerstdev.Max() + "," +
                         nlayers + "," +

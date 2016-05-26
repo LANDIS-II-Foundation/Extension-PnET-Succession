@@ -9,14 +9,19 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class ObservedClimate : IObservedClimate
     {
         #region private variables
-        string year;
-        string month;
-        float  par0;
-        float prec;
-        float tmin;
-        float tmax;
-        float co2;
+        // One observedclimate object  
+        private static Dictionary<string, IObservedClimate> ClimateData = new Dictionary<string, IObservedClimate>(); 
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName; 
+
+        private string year;
+        private string month;
+        private float par0;
+        private float prec;
+        private float tmin;
+        private float tmax;
+        private float co2;
         private float o3;
+        private List<ObservedClimate> data_lines = new List<ObservedClimate>();
         #endregion
 
         #region public accessors
@@ -80,12 +85,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         #endregion
 
-        // One observedclimate object 
-        private static Dictionary<string, IObservedClimate> ClimateData = new Dictionary<string, IObservedClimate>();
-
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> ClimateFileName ;
-
-        List<ObservedClimate> data_lines = new List<ObservedClimate>();
          
         public static void Initialize()
         {
@@ -163,6 +162,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             public int CO2;
             public int PAR0;
             public int Prec;
+            public int O3;
 
             private static int GetColNr(string[] Headers, string Label)
             {
@@ -184,6 +184,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 CO2 = GetColNr(Headers, "CO2");
                 PAR0 = GetColNr(Headers, "PAR");
                 Prec = GetColNr(Headers, "Prec");
+                O3 = GetColNr(Headers, "O3");
             }
         }
 
@@ -234,8 +235,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 climate.tmin = CheckInRange<float>(float.Parse(terms[columns.TMin]), -80, climate.tmax, "TMin");
                 climate.co2 = CheckInRange<float>(float.Parse(terms[columns.CO2]), 0, float.MaxValue, "CO2");
                 climate.par0 = (ushort)CheckInRange<float>(float.Parse(terms[columns.PAR0]), 0, float.MaxValue, "PAR0");
-
                 climate.prec = CheckInRange<float>(float.Parse(terms[columns.Prec]), 0, float.MaxValue, "PREC");
+                climate.o3 = columns.O3 > 0 ? CheckInRange<float>(float.Parse(terms[columns.O3]), 0, float.MaxValue, "O3") : 0;
 
                 climate.year = terms[columns.Year];
                 climate.month = terms[columns.Month];

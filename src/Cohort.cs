@@ -64,6 +64,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Reduction factor for suboptimal or supra optimal water 
         public float[] FWater = null;
 
+        // Reduction factor for ozone 
+        public float[] FOzone = null;
+
         // Interception (mm/mo)
         public float[] Interception = null;
 
@@ -78,6 +81,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Transpiration = new float[PlugIn.IMAX];
             FRad = new float[PlugIn.IMAX];
             FWater = new float[PlugIn.IMAX];
+            FOzone = new float[PlugIn.IMAX];
             MaintenanceRespiration = new float[PlugIn.IMAX];
             Interception = new float[PlugIn.IMAX];
         }
@@ -91,6 +95,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Transpiration = null;
             FRad = null;
             FWater = null;
+            FOzone = null;
             MaintenanceRespiration = null;
             Interception = null;
         }
@@ -244,7 +249,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float) Landis.Library.Biomass.CohortDefoliation.Compute(site, species, (int)biomass, SiteBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float o3)
         {
             
             bool success = true;
@@ -354,7 +359,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Reduction factor for radiation on photosynthesis
             FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
-            
+
+            // Reduction factor for ozone on photosynthesis
+            FOzone[index] = ComputeFOzone(o3, species.O3HaltPsn, species.PsnO3Red);
+
             // Below-canopy PAR if updated after each subcanopy layer
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
 
@@ -423,6 +431,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             else if (pressurehead < H2) return pressurehead / H2;
             else return 1;
         }
+        public static float ComputeFOzone(float o3, float O3HaltPsn, float PsnO3Red)
+        {
+            return Math.Max(0, 1 - (float)Math.Pow((o3 / (float)O3HaltPsn), PsnO3Red));
+        }
         public int ComputeNonWoodyBiomass(ActiveSite site)
         {
             return (int)(fol);
@@ -471,6 +483,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        NSCfrac + "," +
                        FWater.Average() + "," +
                        FRad.Average() + "," +
+                       FOzone.Average() + "," +
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        Fage + "," +
@@ -505,6 +518,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             OutputHeaders.NSCfrac + "," + 
                             OutputHeaders.fWater + "," +  
                             OutputHeaders.fRad + "," + 
+                            OutputHeaders.FOzone+ ","+
                             OutputHeaders.fTemp_psn + "," +
                             OutputHeaders.fTemp_resp + "," + 
                             OutputHeaders.fage + "," + 

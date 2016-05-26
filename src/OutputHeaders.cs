@@ -9,6 +9,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         public const string PET = "PET(mm)";
         public const string Time = "Time";
+        public const string Ecoregion = "Ecoregion";
         public const string PAR0 = "PAR0";  
         public const string NrOfCohorts = "NrOfCohorts";  
         public const string MaxLayerStdev = "MaxLayerStdev";  
@@ -59,6 +60,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string DeliveryPotential = "DeliveryPotential";
         public const string MaxWater = "MaxWater";
         public const string SoilType = "SoilType";
+        public const string FOzone = "fOzone(-)";
           
     }
 }

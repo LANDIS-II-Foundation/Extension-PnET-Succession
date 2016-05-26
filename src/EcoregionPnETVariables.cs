@@ -320,7 +320,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Foliar reduction due to ozone pollution
             //DocumentO3FolRed(spc);
-            speciespnetvars.O3_FolRed = FolO3Red(climate_dataset.O3, spc.O3TotalFolLoss, spc.O3RespPwr);
+            //speciespnetvars.O3_FolRed = FolO3Red(climate_dataset.O3, spc.O3HaltPsn, spc.PsnO3Red);
              
             // CO2 effect on photosynthesis
             // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
@@ -425,14 +425,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static void DocumentO3FolRed(ISpeciesPNET spc)
         {
             IList<float> O3RespPwr = new List<float>() { 0.3F, 0.5F, 1, 4 };
-            IList<string> outputfilecontent = new List<string>() { "O3/O3TotalFolLoss" + "\t" + O3RespPwr.Select(o3 => o3.ToString()).Aggregate((i, j) => i + "\t" + "o3RespPwr=" + j) };
+            IList<string> outputfilecontent = new List<string>() { "O3/O3HaltPsn" + "\t" + O3RespPwr.Select(o3 => o3.ToString()).Aggregate((i, j) => i + "\t" + "o3RespPwr=" + j) };
             float MyO3 = 0;
-            while (MyO3 < spc.O3TotalFolLoss)
+            while (MyO3 < spc.O3HaltPsn)
             {
-                string line = MyO3 / spc.O3TotalFolLoss + "\t";
+                string line = MyO3 / spc.O3HaltPsn + "\t";
                 foreach (float o3RespPwr in O3RespPwr)
                 {
-                    line += FolO3Red(MyO3, spc.O3TotalFolLoss, o3RespPwr) + "\t";
+                    line += FolO3Red(MyO3, spc.O3HaltPsn, o3RespPwr) + "\t";
                 }
                 outputfilecontent.Add(line);
                 MyO3 += 0.1F;
@@ -440,9 +440,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             System.IO.File.WriteAllLines(@"C:\Users\Arjan\Desktop\o3red.txt", outputfilecontent.ToArray());
         }
 
-        private static float FolO3Red(float o3, float O3TotalFolLoss, float O3RespPwr)
+        private static float FolO3Red(float o3, float O3HaltPsn, float PsnO3Red)
         {
-            return Math.Max(0, 1 - (float)Math.Pow((o3 / (float)O3TotalFolLoss), O3RespPwr));
+            return Math.Max(0, 1 - (float)Math.Pow((o3 / (float)O3HaltPsn), PsnO3Red));
         }
 
        

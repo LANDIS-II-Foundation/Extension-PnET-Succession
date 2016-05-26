@@ -105,11 +105,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Referece maintenance respiration 
         float MaintResp { get; }
 
-        // O3 level where total foliage loss occurs
-        float O3TotalFolLoss { get; }
+        // O3 level where total photosynthesis stops
+        float O3HaltPsn { get; }
 
-        // O3 half saturation concentration (units)
-        float O3RespPwr { get; }
+        //Growth reduction parameter with ozone
+        float PsnO3Red { get; }
 
     }
 }
