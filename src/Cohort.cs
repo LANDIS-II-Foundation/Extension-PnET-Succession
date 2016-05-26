@@ -447,7 +447,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             float netPsnSum = NetPsn.Sum();
             float transpirationSum = Transpiration.Sum();
-            float JCO2_JH2O = (float) (0.01227 * (netPsnSum / transpirationSum));
+            float JCO2_JH2O = 0;
+            if(transpirationSum > 0)
+                JCO2_JH2O = (float) (0.01227 * (netPsnSum / transpirationSum));
             float WUE = JCO2_JH2O * ((float)44 / (float)18); //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
             // Cohort output file
