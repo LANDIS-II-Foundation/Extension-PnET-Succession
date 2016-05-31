@@ -377,7 +377,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
 
                 // Compute net psn from stress factors and reference net psn
-                NetPsn[index] = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
+                NetPsn[index] = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * FOzone[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
 
                 // Net foliage respiration depends on reference psn (AMAX)
                 //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;

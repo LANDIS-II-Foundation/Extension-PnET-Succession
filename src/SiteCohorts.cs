@@ -250,13 +250,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    //double defoliation = Landis.Library.Biomass.CohortDefoliation.Compute(Site, AllCohorts[cohort].Species, AllCohorts[cohort].Biomass, SiteBiomass);
                     AllCohorts[cohort].CalculateDefoliation(Site, SiteBiomass);
-
-                    //if (defoliation > 0)
-                    //{
-                    //    AllCohorts[cohort].ReduceFoliage(defoliation);
-                    //}
                 }
                 for (int i = 0; i < PlugIn.IMAX; i++)
                 {
@@ -276,8 +270,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             List<List<int>> random_range = GetRandomRange(bins);
              
-            //float LeakageFractionPerCohort = Ecoregion.LeakageFrac / SubCanopyCohorts.Count();
-
             folresp = new float[13];
             netpsn = new float[13];
             grosspsn = new float[13];
@@ -305,10 +297,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
 
-                
-               
-                // mm
-                float snowmelt = Math.Min(snowPack, CumputeSnowMeltFraction(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan) * snowPack);
+                float snowmelt = Math.Min(snowPack, CumputeSnowMeltFraction(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan) * snowPack); // mm
                 if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt );
 
                 float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec;//mm
@@ -329,9 +318,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float precin = availableRain + snowmelt;
                 if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
 
-                //float PrecInByCanopyLayer = precin / SubCanopyCohorts.Count();                
-                //if (PrecInByCanopyLayer < 0) throw new System.Exception("Error, PrecInByCanopyLayer = " + PrecInByCanopyLayer);
-
                 int numEvents = (int) Math.Round(PlugIn.PrecipEvents);  // maximum number of precipitation events per month
                 if (numEvents > SubCanopyCohorts.Count())
                     numEvents = SubCanopyCohorts.Count();
@@ -339,8 +325,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (PrecInByEvent < 0) throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent);
                 
                 // Randomly choose which layers will receive the precip events
-                var rnd = new Random();
-                var randomNumbers = Enumerable.Range(1, SubCanopyCohorts.Count()).OrderBy(x => rnd.Next()).Take(numEvents).ToList();
+                var randomNumbers = Enumerable.Range(1, SubCanopyCohorts.Count()).OrderBy(x => PlugIn.ContinuousUniformRandom()).Take(numEvents).ToList();
                 
                 float subCanopyPrecip = 0;
                 int subCanopyIndex = 0;
@@ -360,17 +345,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 subCanopyPrecip = 0;
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                            //success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
                             success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.O3);
 
-                            // O3 reduction
-                            //c.ReduceFoliage(this.Ecoregion.Variables[c.Species.Name].O3_FolRed);
                              
                             if (success == false)
                             {
                                 throw new System.Exception("Error CalculatePhotosynthesis");
                             }
-                            //interception += c.Interception.Sum();
                             c.Layer = (byte)Math.Max(b, c.Layer);
                         }
                     }
@@ -428,7 +409,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    //establishmentProbability.Calculate_Establishment(data[m], Ecoregion, subcanopypar, hydrology);
                     monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology);
 
                     foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
@@ -790,8 +770,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                     Bin = GetNextBinPositions(Bin, CumCohortBiomass.Count());
 
-                    
-
                 }
             }
             while (layerstdev.Max() >= MaxDevLyrAv && nlayers < MaxCanopyLayers);
@@ -822,10 +800,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     Bins[i].Add(a);
                 }
             }
-
-           
-
-
             return Bins;
         }
          
