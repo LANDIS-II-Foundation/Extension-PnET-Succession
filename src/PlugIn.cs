@@ -90,9 +90,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore.ContinuousUniformDistribution.Alpha = min;
             ModelCore.ContinuousUniformDistribution.Beta = max;
             ModelCore.ContinuousUniformDistribution.NextDouble();
-
-            Troschuetz.Random.ContinuousUniformDistribution i = ModelCore.ContinuousUniformDistribution;
-
+            
             int value = (int)ModelCore.ContinuousUniformDistribution.NextDouble();
 
             return value;
