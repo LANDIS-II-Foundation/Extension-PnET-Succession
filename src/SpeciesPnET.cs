@@ -41,6 +41,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         #region private variables
         private float _psnO3Red;//;
         private float _o3HaltPsn;
+        private float _noO3Effect;
         private float _wuecnst;
         private float _cfracbiomass;
         private float _kwdlit;
@@ -91,6 +92,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         #region private static species variables
+        private static Landis.Library.Parameters.Species.AuxParm<float> noO3Effect;
         private static Landis.Library.Parameters.Species.AuxParm<float> o3HaltPsn;
         private static Landis.Library.Parameters.Species.AuxParm<float> psnO3Red;
         private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
@@ -137,6 +139,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public SpeciesPnET()
         {
             #region initialization of private static species variables
+            noO3Effect = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("NoO3Effect"));
             o3HaltPsn = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3HaltPsn"));
             psnO3Red = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PsnO3Red"));
             wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
@@ -318,6 +321,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _amaxb = amaxb[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
+            _noO3Effect = noO3Effect[species];
             _o3HaltPsn = o3HaltPsn[species];
             _psnO3Red = psnO3Red[species];
             index = species.Index;
@@ -604,6 +608,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return  minSproutAge;
+            }
+        }
+        public float NoO3Effect
+        {
+            get
+            {
+                return _noO3Effect;
             }
         }
         public float O3HaltPsn

@@ -361,7 +361,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
 
             // Reduction factor for ozone on photosynthesis
-            FOzone[index] = ComputeFOzone(o3, species.O3HaltPsn, species.PsnO3Red);
+            FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);
 
             // Below-canopy PAR if updated after each subcanopy layer
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
@@ -431,9 +431,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             else if (pressurehead < H2) return pressurehead / H2;
             else return 1;
         }
-        public static float ComputeFOzone(float o3, float O3HaltPsn, float PsnO3Red)
+        public static float ComputeFOzone(float o3, float NoO3Effect, float O3HaltPsn, float PsnO3Red)
         {
-            return Math.Max(0, 1 - (float)Math.Pow((o3 / (float)O3HaltPsn), PsnO3Red));
+            if (o3 <= NoO3Effect)
+            {
+                return (float)1.0;
+            }
+            else
+            {
+                return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
+            }
         }
         public int ComputeNonWoodyBiomass(ActiveSite site)
         {

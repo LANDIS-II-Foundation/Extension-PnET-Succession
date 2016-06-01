@@ -105,6 +105,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Referece maintenance respiration 
         float MaintResp { get; }
 
+        // O3 level where there is no effect on photosynthesis
+        float NoO3Effect { get; }
+
         // O3 level where total photosynthesis stops
         float O3HaltPsn { get; }
 
