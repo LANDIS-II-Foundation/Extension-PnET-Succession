@@ -423,6 +423,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
 
                 AllCohorts.ForEach(x => x.NullSubLayers());
+
+                //  Decompose litter once per year
+                if (data[m].Month == (int)Constants.Months.December)
+                {
+                    HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());
+                }
             }
             if (PlugIn.ModelCore.CurrentTime > 0)
             {
@@ -455,7 +461,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             RemoveMarkedCohorts();
 
-            HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//6s
+            //HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//Moved within m loop to trigger once per year
 
             return success;
         }
