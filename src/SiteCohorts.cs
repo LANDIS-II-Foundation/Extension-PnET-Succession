@@ -548,7 +548,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return SpeciesPresent;
             }
         }
+        public Landis.Library.Parameters.Species.AuxParm<int> SenescencePerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.LastSenescence);
+                }
+                return SpeciesPresent;
+            }
+        }
         public Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies 
         { 
             get
@@ -586,6 +598,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         }
 
+        public float SenescenceSum
+        {
+            get
+            {
+                return AllCohorts.Sum(o => o.LastSenescence);
+            }
+
+        }
         public uint BelowGroundBiomass 
         {
             get
@@ -1087,7 +1107,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         OutputHeaders.NSC + "," + 
                         OutputHeaders.HeteroResp + "," +
                         OutputHeaders.Litter + "," + 
-                        OutputHeaders.CWD;
+                        OutputHeaders.CWD + "," + 
+                        OutputHeaders.Senescence;
 
             return s;
         }
@@ -1101,7 +1122,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         cohorts.Values.Sum(o => o.Count) + "," +
                         layerstdev.Max() + "," +
                         nlayers + "," +
-                        monthdata.PAR0 + "," + 
+                        monthdata.PAR0 + "," +
                         monthdata.Tday + "," +
                         monthdata.Prec + "," +
                         Hydrology.RunOff + "," +
@@ -1124,7 +1145,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         cohorts.Values.Sum(o => o.Sum(x => x.NSC)) + "," +
                         HeterotrophicRespiration + "," +
                         PlugIn.Litter[Site].Mass + "," +
-                         PlugIn.WoodyDebris[Site].Mass;
+                         PlugIn.WoodyDebris[Site].Mass + "," +
+                         cohorts.Values.Sum(o => o.Sum(x => x.LastSenescence));
            
             this.siteoutput.Add(s);
         }
