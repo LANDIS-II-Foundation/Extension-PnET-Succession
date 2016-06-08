@@ -34,6 +34,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float nsc;
         private ushort age;
         private float defolProp; //BRM
+        private float lastSenescence; // last recorded senescence
          
         public ushort index;
         
@@ -167,6 +168,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             biomassmax = Math.Max(biomassmax, biomass);
             fol += c.Fol;
         }
+
+        // Add dead wood to last senescence
+        public void AccumulateSenescence (int senescence)
+        {
+            lastSenescence += senescence;
+        }
+
         // Growth reduction factor for age
         float Fage
         {
@@ -207,6 +215,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return defolProp;
             }
         }
+
+        // Annual Senescence (g/m2)
+        public int LastSenescence
+        {
+            get
+            {
+                return (int)lastSenescence;
+            }
+        }
+
         // Constructor
         public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
         {
@@ -295,8 +313,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // In the first month
                 if (ecoregion.Variables.Month == (int)Constants.Months.January)
                 {
-
-                    addwoodydebris(Senescence(), species.KWdLit);
+                    float woodSenescence = Senescence();
+                    addwoodydebris(woodSenescence, species.KWdLit);
+                    lastSenescence = woodSenescence;
 
                     // Release of nsc, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
@@ -574,6 +593,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             return senescence;
         }
+
         public void ReduceFoliage(double fraction)
         {
             fol *= (float)(1.0 - fraction);

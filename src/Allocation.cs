@@ -72,11 +72,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
 
             }
+            float woodLost = (float)((1 - pwoodlost) * cohort.Wood);
+            float rootLost = (float)((1 - prootlost) * cohort.Root);
+            float folLost = (float)((1 - pfollost) * cohort.Fol);
 
-            ((SiteCohorts)sitecohorts).AddWoodyDebris((float)((1 - pwoodlost) * cohort.Wood), cohort.SpeciesPNET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddWoodyDebris((float)((1 - prootlost) * cohort.Root), cohort.SpeciesPNET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddLitter((float)((1 - pfollost) * cohort.Fol), cohort.SpeciesPNET);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodLost, cohort.SpeciesPNET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootLost, cohort.SpeciesPNET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddLitter(folLost, cohort.SpeciesPNET);
 
+            cohort.AccumulateSenescence((int)(woodLost + rootLost));
 
         }
     }

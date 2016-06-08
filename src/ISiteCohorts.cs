@@ -28,9 +28,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
 
+        Landis.Library.Parameters.Species.AuxParm<int> SenescencePerSpecies { get; }
+
         Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
 
         float BiomassSum { get; }
+
+        float SenescenceSum { get; }
 
         int CohortCount { get; }
 

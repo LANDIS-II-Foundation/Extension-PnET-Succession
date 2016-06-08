@@ -61,6 +61,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string MaxWater = "MaxWater";
         public const string SoilType = "SoilType";
         public const string FOzone = "fOzone(-)";
+        public const string Senescence = "Senescence(gDW_m2)";
           
     }
 }
