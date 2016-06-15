@@ -34,8 +34,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float nsc;
         private ushort age;
         private float defolProp; //BRM
-        private float lastSenescence; // last recorded senescence
-         
+        private float lastWoodySenescence; // last recorded woody senescence
+        private float lastFoliageSenescence; // last recorded foliage senescence
+
         public ushort index;
         
         private ISpeciesPNET species;
@@ -170,9 +171,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Add dead wood to last senescence
-        public void AccumulateSenescence (int senescence)
+        public void AccumulateWoodySenescence (int senescence)
         {
-            lastSenescence += senescence;
+            lastWoodySenescence += senescence;
+        }
+
+        // Add dead foliage to last senescence
+        public void AccumulateFoliageSenescence(int senescence)
+        {
+            lastFoliageSenescence += senescence;
         }
 
         // Growth reduction factor for age
@@ -216,12 +223,20 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        // Annual Senescence (g/m2)
-        public int LastSenescence
+        // Annual Woody Senescence (g/m2)
+        public int LastWoodySenescence
         {
             get
             {
-                return (int)lastSenescence;
+                return (int)lastWoodySenescence;
+            }
+        }
+        // Annual Foliage Senescence (g/m2)
+        public int LastFoliageSenescence
+        {
+            get
+            {
+                return (int)lastFoliageSenescence;
             }
         }
 
@@ -315,7 +330,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     float woodSenescence = Senescence();
                     addwoodydebris(woodSenescence, species.KWdLit);
-                    lastSenescence = woodSenescence;
+                    lastWoodySenescence = woodSenescence;
 
                     // Release of nsc, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
@@ -334,7 +349,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (leaf_on == true)
                 {
                     leaf_on = false;
-                    addlitter(FoliageSenescence(), SpeciesPNET);
+                    float foliageSenescence = FoliageSenescence();
+                    addlitter(foliageSenescence, SpeciesPNET);
+                    lastFoliageSenescence = foliageSenescence;
                 }
             }
             else  
