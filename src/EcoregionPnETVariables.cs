@@ -348,7 +348,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
             // NETPSN net photosynthesis
-            speciespnetvars.Amax = speciespnetvars.DelAmax * (spc.AmaxA + spc.AmaxB * spc.FolN);
+            // Modify AmaxB based on CO2 level
+            // Equation solved from 2 known points: (350, AmaxB) and (550, AmaxB * 1.587)
+            float AmaxB_slope = (float)0.002935 * spc.AmaxB;  // Derived from m = [(AmaxB*1.587) - AmaxB]/[550 - 350]
+            float AmaxB_int = (float)-0.02725 * spc.AmaxB;  // Derived from b = AmaxB - (AmaxB_slope * 350)
+            float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
+            speciespnetvars.Amax = speciespnetvars.DelAmax * (spc.AmaxA + AmaxB_CO2 * spc.FolN);
 
             //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
             float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion;
