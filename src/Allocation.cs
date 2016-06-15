@@ -80,7 +80,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             ((SiteCohorts)sitecohorts).AddWoodyDebris(rootLost, cohort.SpeciesPNET.KWdLit);
             ((SiteCohorts)sitecohorts).AddLitter(folLost, cohort.SpeciesPNET);
 
-            cohort.AccumulateSenescence((int)(woodLost + rootLost));
+            cohort.AccumulateWoodySenescence((int)(woodLost + rootLost));
+            cohort.AccumulateFoliageSenescence((int)(folLost));
+
 
         }
     }
