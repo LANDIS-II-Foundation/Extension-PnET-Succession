@@ -470,7 +470,19 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return maintresp.Select(r => (int)r).ToArray();
+                if (maintresp == null)
+                {
+                    int[] maintresp_array = new int[12];
+                    for (int i = 0; i < maintresp_array.Length; i++)
+                    {
+                        maintresp_array[i] = 0;
+                    }
+                    return maintresp_array;
+                }
+                else
+                {
+                    return maintresp.Select(r => (int)r).ToArray();
+                }
             }
         }
 
@@ -478,14 +490,38 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return folresp.Select(psn => (int)psn).ToArray(); 
+                if (folresp == null)
+                {
+                    int[] folresp_array = new int[12];
+                    for (int i = 0; i < folresp_array.Length; i++)
+                    {
+                        folresp_array[i] = 0;
+                    }
+                    return folresp_array;
+                }
+                else
+                {
+                    return folresp.Select(psn => (int)psn).ToArray();
+                }
             }
         }
         public int[] GrossPsn
         {
             get
             {
-                return grosspsn.Select(psn => (int)psn).ToArray(); 
+                if (grosspsn == null)
+                {
+                    int[] grosspsn_array = new int[12];
+                    for (int i = 0; i < grosspsn_array.Length; i++)
+                    {
+                        grosspsn_array[i] = 0;
+                    }
+                    return grosspsn_array;
+                }
+                else
+                {
+                    return grosspsn.Select(psn => (int)psn).ToArray();
+                }
             }
         }
 
@@ -493,7 +529,19 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return netpsn.Select(psn => (int)psn).ToArray();  
+                if (netpsn == null)
+                {
+                    int[] netpsn_array = new int[12];
+                    for (int i = 0; i < netpsn_array.Length; i++)
+                    {
+                        netpsn_array[i] = 0;
+                    }
+                    return netpsn_array;
+                }
+                else
+                {
+                    return netpsn.Select(psn => (int)psn).ToArray();
+                }
             }
         }
 
@@ -1137,12 +1185,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private void AddSiteOutput(IEcoregionPnETVariables monthdata)
         {
+            uint maxLayerStdev = 0;
+            if (layerstdev.Count() > 0)
+                maxLayerStdev = layerstdev.Max();
 
             string s = monthdata.Year + "," +
                         Ecoregion.Name + "," +
                         Ecoregion.SoilType + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
-                        layerstdev.Max() + "," +
+                        maxLayerStdev + "," +
                         nlayers + "," +
                         monthdata.PAR0 + "," +
                         monthdata.Tday + "," +
