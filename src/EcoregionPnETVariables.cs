@@ -262,7 +262,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPNET> Species)
+        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPNET> Species, float CO2AMaxBEff)
         {
             
             this._date = Date;
@@ -285,14 +285,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ISpeciesPNET spc in Species )
             {
-                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc);
+                SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc, CO2AMaxBEff);
 
                 speciesVariables.Add(spc.Name, speciespnetvars);
             }
 
         }
         
-        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float daylength, float nightlength, ISpeciesPNET spc)
+        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float daylength, float nightlength, ISpeciesPNET spc, float CO2AMaxBEff)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
@@ -349,9 +349,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // NETPSN net photosynthesis
             // Modify AmaxB based on CO2 level
-            // Equation solved from 2 known points: (350, AmaxB) and (550, AmaxB * 1.587)
-            float AmaxB_slope = (float)0.002935 * spc.AmaxB;  // Derived from m = [(AmaxB*1.587) - AmaxB]/[550 - 350]
-            float AmaxB_int = (float)-0.02725 * spc.AmaxB;  // Derived from b = AmaxB - (AmaxB_slope * 350)
+            // Equations solved from 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
+            float AmaxB_slope = (float)(((CO2AMaxBEff - 1.0) * spc.AmaxB) / 200.0);  // Derived from m = [(AmaxB*CO2AMaxBEff) - AmaxB]/[550 - 350]
+            float AmaxB_int = (float)(-1.0*(((CO2AMaxBEff - 1.0)*1.75)-1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
             float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
             speciespnetvars.Amax = speciespnetvars.DelAmax * (spc.AmaxA + AmaxB_CO2 * spc.FolN);
 
