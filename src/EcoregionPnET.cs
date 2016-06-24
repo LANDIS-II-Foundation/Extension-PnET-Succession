@@ -28,7 +28,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
-        private static float CO2AMaxBEff;
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
@@ -200,7 +199,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
 
-                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, CO2AMaxBEff);
+                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species);
 
                     all_values[ecoregion].Add(date, ecoregion_variables);
 
@@ -222,7 +221,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
-            CO2AMaxBEff = ((Parameter<float>)PlugIn.GetParameter("CO2AMaxBEff")).Value;
 
 
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
@@ -237,21 +235,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 all_values[ecoregion] = new Dictionary<DateTime, IEcoregionPnETVariables>();
             }
-             
-            
         }
 
         public EcoregionPnET(Landis.Core.IEcoregion ecoregion)
         {
-            
-
             this.ecoregion = ecoregion;
             this._rootingdepth = rootingdepth[ecoregion];
             this._soiltype = soiltype[ecoregion];
             this._precintconst = precintconst[ecoregion];
             this._preclossfrac = preclossfrac[ecoregion];
             this._leakagefrac = leakagefrac[ecoregion];
-          
         }
     }
 }

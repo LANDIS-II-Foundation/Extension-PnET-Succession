@@ -111,8 +111,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         // O3 level where total photosynthesis stops
         float O3HaltPsn { get; }
 
-        //Growth reduction parameter with ozone
+        // Growth reduction parameter with ozone
         float PsnO3Red { get; }
+
+        // Effect of CO2 on AMaxB (change in AMaxB with increase of 200 ppm CO2)
+        float CO2AMaxBEff { get; }
 
     }
 }
