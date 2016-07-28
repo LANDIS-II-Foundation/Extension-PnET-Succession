@@ -598,17 +598,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 ActiveSite site,
                                 ExtensionType disturbanceType)
         {
-            if (AgeOnlyDeathEvent != null)
-            {
-                AgeOnlyDeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
-            }
+            //if (AgeOnlyDeathEvent != null)
+            //{
+            //    AgeOnlyDeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
+            //}
             if (DeathEvent != null)
             {
                 DeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
             }
            
         }
- 
+
         
     } 
 }

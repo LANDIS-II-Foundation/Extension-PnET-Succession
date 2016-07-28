@@ -184,6 +184,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (TryGetParameter(Names.AgeOnlyDisturbances, out AgeOnlyDisturbancesParameterFile))
             {
                 Allocation.Initialize(AgeOnlyDisturbancesParameterFile.Value,  parameters);
+                Cohort.AgeOnlyDeathEvent += Events.CohortDied;
             }
 
              

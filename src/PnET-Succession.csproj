@@ -75,6 +75,7 @@
     <Compile Include="Allocation.cs" />
     <Compile Include="EcoregionPnET.cs" />
     <Compile Include="EcoregionPnETVariables.cs" />
+    <Compile Include="Events.cs" />
     <Compile Include="IEcoregionPnET.cs" />
     <Compile Include="IEcoregionPnETVariables.cs" />
     <Compile Include="IEstablishmentProbability.cs" />

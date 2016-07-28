@@ -1040,6 +1040,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             foreach (Cohort cohort in ToRemove)
             {
+                Landis.Library.BiomassCohorts.Cohort.KilledByAgeOnlyDisturbance(disturbance, cohort, disturbance.CurrentSite, disturbance.Type);
                 RemoveCohort(cohort, disturbance.Type);
             }
         }
@@ -1055,6 +1056,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     if (species_cohort[cc].IsAlive == false)
                     {
+                      
                         RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
 
                     }
