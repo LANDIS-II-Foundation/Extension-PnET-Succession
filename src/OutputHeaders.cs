@@ -63,5 +63,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string FOzone = "fOzone(-)";
         public const string WoodySenescence = "WoodSenescence(gDW_m2)";
         public const string FoliageSenescence = "FoliageSenescence(gDW_m2)";
+        public const string DelAMax = "DelAMax(-)";
     }
 }

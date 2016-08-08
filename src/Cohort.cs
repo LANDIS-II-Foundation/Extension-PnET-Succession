@@ -72,6 +72,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Interception (mm/mo)
         public float[] Interception = null;
 
+
         public void InitializeSubLayers()
         {
             // Initialize subcanopy layers
@@ -536,11 +537,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                        FWater.Average() + "," +
                        FRad.Average() + "," +
                        FOzone.Average() + "," +
+                       monthdata[Species.Name].DelAmax +
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        Fage + "," +
                        leaf_on + "," +
-                       FActiveBiom;
+                       FActiveBiom + "," ;
              
             cohortoutput.Add(s);
 
@@ -570,7 +572,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                             OutputHeaders.NSCfrac + "," + 
                             OutputHeaders.fWater + "," +  
                             OutputHeaders.fRad + "," + 
-                            OutputHeaders.FOzone+ ","+
+                            OutputHeaders.FOzone+ "," +
+                            OutputHeaders.DelAMax + "," + 
                             OutputHeaders.fTemp_psn + "," +
                             OutputHeaders.fTemp_resp + "," + 
                             OutputHeaders.fage + "," + 
