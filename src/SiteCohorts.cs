@@ -244,17 +244,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
 
-            int SiteBiomass = AllCohorts.Sum(a => a.Biomass);
+            int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.Biomass);
 
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    AllCohorts[cohort].CalculateDefoliation(Site, SiteBiomass);
+                    AllCohorts[cohort].CalculateDefoliation(Site, SiteAboveGroundBiomass);
                 }
                 for (int i = 0; i < PlugIn.IMAX; i++)
                 {
-                    double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].Biomass;
+                    double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
                     while (SubCanopyCohorts.ContainsKey(CumCohortBiomass))
                     {
                         // Add a negligable value [-1e-10; + 1e-10] to CumCohortBiomass in order to prevent duplicate keys
@@ -544,7 +544,20 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o=>o.Biomass);
+                    SpeciesPresent[spc] = cohorts[spc].Sum(o=>o.TotalBiomass);
+                }
+                return SpeciesPresent;
+            }
+        }
+        public Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.Biomass);
                 }
                 return SpeciesPresent;
             }
@@ -607,11 +620,18 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
+                return AllCohorts.Sum(o => o.TotalBiomass);
+            }
+
+        }
+        public float AbovegroundBiomassSum
+        {
+            get
+            {
                 return AllCohorts.Sum(o => o.Biomass);
             }
 
         }
-
         public float WoodySenescenceSum
         {
             get
@@ -883,18 +903,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[0];
 
+                    // Disturbances return reduction in aboveground biomass
                     int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
 
                     reduction.Add(_reduction);
-                    if (reduction[reduction.Count() - 1] >= species_cohort[c].Biomass)
+                    if (reduction[reduction.Count() - 1] >= species_cohort[c].Biomass)  //Compare to aboveground biomass
                     {
                         ToRemove.Add(species_cohort[c]);
                         // Edited by BRM - 090115
                     }
                     else
                     {
-                        double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;
-                        species_cohort[c].ReduceBiomass(reductionProp);
+                        double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;  //Proportion of aboveground biomass
+                        species_cohort[c].ReduceBiomass(reductionProp);  // Reduction applies to all biomass
                     }
                     //
                 }
