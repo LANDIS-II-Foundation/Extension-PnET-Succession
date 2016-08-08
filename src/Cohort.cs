@@ -120,8 +120,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return fol;
             }
         }
-        // Biomass (g/m2)
+        // Aboveground Biomass (g/m2)
         public int Biomass
+        {
+            get
+            {
+                return (int)((1 - species.FracBelowG) * biomass) + (int)fol;
+            }
+        }
+        // Total Biomass (root + wood) (g/m2)
+        public int TotalBiomass
         {
             get
             {
@@ -272,9 +280,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         
 
-        public void CalculateDefoliation(ActiveSite site, int SiteBiomass)
+        public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
         {
-            defolProp = (float) Landis.Library.Biomass.CohortDefoliation.Compute(site, species, (int)biomass, SiteBiomass);
+            int abovegroundBiomass = (int)((1 - species.FracBelowG) * biomass) + (int)fol;
+            defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
         public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
