@@ -537,7 +537,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        FWater.Average() + "," +
                        FRad.Average() + "," +
                        FOzone.Average() + "," +
-                       monthdata[Species.Name].DelAmax +
+                       monthdata[Species.Name].DelAmax + "," +
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        Fage + "," +
