@@ -948,7 +948,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 for (int c =0;c< species_cohort.Count(); c++)
                 {
-                    Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[0];
+                    Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[c];
 
                     // Disturbances return reduction in aboveground biomass
                     int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
