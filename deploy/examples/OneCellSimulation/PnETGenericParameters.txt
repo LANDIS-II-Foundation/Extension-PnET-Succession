@@ -3,3 +3,5 @@ LandisData PnETGenericParameters
 
 PnETGenericParameters Value
 DTemp	false
+Wythers	false
+PrecipEvents	11

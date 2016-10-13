@@ -1175,7 +1175,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        OutputHeaders.SoilType +"," +
                        OutputHeaders.NrOfCohorts + "," +
                        OutputHeaders.MaxLayerStdev + "," + 
-                       OutputHeaders.layers + "," + 
+                       OutputHeaders.Layers + "," + 
                        OutputHeaders.PAR0  + "," + 
                        OutputHeaders.Tday + "," + 
                        OutputHeaders.Precip + "," +

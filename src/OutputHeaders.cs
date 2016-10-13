@@ -13,7 +13,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PAR0 = "PAR0";  
         public const string NrOfCohorts = "NrOfCohorts";  
         public const string MaxLayerStdev = "MaxLayerStdev";  
-        public const string layers = "layers";  
+        public const string Layers = "Layers";  
         public const string Tday = "Tday(C)";  
         public const string Precip = "Precip(mm/mo)";
 
