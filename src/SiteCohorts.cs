@@ -362,9 +362,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + " water = " + hydrology.Water);
 
                     // Instantaneous runoff (excess of porosity)
-                    float runoff = Math.Max(hydrology.Water - Ecoregion.Porosity, 0);
-                    success = hydrology.AddWater(-1 * runoff);
-                    if (success == false) throw new System.Exception("Error adding water, runoff = " + runoff + " water = " + hydrology.Water);
+                    Hydrology.RunOff = Math.Max(hydrology.Water - Ecoregion.Porosity, 0);
+                    success = hydrology.AddWater(-1 * Hydrology.RunOff);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
 
                     // Fast Leakage 
                     Hydrology.Leakage = Math.Max(Ecoregion.LeakageFrac * (hydrology.Water - Ecoregion.FieldCap), 0);
@@ -948,7 +948,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 for (int c =0;c< species_cohort.Count(); c++)
                 {
-                    Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[0];
+                    Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[c];
 
                     // Disturbances return reduction in aboveground biomass
                     int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
