@@ -22,6 +22,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _fieldcap;
         private float _wiltpnt;
         private float _porosity;
+        private float _snowsublimfrac;
         IEcoregionPnETVariables _variables;
         #endregion
 
@@ -35,6 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
         #endregion
 
@@ -168,6 +170,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Name;
             }
         }
+        public float SnowSublimFrac
+        {
+            get
+            {
+                return _snowsublimfrac;
+            }
+        }
         #endregion
 
         public static List<string> ParameterNames
@@ -218,11 +227,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RootingDepth", 0, 1000);
             precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
             preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
+            snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("SnowSublimFrac", 0, 1);
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
-
-
+            
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
@@ -235,20 +244,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 all_values[ecoregion] = new Dictionary<DateTime, IEcoregionPnETVariables>();
             }
-             
-            
         }
 
         public EcoregionPnET(Landis.Core.IEcoregion ecoregion)
         {
-            
-
             this.ecoregion = ecoregion;
             this._rootingdepth = rootingdepth[ecoregion];
             this._soiltype = soiltype[ecoregion];
             this._precintconst = precintconst[ecoregion];
             this._preclossfrac = preclossfrac[ecoregion];
             this._leakagefrac = leakagefrac[ecoregion];
+            this._snowsublimfrac = snowsublimfrac[ecoregion];
           
         }
     }

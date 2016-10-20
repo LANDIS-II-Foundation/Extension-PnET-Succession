@@ -315,7 +315,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 float availableRain = (1F - this.Ecoregion.PrecLossFrac) * (newrain - interception); //This should be reduced by interception first
 
-                float precin = availableRain + snowmelt;
+                float precin = availableRain + (snowmelt * this.Ecoregion.SnowSublimFrac);  //Account for sublimation here
                 if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
 
                 int numEvents = (int) Math.Round(PlugIn.PrecipEvents);  // maximum number of precipitation events per month
@@ -386,10 +386,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                         transpiration += x.Transpiration.Sum();
                     }
                 );
-                
-              
+
+                // Surface PAR is effectively 0 when snowpack is present
+                if (snowPack > 0)
+                    subcanopypar = 0;
+
                 canopylaimax = (byte)Math.Max(canopylaimax, CanopyLAI);
-                watermax = (ushort)Math.Max(hydrology.Water, watermax);
+                watermax = (ushort)Math.Max(hydrology.Water, watermax);                
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
                 Hydrology.Evaporation = hydrology.CalculateEvaporation(this);
