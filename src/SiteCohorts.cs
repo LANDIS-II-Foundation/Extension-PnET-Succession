@@ -225,9 +225,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        private static float CumputeSnowMeltFraction(float Tave, float DaySpan)
+        private static float ComputeMaxSnowMelt(float Tave, float DaySpan)
         {
-            return 0.15f * Math.Max(0, Tave) * DaySpan;
+            // Snowmelt rate can range between 1.6 to 6.0 mm/degree day, and default should be 2.74 according to NRCS Part 630 Hydrology National Engineering Handbook (Chapter 11: Snowmelt)
+            return 2.74f * Math.Max(0, Tave) * DaySpan;
         }
         private static float CumputeSnowFraction(float Tave)
         {
@@ -297,10 +298,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
 
-                float snowmelt = Math.Min(snowPack, CumputeSnowMeltFraction(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan) * snowPack); // mm
+                float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan)); // mm
                 if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt );
 
-                float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec;//mm
+                float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec * (1 - this.Ecoregion.SnowSublimFrac);// (mm) Account for sublimation here
                 if (newsnow < 0 || newsnow > this.Ecoregion.Variables.Prec)
                 {
                     throw new System.Exception("Error, newsnow = " + newsnow + " availablePrecipitation = " + this.Ecoregion.Variables.Prec);
@@ -315,7 +316,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 float availableRain = (1F - this.Ecoregion.PrecLossFrac) * (newrain - interception); //This should be reduced by interception first
 
-                float precin = availableRain + (snowmelt * this.Ecoregion.SnowSublimFrac);  //Account for sublimation here
+                float precin = availableRain + snowmelt;  
                 if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
 
                 int numEvents = (int) Math.Round(PlugIn.PrecipEvents);  // maximum number of precipitation events per month
