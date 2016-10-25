@@ -309,15 +309,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
            
             // Instantaneous runoff (excess of porosity)
-            Hydrology.RunOff = Math.Max(hydrology.Water - ecoregion.Porosity, 0);
-            success = hydrology.AddWater(-1 * Hydrology.RunOff);
+            float runoff =  Math.Max(hydrology.Water - ecoregion.Porosity, 0);
+            Hydrology.RunOff += runoff;
+            success = hydrology.AddWater(-1 * runoff);
             if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
 
             // Fast Leakage 
-            Hydrology.Leakage = Math.Max(LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
+            float leakage = Math.Max(LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
+            Hydrology.Leakage += leakage;
             
             // Remove fast leakage
-            success = hydrology.AddWater(-1 * Hydrology.Leakage);
+            success = hydrology.AddWater(-1 * leakage);
             if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
 
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature

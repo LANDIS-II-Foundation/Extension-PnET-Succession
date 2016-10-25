@@ -327,6 +327,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 // Randomly choose which layers will receive the precip events
                 var randomNumbers = Enumerable.Range(1, SubCanopyCohorts.Count()).OrderBy(x => PlugIn.ContinuousUniformRandom()).Take(numEvents).ToList();
+
+                // Reset Hydrology values
+                Hydrology.RunOff = 0;
+                Hydrology.Leakage = 0;
+                Hydrology.Evaporation = 0;
                 
                 float subCanopyPrecip = 0;
                 int subCanopyIndex = 0;
