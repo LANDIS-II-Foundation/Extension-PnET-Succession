@@ -132,12 +132,20 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Water];
 
-            DeliveryPotential = Cohort.CumputeFWater(0, 0, 153, pressurehead);
+            // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
+            // Robock, A., Vinnikov, K. Y., Schlosser, C. A., Speranskaya, N. A., & Xue, Y. (1995). Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
+            float evapCritWater = sitecohorts.Ecoregion.FieldCap * 0.75f;
+
+            DeliveryPotential = Cohort.ComputeFWater(0, evapCritWater, 153, pressurehead);
 
             // Per month
-            sitecohorts.SetAet(DeliveryPotential * PET, sitecohorts.Ecoregion.Variables.Month); 
+            sitecohorts.SetAet(DeliveryPotential * PET, sitecohorts.Ecoregion.Variables.Month);
 
-            Evaporation = (float)Math.Min(Water, Math.Max(0, DeliveryPotential * PET - (double)sitecohorts.Transpiration));
+            float wiltPoint = sitecohorts.Ecoregion.WiltPnt;
+
+            // Evaporation cannot remove water below wilting point, evaporation cannot be negative
+            // Transpiration is assumed to replace evaporation
+            Evaporation = (float)Math.Max(0,Math.Min(Water - wiltPoint, Math.Max(0, DeliveryPotential * PET - (double)sitecohorts.Transpiration)));
 
             return Evaporation;
         }

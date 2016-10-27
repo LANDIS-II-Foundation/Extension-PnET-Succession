@@ -1,0 +1,5 @@
+LandisData PnETGenericParameters
+
+
+PnETGenericParameters Value
+DTemp	false

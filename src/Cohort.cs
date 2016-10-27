@@ -400,7 +400,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             // Reduction factor for radiation on photosynthesis
-            FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
+            FRad[index] = ComputeFrad(SubCanopyPar, species.HalfSat);
             
             // Below-canopy PAR if updated after each subcanopy layer
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
@@ -409,7 +409,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float PressureHead = hydrology.GetPressureHead(ecoregion);
 
             // Reduction water for sub or supra optimal soil water content
-            FWater[index] = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
+            FWater[index] = ComputeFWater(species.H2, species.H3, species.H4, PressureHead);
             
             // If trees are physiologically active
             if (leaf_on)
@@ -454,11 +454,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             return success;
         }
  
-        public static float CumputeFrad(float Radiation, float HalfSat)
+        public static float ComputeFrad(float Radiation, float HalfSat)
         {
             return Radiation / (Radiation + HalfSat);
         }
-        public static float CumputeFWater(float H2, float H3, float H4, float pressurehead)
+        public static float ComputeFWater(float H2, float H3, float H4, float pressurehead)
         {
             // Compute water stress
             if (pressurehead < 0 || pressurehead > H4) return 0;

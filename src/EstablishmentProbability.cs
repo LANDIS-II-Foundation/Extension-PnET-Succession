@@ -60,11 +60,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (pnetvars.Tmin > spc.PsnTMin)
                 {
-                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
+                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
                         
-                    float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
+                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
                     if (!spc.PreventEstablishment)
@@ -105,11 +105,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 if (pnetvars.Tmin > spc.PsnTMin)
                 {
-                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
+                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
 
-                    float fwater = (float)Math.Pow(Cohort.CumputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
+                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
                     estabDict[spc] = pest;
