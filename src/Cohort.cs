@@ -409,7 +409,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             float PressureHead = hydrology.GetPressureHead(ecoregion);
 
             // Reduction water for sub or supra optimal soil water content
-            FWater[index] = ComputeFWater(species.H2, species.H3, species.H4, PressureHead);
+            if(PlugIn.ModelCore.CurrentTime > 0)
+                FWater[index] = ComputeFWater(species.H2, species.H3, species.H4, PressureHead);
+            else // Ignore H2 parameter during spinup
+                FWater[index] = ComputeFWater(0, species.H3, species.H4, PressureHead);
             
             // If trees are physiologically active
             if (leaf_on)
