@@ -7,6 +7,9 @@ StartYear		2000
 SeedingAlgorithm  	WardSeedDispersal
 Latitude		42
 >>MaxDevLyrAv		8000
+Wythers			True
+DTemp			True
+PrecipEvents		10
 
 PNEToutputsites		PNEToutputsites.txt
  	
