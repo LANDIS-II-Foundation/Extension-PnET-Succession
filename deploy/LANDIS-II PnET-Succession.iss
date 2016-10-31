@@ -26,7 +26,7 @@ Source: ..\src\lib\SaxtonAndRawlsParameters.txt; DestDir: {app}\bin\extensions\D
 #define UserGuide    StringChange(UserGuideSrc, "X.Y", MajorMinor)
 Source: docs\{#UserGuide}; DestDir: {app}\docs; DestName: {#UserGuide}
 
-Source: examples\*; DestDir: {app}\examples\{#ExtensionName}; Flags: recursesubdirs
+Source: examples\*; DestDir: {app}\examples\{#ExtensionName}\{#MajorMinor}; Flags: recursesubdirs
 
 #define ExtensionInfo  ExtensionName + " " + MajorMinor + ".txt"
 Source: {#ExtInfoFile}; DestDir: {#LandisExtInfoDir}; DestName: {#ExtensionInfo}
