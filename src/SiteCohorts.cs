@@ -850,14 +850,18 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private List<List<int>> GetBins(List<double> CumCohortBiomass)
         {
-            if (CumCohortBiomass.Count() == 0) return null;
+            nlayers = 0;
+            layerstdev.Clear();
+            if (CumCohortBiomass.Count() == 0)
+            {                
+                return null;
+            }
 
             // Bin and BestBin are lists of indexes that determine what cohort belongs to what canopy layer, 
             // i.e. when Bin[1] contains 45 then SubCanopyCohorts[45] is in layer 1
             int[] BestBin = null;
             int[] Bin = null;
-
-            nlayers = 0;
+                       
 
             float LayerStDev = float.MaxValue;
 
