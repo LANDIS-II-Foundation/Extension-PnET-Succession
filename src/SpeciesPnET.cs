@@ -39,6 +39,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         #region private variables
+         private float _co2HalfSatEff;
         private float _psnO3Red;//;
         private float _o3HaltPsn;
         private float _noO3Effect;
@@ -93,6 +94,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         #region private static species variables
+        private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
         private static Landis.Library.Parameters.Species.AuxParm<float> noO3Effect;
         private static Landis.Library.Parameters.Species.AuxParm<float> o3HaltPsn;
         private static Landis.Library.Parameters.Species.AuxParm<float> psnO3Red;
@@ -141,6 +143,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public SpeciesPnET()
         {
             #region initialization of private static species variables
+            co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2HalfSatEff"));
             noO3Effect = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("NoO3Effect"));
             o3HaltPsn = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3HaltPsn"));
             psnO3Red = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PsnO3Red"));
@@ -330,6 +333,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _noO3Effect = noO3Effect[species];
             _o3HaltPsn = o3HaltPsn[species];
             _psnO3Red = psnO3Red[species];
+            _co2HalfSatEff = co2HalfSatEff[species];
             index = species.Index;
             name = species.Name;
 
@@ -642,6 +646,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _psnO3Red; 
+            }
+        }
+        public float CO2HalfSatEff
+        {
+            get
+            {
+                return _co2HalfSatEff;
             }
         }
         public Landis.Core.PostFireRegeneration PostFireRegeneration

@@ -292,7 +292,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float o3)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3)
         {
             
             bool success = true;
@@ -403,8 +403,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             }
 
+            // Adjust HalfSat for CO2 effect
+            float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
+            float adjHalfSat = species.CO2HalfSatEff * co2 + halfSatIntercept;
+
             // Reduction factor for radiation on photosynthesis
-            FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
+            FRad[index] = CumputeFrad(SubCanopyPar, adjHalfSat);
 
             // Reduction factor for ozone on photosynthesis
             FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);
