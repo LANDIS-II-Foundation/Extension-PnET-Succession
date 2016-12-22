@@ -115,7 +115,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             catch
             {
-                throw new System.Exception("Can't get climate data for ecoregion "+ ecoregion.Name);
+                throw new System.Exception("Can't get climate data for ecoregion "+ ecoregion.Name + " and date " + date.ToString());
             }
             
         }
