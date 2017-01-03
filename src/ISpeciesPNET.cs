@@ -22,13 +22,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         float FrActWd { get; }
 
         // Water stress parameter for excess water
-        ushort H2 { get; }
+        float H2 { get; }
 
         // Water stress parameter for water shortage: pressurehead above which growth declines
-        ushort H3 { get; }
+        float H3 { get; }
 
         // Water stress parameter: pressurehead above growth halts (= wilting point)
-        ushort H4 { get; }
+        float H4 { get; }
 
         // Initial NSC for new cohort
         float InitialNSC { get; }

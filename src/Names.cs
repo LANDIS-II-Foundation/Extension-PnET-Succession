@@ -10,8 +10,6 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         public const string ExtensionName = "PnET-Succession";
         public const string PNEToutputsites = "PNEToutputsites";
-        public const string climateFileName = "climateFileName";
-        public const string Latitude = "Latitude";
         public const string EcoregionParameters = "EcoregionParameters";
         public const string AgeOnlyDisturbances = "AgeOnlyDisturbances";
         public const string PnETGenericParameters = "PnETGenericParameters";
@@ -32,14 +30,17 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PNEToutputSiteLocation = "PNEToutputSiteLocation";
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
-        public const string PrecipEvents = "PrecipEvents";
+
         public const string DTemp = "DTemp";
-       
+        //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
         public const string PrecLossFrac = "PrecLossFrac";
         public const string RootingDepth = "RootingDepth";
         public const string SoilType = "SoilType";
         public const string PrecIntConst = "PrecIntConst";
+        public const string PrecipEvents = "PrecipEvents";
+        public const string Latitude = "Latitude";
+        public const string climateFileName = "climateFileName";
         
     
         
