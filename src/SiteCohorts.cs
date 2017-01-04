@@ -312,14 +312,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 float newrain = this.Ecoregion.Variables.Prec - newsnow;
 
-                interception = newrain * (float)(1 - Math.Exp(-1 * Ecoregion.PrecIntConst * CanopyLAI));
+                interception = newrain * (float)(1 - Math.Exp(-1 * this.Ecoregion.PrecIntConst * CanopyLAI));
 
                 float availableRain = (1F - this.Ecoregion.PrecLossFrac) * (newrain - interception); //This should be reduced by interception first
 
                 float precin = availableRain + snowmelt;  
                 if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
 
-                int numEvents = (int) Math.Round(PlugIn.PrecipEvents);  // maximum number of precipitation events per month
+                int numEvents = this.Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
                 if (numEvents > SubCanopyCohorts.Count())
                     numEvents = SubCanopyCohorts.Count();
                 float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
