@@ -1214,7 +1214,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         OutputHeaders.Litter + "," + 
                         OutputHeaders.CWD + "," +
                         OutputHeaders.WoodySenescence + "," + 
-                        OutputHeaders.FoliageSenescence;
+                        OutputHeaders.FoliageSenescence + ","+
+                        OutputHeaders.SubCanopyPAR;
 
             return s;
         }
@@ -1256,7 +1257,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         PlugIn.Litter[Site].Mass + "," +
                         PlugIn.WoodyDebris[Site].Mass + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence));
+                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence))+ "," +
+                        subcanopypar;
            
             this.siteoutput.Add(s);
         }
