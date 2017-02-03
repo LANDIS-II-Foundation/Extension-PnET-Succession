@@ -2,6 +2,7 @@
 //  Authors:  Arjan de Bruijn
 
 using Landis.Core;
+using Landis.Library.Climate;
 using Landis.SpatialModeling;
 using Landis.Library.Succession;
 using Landis.Library.InitialCommunities;
@@ -27,9 +28,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
+        public static int FutureClimateBaseYear;
         //public static float PrecipEvents;// Now an ecoregion parameter
-        
-        
+
+
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
 
@@ -258,7 +260,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
 
-            
+            //Initialize climate.
+            Climate.Initialize(parameters[Names.ClimateConfigFile].Value, false, ModelCore);
+            FutureClimateBaseYear = Climate.Future_MonthlyData.Keys.Min();
+
             ObservedClimate.Initialize();
 
             SpeciesPnET = new SpeciesPnET();
