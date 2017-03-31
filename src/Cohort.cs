@@ -456,7 +456,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (index < PlugIn.IMAX - 1) index++;
             return success;
         }
- 
+
+        // Based on Michaelis-Menten saturation curve
+        // https://en.wikibooks.org/wiki/Structural_Biochemistry/Enzyme/Michaelis_and_Menten_Equation
         public static float ComputeFrad(float Radiation, float HalfSat)
         {
             return Radiation / (Radiation + HalfSat);
