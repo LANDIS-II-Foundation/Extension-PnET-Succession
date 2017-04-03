@@ -85,13 +85,23 @@ namespace Landis.Extension.Succession.BiomassPnET
             
         }
       
+        /// <summary>
+        /// Choose random integer between min and max (inclusive)
+        /// </summary>
+        /// <param name="min">Minimum integer</param>
+        /// <param name="max">Maximum integer</param>
+        /// <returns></returns>
         public static int DiscreteUniformRandom(int min, int max)
         {
             ModelCore.ContinuousUniformDistribution.Alpha = min;
-            ModelCore.ContinuousUniformDistribution.Beta = max;
+            ModelCore.ContinuousUniformDistribution.Beta = max + 1;
             ModelCore.ContinuousUniformDistribution.NextDouble();
+
+            //double testMin = ModelCore.ContinuousUniformDistribution.Minimum;
+            //double testMax = ModelCore.ContinuousUniformDistribution.Maximum;
             
-            int value = (int)ModelCore.ContinuousUniformDistribution.NextDouble();
+            double valueD = ModelCore.ContinuousUniformDistribution.NextDouble();
+            int value = Math.Min((int)valueD,max);
 
             return value;
         }

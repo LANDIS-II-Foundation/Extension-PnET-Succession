@@ -18,7 +18,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Precip = "Precip(mm/mo)";
 
         public const string RunOff = "RunOff(mm/mo)";
-        public const string SurfaceRunOff = "SurfaceRunOff(mm/mo)"; 
+        public const string SurfaceRunOff = "PrecLoss(mm/mo)"; 
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
         public const string FolResp = "FolResp(gC_m2_mo)";
@@ -37,7 +37,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string CWD = "CWD(gDW_m2)";
         public const string Age = "Age(yr)";
         public const string ConductanceCO2 = "ConductanceCO2";    
-        public const string Layer = "Layer(-)"; 
+        public const string Layer = "TopLayer(-)"; 
         public const string ReleasedNSC = "ReleasedNSC(gC_m2_mo)";                  
         public const string Folalloc = "Folalloc(gC_m2_mo)";                  
         public const string RootAlloc = "RootAlloc(gC_m2_mo)";                       
