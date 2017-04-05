@@ -18,7 +18,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
         public static SpeciesPnET SpeciesPnET;
-        public static float Latitude;               
+        //public static float Latitude;// Now an ecoregion parameter
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
         public static DateTime Date;
@@ -27,7 +27,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
-        public static float PrecipEvents;
+        //public static float PrecipEvents;// Now an ecoregion parameter
         
         
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
@@ -85,13 +85,23 @@ namespace Landis.Extension.Succession.BiomassPnET
             
         }
       
+        /// <summary>
+        /// Choose random integer between min and max (inclusive)
+        /// </summary>
+        /// <param name="min">Minimum integer</param>
+        /// <param name="max">Maximum integer</param>
+        /// <returns></returns>
         public static int DiscreteUniformRandom(int min, int max)
         {
             ModelCore.ContinuousUniformDistribution.Alpha = min;
-            ModelCore.ContinuousUniformDistribution.Beta = max;
+            ModelCore.ContinuousUniformDistribution.Beta = max + 1;
             ModelCore.ContinuousUniformDistribution.NextDouble();
+
+            //double testMin = ModelCore.ContinuousUniformDistribution.Minimum;
+            //double testMax = ModelCore.ContinuousUniformDistribution.Maximum;
             
-            int value = (int)ModelCore.ContinuousUniformDistribution.NextDouble();
+            double valueD = ModelCore.ContinuousUniformDistribution.NextDouble();
+            int value = Math.Min((int)valueD,max);
 
             return value;
         }
@@ -256,7 +266,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             FTimeStep = 1.0F / Timestep;
 
-            Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value;
+            //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
 
             
             ObservedClimate.Initialize();
@@ -270,7 +280,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
-            PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;
+            //PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;// Now an ecoregion parameter
           
 
             // Initialize Reproduction routines:

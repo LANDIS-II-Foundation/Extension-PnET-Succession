@@ -286,7 +286,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, double LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
         {
             
             bool success = true;
@@ -299,29 +299,35 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
             //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
             //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
-
-            // Incoming precipitation
-            //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
-            float waterIn = PrecInByCanopyLayer; //mm 
-
-            // Add incoming precipitation to soil moisture
-            success = hydrology.AddWater(waterIn);
-            if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
-           
-            // Instantaneous runoff (excess of porosity)
-            float runoff =  Math.Max(hydrology.Water - ecoregion.Porosity, 0);
-            Hydrology.RunOff += runoff;
-            success = hydrology.AddWater(-1 * runoff);
-            if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
-
-            // Fast Leakage 
-            float leakage = Math.Max(LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
-            Hydrology.Leakage += leakage;
             
-            // Remove fast leakage
-            success = hydrology.AddWater(-1 * leakage);
-            if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+            // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
+            for (int p = 1; p <= precipCount; p++)
+            {
+                // Incoming precipitation
+                //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
+                float waterIn = PrecInByCanopyLayer; //mm 
 
+                // Add incoming precipitation to soil moisture
+                success = hydrology.AddWater(waterIn);
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
+
+                // Instantaneous runoff (excess of porosity)
+                float runoff = Math.Max(hydrology.Water - ecoregion.Porosity, 0);
+                Hydrology.RunOff += runoff;
+                success = hydrology.AddWater(-1 * runoff);
+                if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
+
+                // Fast Leakage only occurs following precipitation events
+                if (waterIn > 0)
+                {
+                    float leakage = Math.Max((float)LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
+                    Hydrology.Leakage += leakage;
+
+                    // Remove fast leakage
+                    success = hydrology.AddWater(-1 * leakage);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+                }
+            }
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
             MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
             
