@@ -244,7 +244,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Constructor
-        public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
+        public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName, double propBiomass)
         {
             this.species =  species;
             age = 0; 
@@ -252,7 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.nsc = (ushort)species.InitialNSC;
            
             // Initialize biomass assuming fixed concentration of NSC
-            this.biomass = (uint)(1F / species.DNSC * (ushort)species.InitialNSC);
+            this.biomass = (uint)(1F / species.DNSC * (ushort)species.InitialNSC * propBiomass);
             
             biomassmax = biomass;
 

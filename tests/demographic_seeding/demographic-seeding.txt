@@ -1,0 +1,35 @@
+LandisData  "Demographic Seeding"
+
+Kernel    DoubleExponential  << DoubleExponential, 2Dt
+
+SeedProduction   Fixed       << Fixed, Uniform
+
+MonteCarloDraws  500
+
+>>MaxLeafArea 	 0.1 << Optional: default = cell area
+
+CohortThreshold  5
+
+SeedRainMaps           "demographic-seeding/seed-rain_{timestep}_{species}.img"
+SeedlingEmergenceMaps  "demographic-seeding/seedling-emergence_{timestep}_{species}.img"
+
+
+>> 		 Seeds Produced		Seedling	 Dispersal Functions
+>> Name		Minimum  Maximum	Leaf Area	Mean1  Mean2  Weight1
+>> ----		-------	 -------	---------	-----  -----  -------
+ querrubr	0	 500		0.001		20.00   1000.00   0.01
+
+EmergenceProbabilities
+
+>> Species   eco0	eco1 
+>> --------  ----	----
+   querrubr	0.0	1.0
+>> If species not present, then all its probabilities are 0
+
+
+SurvivalProbabilities
+
+>> Species   eco0	eco1
+>> --------  ----	----
+   querrubr  0.0	1.0
+>> If species not present, then all its probabilities are 0

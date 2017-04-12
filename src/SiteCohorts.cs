@@ -170,7 +170,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     //  Add those cohorts that were born at the current year
                     while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == sortedAgeCohorts[0].Age)
                     {
-                        Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
+                        // Assume full starting biomass during spinup (no seed density effect)
+                        Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName, 1.0);
 
                         AddNewCohort(cohort);
 
