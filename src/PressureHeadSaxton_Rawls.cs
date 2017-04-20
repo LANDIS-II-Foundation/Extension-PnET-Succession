@@ -27,6 +27,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         static Dictionary<string, float> tensionA = new Dictionary<string, float>();
         static Dictionary<string, float> tensionB = new Dictionary<string, float>();
         static Dictionary<string, float> porosity_OM_comp = new Dictionary<string, float>();
+        static Dictionary<string, float> clayProp = new Dictionary<string, float>();
+        static Dictionary<string, float> cTheta = new Dictionary<string, float>();
+        static Dictionary<string, float> lambda_s = new Dictionary<string, float>();
+        static Dictionary<string, float> Fs = new Dictionary<string, float>();
 
         Landis.Library.Parameters.Ecoregions.AuxParm<ushort[]> table = new Library.Parameters.Ecoregions.AuxParm<ushort[]>(PlugIn.ModelCore.Ecoregions);
 
@@ -139,6 +143,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     tensionB.Add(SoilType[ecoregion], (float)((Math.Log(1500) - Math.Log(33)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
                     tensionA.Add(SoilType[ecoregion], (float)Math.Exp(Math.Log(33) + (tensionB[SoilType[ecoregion]] * Math.Log(moist33_comp))));
+                    // For Permafrost
+                    clayProp.Add(SoilType[ecoregion], (float)clay);                    
+                    double cTheta_temp = Constants.cs * (1 - porosity_OM_comp[SoilType[ecoregion]]) + Constants.cw * porosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
+                    cTheta.Add(SoilType[ecoregion], (float)cTheta_temp);
+                    double lambda_s_temp = (1 - clay) * Constants.lambda_0 + clay * Constants.lambda_clay;   //thermal conductivity soil	kJ/m/d/K
+                    lambda_s.Add(SoilType[ecoregion], (float)lambda_s_temp);
+                    double Fs_temp = ((2 / 3) / (1 + Constants.gs * ((lambda_s_temp / Constants.lambda_w) - 1))) + ((1 / 3) / (1 + (1 - 2 * Constants.gs) * ((lambda_s_temp / Constants.lambda_w) - 1)));  //ratio of solid temp gradient
+                    Fs.Add(SoilType[ecoregion], (float)Fs_temp);
                 }
                 double watercontent = 0.0;
 
@@ -154,6 +166,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 table[ecoregion] = PressureHead.ToArray();
             }
 
+        }
+        public static float GetClay(string SoilType)
+        {
+            return clayProp[SoilType];
         }
 
     }

@@ -342,8 +342,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             
              
         }
-  
-         
+           
         public void AddNewCohort(ISpecies species, ActiveSite site)
         {
             ISpeciesPNET spc = PlugIn.SpeciesPnET[species];

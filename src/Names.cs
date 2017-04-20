@@ -30,8 +30,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PNEToutputSiteLocation = "PNEToutputSiteLocation";
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
-
         public const string DTemp = "DTemp";
+        public const string Permafrost = "Permafrost";
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
         public const string PrecLossFrac = "PrecLossFrac";

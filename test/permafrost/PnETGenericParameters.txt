@@ -7,3 +7,5 @@ Wythers			true
 PrecipEvents		11
 ClimateFileName		Climate.txt
 Latitude		42
+Permafrost		true
+

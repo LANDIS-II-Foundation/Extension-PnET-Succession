@@ -295,6 +295,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 subcanopypar = this.Ecoregion.Variables.PAR0;                
                 interception = 0;
 
+                // Permafrost calculations
+                float clay = PressureHeadSaxton_Rawls.GetClay(this.Ecoregion.SoilType);
+                float porosity = this.Ecoregion.Porosity;
+                float waterContent = hydrology.Water / this.Ecoregion.RootingDepth;
+
+
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
