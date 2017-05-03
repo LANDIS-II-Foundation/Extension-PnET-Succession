@@ -1140,7 +1140,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             bool speciesPresent = cohorts.ContainsKey(species);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[species].Min(o => o.Age) > species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }
