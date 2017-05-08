@@ -1141,7 +1141,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             bool speciesPresent = cohorts.ContainsKey(species);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[species].Min(o => o.Age) > species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }
@@ -1154,7 +1154,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // This should deliver only one KeyValuePair
                 KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == cohort.Species))[0];
 
-                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age <= Timestep));
+                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < Timestep));
 
                 Cohorts.ForEach(a => cohort.Accumulate(a)); ;
 

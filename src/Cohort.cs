@@ -120,7 +120,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return fol;
             }
         }
-        // Aboveground Biomass (g/m2)
+        // Aboveground Biomass (wood + foliage) (g/m2)
         public int Biomass
         {
             get

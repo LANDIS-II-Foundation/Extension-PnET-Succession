@@ -289,7 +289,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Reproduction.AddNewCohort = AddNewCohort;
             Reproduction.MaturePresent = MaturePresent;
             Reproduction.PlantingEstablish = PlantingEstablish;
-
+            Reproduction.EstablishmentProbability = EstabProbability;
             
             SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), parameters["SeedingAlgorithm"].Value);
             
@@ -435,7 +435,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             return Establish;
         }
 
-        
+        public double EstabProbability(ISpecies species, ActiveSite site)
+        {
+            if (PlugIn.ModelCore.CurrentTime <= 0)
+                return 1.0;
+            else
+            {
+                ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
+                return sitecohorts[site].EstablishmentProbability.Probability[species];
+            }
+        }
         //---------------------------------------------------------------------
 
         /// <summary>

@@ -22,15 +22,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             return _hasEstablished.Contains(species);
         }
        
-        public Landis.Library.Parameters.Species.AuxParm<byte> Probability
+        public Landis.Library.Parameters.Species.AuxParm<double> Probability
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<byte> probability = new Library.Parameters.Species.AuxParm<byte>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<double> probability = new Library.Parameters.Species.AuxParm<double>(PlugIn.ModelCore.Species);
                 foreach (ISpecies spc in PlugIn.ModelCore.Species)
                 {
                     ISpeciesPNET speciespnet = PlugIn.SpeciesPnET[spc];
-                    probability[spc] = (byte)(100F * _pest[speciespnet]);
+                    probability[spc] = _pest[speciespnet];
                 }
                 return probability;
             }
@@ -52,51 +52,51 @@ namespace Landis.Extension.Succession.BiomassPnET
              
         }
      
-        public void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
-        {
-            foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
-            {
+        //public void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
+        //{
+        //    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+        //    {
               
 
-                if (pnetvars.Tmin > spc.PsnTMin)
-                {
-                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
+        //        if (pnetvars.Tmin > spc.PsnTMin)
+        //        {
+        //            float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
 
-                    float PressureHead = hydrology.GetPressureHead(ecoregion);
+        //            float PressureHead = hydrology.GetPressureHead(ecoregion);
                         
-                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
+        //            float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
-                    float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
-                    if (!spc.PreventEstablishment)
-                    {
-                        if (pest > _pest[spc])
-                        {
-                            _pest[spc] = pest;
-                            _fwater[spc] = fwater;
-                            _frad[spc] = frad;
+        //            float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
+        //            if (!spc.PreventEstablishment)
+        //            {
+        //                if (pest > _pest[spc])
+        //                {
+        //                    _pest[spc] = pest;
+        //                    _fwater[spc] = fwater;
+        //                    _frad[spc] = frad;
 
-                            if (pest > (float)PlugIn.ContinuousUniformRandom())
-                            {
-                                if (HasEstablished(spc) == false)
-                                {
-                                    _hasEstablished.Add(spc);
-                                }
+        //                    if (pest > (float)PlugIn.ContinuousUniformRandom())
+        //                    {
+        //                        if (HasEstablished(spc) == false)
+        //                        {
+        //                            _hasEstablished.Add(spc);
+        //                        }
 
-                            }
+        //                    }
 
-                        }
-                    }
-                    if (establishment_siteoutput != null)
-                    {
+        //                }
+        //            }
+        //            if (establishment_siteoutput != null)
+        //            {
 
-                        establishment_siteoutput.Add(((int)pnetvars.Year).ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + HasEstablished(spc));
+        //                establishment_siteoutput.Add(((int)pnetvars.Year).ToString() + "," + spc.Name + "," + pest + "," + fwater + "," + frad + "," + HasEstablished(spc));
 
-                        // TODO: win time by reducing calls to write
-                        establishment_siteoutput.Write();
-                    }
-                }
-            }
-        }
+        //                // TODO: win time by reducing calls to write
+        //                establishment_siteoutput.Write();
+        //            }
+        //        }
+        //    }
+        //}
         public Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
         {
             Dictionary<ISpeciesPNET, float> estabDict = new Dictionary<ISpeciesPNET, float>();
@@ -169,6 +169,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public void RecordPest(int year, ISpeciesPNET spc, float annualPest, bool estab)
         {
+            _pest[spc] = annualPest;
             if (estab)
             {
                 if (HasEstablished(spc) == false)

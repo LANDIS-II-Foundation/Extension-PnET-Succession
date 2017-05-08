@@ -7,9 +7,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface IEstablishmentProbability
     {
-        Landis.Library.Parameters.Species.AuxParm<byte> Probability { get; }
+        Landis.Library.Parameters.Species.AuxParm<double> Probability { get; }
 
-        void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
+        //void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
 
         Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
 
