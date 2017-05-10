@@ -36,6 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float defolProp; //BRM
         private float lastWoodySenescence; // last recorded woody senescence
         private float lastFoliageSenescence; // last recorded foliage senescence
+        private float adjHalfSat;
 
         public ushort index;
         
@@ -405,7 +406,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Adjust HalfSat for CO2 effect
             float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
-            float adjHalfSat = species.CO2HalfSatEff * co2 + halfSatIntercept;
+            adjHalfSat = species.CO2HalfSatEff * co2 + halfSatIntercept;
 
             // Reduction factor for radiation on photosynthesis
             FRad[index] = CumputeFrad(SubCanopyPar, adjHalfSat);
@@ -546,7 +547,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        Fage + "," +
                        leaf_on + "," +
-                       FActiveBiom + "," ;
+                       FActiveBiom + "," +
+                       adjHalfSat + ",";
              
             cohortoutput.Add(s);
 
@@ -582,7 +584,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                             OutputHeaders.fTemp_resp + "," + 
                             OutputHeaders.fage + "," + 
                             OutputHeaders.LeafOn + "," + 
-                            OutputHeaders.FActiveBiom + ",";
+                            OutputHeaders.FActiveBiom + ","+
+                            OutputHeaders.AdjHalfSat + ",";
 
                 return hdr;
             }
