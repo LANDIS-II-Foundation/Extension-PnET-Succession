@@ -1,5 +1,5 @@
-;#include GetEnv("LANDIS_SDK") + '\packaging\initialize.iss'
-#include  "C:\Program Files\LANDIS-II\SDK\packaging\initialize.iss"
+#include GetEnv("LANDIS_SDK") + '\packaging\initialize.iss'
+;#include  "C:\Program Files\LANDIS-II\SDK\packaging\initialize.iss"
 #define ExtInfoFile "PnET-Succession.txt"
 
 #include LandisSDK + '\packaging\read-ext-info.iss'
@@ -11,22 +11,22 @@ LicenseFile={#LandisSDK}\licenses\LANDIS-II_Binary_license.rtf
 
 [Files]
 Source: {#LandisExtDir}\{#ExtensionAssembly}.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.AgeOnlyCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.BiomassCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.Parameters-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\src\lib\Landis.Library.AgeOnlyCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\src\lib\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\src\lib\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\src\lib\Landis.Library.BiomassCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\src\lib\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\src\lib\Landis.Library.Parameters-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 
-Source: {#LandisExtDir}\Defaults\PnETGenericDefaultParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
-Source: {#LandisExtDir}\Defaults\VanGenuchtenParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
-Source: {#LandisExtDir}\Defaults\SaxtonAndRawlsParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
+Source: ..\src\lib\PnETGenericDefaultParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
+Source: ..\src\lib\VanGenuchtenParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
+Source: ..\src\lib\SaxtonAndRawlsParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
 
 #define UserGuideSrc "LANDIS-II " + ExtensionName + " vX.Y User Guide.pdf"
 #define UserGuide    StringChange(UserGuideSrc, "X.Y", MajorMinor)
 Source: docs\{#UserGuide}; DestDir: {app}\docs; DestName: {#UserGuide}
 
-Source: examples\*; DestDir: {app}\examples\{#ExtensionName}; Flags: recursesubdirs
+Source: examples\*; DestDir: {app}\examples\{#ExtensionName}\{#MajorMinor}; Flags: recursesubdirs
 
 #define ExtensionInfo  ExtensionName + " " + MajorMinor + ".txt"
 Source: {#ExtInfoFile}; DestDir: {#LandisExtInfoDir}; DestName: {#ExtensionInfo}
