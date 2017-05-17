@@ -15,16 +15,17 @@ Source: ..\..\Support-Library-Dlls\Landis.Library.AgeOnlyCohorts.dll; DestDir: {
 Source: ..\..\Support-Library-Dlls\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Landis.Library.BiomassCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: {#LandisExtDir}\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Landis.Library.Parameters-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: {#LandisExtDir}\Seed_Dispersal.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 
 Source: ..\..\Support-Library-Dlls\Defaults\PnETGenericDefaultParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Defaults\VanGenuchtenParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Defaults\SaxtonAndRawlsParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
 
-#define UserGuideSrc "LANDIS-II " + ExtensionName + " vX.Y User Guide.pdf"
-#define UserGuide    StringChange(UserGuideSrc, "X.Y", MajorMinor)
-Source: docs\{#UserGuide}; DestDir: {app}\docs; DestName: {#UserGuide}
+;#define UserGuideSrc "LANDIS-II " + ExtensionName + " vX.Y User Guide.pdf"
+;#define UserGuide    StringChange(UserGuideSrc, "X.Y", MajorMinor)
+;Source: docs\{#UserGuide}; DestDir: {app}\docs; DestName: {#UserGuide}
 
 Source: examples\*; DestDir: {app}\examples\{#ExtensionName}\{#MajorMinor}; Flags: recursesubdirs
 
