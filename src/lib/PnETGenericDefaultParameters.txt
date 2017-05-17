@@ -30,4 +30,5 @@ PressureHeadCalculationMethod	SaxtonAndRawls
 LeakageFrac			1
 PrecIntConst			0.1
 SLWDel				0
->>Wythers				true
+Wythers				true
+DTemp				false
