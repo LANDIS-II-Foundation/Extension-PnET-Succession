@@ -30,6 +30,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
 
+        Landis.Library.Parameters.Species.AuxParm<int> MatureBiomassPerSpecies { get; }
+
+        Landis.Library.Parameters.Species.AuxParm<int> ActiveBiomassPerSpecies { get; }
+
         Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies { get; }
