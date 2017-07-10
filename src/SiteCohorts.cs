@@ -612,52 +612,52 @@ namespace Landis.Extension.Succession.BiomassPnET
         { 
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o=>o.TotalBiomass);
+                    BiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.TotalBiomass);
                 }
-                return SpeciesPresent;
+                return BiomassPerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.Biomass);
+                    AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.Biomass);
                 }
-                return SpeciesPresent;
+                return AbovegroundBiomassPerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.LastWoodySenescence);
+                    WoodySenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastWoodySenescence);
                 }
-                return SpeciesPresent;
+                return WoodySenescencePerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.LastFoliageSenescence);
+                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastFoliageSenescence);
                 }
-                return SpeciesPresent;
+                return FoliageSenescencePerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies 
@@ -761,6 +761,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
+        public float AETSum
+        {
+            get
+            {
+                return AET.Sum();
+            }
+        }
         class SubCanopyComparer : IComparer<int[]>
         {
             // Compare second int (cumulative cohort biomass)
