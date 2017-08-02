@@ -315,7 +315,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
 
             // CO2 effect on growth
-            float delamax = 1 + ((ArelElev - Arel350) / Arel350);
+            float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
             speciespnetvars.DelAmax = delamax;
 
             // Foliar reduction due to ozone pollution
