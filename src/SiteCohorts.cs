@@ -252,7 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     AllCohorts[cohort].CalculateDefoliation(Site, SiteAboveGroundBiomass);
                 }
-                for (int i = 0; i < PlugIn.IMAX; i++)
+                for (int i = 1; i <= PlugIn.IMAX; i++)
                 {
                     double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
                     while (SubCanopyCohorts.ContainsKey(CumCohortBiomass))
@@ -266,7 +266,67 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
 
-            List<List<int>> bins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+     
+            List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+
+            // Sort through bins to put cohort sublayers in the same bin based on majority
+            List<List<int>> bins = new List<List<int>>();
+            if(rawBins.Count > 1)
+            {
+                Dictionary<string, int> speciesLayerIndex = new Dictionary<string, int>();
+                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                {
+                    Dictionary<int, double> sumBio = new Dictionary<int, double>();
+                    for(int i =0; i < rawBins.Count();i++)
+                    {
+                        double sumLayerBio = 0;
+                        List<int> binLayers = rawBins[i];
+                        for(int b=0; b < binLayers.Count();b++)
+                        {
+                            int layerKey = binLayers[b];
+                            Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
+                            if(layerCohort.SpeciesPNET.Name == spc.Name)
+                            {
+                                sumLayerBio += ((double)layerCohort.TotalBiomass)/((double)PlugIn.IMAX);
+                            }
+                        }
+                        sumBio.Add(i, sumLayerBio);
+                    }
+                    int layerMaxBio = sumBio.LastOrDefault(x => x.Value == sumBio.Values.Max()).Key;
+                    speciesLayerIndex.Add(spc.Name, layerMaxBio);
+                }
+                //step through subcanopycohorts
+                int subLayerKey = 0;
+
+                for (int i = 0; i <= speciesLayerIndex.Values.Distinct().Max(); i++)
+                {
+                    bins.Add(new List<int>());
+                }
+                foreach (KeyValuePair<double, Cohort> entry in SubCanopyCohorts)
+                {
+                    ISpecies spc = entry.Value.SpeciesPNET;
+                    int layerIndex = Math.Max(speciesLayerIndex[spc.Name],entry.Value.Layer);  //Once a cohort reaches a canopy layer it cannot be dropped below that position
+                    if(layerIndex > MaxCanopyLayers - 1)
+                    {
+                        throw new System.Exception("layerIndex  " + layerIndex + " is greater than MaxCanopyLayers - 1: " + (MaxCanopyLayers-1));
+                    }
+                    if (bins.ElementAtOrDefault(layerIndex) == null)
+                    {
+                        while (bins.ElementAtOrDefault(layerIndex) == null)
+                        {
+                            bins.Add(new List<int>());                           
+                        }
+                    }
+                    bins[layerIndex].Add(subLayerKey);
+                    
+                    subLayerKey += 1;
+                }
+
+            }
+            else
+            {
+                bins = rawBins;
+            }
 
             List<List<int>> random_range = GetRandomRange(bins);
              
