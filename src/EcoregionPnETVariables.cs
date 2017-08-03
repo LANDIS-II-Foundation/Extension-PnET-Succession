@@ -307,15 +307,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             float ci350 = 350 * cicaRatio;
 
             // Elevated co2 effect
-            float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
+            //float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
 
             // Elevated leaf internal co2 concentration
             float ciElev = climate_dataset.CO2 * cicaRatio;
 
-            float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
+            //float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
 
             // CO2 effect on growth
-            float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
+            //float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
+            float Gamma = 40; // 40; assume a mean leaf temperature during psn of 25 oC
+            float Ca0 = 350;  // 350
+            float delamax = (climate_dataset.CO2 - Gamma) / (climate_dataset.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);  // (Franks,2013, New Phytologist, 197:1077-1094)
+            
             speciespnetvars.DelAmax = delamax;
 
             // Foliar reduction due to ozone pollution
