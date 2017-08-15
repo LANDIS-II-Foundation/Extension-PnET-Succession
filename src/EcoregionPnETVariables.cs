@@ -316,7 +316,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // CO2 effect on growth
             //float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
-            float Gamma = 40; // 40; assume a mean leaf temperature during psn of 25 oC
+            float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
             float Ca0 = 350;  // 350
             float delamax = (climate_dataset.CO2 - Gamma) / (climate_dataset.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);  // (Franks,2013, New Phytologist, 197:1077-1094)
             
