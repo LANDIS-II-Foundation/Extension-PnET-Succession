@@ -55,8 +55,9 @@
     <Reference Include="Landis.Library.Parameters-v1">
       <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II\v6\bin\extensions\Landis.Library.Parameters-v1.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession">
-      <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II\v6\bin\extensions\Landis.Library.Succession.dll</HintPath>
+    <Reference Include="Landis.Library.Succession, Version=4.0.6424.21148, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Support-Library-Dlls\Landis.Library.Succession.dll</HintPath>
     </Reference>
     <Reference Include="Landis.SpatialModeling">
       <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II\v6\bin\6.1\Landis.SpatialModeling.dll</HintPath>

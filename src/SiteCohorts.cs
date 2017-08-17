@@ -405,7 +405,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 subCanopyPrecip = 0;
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, this.Ecoregion.Variables.O3);
+
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, this.Ecoregion.Variables.O3,subCanopyIndex, SubCanopyCohorts.Count());
 
                              
                             if (success == false)

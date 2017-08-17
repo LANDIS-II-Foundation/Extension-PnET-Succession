@@ -67,6 +67,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Reduction factor for suboptimal or supra optimal water 
         public float[] FWater = null;
 
+        // O3Effect by sublayer
+        public float[] O3Effect = null;
+
         // Reduction factor for ozone 
         public float[] FOzone = null;
 
@@ -85,6 +88,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Transpiration = new float[PlugIn.IMAX];
             FRad = new float[PlugIn.IMAX];
             FWater = new float[PlugIn.IMAX];
+            O3Effect = new float[PlugIn.IMAX];
             FOzone = new float[PlugIn.IMAX];
             MaintenanceRespiration = new float[PlugIn.IMAX];
             Interception = new float[PlugIn.IMAX];
@@ -103,6 +107,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaintenanceRespiration = null;
             Interception = null;
         }
+        //public void NullO3SubLayers()
+        //{
+        //    // Reset values for subcanopy layers
+        //    O3Effect = null;
+        //}
       
         public ushort Age
         {
@@ -293,22 +302,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3)
-        {
-            
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3,int subCanopyIndex,int layerCount)
+        {            
             bool success = true;
 
-
-            // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
-            // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
-            LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
-            
-            // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
-            //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
-            //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
-
             // Incoming precipitation
-            //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
             float waterIn = PrecInByCanopyLayer; //mm 
 
             // Add incoming precipitation to soil moisture
@@ -389,7 +387,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     nsc -= Folalloc;
                 }
             }
-
+            // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
+            // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
+            LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+            
             //  Apply defoliation in month of june
             if ((PlugIn.ModelCore.CurrentTime > 0) && (ecoregion.Variables.Month == (int)Constants.Months.June))
             {
@@ -411,8 +412,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Reduction factor for radiation on photosynthesis
             FRad[index] = CumputeFrad(SubCanopyPar, adjHalfSat);
 
-            // Reduction factor for ozone on photosynthesis
-            FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);
+
 
             // Below-canopy PAR if updated after each subcanopy layer
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
@@ -426,9 +426,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             // If trees are physiologically active
             if (leaf_on)
             {
-
+                
                 // Compute net psn from stress factors and reference net psn
-                NetPsn[index] = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * FOzone[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
+                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
+
+                // Reduction factor for ozone on photosynthesis
+                //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
+                O3Effect[index] = ComputeO3Effect_PnET(o3, ecoregion.Variables[Species.Name].DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol,O3Effect[index]);
+                FOzone[index] = 1 - O3Effect[index];
+               
+
+                //Apply reduction factor for Ozone
+                NetPsn[index] = nonOzoneNetPsn * FOzone[index];
 
                 // Net foliage respiration depends on reference psn (AMAX)
                 //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
@@ -472,6 +481,9 @@ namespace Landis.Extension.Succession.BiomassPnET
  
         public static float CumputeFrad(float Radiation, float HalfSat)
         {
+            // Derived from Michaelis-Menton equation
+            // https://en.wikibooks.org/wiki/Structural_Biochemistry/Enzyme/Michaelis_and_Menten_Equation
+
             return Radiation / (Radiation + HalfSat);
         }
         public static float CumputeFWater(float H2, float H3, float H4, float pressurehead)
@@ -492,6 +504,33 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
             }
+        }
+        public static float ComputeO3Effect_PnET(float o3, float delAmax, float layNetPsn, int Layer, int nLayers, float FolMass,float lastO3Effect)
+        {
+            float currentO3Effect = 1.0F;
+            float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
+            // Convert (gC/m2/mo) to (umol/m2/sec)
+            // gC to umol = 8333333.3333333
+            // month to sec = 2592000
+            // 8333333.333333 / 2592000 = 0.3215020576
+            float netPsnumol = (float) (layNetPsn * 0.3215020576);
+
+            float kO3Eff = 0.0026F;  // Should this be a species parameter?
+
+            float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
+            float RelLayer = (float)Layer / (float)nLayers;
+            //float relO3=MIN(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
+            float relO3 = Math.Min(1,1 - (RelLayer * O3Prof) * (RelLayer * O3Prof) * (RelLayer * O3Prof));
+            //float relO3=Math.Min(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
+            float gsSlope=(float)((-1.1309*delAmax)+1.9762);
+            float gsInt = (float)((0.4656 * delAmax) - 0.9701);
+            //float conductance =MAX(0,($D$34+($D$33*K3))*(1-$N$2));
+            float conductance = Math.Max(0, (gsInt + (gsSlope * netPsnumol)) * (1 - lastO3Effect));
+           
+            //float O3Effect =MIN(1,($N$2*$T$2)+(0.0026*M3*$D$29*L3));
+            currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * conductance * o3 * relO3));
+            
+            return currentO3Effect;
         }
         public int ComputeNonWoodyBiomass(ActiveSite site)
         {
