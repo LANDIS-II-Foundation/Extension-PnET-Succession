@@ -344,6 +344,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 monthlyCount[spc] = 0;
             }
 
+            float[] lastOzoneEffect = new float[SubCanopyCohorts.Count()];
+            for (int i = 0; i < lastOzoneEffect.Length; i++)
+            {
+                lastOzoneEffect[i] = 0;
+            }
 
             int monthCount = 0;
             for (int m = 0; m < data.Count(); m++ )
@@ -405,9 +410,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 subCanopyPrecip = 0;
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, this.Ecoregion.Variables.O3,subCanopyIndex, SubCanopyCohorts.Count());
-
+                            float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, this.Ecoregion.Variables.O3,subCanopyIndex, SubCanopyCohorts.Count(),ref O3Effect);
+                            lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
                              
                             if (success == false)
                             {

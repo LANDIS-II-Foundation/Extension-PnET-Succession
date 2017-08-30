@@ -68,7 +68,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float[] FWater = null;
 
         // O3Effect by sublayer
-        public float[] O3Effect = null;
+        //public float[] O3Effect = null;
 
         // Reduction factor for ozone 
         public float[] FOzone = null;
@@ -88,7 +88,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Transpiration = new float[PlugIn.IMAX];
             FRad = new float[PlugIn.IMAX];
             FWater = new float[PlugIn.IMAX];
-            O3Effect = new float[PlugIn.IMAX];
+            //O3Effect = new float[PlugIn.IMAX];
             FOzone = new float[PlugIn.IMAX];
             MaintenanceRespiration = new float[PlugIn.IMAX];
             Interception = new float[PlugIn.IMAX];
@@ -302,9 +302,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3,int subCanopyIndex,int layerCount)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3,int subCanopyIndex,int layerCount, ref float O3Effect)
         {            
             bool success = true;
+            float lastO3Effect = O3Effect;
+            O3Effect = 0;
 
             // Incoming precipitation
             float waterIn = PrecInByCanopyLayer; //mm 
@@ -432,8 +434,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Reduction factor for ozone on photosynthesis
                 //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
-                O3Effect[index] = ComputeO3Effect_PnET(o3, ecoregion.Variables[Species.Name].DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol,O3Effect[index]);
-                FOzone[index] = 1 - O3Effect[index];
+                O3Effect = ComputeO3Effect_PnET(o3, ecoregion.Variables[Species.Name].DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect);
+                FOzone[index] = 1 - O3Effect;
                
 
                 //Apply reduction factor for Ozone
