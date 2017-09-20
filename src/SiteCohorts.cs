@@ -392,6 +392,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Randomly choose which layers will receive the precip events
                 var randomNumbers = Enumerable.Range(1, SubCanopyCohorts.Count()).OrderBy(x => PlugIn.ContinuousUniformRandom()).Take(numEvents).ToList();
                 
+                // Determine impact of water and ozone on stomata
+                // ciModifier ~ psi + AOT40
+                // separate equations for ozone tolerant and ozone sensitive
+                // ciMod_regression.pptx contains regression results
+                // ciMod can be used to alter the absorption of CO2 and O3
+                // currently not being used
+                float pressureHead = hydrology.GetPressureHead(Ecoregion); // units are mH2O
+                float pressureHead_kPa = pressureHead / 0.101972f;  // convert units to kPa
+                float pressureHead_MPa = (-1.0f * pressureHead_kPa) / 1000f;  // convert units to Mpa and correct sign to be negative
+                float ciMod_tol =(float)(1.108121 + (0.299876 * pressureHead_MPa) + (-0.001844 * Ecoregion.Variables.O3));
+                ciMod_tol = Math.Min(ciMod_tol, 1.0f);
+                float ciMod_sens =(float)(1.0583282 + (0.2928593 * pressureHead_MPa) + (0.0002362 * Ecoregion.Variables.O3));
+                ciMod_sens = Math.Min(ciMod_sens, 1.0f);
+
                 float subCanopyPrecip = 0;
                 int subCanopyIndex = 0;
                 if (bins != null)

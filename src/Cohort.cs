@@ -524,6 +524,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             //float relO3=MIN(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
             float relO3 = Math.Min(1,1 - (RelLayer * O3Prof) * (RelLayer * O3Prof) * (RelLayer * O3Prof));
             //float relO3=Math.Min(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
+
+            // Calculations for gsSlope and gsInt could be moved back to EcoregionPnETVariables since they only depend on delamax
             float gsSlope=(float)((-1.1309*delAmax)+1.9762);
             float gsInt = (float)((0.4656 * delAmax) - 0.9701);
             //float conductance =MAX(0,($D$34+($D$33*K3))*(1-$N$2));

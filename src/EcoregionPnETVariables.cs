@@ -300,27 +300,63 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Gradient of effect of vapour pressure deficit on growth. 
             float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
+            // ** CO2 effect on growth **
+
             // Co2 ratio internal to the leave versus external
             float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
 
-            // Reference co2 ratio
-            float ci350 = 350 * cicaRatio;
+            float ciModifier = 1.0f;  // Placeholder for varying ci
+            float modCiCaRatio = cicaRatio * ciModifier;
 
-            // Elevated co2 effect
-            //float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
+            // Reference co2 ratio
+            float ci350 = 350 * modCiCaRatio;
 
             // Elevated leaf internal co2 concentration
-            float ciElev = climate_dataset.CO2 * cicaRatio;
+            float ciElev = climate_dataset.CO2 * modCiCaRatio;
 
+            // Corrected Ollinger method
+            //float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
             //float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
-
-            // CO2 effect on growth
             //float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
+
+            // Italians method
+            // Derived from data shared by Elena Paoletti and Yasutomo Hoshika
+            // 'new normalized A - Ci graphs.docx' by M. Kubiske
+            //float Arel350 = 0;
+            //if (ci350 <= 291)
+            //{
+            //    Arel350 = (float)(0.00318045 * ci350 - 0.22611);
+            //}
+            //else if (ci350 <= 960)
+            //{
+            //    Arel350 = (float)((1.25393 * ci350) / (244.793 + ci350));
+            //}
+            //else
+            //   Arel350 = 1.0f;
+            //float ArelElev = 0;
+            //if (ciElev <= 291)
+            //{
+            //    ArelElev = (float)(0.00318045 * ciElev - 0.22611);
+            //}
+            //else if (ciElev <= 960)
+            //{
+            //    ArelElev = (float)((1.25393 * ciElev) / (244.793 + ciElev));
+            //}
+            //else
+            //    ArelElev = 1.0f;
+            //float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
+          
+            // Franks method
+            // (Franks,2013, New Phytologist, 197:1077-1094)
             float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
             float Ca0 = 350;  // 350
-            float delamax = (climate_dataset.CO2 - Gamma) / (climate_dataset.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);  // (Franks,2013, New Phytologist, 197:1077-1094)
+            //float delamax = (climate_dataset.CO2 - Gamma) / (climate_dataset.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);  // (Franks,2013, New Phytologist, 197:1077-1094)
             
-            speciespnetvars.DelAmax = delamax;
+            // Modified Franks method - by M. Kubiske
+            // substitute ciElev for CO2
+            float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
+
+            speciespnetvars.DelAmax = delamaxCi; // Using Modified Franks
 
             // Foliar reduction due to ozone pollution
             //DocumentO3FolRed(spc);
@@ -332,6 +368,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
             //float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
 
+            // This is currently in the Cohort.cs calculation, but could be moved back here since in only depends on delamax
             //_gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
             //_gsInt = (float)((0.4656 * delamax) - 0.9701);
 
