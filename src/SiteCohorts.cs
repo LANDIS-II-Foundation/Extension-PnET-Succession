@@ -406,6 +406,57 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float ciMod_sens =(float)(1.0583282 + (0.2928593 * pressureHead_MPa) + (0.0002362 * Ecoregion.Variables.O3));
                 ciMod_sens = Math.Min(ciMod_sens, 1.0f);
 
+                List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+                Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
+                Dictionary<string, float> JCO2_spp = new Dictionary<string, float>();
+                Dictionary<string, float> Amax_spp = new Dictionary<string, float>();
+                Dictionary<string, float> FTempPSNRefNetPSN_spp = new Dictionary<string, float>();
+
+                // Franks method
+                // (Franks,2013, New Phytologist, 197:1077-1094)
+                float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
+                float Ca0 = 350;  // 350
+
+                foreach (ISpeciesPNET spc in species)
+                {
+                    // Co2 ratio internal to the leave versus external
+                    float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
+                    float ciModifier = 1.0f;
+                    if (spc.OzoneSens == "Sensitive")
+                        ciModifier = ciMod_sens;
+                    else
+                        ciModifier = ciMod_tol;
+                    float modCiCaRatio = cicaRatio * ciModifier;
+                    // Reference co2 ratio
+                    float ci350 = 350 * modCiCaRatio;
+                    // Elevated leaf internal co2 concentration
+                    float ciElev = Ecoregion.Variables.CO2 * modCiCaRatio;
+
+                    // Modified Franks method - by M. Kubiske
+                    // substitute ciElev for CO2
+                    float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
+                    DelAmax_spp.Add(spc.Name, delamaxCi); // using modified Franks
+
+                    data[m][spc.Name].DelAmax = delamaxCi; // for output
+
+                    // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
+                    float V = (float)(8314.47 * (Ecoregion.Variables.Tmin + 273) / 101.3);
+                    float JCO2 = (float)(0.139 * ((Ecoregion.Variables.CO2 - ciElev) / V) * 0.00001);
+                    JCO2_spp.Add(spc.Name,JCO2);
+                    float JH2O = Ecoregion.Variables[spc.Name].JH2O;
+                    float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
+
+                    float Amax = delamaxCi * (spc.AmaxA + Ecoregion.Variables[spc.Name].AmaxB_CO2 * spc.FolN);
+                    Amax_spp.Add(spc.Name, Amax);
+                    //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
+                    float RefNetPsn = Ecoregion.Variables.DaySpan * (Amax * Ecoregion.Variables[spc.Name].DVPD * Ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;
+
+                    // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
+                    float FTempPSNRefNetPsn = Ecoregion.Variables[spc.Name].FTempPSN * RefNetPsn;
+                    FTempPSNRefNetPSN_spp.Add(spc.Name, FTempPSNRefNetPsn);
+                }
+
+
                 float subCanopyPrecip = 0;
                 int subCanopyIndex = 0;
                 if (bins != null)
@@ -425,7 +476,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, this.Ecoregion.Variables.O3,subCanopyIndex, SubCanopyCohorts.Count(),ref O3Effect);
+                            float delAmax = DelAmax_spp[c.Species.Name];
+                            float jCO2 = JCO2_spp[c.Species.Name];
+                            float aMax = Amax_spp[c.Species.Name];
+                            float fTempPSNRefNetPsn = FTempPSNRefNetPSN_spp[c.Species.Name];
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, this.Ecoregion.Variables.O3, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
                              
                             if (success == false)

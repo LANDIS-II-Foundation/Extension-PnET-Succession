@@ -77,6 +77,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _co2AMaxBEff;
         private float _maintresp;
         private float _bfolresp;
+        private string _ozoneSens;
         private string name;
         private int index;
         
@@ -137,6 +138,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
+        private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
         
         #endregion
 
@@ -181,6 +183,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             co2AMaxBEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2AMaxBEff"));
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
+            ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("OzoneSens"));
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -231,6 +234,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float co2AMaxBEff,
             float maintresp,
             float bfolresp,
+            string ozoneSens,
             int Index,
             string name,
             int maxSproutAge,
@@ -279,6 +283,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._co2AMaxBEff = co2AMaxBEff;
             this._maintresp = maintresp;
             this._bfolresp = bfolresp;
+            this._ozoneSens = ozoneSens;
             this.index = Index;
             this.name = name;
             this.maxSproutAge = maxSproutAge;
@@ -334,6 +339,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _o3HaltPsn = o3HaltPsn[species];
             _psnO3Red = psnO3Red[species];
             _co2HalfSatEff = co2HalfSatEff[species];
+            _ozoneSens = ozoneSens[species];
             index = species.Index;
             name = species.Name;
 
@@ -712,6 +718,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return longevity;
+            }
+        }
+        public string OzoneSens
+        {
+            get
+            {
+                return _ozoneSens;
             }
         }
         # endregion

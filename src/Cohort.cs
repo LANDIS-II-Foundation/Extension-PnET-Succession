@@ -302,7 +302,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3,int subCanopyIndex,int layerCount, ref float O3Effect)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3,int subCanopyIndex,int layerCount, ref float O3Effect, float DelAmax, float JCO2, float Amax, float FTempPSNRefNetPsn)
         {            
             bool success = true;
             float lastO3Effect = O3Effect;
@@ -430,11 +430,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 
                 // Compute net psn from stress factors and reference net psn
-                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * ecoregion.Variables[species.Name].FTempPSNRefNetPsn * fol;
+                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefNetPsn * fol;
 
                 // Reduction factor for ozone on photosynthesis
                 //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
-                O3Effect = ComputeO3Effect_PnET(o3, ecoregion.Variables[Species.Name].DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect);
+                // Disabled for now
+                //O3Effect = ComputeO3Effect_PnET(o3, DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect);
+                O3Effect = 0.0f;
                 FOzone[index] = 1 - O3Effect;
                
 
@@ -444,7 +446,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Net foliage respiration depends on reference psn (AMAX)
                 //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
                 //Subistitute 24 hours in place of DayLength because foliar respiration does occur at night.  FTempRespDay uses Tave temps reflecting both day and night temperatures.
-                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
+                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * Amax;
                 
                 // Actal foliage respiration (growth respiration) 
                 FolResp[index] = FWater[index] * FTempRespDayRefResp * fol / (float)PlugIn.IMAX;
@@ -457,7 +459,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
-                Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (ecoregion.Variables[Species.Name].JCO2 / ecoregion.Variables[Species.Name].JH2O)));
+                Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
                  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
