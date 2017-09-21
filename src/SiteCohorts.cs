@@ -401,9 +401,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float pressureHead = hydrology.GetPressureHead(Ecoregion); // units are mH2O
                 float pressureHead_kPa = pressureHead / 0.101972f;  // convert units to kPa
                 float pressureHead_MPa = (-1.0f * pressureHead_kPa) / 1000f;  // convert units to Mpa and correct sign to be negative
-                float ciMod_tol =(float)(1.108121 + (0.299876 * pressureHead_MPa) + (-0.001844 * Ecoregion.Variables.O3));
+                float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert units to ppm h
+                float ciMod_tol = (float)(1.108121 + (0.299876 * pressureHead_MPa) + (-0.001844 * O3_ppmh));
                 ciMod_tol = Math.Min(ciMod_tol, 1.0f);
-                float ciMod_sens =(float)(1.0583282 + (0.2928593 * pressureHead_MPa) + (0.0002362 * Ecoregion.Variables.O3));
+                float ciMod_sens = (float)(1.0583282 + (0.2928593 * pressureHead_MPa) + (0.0002362 * O3_ppmh));
                 ciMod_sens = Math.Min(ciMod_sens, 1.0f);
 
                 List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
@@ -480,7 +481,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             float jCO2 = JCO2_spp[c.Species.Name];
                             float aMax = Amax_spp[c.Species.Name];
                             float fTempPSNRefNetPsn = FTempPSNRefNetPSN_spp[c.Species.Name];
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, this.Ecoregion.Variables.O3, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, O3_ppmh, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
                              
                             if (success == false)
