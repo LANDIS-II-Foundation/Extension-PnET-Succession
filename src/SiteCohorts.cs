@@ -415,7 +415,12 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Franks method
                 // (Franks,2013, New Phytologist, 197:1077-1094)
-                float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
+                //float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
+                
+                // Modified Gamma based on air temp
+                // Bernacchi et al. 2002. Plant Physiology 130, 1992-1998
+                // Gamma* = e^(13.49-24.46/RTk) [R is universal gas constant = 0.008314 kJ/J/mole, Tk is absolute temperature]
+                float Gamma = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (Ecoregion.Variables.Tday + 273)));
                 float Ca0 = 350;  // 350
 
                 foreach (ISpeciesPNET spc in species)
