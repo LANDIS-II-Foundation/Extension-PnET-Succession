@@ -397,7 +397,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // separate equations for ozone tolerant and ozone sensitive
                 // ciMod_regression.pptx contains regression results
                 // ciMod can be used to alter the absorption of CO2 and O3
-                // currently not being used
                 float pressureHead = hydrology.GetPressureHead(Ecoregion); // units are mH2O
                 float pressureHead_kPa = pressureHead / 0.101972f;  // convert units to kPa
                 float pressureHead_MPa = (-1.0f * pressureHead_kPa) / 1000f;  // convert units to Mpa and correct sign to be negative
@@ -406,6 +405,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 ciMod_tol = Math.Min(ciMod_tol, 1.0f);
                 float ciMod_sens = (float)(1.0583282 + (0.2928593 * pressureHead_MPa) + (0.0002362 * O3_ppmh));
                 ciMod_sens = Math.Min(ciMod_sens, 1.0f);
+                // Intermediate tolerance interpolated between sensitive and tolerant
+                float ciMod_int = (float)(1.163728511 + (0.29623265 * pressureHead_MPa) + (-0.0008039 * O3_ppmh));
+                ciMod_int = Math.Min(ciMod_int, 1.0f);
 
                 List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
                 Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
@@ -415,12 +417,12 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Franks method
                 // (Franks,2013, New Phytologist, 197:1077-1094)
-                //float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
+                float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
                 
                 // Modified Gamma based on air temp
                 // Bernacchi et al. 2002. Plant Physiology 130, 1992-1998
                 // Gamma* = e^(13.49-24.46/RTk) [R is universal gas constant = 0.008314 kJ/J/mole, Tk is absolute temperature]
-                float Gamma = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (Ecoregion.Variables.Tday + 273)));
+                //float Gamma = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (Ecoregion.Variables.Tday + 273)));
                 float Ca0 = 350;  // 350
 
                 foreach (ISpeciesPNET spc in species)
@@ -430,8 +432,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float ciModifier = 1.0f;
                     if (spc.OzoneSens == "Sensitive")
                         ciModifier = ciMod_sens;
-                    else
+                    else if (spc.OzoneSens == "Tolerant")
                         ciModifier = ciMod_tol;
+                    else  //"Intermediate"
+                        ciMod_int = ciMod_int;
+
                     float modCiCaRatio = cicaRatio * ciModifier;
                     // Reference co2 ratio
                     float ci350 = 350 * modCiCaRatio;
