@@ -434,9 +434,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Reduction factor for ozone on photosynthesis
                 //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
-                // Disabled for now
-                //O3Effect = ComputeO3Effect_PnET(o3, DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect);
-                O3Effect = 0.0f;
+                O3Effect = ComputeO3Effect_PnET(o3, DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect);
                 FOzone[index] = 1 - O3Effect;
                
 
@@ -514,10 +512,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             float currentO3Effect = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             // Convert (gC/m2/mo) to (umol/m2/sec)
-            // gC to umol = 8333333.3333333
-            // month to sec = 2592000
-            // 8333333.333333 / 2592000 = 0.3215020576
-            float netPsnumol = (float) (layNetPsn * 0.3215020576);
+            float gC_to_umol = 83333.333333333f;  //1,000,000 umol / 12g C
+            float psn_conversion = gC_to_umol / ecoregion.Variables.Daylength; //(gC/m2/mo) to (umol/m2/sec)
+            float netPsnumol = (float)(layNetPsn * psn_conversion);
 
             float kO3Eff = 0.0026F;  // Should this be a species parameter?
 
