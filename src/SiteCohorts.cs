@@ -358,6 +358,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 subcanopypar = this.Ecoregion.Variables.PAR0;                
                 interception = 0;
 
+                float ozoneD40 = 0;
+                if (m > 0)
+                    ozoneD40 = Math.Max(0,this.Ecoregion.Variables.O3 - data[m - 1].O3);
+                else
+                    ozoneD40 = this.Ecoregion.Variables.O3;
+                float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
+
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
@@ -400,7 +407,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float pressureHead = hydrology.GetPressureHead(Ecoregion); // units are mH2O
                 float pressureHead_kPa = pressureHead / 0.101972f;  // convert units to kPa
                 float pressureHead_MPa = (-1.0f * pressureHead_kPa) / 1000f;  // convert units to Mpa and correct sign to be negative
-                float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert units to ppm h
+                float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert AOT40 units to ppm h
                 float ciMod_tol = (float)(1.108121 + (0.299876 * pressureHead_MPa) + (-0.001844 * O3_ppmh));
                 ciMod_tol = Math.Min(ciMod_tol, 1.0f);
                 float ciMod_sens = (float)(1.0583282 + (0.2928593 * pressureHead_MPa) + (0.0002362 * O3_ppmh));
@@ -459,10 +466,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     float Amax = delamaxCi * (spc.AmaxA + Ecoregion.Variables[spc.Name].AmaxB_CO2 * spc.FolN);
                     Amax_spp.Add(spc.Name, Amax);
-                    //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
+                    //Reference net Psn (lab conditions) in gC/m2 leaf area/month
                     float RefNetPsn = Ecoregion.Variables.DaySpan * (Amax * Ecoregion.Variables[spc.Name].DVPD * Ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;
 
-                    // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
+                    // PSN (gC/m2 leaf area/month) reference net psn in a given temperature
                     float FTempPSNRefNetPsn = Ecoregion.Variables[spc.Name].FTempPSN * RefNetPsn;
                     FTempPSNRefNetPSN_spp.Add(spc.Name, FTempPSNRefNetPsn);
                 }
@@ -491,7 +498,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             float jCO2 = JCO2_spp[c.Species.Name];
                             float aMax = Amax_spp[c.Species.Name];
                             float fTempPSNRefNetPsn = FTempPSNRefNetPSN_spp[c.Species.Name];
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, O3_ppmh, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, O3_D40_ppmh, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
                              
                             if (success == false)

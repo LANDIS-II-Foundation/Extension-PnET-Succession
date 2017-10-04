@@ -434,7 +434,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Reduction factor for ozone on photosynthesis
                 //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
-                O3Effect = ComputeO3Effect_PnET(o3, DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect);
+                O3Effect = ComputeO3Effect_PnET(o3, DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect); // O3 units are D40 ppm-h
                 FOzone[index] = 1 - O3Effect;
                
 
@@ -496,28 +496,29 @@ namespace Landis.Extension.Succession.BiomassPnET
             else if (pressurehead < H2) return pressurehead / H2;
             else return 1;
         }
-        public static float ComputeFOzone(float o3, float NoO3Effect, float O3HaltPsn, float PsnO3Red)
-        {
-            if (o3 <= NoO3Effect)
-            {
-                return (float)1.0;
-            }
-            else
-            {
-                return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
-            }
-        }
+        //public static float ComputeFOzone(float o3, float NoO3Effect, float O3HaltPsn, float PsnO3Red)
+        //{
+        //    if (o3 <= NoO3Effect)
+        //    {
+        //        return (float)1.0;
+        //    }
+        //    else
+        //    {
+        //        return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
+        //    }
+        //}
         public static float ComputeO3Effect_PnET(float o3, float delAmax, float layNetPsn, int Layer, int nLayers, float FolMass,float lastO3Effect)
         {
             float currentO3Effect = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
             // Convert (gC/m2/mo) to (umol/m2/sec)
             float gC_to_umol = 83333.333333333f;  //1,000,000 umol / 12g C
-            float psn_conversion = gC_to_umol / ecoregion.Variables.Daylength; //(gC/m2/mo) to (umol/m2/sec)
+            float psn_conversion = gC_to_umol / (ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan); //(gC/m2/mo) to (umol/m2/sec)
             float netPsnumol = (float)(layNetPsn * psn_conversion);
 
-            float kO3Eff = 0.0026F;  // Should this be a species parameter?
+            float kO3Eff = 0.0026F;  // From Ollinger 1997
 
+            //Calculate canopy ozone extinction based on folmass
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = (float)Layer / (float)nLayers;
             //float relO3=MIN(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
