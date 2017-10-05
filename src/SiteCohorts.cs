@@ -663,6 +663,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ActiveBiomassPerSpecies;
             }
         }
+        public Landis.Library.Parameters.Species.AuxParm<int> MatureFoliagePerSpecies
+        {
+            get
+            {
+                Landis.Library.Parameters.Species.AuxParm<int> MatureFoliagePerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+
+                foreach (ISpecies spc in cohorts.Keys)
+                {
+                    int matAge = spc.Maturity;
+                    MatureFoliagePerSpecies[spc] = (int)cohorts[spc].Where(j => j.Age >= matAge).Sum(o => (o.Fol));
+                }
+                return MatureFoliagePerSpecies;
+            }
+        }
         public Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies
         {
             get

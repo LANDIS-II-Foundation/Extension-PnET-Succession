@@ -292,6 +292,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Reproduction.EstablishmentProbability = EstabProbability;
             Reproduction.MatureBiomass = ComputeMatureBiomass;
             Reproduction.ActiveBiomass = ComputeActiveBiomass;
+            Reproduction.MatureFolMass = ComputeMatureFolMass;
 
             
             SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), parameters["SeedingAlgorithm"].Value);
@@ -489,6 +490,23 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     double activeBiomass = mySiteCohorts.ActiveBiomassPerSpecies[species];
                     return activeBiomass;
+                }
+                else
+                    return 0.0;
+            }
+        }
+        //---------------------------------------------------------------------
+        public double ComputeMatureFolMass(ISpecies species, ActiveSite site)
+        {
+            if (PlugIn.ModelCore.CurrentTime <= 0)
+                return 0.0;
+            else
+            {
+                ISiteCohorts mySiteCohorts = sitecohorts[site];
+                if (mySiteCohorts.CohortCountPerSpecies[species] > 0)
+                {
+                    double folMass = mySiteCohorts.MatureFoliagePerSpecies[species];
+                    return folMass;
                 }
                 else
                     return 0.0;
