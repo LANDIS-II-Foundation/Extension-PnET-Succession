@@ -252,7 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.nsc = (ushort)species.InitialNSC;
            
             // Initialize biomass assuming fixed concentration of NSC
-            this.biomass = (uint)(1F / species.DNSC * (ushort)species.InitialNSC * propBiomass);
+            this.biomass = (uint)Math.Max(1,(1F / species.DNSC * (ushort)species.InitialNSC * propBiomass));
             
             biomassmax = biomass;
 

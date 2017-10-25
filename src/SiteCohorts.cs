@@ -672,8 +672,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 foreach (ISpecies spc in cohorts.Keys)
                 {
                     int matAge = spc.Maturity;
-                    MatureFoliagePerSpecies[spc] = (int)cohorts[spc].Where(j => j.Age >= matAge).Sum(o => (o.Fol));
-                }
+                    //MatureFoliagePerSpecies[spc] = (int)cohorts[spc].Where(j => j.Age >= matAge).Sum(o => (o.Fol));
+                    MatureFoliagePerSpecies[spc] = (int)cohorts[spc].Where(j => j.Age >= matAge).Sum(o => (o.SpeciesPNET.FracFol * o.FActiveBiom * o.TotalBiomass));
+                                    }
                 return MatureFoliagePerSpecies;
             }
         }
