@@ -401,19 +401,27 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float pressureHead_kPa = pressureHead / 0.101972f;  // convert units to kPa
                 float pressureHead_MPa = (-1.0f * pressureHead_kPa) / 1000f;  // convert units to Mpa and correct sign to be negative
                 float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert units to ppm h
-                float ciMod_tol = (float)(1.108121 + (0.299876 * pressureHead_MPa) + (-0.001844 * O3_ppmh));
-                ciMod_tol = Math.Min(ciMod_tol, 1.0f);
-                float ciMod_sens = (float)(1.0583282 + (0.2928593 * pressureHead_MPa) + (0.0002362 * O3_ppmh));
-                ciMod_sens = Math.Min(ciMod_sens, 1.0f);
-                // Intermediate tolerance interpolated between sensitive and tolerant
-                float ciMod_int = (float)(1.163728511 + (0.29623265 * pressureHead_MPa) + (-0.0008039 * O3_ppmh));
-                ciMod_int = Math.Min(ciMod_int, 1.0f);
-
+                // ciMod equations updated to new regression results (v2)
+                float ciMod_tol = 1.0f;
+                float ciMod_int = 1.0f;
+                float ciMod_sens = 1.0f;
+                if (pressureHead_MPa < (-0.6))
+                {
+                    ciMod_tol = (float)(1.326 + (0.5622 * pressureHead_MPa) + (0.0003557 * O3_ppmh));
+                    ciMod_tol = Math.Min(ciMod_tol, 1.0f);
+                    ciMod_int = (float)(1.273 + (0.4751 * pressureHead_MPa) + (0.0003999 * O3_ppmh));
+                    ciMod_int = Math.Min(ciMod_int, 1.0f);
+                    ciMod_sens = (float)(1.2383097 + (0.4832358 * pressureHead_MPa) + (0.001658 * O3_ppmh));
+                    ciMod_sens = Math.Min(ciMod_sens, 1.0f);                    
+                }
                 List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
                 Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
                 Dictionary<string, float> JCO2_spp = new Dictionary<string, float>();
                 Dictionary<string, float> Amax_spp = new Dictionary<string, float>();
                 Dictionary<string, float> FTempPSNRefNetPSN_spp = new Dictionary<string, float>();
+                Dictionary<string, float> Ca_Ci_spp = new Dictionary<string, float>();
+
+                
 
                 // Franks method
                 // (Franks,2013, New Phytologist, 197:1077-1094)
@@ -435,14 +443,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                     else if (spc.OzoneSens == "Tolerant")
                         ciModifier = ciMod_tol;
                     else  //"Intermediate"
-                        ciMod_int = ciMod_int;
+                        ciModifier = ciMod_int;
 
                     float modCiCaRatio = cicaRatio * ciModifier;
                     // Reference co2 ratio
                     float ci350 = 350 * modCiCaRatio;
                     // Elevated leaf internal co2 concentration
                     float ciElev = Ecoregion.Variables.CO2 * modCiCaRatio;
-
+                    Ca_Ci_spp.Add(spc.Name, (Ecoregion.Variables.CO2 - ciElev));
+                    
                     // Modified Franks method - by M. Kubiske
                     // substitute ciElev for CO2
                     float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
@@ -459,10 +468,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     float Amax = delamaxCi * (spc.AmaxA + Ecoregion.Variables[spc.Name].AmaxB_CO2 * spc.FolN);
                     Amax_spp.Add(spc.Name, Amax);
-                    //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
+                    //Reference net Psn (lab conditions) in gC/g Fol/month
                     float RefNetPsn = Ecoregion.Variables.DaySpan * (Amax * Ecoregion.Variables[spc.Name].DVPD * Ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;
 
-                    // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
+                    // PSN (gC/g Fol/month) reference net psn in a given temperature
                     float FTempPSNRefNetPsn = Ecoregion.Variables[spc.Name].FTempPSN * RefNetPsn;
                     FTempPSNRefNetPSN_spp.Add(spc.Name, FTempPSNRefNetPsn);
                 }
@@ -491,7 +500,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                             float jCO2 = JCO2_spp[c.Species.Name];
                             float aMax = Amax_spp[c.Species.Name];
                             float fTempPSNRefNetPsn = FTempPSNRefNetPSN_spp[c.Species.Name];
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, O3_ppmh, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn);
+                            float Ca_Ci = Ca_Ci_spp[c.Species.Name];
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, O3_ppmh, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn, Ca_Ci);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
                              
                             if (success == false)
