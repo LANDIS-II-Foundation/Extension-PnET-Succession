@@ -401,6 +401,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float pressureHead_kPa = pressureHead / 0.101972f;  // convert units to kPa
                 float pressureHead_MPa = (-1.0f * pressureHead_kPa) / 1000f;  // convert units to Mpa and correct sign to be negative
                 float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert units to ppm h
+                float lastO3 = 0;
+                if(m > 0)
+                    lastO3 = (data[m-1].O3/1000f);
+                float O3_ppmh_month = O3_ppmh - lastO3;
                 // ciMod equations updated to new regression results (v2)
                 float ciMod_tol = 1.0f;
                 float ciMod_int = 1.0f;
@@ -501,7 +505,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             float aMax = Amax_spp[c.Species.Name];
                             float fTempPSNRefNetPsn = FTempPSNRefNetPSN_spp[c.Species.Name];
                             float Ca_Ci = Ca_Ci_spp[c.Species.Name];
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, O3_ppmh, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn, Ca_Ci);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, this.Ecoregion.Variables.CO2, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, delAmax, jCO2, aMax, fTempPSNRefNetPsn, Ca_Ci);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
                              
                             if (success == false)
