@@ -458,7 +458,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
-                 
+                // Use Psn before ozone reduction to reflect lower water use efficiency with ozone
+                //Transpiration[index] = (float)(0.01227 * (nonOzoneNetPsn / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
+ 
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
                 if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water);
