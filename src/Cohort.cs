@@ -302,7 +302,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3,int subCanopyIndex,int layerCount, ref float O3Effect, float DelAmax, float JCO2, float Amax, float FTempPSNRefNetPsn)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float DelAmax, float JCO2, float Amax, float FTempPSNRefNetPsn, float Ca_Ci)
         {            
             bool success = true;
             float lastO3Effect = O3Effect;
@@ -429,12 +429,47 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (leaf_on)
             {
                 
-                // Compute net psn from stress factors and reference net psn
-                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefNetPsn * fol;
+                // Compute net psn from stress factors and reference net psn (gC/g Fol/month)
+                // FTempPSNRefNetPsn units are gC/g Fol/mo
+                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefNetPsn * fol; // this gives odd units of gC*gFol/m2 fol * m2 ground/mo
+                
+                //determine gc (conductance to CO2) from Psn/(Ca-Ci)=gc
+                //float gc = nonOzoneNetPsn / (Ca_Ci);
+                //convert gc to gwv (conductance to water vapor) in mm^3 H2O/mm^2 ground/month
+                //Use the universal gas law: Pv=nRT
+                //Assume pressure to be 1 atmosphere.  
+                // v = (grams C / 12) * (T+273) * 0.08206 * 1000000 *1.6
+                //The first term converts grams of C to moles
+                //The second term converts degrees Celsius to degrees K
+                //Third term is the gas constant
+                //Fourth term converts liters to mm^3
+                //Fifth term converts gc to gwv
+                //float gwv_ground_month = (float)((gc / 12) * (ecoregion.Variables.Tave + 273) * 0.08206 * 1000000 * 1.6);
+                // Convert to mm^3/mm^2 leaf/month
+                //float gwv_month = gwv_ground_month * LAI[index];
+                // Convert to mm^3/mm^2 leaf/sec
+                //float gwv = gwv_month /(ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan);
+              
+                
+                // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
+                // netPsn_ground = LayerNestPsn*1000000umol*(1mol/12gC) * (1/(60s*60min*14hr*30day))
+                float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan));
+                // nesPsn_leaf_s = NetPsn_ground*(1/LAI){m2 fol/m2 ground}
+                float netPsn_leaf_s = netPsn_ground * (1F / LAI[index]);
+
+                //Calculate water vapor conductance (gwv) from Psn and Ci; Kubiske Conductance_5.xlsx
+                //gwv_mol = NetPsn_leaf_s /(Ca-Ci) {umol/mol} * 1.6(molH20/molCO2)*1000 {mmol/mol}
+                float gwv_mol = (float)(netPsn_leaf_s / (Ca_Ci) * 1.6 * 1000);
+                //gwv = gwv_mol / (444.5 - 1.3667*Tc)*10    {denominator is from Koerner et al. 1979 (Sheet 3),  Tc = temp in degrees C, * 10 converts from cm to mm.  
+                float gwv = (float) (gwv_mol / (444.5 - 1.3667 * ecoregion.Variables.Tave) * 10);
+
+                // Calculate gwv from Psn using Ollinger equation
+                // g = -0.3133+0.8126*NetPsn_leaf_s
+                float g = (float) (-0.3133 + 0.8126 * netPsn_leaf_s);
 
                 // Reduction factor for ozone on photosynthesis
                 //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
-                O3Effect = ComputeO3Effect_PnET(o3, DelAmax, nonOzoneNetPsn, subCanopyIndex, layerCount, fol, lastO3Effect); // O3 units are D40 ppm-h
+                O3Effect = ComputeO3Effect_PnET(o3_month, DelAmax, netPsn_leaf_s, subCanopyIndex, layerCount, fol, lastO3Effect, gwv, LAI[index]);
                 FOzone[index] = 1 - O3Effect;
                
 
@@ -457,9 +492,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
-                Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
+                //Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
                 // Use Psn before ozone reduction to reflect lower water use efficiency with ozone
-                //Transpiration[index] = (float)(0.01227 * (nonOzoneNetPsn / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
+                Transpiration[index] = (float)(0.01227 * (nonOzoneNetPsn / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
@@ -498,45 +533,52 @@ namespace Landis.Extension.Succession.BiomassPnET
             else if (pressurehead < H2) return pressurehead / H2;
             else return 1;
         }
-        //public static float ComputeFOzone(float o3, float NoO3Effect, float O3HaltPsn, float PsnO3Red)
-        //{
-        //    if (o3 <= NoO3Effect)
-        //    {
-        //        return (float)1.0;
-        //    }
-        //    else
-        //    {
-        //        return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
-        //    }
-        //}
-        public static float ComputeO3Effect_PnET(float o3, float delAmax, float layNetPsn, int Layer, int nLayers, float FolMass,float lastO3Effect)
+        public static float ComputeFOzone(float o3, float NoO3Effect, float O3HaltPsn, float PsnO3Red)
+        {
+            if (o3 <= NoO3Effect)
+            {
+                return (float)1.0;
+            }
+            else
+            {
+                return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
+            }
+        }
+        public static float ComputeO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI)
         {
             float currentO3Effect = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
-            // Convert (gC/m2/mo) to (umol/m2/sec)
-            float gC_to_umol = 83333.333333333f;  //1,000,000 umol / 12g C
-            float psn_conversion = gC_to_umol / (ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan); //(gC/m2/mo) to (umol/m2/sec)
-            float netPsnumol = (float)(layNetPsn * psn_conversion);
+            float kO3Eff = 0.0026F;  // Should this be a species parameter?
 
-            float kO3Eff = 0.0026F;  // From Ollinger 1997
-
-            //Calculate canopy ozone extinction based on folmass
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = (float)Layer / (float)nLayers;
             //float relO3=MIN(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
-            float relO3 = Math.Max(0,Math.Min(1,1 - (RelLayer * O3Prof) * (RelLayer * O3Prof) * (RelLayer * O3Prof)));
+            float relO3 = Math.Min(1,1 - (RelLayer * O3Prof) * (RelLayer * O3Prof) * (RelLayer * O3Prof));
             //float relO3=Math.Min(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
 
             // Calculations for gsSlope and gsInt could be moved back to EcoregionPnETVariables since they only depend on delamax
             float gsSlope=(float)((-1.1309*delAmax)+1.9762);
             float gsInt = (float)((0.4656 * delAmax) - 0.9701);
             //float conductance =MAX(0,($D$34+($D$33*K3))*(1-$N$2));
-            float conductance = Math.Max(0, (gsInt + (gsSlope * netPsnumol)) * (1 - lastO3Effect));
+            float conductance = Math.Max(0, (gsInt + (gsSlope * netPsn_leaf_s)) * (1 - lastO3Effect));
            
             //float O3Effect =MIN(1,($N$2*$T$2)+(0.0026*M3*$D$29*L3));
-            currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * conductance * o3 * relO3));
+            float currentO3Effect_conductance = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * conductance * o3 * relO3));
+            currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
+
+            string OzoneConductance = ((Parameter<string>)PlugIn.GetParameter(Names.OzoneConductance)).Value;
+
+            if (OzoneConductance == "Kubiske")
+                return currentO3Effect;
+            else if (OzoneConductance == "Ollinger")
+                return currentO3Effect_conductance;
+            else
+            {
+                System.Console.WriteLine("OzoneConductance is not Kubiske or Ollinger.  Using Kubiske by default");
+                return currentO3Effect;
+            }
+
             
-            return currentO3Effect;
         }
         public int ComputeNonWoodyBiomass(ActiveSite site)
         {
