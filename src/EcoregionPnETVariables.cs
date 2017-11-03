@@ -291,19 +291,27 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Co2 ratio internal to the leave versus external
             float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
 
+            // ** CO2 effect on growth **
             // Reference co2 ratio
             float ci350 = 350 * cicaRatio;
 
-            // Elevated co2 effect
-            float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
+            // Corrected Ollinger method
+            //float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
+            float ciElev = climate_dataset.CO2 * cicaRatio;// Elevated leaf internal co2 concentration
+            //float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
+            //float delamax = 1 + ((ArelElev - Arel350) / Arel350);
 
-            // Elevated leaf internal co2 concentration
-            float ciElev = climate_dataset.CO2 * cicaRatio;
+                       
+            // Franks method
+            // (Franks,2013, New Phytologist, 197:1077-1094)
+            float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
+            float Ca0 = 350;
+            //float delamax = (climate_dataset.CO2 - Gamma) / (climate_dataset.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma); 
+            
+            // Modified Franks method - by M. Kubiske
+            // substitute ciElev for CO2
+            float delamax = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
 
-            float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
-
-            // CO2 effect on growth
-            float delamax = 1 + ((ArelElev - Arel350) / Arel350);
             speciespnetvars.DelAmax = delamax;
 
             // CO2 effect on photosynthesis
