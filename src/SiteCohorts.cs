@@ -411,7 +411,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float lastO3 = 0;
                 if(m > 0)
                     lastO3 = (data[m-1].O3/1000f);
-                float O3_ppmh_month = O3_ppmh - lastO3;
+                float O3_ppmh_month = Math.Max(0,O3_ppmh - lastO3);
                 // ciMod equations updated to new regression results (v2)
                 float ciMod_tol = 1.0f;
                 float ciMod_int = 1.0f;

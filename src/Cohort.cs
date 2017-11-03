@@ -618,8 +618,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                        GrossPsn.Sum() + "," +
                        FolResp.Sum() + "," +
                        MaintenanceRespiration.Sum() + "," +
-                       NetPsn.Sum() + "," +                  // Sum over canopy layers
-                       Transpiration.Sum() + "," +
+                       netPsnSum + "," +                  // Sum over canopy layers
+                       transpirationSum + "," +
                        WUE.ToString() + "," +
                        fol + "," + 
                        Root + "," + 
