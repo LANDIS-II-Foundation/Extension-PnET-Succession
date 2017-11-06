@@ -50,9 +50,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Support-Library-Dlls\Landis.Library.Biomass-v1.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.BiomassCohorts, Version=1.3.5520.27608, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Landis.Library.BiomassCohorts-v2, Version=1.3.6206.14399, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Support-Library-Dlls\Landis.Library.BiomassCohorts.dll</HintPath>
+      <HintPath>..\..\Support-Library-Dlls\Landis.Library.BiomassCohorts-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Cohorts, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
