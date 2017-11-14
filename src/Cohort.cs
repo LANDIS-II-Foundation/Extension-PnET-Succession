@@ -476,7 +476,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float JH2O = ecoregion.Variables[species.Name].JH2O;
                 float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
-                float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * species.FolN);
+                //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * species.FolN);
+                float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * FRad[index])); // Reduction in FolN with canopy depth
                 //Amax_spp.Add(spc.Name, Amax);
                 //Reference net Psn (lab conditions) in gC/g Fol/month
                 float RefNetPsn = ecoregion.Variables.DaySpan * (Amax * ecoregion.Variables[species.Name].DVPD * ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;
