@@ -473,12 +473,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float V = (float)(8314.47 * (ecoregion.Variables.Tmin + 273) / 101.3);
                 float JCO2 = (float)(0.139 * ((ecoregion.Variables.CO2 - ciElev) / V) * 0.00001);
                 //JCO2_spp.Add(spc.Name, JCO2);
-                float JH2O = ecoregion.Variables[species.Name].JH2O;
+                float JH2O = ecoregion.Variables[species.Name].JH2O * ciModifier;
                 float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * species.FolN);
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * FRad[index])); // Linear reduction in FolN with canopy depth
-                float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (float)(Math.Pow(FRad[index],2)+0.7))); // Exponential reduction in FolN with canopy depth
+                //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (float)(Math.Pow(FRad[index],2)+0.7))); // Exponential reduction in FolN with canopy depth
+                float Amax = (float) (delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (FRad[index] * 1.0 + 0.7)))); // Linear reduction (with intercept) in FolN with canopy depth
 
                 //Amax_spp.Add(spc.Name, Amax);
                 //Reference net Psn (lab conditions) in gC/g Fol/month
@@ -553,7 +554,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 //Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
                 // Use Psn before ozone reduction to reflect lower water use efficiency with ozone
-                Transpiration[index] = (float)(0.01227 * (nonOzoneNetPsn / (JCO2 / ecoregion.Variables[Species.Name].JH2O)));
+                Transpiration[index] = (float)(0.01227 * (nonOzoneNetPsn / (JCO2 / JH2O)));
  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
