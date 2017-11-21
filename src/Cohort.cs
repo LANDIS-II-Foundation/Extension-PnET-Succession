@@ -478,8 +478,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * species.FolN);
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * FRad[index])); // Linear reduction in FolN with canopy depth
-                float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (float)(Math.Pow(FRad[index],2)+0.7))); // Exponential reduction in FolN with canopy depth
-                //float Amax = (float) (delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (FRad[index] * 1.0 + 0.5)))); // Linear reduction (with intercept) in FolN with canopy depth
+                //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (float)(Math.Pow(FRad[index],2)+0.7))); // Exponential reduction in FolN with canopy depth
+                float folN_slope = 0.6f;  //Slope for linear FolN relationship
+                float folN_int = 0.7f;  //Intercept for linear FolN relationship
+                float Amax = (float) (delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (FRad[index] * folN_slope + folN_int)))); // Linear reduction (with intercept) in FolN with canopy depth
 
                 //Amax_spp.Add(spc.Name, Amax);
                 //Reference net Psn (lab conditions) in gC/g Fol/month
