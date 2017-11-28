@@ -37,6 +37,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float lastWoodySenescence; // last recorded woody senescence
         private float lastFoliageSenescence; // last recorded foliage senescence
         private float adjHalfSat;
+        private float adjFolN;
 
         public ushort index;
         
@@ -76,6 +77,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Interception (mm/mo)
         public float[] Interception = null;
 
+        // Adjustment factor for folN based on fRad
+        public float[] AdjFolN = null;
+
+        // Modifier of CiCa ratio based on fWater and Ozone
+        public float[] CiModifier = null;
+
+        // Adjustment to Amax based on CO2 (modified Franks)
+        public float[] DelAmax = null;
+
 
         public void InitializeSubLayers()
         {
@@ -92,6 +102,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             FOzone = new float[PlugIn.IMAX];
             MaintenanceRespiration = new float[PlugIn.IMAX];
             Interception = new float[PlugIn.IMAX];
+            AdjFolN = new float[PlugIn.IMAX];
+            CiModifier = new float[PlugIn.IMAX];
+            DelAmax = new float[PlugIn.IMAX];
         }
         public void NullSubLayers()
         {
@@ -106,6 +119,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             FOzone = null;
             MaintenanceRespiration = null;
             Interception = null;
+            AdjFolN = null;
+            CiModifier = null;
+            DelAmax = null;
         }
         //public void NullO3SubLayers()
         //{
@@ -426,26 +442,34 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Reduction water for sub or supra optimal soil water content
             float fWater = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
             FWater[index] = fWater;
+
+            // FoliarN adjusted based on canopy position (FRad)
+            float folN_slope = 0.6f;  //Slope for linear FolN relationship
+            float folN_int = 0.7f;  //Intercept for linear FolN relationship
+            adjFolN = (FRad[index] * folN_slope + folN_int); // Linear reduction (with intercept) in FolN with canopy depth
+            AdjFolN[index] = adjFolN;  // Stored for output
+                        
+            float ciMod_tol = (float)(fWater + (-0.021 * fWater+0.0087) * o3_cum);
+            ciMod_tol = Math.Min(ciMod_tol, 1.0f);
+            float ciMod_int = (float)(fWater + (-0.0148 * fWater + 0.0062) * o3_cum);
+            ciMod_int = Math.Min(ciMod_int, 1.0f);
+            float ciMod_sens = (float)(fWater + (-0.0176 * fWater + 0.0118) * o3_cum);
+            ciMod_sens = Math.Min(ciMod_sens, 1.0f);
             
+            // Co2 ratio internal to the leave versus external
+            float cicaRatio = (-0.075f * (species.FolN * adjFolN)) + 0.875f;
+            float ciModifier = 1.0f;
+            if (species.OzoneSens == "Sensitive")
+                ciModifier = ciMod_sens;
+            else if (species.OzoneSens == "Tolerant")
+                ciModifier = ciMod_tol;
+            else  //"Intermediate"
+                ciModifier = ciMod_int;
+            CiModifier[index] = ciModifier;  // Stored for output
+
             // If trees are physiologically active
             if (leaf_on)
-            {
-                float ciMod_tol = (float)(fWater + (-0.021 * fWater+0.0087) * o3_cum);
-                ciMod_tol = Math.Min(ciMod_tol, 1.0f);
-                float ciMod_int = (float)(fWater + (-0.0148 * fWater + 0.0062) * o3_cum);
-                ciMod_int = Math.Min(ciMod_int, 1.0f);
-                float ciMod_sens = (float)(fWater + (-0.0176 * fWater + 0.0118) * o3_cum);
-                ciMod_sens = Math.Min(ciMod_sens, 1.0f);  
-
-                // Co2 ratio internal to the leave versus external
-                float cicaRatio = (-0.075f * species.FolN) + 0.875f;
-                float ciModifier = 1.0f;
-                if (species.OzoneSens == "Sensitive")
-                    ciModifier = ciMod_sens;
-                else if (species.OzoneSens == "Tolerant")
-                    ciModifier = ciMod_tol;
-                else  //"Intermediate"
-                    ciModifier = ciMod_int;
+            {                 
                 float modCiCaRatio = cicaRatio * ciModifier;
                 // Reference co2 ratio
                 float ci350 = 350 * modCiCaRatio;
@@ -466,8 +490,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Modified Franks method - by M. Kubiske
                 // substitute ciElev for CO2
                 float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
-             
-                //data[m][spc.Name].DelAmax = delamaxCi; // for output
+                DelAmax[index] = delamaxCi;
 
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
                 float V = (float)(8314.47 * (ecoregion.Variables.Tmin + 273) / 101.3);
@@ -479,9 +502,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * species.FolN);
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * FRad[index])); // Linear reduction in FolN with canopy depth
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (float)(Math.Pow(FRad[index],2)+0.7))); // Exponential reduction in FolN with canopy depth
-                float folN_slope = 0.6f;  //Slope for linear FolN relationship
-                float folN_int = 0.7f;  //Intercept for linear FolN relationship
-                float Amax = (float) (delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (FRad[index] * folN_slope + folN_int)))); // Linear reduction (with intercept) in FolN with canopy depth
+                
+                float Amax = (float)(delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * adjFolN))); 
 
                 //Amax_spp.Add(spc.Name, Amax);
                 //Reference net Psn (lab conditions) in gC/g Fol/month
@@ -493,7 +515,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Compute net psn from stress factors and reference net psn (gC/g Fol/month)
                 // FTempPSNRefNetPsn units are gC/g Fol/mo
-                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefNetPsn * fol; // this gives odd units of gC*gFol/m2 fol * m2 ground/mo
+                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefNetPsn * fol;  // gC/m2 ground/mo
                 
                 //determine gc (conductance to CO2) from Psn/(Ca-Ci)=gc
                 //float gc = nonOzoneNetPsn / (Ca_Ci);
@@ -674,10 +696,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             float WUE = JCO2_JH2O * ((float)44 / (float)18); //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
             // Cohort output file
-            string s = Math.Round(monthdata.Year, 2) + "," + 
+            string s = Math.Round(monthdata.Year, 2) + "," +
                         Age + "," +
-                        Layer + "," + 
-                       //canopy.ConductanceCO2 + "," +
+                        Layer + "," +
+                //canopy.ConductanceCO2 + "," +
                        SumLAI + "," +
                        GrossPsn.Sum() + "," +
                        FolResp.Sum() + "," +
@@ -685,21 +707,23 @@ namespace Landis.Extension.Succession.BiomassPnET
                        netPsnSum + "," +                  // Sum over canopy layers
                        transpirationSum + "," +
                        WUE.ToString() + "," +
-                       fol + "," + 
-                       Root + "," + 
-                       Wood + "," + 
+                       fol + "," +
+                       Root + "," +
+                       Wood + "," +
                        NSC + "," +
                        NSCfrac + "," +
                        FWater.Average() + "," +
                        FRad.Average() + "," +
                        FOzone.Average() + "," +
-                       monthdata[Species.Name].DelAmax + "," +
+                       DelAmax.Average() + "," +
                        monthdata[Species.Name].FTempPSN + "," +
                        monthdata[Species.Name].FTempRespWeightedDayAndNight + "," +
                        Fage + "," +
                        leaf_on + "," +
                        FActiveBiom + "," +
-                       adjHalfSat + ",";
+                       AdjFolN.Average() + "," +
+                       CiModifier.Average() + ",";
+                       //adjHalfSat + ",";
              
             cohortoutput.Add(s);
 
@@ -711,32 +735,34 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             { 
                 // Cohort output file header
-                string hdr = OutputHeaders.Time + "," + 
+                string hdr = OutputHeaders.Time + "," +
                             OutputHeaders.Age + "," +
-                            //OutputHeaders.ConductanceCO2 + "," + 
-                            OutputHeaders.Layer + "," + 
+                    //OutputHeaders.ConductanceCO2 + "," + 
+                            OutputHeaders.Layer + "," +
                             OutputHeaders.LAI + "," +
-                            OutputHeaders.GrossPsn + "," + 
-                            OutputHeaders.FolResp + "," + 
-                            OutputHeaders.MaintResp + "," + 
+                            OutputHeaders.GrossPsn + "," +
+                            OutputHeaders.FolResp + "," +
+                            OutputHeaders.MaintResp + "," +
                             OutputHeaders.NetPsn + "," +
                             OutputHeaders.Transpiration + "," +
                             OutputHeaders.WUE + "," +
-                            OutputHeaders.Fol + "," + 
-                            OutputHeaders.Root + "," + 
+                            OutputHeaders.Fol + "," +
+                            OutputHeaders.Root + "," +
                             OutputHeaders.Wood + "," +
-                            OutputHeaders.NSC + "," + 
-                            OutputHeaders.NSCfrac + "," + 
-                            OutputHeaders.fWater + "," +  
-                            OutputHeaders.fRad + "," + 
-                            OutputHeaders.FOzone+ "," +
-                            OutputHeaders.DelAMax + "," + 
+                            OutputHeaders.NSC + "," +
+                            OutputHeaders.NSCfrac + "," +
+                            OutputHeaders.fWater + "," +
+                            OutputHeaders.fRad + "," +
+                            OutputHeaders.FOzone + "," +
+                            OutputHeaders.DelAMax + "," +
                             OutputHeaders.fTemp_psn + "," +
-                            OutputHeaders.fTemp_resp + "," + 
-                            OutputHeaders.fage + "," + 
-                            OutputHeaders.LeafOn + "," + 
-                            OutputHeaders.FActiveBiom + ","+
-                            OutputHeaders.AdjHalfSat + ",";
+                            OutputHeaders.fTemp_resp + "," +
+                            OutputHeaders.fage + "," +
+                            OutputHeaders.LeafOn + "," +
+                            OutputHeaders.FActiveBiom + "," +
+                            OutputHeaders.AdjFolN + "," +
+                            OutputHeaders.CiModifier + ",";
+                            //OutputHeaders.AdjHalfSat + ",";
 
                 return hdr;
             }
