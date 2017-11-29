@@ -42,6 +42,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string SoilType = "SoilType";
         public const string PrecIntConst = "PrecIntConst";
         public const string OzoneConductance = "OzoneConductance";
+        public const string FolNSlope = "FolNSlope";
+        public const string FolNInt = "FolNInt";
     
         
      

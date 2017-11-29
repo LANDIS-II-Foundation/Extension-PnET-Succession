@@ -91,6 +91,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private byte shadeTolerance;
         int maturity;
         int longevity;
+        private float _folNSlope;
+        private float _folNInt;
         # endregion
 
 
@@ -139,6 +141,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
+
+        private static Landis.Library.Parameters.Species.AuxParm<float> folNSlope;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folNInt;
         
         #endregion
 
@@ -184,6 +189,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
             ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("OzoneSens"));
+            folNSlope = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNSlope"));
+            folNInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNInt"));
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -245,7 +252,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             byte fireTolerance,
             byte shadeTolerance,
             int maturity,
-            int longevity
+            int longevity,
+            float folNSlope,
+            float folNInt
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -296,6 +305,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.shadeTolerance = shadeTolerance;
             this.maturity = maturity;
             this.longevity = longevity;
+            this._folNSlope = folNSlope;
+            this._folNInt = folNInt;
         
         }
        
@@ -353,7 +364,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             shadeTolerance = species.ShadeTolerance;
             maturity = species.Maturity;
             longevity = species.Longevity;
-        
+
+            _folNSlope = folNSlope[species];
+            _folNInt = folNInt[species];
           
         }
         
@@ -725,6 +738,21 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _ozoneSens;
+            }
+        }
+
+        public float FolNSlope
+        {
+            get
+            {
+                return _folNSlope;
+            }
+        }
+        public float FolNInt
+        {
+            get
+            {
+                return _folNInt;
             }
         }
         # endregion

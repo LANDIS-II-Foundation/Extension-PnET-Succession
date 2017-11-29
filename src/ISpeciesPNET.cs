@@ -122,5 +122,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Ozone sensitivity
         string OzoneSens { get; }
+
+        // Slope for linear FolN relationship
+        float FolNSlope { get; }
+
+        //Intercept for linear FolN relationship
+        float FolNInt { get; }
     }
 }

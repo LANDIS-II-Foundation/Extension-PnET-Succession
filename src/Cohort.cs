@@ -77,7 +77,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Interception (mm/mo)
         public float[] Interception = null;
 
-        // Adjustment factor for folN based on fRad
+        // Adjustment folN based on fRad
         public float[] AdjFolN = null;
 
         // Modifier of CiCa ratio based on fWater and Ozone
@@ -444,9 +444,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             FWater[index] = fWater;
 
             // FoliarN adjusted based on canopy position (FRad)
-            float folN_slope = 0.6f;  //Slope for linear FolN relationship
-            float folN_int = 0.7f;  //Intercept for linear FolN relationship
-            adjFolN = (FRad[index] * folN_slope + folN_int); // Linear reduction (with intercept) in FolN with canopy depth
+            //float folN_slope = 0.6f;  //Slope for linear FolN relationship
+            float folN_slope = species.FolNSlope; //Slope for linear FolN relationship
+            //float folN_int = 0.7f;  //Intercept for linear FolN relationship
+            float folN_int = species.FolNInt; //Intercept for linear FolN relationship
+            adjFolN = (FRad[index] * folN_slope + folN_int) * species.FolN; // Linear reduction (with intercept) in FolN with canopy depth (FRad)
             AdjFolN[index] = adjFolN;  // Stored for output
                         
             float ciMod_tol = (float)(fWater + (-0.021 * fWater+0.0087) * o3_cum);
@@ -457,7 +459,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             ciMod_sens = Math.Min(ciMod_sens, 1.0f);
             
             // Co2 ratio internal to the leave versus external
-            float cicaRatio = (-0.075f * (species.FolN * adjFolN)) + 0.875f;
+            float cicaRatio = (-0.075f * adjFolN) + 0.875f;
             float ciModifier = 1.0f;
             if (species.OzoneSens == "Sensitive")
                 ciModifier = ciMod_sens;
@@ -485,11 +487,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Bernacchi et al. 2002. Plant Physiology 130, 1992-1998
                 // Gamma* = e^(13.49-24.46/RTk) [R is universal gas constant = 0.008314 kJ/J/mole, Tk is absolute temperature]
                 //float Gamma = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (Ecoregion.Variables.Tday + 273)));
-                float Ca0 = 350;  // 350
+                //float Ca0 = 350;  // 350
+                float Ca0 = 350 * cicaRatio;  // Calculated internal concentration given external 350
 
                 // Modified Franks method - by M. Kubiske
                 // substitute ciElev for CO2
                 float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
+                if (delamaxCi < 0)
+                {
+                    delamaxCi = 0;
+                }
                 DelAmax[index] = delamaxCi;
 
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
@@ -503,7 +510,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * FRad[index])); // Linear reduction in FolN with canopy depth
                 //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (float)(Math.Pow(FRad[index],2)+0.7))); // Exponential reduction in FolN with canopy depth
                 
-                float Amax = (float)(delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * adjFolN))); 
+                float Amax = (float)(delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * adjFolN)); 
 
                 //Amax_spp.Add(spc.Name, Amax);
                 //Reference net Psn (lab conditions) in gC/g Fol/month
