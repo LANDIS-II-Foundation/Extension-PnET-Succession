@@ -486,10 +486,27 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Modified Gamma based on air temp
                 // Bernacchi et al. 2002. Plant Physiology 130, 1992-1998
                 // Gamma* = e^(13.49-24.46/RTk) [R is universal gas constant = 0.008314 kJ/J/mole, Tk is absolute temperature]
-                //float Gamma = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (Ecoregion.Variables.Tday + 273)));
-                //float Ca0 = 350;  // 350
-                float Ca0 = 350 * cicaRatio;  // Calculated internal concentration given external 350
+                float Gamma_T = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (ecoregion.Variables.Tday + 273)));
 
+                float Ca0 = 350;  // 350
+                float Ca0_adj = Ca0 * cicaRatio;  // Calculated internal concentration given external 350
+
+
+                // Franks method (Franks,2013, New Phytologist, 197:1077-1094)
+                float delamax = (ecoregion.Variables.CO2 - Gamma) / (ecoregion.Variables.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
+                if (delamax < 0)
+                {
+                    delamax = 0;
+                }
+
+                // Franks method (Franks,2013, New Phytologist, 197:1077-1094)
+                // Adj Ca0
+                float delamax_adj = (ecoregion.Variables.CO2 - Gamma) / (ecoregion.Variables.CO2 + 2 * Gamma) * (Ca0_adj + 2 * Gamma) / (Ca0_adj - Gamma);
+                if (delamax_adj < 0)
+                {
+                    delamax_adj = 0;
+                }
+                
                 // Modified Franks method - by M. Kubiske
                 // substitute ciElev for CO2
                 float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
@@ -497,7 +514,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     delamaxCi = 0;
                 }
-                DelAmax[index] = delamaxCi;
+                
+                // Modified Franks method - by M. Kubiske
+                // substitute ciElev for CO2
+                // adjusted Ca0
+                float delamaxCi_adj = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0_adj + 2 * Gamma) / (Ca0_adj - Gamma);
+                if (delamaxCi_adj < 0)
+                {
+                    delamaxCi_adj = 0;
+                }
+
+                DelAmax[index] = delamax;  // Franks
+                //DelAmax[index] = delamax_adj;  // Franks with adjusted Ca0
+                //DelAmax[index] = delamaxCi;  // Modified Franks
+                //DelAmax[index] = delamaxCi_adj;  // Modified Franks with adjusted Ca0
 
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
                 float V = (float)(8314.47 * (ecoregion.Variables.Tmin + 273) / 101.3);
