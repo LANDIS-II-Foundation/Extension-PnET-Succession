@@ -44,7 +44,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string OzoneConductance = "OzoneConductance";
         public const string FolNSlope = "FolNSlope";
         public const string FolNInt = "FolNInt";
-    
+        public const string O3Coeff = "O3Coeff";
         
      
         public static void AssureIsName(string name)

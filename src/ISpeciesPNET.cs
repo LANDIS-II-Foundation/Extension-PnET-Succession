@@ -128,5 +128,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         //Intercept for linear FolN relationship
         float FolNInt { get; }
+
+        // Slope coefficient for O3Effect
+        float O3Coeff { get; }
     }
 }

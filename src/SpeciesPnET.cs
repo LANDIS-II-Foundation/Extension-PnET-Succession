@@ -93,6 +93,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         int longevity;
         private float _folNSlope;
         private float _folNInt;
+        private float _o3Coeff;
         # endregion
 
 
@@ -144,7 +145,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private static Landis.Library.Parameters.Species.AuxParm<float> folNSlope;
         private static Landis.Library.Parameters.Species.AuxParm<float> folNInt;
-        
+
+        private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         #endregion
 
         public SpeciesPnET()
@@ -191,6 +193,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("OzoneSens"));
             folNSlope = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNSlope"));
             folNInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNInt"));
+            o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3Coeff"));
+            
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -254,7 +258,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             int maturity,
             int longevity,
             float folNSlope,
-            float folNInt
+            float folNInt,
+            float o3Coeff
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -307,6 +312,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.longevity = longevity;
             this._folNSlope = folNSlope;
             this._folNInt = folNInt;
+            this._o3Coeff = o3Coeff;
         
         }
        
@@ -367,6 +373,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             _folNSlope = folNSlope[species];
             _folNInt = folNInt[species];
+            _o3Coeff = o3Coeff[species];
           
         }
         
@@ -753,6 +760,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _folNInt;
+            }
+        }
+        public float O3Coeff
+        {
+            get
+            {
+                return _o3Coeff;
             }
         }
         # endregion

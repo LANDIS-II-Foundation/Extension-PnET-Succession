@@ -590,7 +590,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Reduction factor for ozone on photosynthesis
                 //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
-                O3Effect = ComputeO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, fol, lastO3Effect, gwv, LAI[index]);
+                float o3Coeff = species.O3Coeff;
+                O3Effect = ComputeO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, fol, lastO3Effect, gwv, LAI[index], o3Coeff);
                 FOzone[index] = 1 - O3Effect;
                
 
@@ -667,11 +668,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
             }
         }
-        public static float ComputeO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI)
+        public static float ComputeO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI, float o3Coeff)
         {
             float currentO3Effect = 1.0F;
             float droughtO3Frac = 1.0F; // Not using droughtO3Frac from PnET code per M. Kubiske and A. Chappelka
-            float kO3Eff = 0.0026F;  // Should this be a species parameter?
+            //float kO3Eff = 0.0026F;  // Generic coefficient from Ollinger
+            float kO3Eff = 0.0026F * o3Coeff;  // Scaled by species using input parameters
+            
 
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = (float)Layer / (float)nLayers;
