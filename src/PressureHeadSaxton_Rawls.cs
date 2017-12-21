@@ -143,6 +143,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     tensionB.Add(SoilType[ecoregion], (float)((Math.Log(1500) - Math.Log(33)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
                     tensionA.Add(SoilType[ecoregion], (float)Math.Exp(Math.Log(33) + (tensionB[SoilType[ecoregion]] * Math.Log(moist33_comp))));
+                    
                     // For Permafrost
                     clayProp.Add(SoilType[ecoregion], (float)clay);                    
                     double cTheta_temp = Constants.cs * (1 - porosity_OM_comp[SoilType[ecoregion]]) + Constants.cw * porosity_OM_comp[SoilType[ecoregion]];  //specific heat of soil	kJ/m3/K
@@ -170,6 +171,18 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float GetClay(string SoilType)
         {
             return clayProp[SoilType];
+        }
+        public static float GetFs(string SoilType)
+        {
+            return Fs[SoilType];
+        }
+        public static float GetLambda_s(string SoilType)
+        {
+            return lambda_s[SoilType];
+        }
+        public static float GetCTheta(string SoilType)
+        {
+            return cTheta[SoilType];
         }
 
     }

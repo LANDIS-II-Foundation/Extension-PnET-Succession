@@ -288,6 +288,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
             int monthCount = 0;
+            Dictionary<float,float> depthTempDict = new Dictionary<float,float>();  //for permafrost
             for (int m = 0; m < data.Count(); m++ )
             {
                 this.Ecoregion.Variables = data[m];
@@ -295,11 +296,63 @@ namespace Landis.Extension.Succession.BiomassPnET
                 subcanopypar = this.Ecoregion.Variables.PAR0;                
                 interception = 0;
 
-                // Permafrost calculations
-                float clay = PressureHeadSaxton_Rawls.GetClay(this.Ecoregion.SoilType);
-                float porosity = this.Ecoregion.Porosity;
-                float waterContent = hydrology.Water / this.Ecoregion.RootingDepth;
+                float frostFreeSoilDepth = this.Ecoregion.RootingDepth;
+                float frostFreeProp = 1.0F;
 
+                bool permafrost = true; // Needs to link to input parameter
+                if (permafrost)
+                {
+                    // Permafrost calculations
+                    float clay = PressureHeadSaxton_Rawls.GetClay(this.Ecoregion.SoilType);
+                    float porosity = this.Ecoregion.Porosity;
+                    float waterContent = hydrology.Water / this.Ecoregion.RootingDepth;
+                    float ga = 0.035F + 0.298F * (waterContent / porosity);
+                    float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
+                    float Fs = PressureHeadSaxton_Rawls.GetFs(this.Ecoregion.SoilType);
+                    float lambda_s = PressureHeadSaxton_Rawls.GetLambda_s(this.Ecoregion.SoilType);
+                    float lambda_theta = (Fs * (1.0F - porosity) * lambda_s + Fa * (porosity - waterContent) * Constants.lambda_a + waterContent * Constants.lambda_w) / (Fs * (1.0F - porosity) + Fa * (porosity - waterContent) + waterContent); //soil thermal conductivity (kJ/m/d/K)
+                    float D = lambda_theta / PressureHeadSaxton_Rawls.GetCTheta(this.Ecoregion.SoilType);  //m2/day
+                    float Dmonth = D * this.Ecoregion.Variables.DaySpan; // m2/month
+                    float ks = Dmonth * 1000000F / (this.Ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24)); // mm2/s
+                    float d = (float)Math.Pow((Constants.omega / 2.0F * Dmonth), (0.5));
+
+                    float maxDepth = this.Ecoregion.RootingDepth + 3.0F;
+                    float freezeDepth = maxDepth;
+                    float testDepth = 0;
+                    if (m == 0)
+                    {
+                        int mCount = Math.Min(12, data.Count());
+                        float tSum = 0;
+                        foreach (int z in Enumerable.Range(0, mCount))
+                        {
+                            tSum += data[z].Tave;
+                        }
+                        float annualTavg = tSum / mCount;
+                        while (testDepth <= maxDepth)
+                        {
+                            float DRz = (float)Math.Exp(-1.0F * testDepth * d);
+                            float zTemp = annualTavg + (this.Ecoregion.Variables.Tave - annualTavg) * DRz;
+                            depthTempDict[testDepth] = zTemp;
+                            if ((zTemp <= 0) && (testDepth < freezeDepth))
+                                freezeDepth = testDepth;
+                            testDepth += 0.25F;
+                        }
+                    }
+                    else
+                    {
+                        while (testDepth <= maxDepth)
+                        {
+                            float DRz = (float)Math.Exp(-1.0F * testDepth * d);
+                            float zTemp = depthTempDict[testDepth] + (this.Ecoregion.Variables.Tave - depthTempDict[testDepth]) * DRz;
+                            depthTempDict[testDepth] = zTemp;
+                            if ((zTemp <= 0) && (testDepth < freezeDepth))
+                                freezeDepth = testDepth;
+                            testDepth += 0.25F;
+                        }
+                    }
+                    frostFreeSoilDepth = Math.Min(freezeDepth, this.Ecoregion.RootingDepth);
+                    frostFreeProp = frostFreeSoilDepth / this.Ecoregion.RootingDepth;
+                }
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
@@ -372,7 +425,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             //success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
                             //success = c.CalculatePhotosynthesis(subCanopyPrecip, leakagePerCohort, hydrology, ref subcanopypar);
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, frostFreeProp);
                             if (success == false)
                             {
                                 throw new System.Exception("Error CalculatePhotosynthesis");

@@ -286,7 +286,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, double LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, double LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float frostFreeProp)
         {
             
             bool success = true;
@@ -312,7 +312,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
 
                 // Instantaneous runoff (excess of porosity)
-                float runoff = Math.Max(hydrology.Water - ecoregion.Porosity, 0);
+                float runoff = Math.Max(hydrology.Water - (ecoregion.Porosity * frostFreeProp), 0);
                 Hydrology.RunOff += runoff;
                 success = hydrology.AddWater(-1 * runoff);
                 if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
@@ -320,7 +320,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Fast Leakage only occurs following precipitation events
                 if (waterIn > 0)
                 {
-                    float leakage = Math.Max((float)LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
+                    float leakage = Math.Max((float)LeakagePerCohort * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
                     Hydrology.Leakage += leakage;
 
                     // Remove fast leakage
