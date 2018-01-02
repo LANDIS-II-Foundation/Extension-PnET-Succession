@@ -271,7 +271,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Sort through bins to put cohort sublayers in the same bin based on majority
             List<List<int>> bins = new List<List<int>>();
-            if(rawBins.Count > 1)
+            if((rawBins != null) && (rawBins.Count > 1))
             {
                 Dictionary<string, int> speciesLayerIndex = new Dictionary<string, int>();
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
