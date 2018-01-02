@@ -105,22 +105,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Referece maintenance respiration 
         float MaintResp { get; }
 
-        // O3 level where there is no effect on photosynthesis
-        float NoO3Effect { get; }
-
-        // O3 level where total photosynthesis stops
-        float O3HaltPsn { get; }
-
-        // Growth reduction parameter with ozone
-        float PsnO3Red { get; }
-
         // Effect of CO2 on AMaxB (change in AMaxB with increase of 200 ppm CO2)
         float CO2AMaxBEff { get; }
 
         // Effect of CO2 on HalfSat (change in HalfSat with increase of 1 ppm CO2 [slope])
-        float CO2HalfSatEff { get; }
+        // Tested here but removed for release v3.0
+        //float CO2HalfSatEff { get; }
 
-        // Ozone sensitivity
+        // Ozone sensitivity class (Sensitive, Intermediate, Tolerant)
         string OzoneSens { get; }
 
         // Slope for linear FolN relationship

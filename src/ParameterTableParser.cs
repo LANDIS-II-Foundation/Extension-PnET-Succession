@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Edu.Wisc.Forest.Flel.Util;
+using System;
 using System.Collections.Generic;
-using Edu.Wisc.Forest.Flel.Util;
-using Landis.Core;
 using System.Linq;
 
 namespace Landis.Extension.Succession.BiomassPnET

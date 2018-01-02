@@ -1,6 +1,4 @@
-﻿using Landis.SpatialModeling;
-using Landis.Core;
-using System.Linq;
+﻿using Landis.Core;
 using System;
 using System.Collections.Generic;
 
@@ -61,10 +59,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (pnetvars.Tmin > spc.PsnTMin)
                 {
                     // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
-                    float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    // Tested here, but removed for release v3.0
+                    //float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
+                    //float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    //float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, adjHalfSat), spc.EstRad);
 
-                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, adjHalfSat), spc.EstRad);
+                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
                         
@@ -110,10 +110,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (pnetvars.Tmin > spc.PsnTMin)
                 {
                     // Adjust HalfSat for CO2 effect
-                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
-                    float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    // Tested here, but removed for release v3.0
+                    //float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
+                    //float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    //float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, adjHalfSat), spc.EstRad);
 
-                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, adjHalfSat), spc.EstRad);
+                    float frad = (float)Math.Pow(Cohort.CumputeFrad(PAR, spc.HalfSat), spc.EstRad);
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -41,7 +38,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string RootingDepth = "RootingDepth";
         public const string SoilType = "SoilType";
         public const string PrecIntConst = "PrecIntConst";
-        public const string OzoneConductance = "OzoneConductance";
+        //public const string OzoneConductance = "OzoneConductance";
         public const string FolNSlope = "FolNSlope";
         public const string FolNInt = "FolNInt";
         public const string O3Coeff = "O3Coeff";

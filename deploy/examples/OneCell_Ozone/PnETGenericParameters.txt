@@ -1,0 +1,10 @@
+LandisData PnETGenericParameters
+
+
+PnETGenericParameters Value
+DTemp	false
+CO2AmaxBEff	1.0
+OzoneSens	Intermediate
+FolNSlope	0.6
+FolNInt	0.7
+O3Coeff	1.0

@@ -1,9 +1,5 @@
-﻿using Landis.Library.Succession;
-using Edu.Wisc.Forest.Flel.Util;
-using Landis.SpatialModeling;
+﻿using Landis.Core;
 using System.Collections.Generic;
-using System;
-using Landis.Core;
 using System.Linq;
 
 namespace Landis.Extension.Succession.BiomassPnET

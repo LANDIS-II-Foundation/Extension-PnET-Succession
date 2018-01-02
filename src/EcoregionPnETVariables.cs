@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Landis.Core;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -17,9 +14,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _tday;
         private float _daylength;
          
-        
-
- 
 
         public float VPD
         {
@@ -301,92 +295,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             speciespnetvars.DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
             // ** CO2 effect on growth **
-
-            // Co2 ratio internal to the leave versus external
-            //float cicaRatio = (-0.075f * spc.FolN) + 0.875f; // moved to SiteCohorts.cs
-
-            //float ciModifier = 1.0f;  // Placeholder for varying ci
-            //float modCiCaRatio = cicaRatio * ciModifier; // moved to SiteCohorts.cs
-
-            // Reference co2 ratio
-            //float ci350 = 350 * modCiCaRatio; // moved to SiteCohorts.cs
-
-            // Elevated leaf internal co2 concentration
-            //loat ciElev = climate_dataset.CO2 * modCiCaRatio; //moved to SiteCohorts.cs
-
-            // Corrected Ollinger method
-            //float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
-            //float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
-            //float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
-
-            // Italians method
-            // Derived from data shared by Elena Paoletti and Yasutomo Hoshika
-            // 'new normalized A - Ci graphs.docx' by M. Kubiske
-            //float Arel350 = 0;
-            //if (ci350 <= 291)
-            //{
-            //    Arel350 = (float)(0.00318045 * ci350 - 0.22611);
-            //}
-            //else if (ci350 <= 960)
-            //{
-            //    Arel350 = (float)((1.25393 * ci350) / (244.793 + ci350));
-            //}
-            //else
-            //   Arel350 = 1.0f;
-            //float ArelElev = 0;
-            //if (ciElev <= 291)
-            //{
-            //    ArelElev = (float)(0.00318045 * ciElev - 0.22611);
-            //}
-            //else if (ciElev <= 960)
-            //{
-            //    ArelElev = (float)((1.25393 * ciElev) / (244.793 + ciElev));
-            //}
-            //else
-            //    ArelElev = 1.0f;
-            //float delamax = 1 + (ArelElev - Arel350);  //Corrected per communication with S. Ollinger
-          
-            // Franks method
-            // (Franks,2013, New Phytologist, 197:1077-1094)
-            //float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C // moved to SiteCohorts.cs
-            //float Ca0 = 350;  // 350 // moved to SiteCohorts.cs
-            //float delamax = (climate_dataset.CO2 - Gamma) / (climate_dataset.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);  // (Franks,2013, New Phytologist, 197:1077-1094)
-            
-            // Modified Franks method - by M. Kubiske
-            // substitute ciElev for CO2
-            //float delamaxCi = (ciElev - Gamma) / (ciElev + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma); // moved to SiteCohorts.cs
-
-            //speciespnetvars.DelAmax = delamaxCi; // Using Modified Franks // moved to SiteCohorts.cs
-
-            // Foliar reduction due to ozone pollution
-            //DocumentO3FolRed(spc);
-            //speciespnetvars.O3_FolRed = FolO3Red(climate_dataset.O3, spc.O3HaltPsn, spc.PsnO3Red);
-             
-            // CO2 effect on photosynthesis
-            // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
-            //float Ci = climate_dataset.CO2 * (1 - cicaRatio);
-            //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
-            //float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
-
-            // This is currently in the Cohort.cs calculation, but could be moved back here since in only depends on delamax
-            //_gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
-            //_gsInt = (float)((0.4656 * delamax) - 0.9701);
-
-            //DWUE determined from CO2 effects on conductance
-            //float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);    
-
             // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
-            //float V = (float)(8314.47 * (climate_dataset.Tmin + 273) / 101.3); // moved to SiteCohorts.cs
-            //float JCO2 = (float)(0.139 * ((climate_dataset.CO2 - ciElev) / V) * 0.00001); // moved to SiteCohorts.cs
-            //speciespnetvars.JCO2 = JCO2; // moved to SiteCohorts.cs
             float JH2O = (float) (0.239 *((VPD/(8314.47 *(climate_dataset.Tmin + 273)))));
             speciespnetvars.JH2O = JH2O;
-
-            //float wue = (JCO2/ JH2O)*(44/18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444 // moved to SiteCohorts.cs
-
-            // water use efficiency in a co2 enriched atmosphere
-            //speciespnetvars.WUE_CO2_corr = wue / delamax;
-            //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
 
             // NETPSN net photosynthesis
             // Modify AmaxB based on CO2 level
@@ -395,12 +306,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float AmaxB_int = (float)(-1.0*(((spc.CO2AMaxBEff - 1.0)*1.75)-1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
             float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
-            //speciespnetvars.Amax = speciespnetvars.DelAmax * (spc.AmaxA + AmaxB_CO2 * spc.FolN); // moved to SiteCohorts.cs
-
-            //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
-            //float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion; // moved to SiteCohorts.cs
-
-           
+                       
             //-------------------FTempPSN (public for output file)
             if (DTemp)
             {
@@ -411,12 +317,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Modified 051216(BRM)
             }
-
-            // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
-            //speciespnetvars.FTempPSNRefNetPsn =  speciespnetvars.FTempPSN * RefNetPsn; // moved to SiteCohorts.cs
- 
-            //EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);
-
+            
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
 
@@ -468,31 +369,6 @@ namespace Landis.Extension.Succession.BiomassPnET
           
             return speciespnetvars;
         }
-
-        private static void DocumentO3FolRed(ISpeciesPNET spc)
-        {
-            IList<float> O3RespPwr = new List<float>() { 0.3F, 0.5F, 1, 4 };
-            IList<string> outputfilecontent = new List<string>() { "O3/O3HaltPsn" + "\t" + O3RespPwr.Select(o3 => o3.ToString()).Aggregate((i, j) => i + "\t" + "o3RespPwr=" + j) };
-            float MyO3 = 0;
-            while (MyO3 < spc.O3HaltPsn)
-            {
-                string line = MyO3 / spc.O3HaltPsn + "\t";
-                foreach (float o3RespPwr in O3RespPwr)
-                {
-                    line += FolO3Red(MyO3, spc.O3HaltPsn, o3RespPwr) + "\t";
-                }
-                outputfilecontent.Add(line);
-                MyO3 += 0.1F;
-            }
-            System.IO.File.WriteAllLines(@"C:\Users\Arjan\Desktop\o3red.txt", outputfilecontent.ToArray());
-        }
-
-        private static float FolO3Red(float o3, float O3HaltPsn, float PsnO3Red)
-        {
-            return Math.Max(0, 1 - (float)Math.Pow((o3 / (float)O3HaltPsn), PsnO3Red));
-        }
-
-       
 
         private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
         {

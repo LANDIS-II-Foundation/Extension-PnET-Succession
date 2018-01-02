@@ -1,7 +1,6 @@
+using Landis.Core;
 using System.Collections.Generic;
 using System.Linq;
-using Landis.Core;
-using System;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -39,10 +38,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         #region private variables
-         private float _co2HalfSatEff;
-        private float _psnO3Red;//;
-        private float _o3HaltPsn;
-        private float _noO3Effect;
+        //private float _co2HalfSatEff; // Tested here but removed for release v3.0
         private float _wuecnst;
         private float _cfracbiomass;
         private float _kwdlit;
@@ -98,10 +94,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         #region private static species variables
-        private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
-        private static Landis.Library.Parameters.Species.AuxParm<float> noO3Effect;
-        private static Landis.Library.Parameters.Species.AuxParm<float> o3HaltPsn;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psnO3Red;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;// Tested here but removed for release v3.0
         private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
@@ -152,10 +145,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public SpeciesPnET()
         {
             #region initialization of private static species variables
-            co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2HalfSatEff"));
-            noO3Effect = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("NoO3Effect"));
-            o3HaltPsn = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3HaltPsn"));
-            psnO3Red = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PsnO3Red"));
+            //co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2HalfSatEff"));// Tested here but removed for release v3.0
             wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
             cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
@@ -352,10 +342,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _co2AMaxBEff = co2AMaxBEff[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
-            _noO3Effect = noO3Effect[species];
-            _o3HaltPsn = o3HaltPsn[species];
-            _psnO3Red = psnO3Red[species];
-            _co2HalfSatEff = co2HalfSatEff[species];
+            //_co2HalfSatEff = co2HalfSatEff[species];// Tested here but removed for release v3.0
             _ozoneSens = ozoneSens[species];
             index = species.Index;
             name = species.Name;
@@ -653,34 +640,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return  minSproutAge;
             }
         }
-        public float NoO3Effect
-        {
-            get
-            {
-                return _noO3Effect;
-            }
-        }
-        public float O3HaltPsn
-        {
-            get
-            {
-                return _o3HaltPsn;
-            }
-        }
-        public float PsnO3Red
-        {
-            get
-            {
-                return _psnO3Red; 
-            }
-        }
-        public float CO2HalfSatEff
-        {
-            get
-            {
-                return _co2HalfSatEff;
-            }
-        }
+        // Tested here but removed for release v3.0
+        //public float CO2HalfSatEff
+        //{
+        //    get
+        //    {
+        //        return _co2HalfSatEff;
+        //    }
+        //}
         public Landis.Core.PostFireRegeneration PostFireRegeneration
         {
             get

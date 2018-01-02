@@ -36,7 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float defolProp; //BRM
         private float lastWoodySenescence; // last recorded woody senescence
         private float lastFoliageSenescence; // last recorded foliage senescence
-        private float adjHalfSat;
+        //private float adjHalfSat; // Tested here but removed for release v3.0
         private float adjFolN;
 
         public ushort index;
@@ -83,7 +83,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Modifier of CiCa ratio based on fWater and Ozone
         public float[] CiModifier = null;
 
-        // Adjustment to Amax based on CO2 (modified Franks)
+        // Adjustment to Amax based on CO2
         public float[] DelAmax = null;
 
 
@@ -318,7 +318,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        //public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float co2, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float DelAmax, float JCO2, float Amax, float FTempPSNRefNetPsn, float Ca_Ci)
         public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect)
          {            
             bool success = true;
@@ -425,13 +424,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             // Adjust HalfSat for CO2 effect
-            float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
-            adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
-
+            // Tested here, but removed for release v3.0
+            //float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
+            //adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
-            FRad[index] = CumputeFrad(SubCanopyPar, adjHalfSat);
-
-
+            //FRad[index] = CumputeFrad(SubCanopyPar, adjHalfSat);
+            
+            // Reduction factor for radiation on photosynthesis
+            FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
+            
 
             // Below-canopy PAR if updated after each subcanopy layer
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
@@ -444,13 +445,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             FWater[index] = fWater;
 
             // FoliarN adjusted based on canopy position (FRad)
-            //float folN_slope = 0.6f;  //Slope for linear FolN relationship
             float folN_slope = species.FolNSlope; //Slope for linear FolN relationship
-            //float folN_int = 0.7f;  //Intercept for linear FolN relationship
             float folN_int = species.FolNInt; //Intercept for linear FolN relationship
             adjFolN = (FRad[index] * folN_slope + folN_int) * species.FolN; // Linear reduction (with intercept) in FolN with canopy depth (FRad)
             AdjFolN[index] = adjFolN;  // Stored for output
-                        
+
+
+            // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
+            // https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
+            // Uses data provided by Yasutomo Hoshika and Elena Paoletti
             float ciMod_tol = (float)(fWater + (-0.021 * fWater+0.0087) * o3_cum);
             ciMod_tol = Math.Min(ciMod_tol, 1.0f);
             float ciMod_int = (float)(fWater + (-0.0148 * fWater + 0.0062) * o3_cum);
@@ -458,15 +461,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             float ciMod_sens = (float)(fWater + (-0.0176 * fWater + 0.0118) * o3_cum);
             ciMod_sens = Math.Min(ciMod_sens, 1.0f);
             
-            // Co2 ratio internal to the leave versus external
+            // CO2 ratio internal to the leaf versus external
             float cicaRatio = (-0.075f * adjFolN) + 0.875f;
             float ciModifier = 1.0f;
-            if (species.OzoneSens == "Sensitive")
+            if ((species.OzoneSens == "Sensitive") || (species.OzoneSens == "Sens"))
                 ciModifier = ciMod_sens;
-            else if (species.OzoneSens == "Tolerant")
+            else if ((species.OzoneSens == "Tolerant") || (species.OzoneSens == "Tol"))
                 ciModifier = ciMod_tol;
-            else  //"Intermediate"
+            else if ((species.OzoneSens == "Intermediate") || (species.OzoneSens == "Int"))
                 ciModifier = ciMod_int;
+
             CiModifier[index] = ciModifier;  // Stored for output
 
             // If trees are physiologically active
@@ -484,9 +488,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float Gamma = 40; // 40; Gamma is the CO2 compensation point (the point at which photorespiration balances exactly with photosynthesis.  Assumed to be 40 based on leaf temp is assumed to be 25 C
 
                 // Modified Gamma based on air temp
+                // Tested here but removed for release v3.0
                 // Bernacchi et al. 2002. Plant Physiology 130, 1992-1998
                 // Gamma* = e^(13.49-24.46/RTk) [R is universal gas constant = 0.008314 kJ/J/mole, Tk is absolute temperature]
-                float Gamma_T = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (ecoregion.Variables.Tday + 273)));
+                //float Gamma_T = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (ecoregion.Variables.Tday + 273)));
 
                 float Ca0 = 350;  // 350
                 float Ca0_adj = Ca0 * cicaRatio;  // Calculated internal concentration given external 350
@@ -524,6 +529,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     delamaxCi_adj = 0;
                 }
 
+                // Choose between delamax methods here:
                 DelAmax[index] = delamax;  // Franks
                 //DelAmax[index] = delamax_adj;  // Franks with adjusted Ca0
                 //DelAmax[index] = delamaxCi;  // Modified Franks
@@ -532,46 +538,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
                 float V = (float)(8314.47 * (ecoregion.Variables.Tmin + 273) / 101.3);
                 float JCO2 = (float)(0.139 * ((ecoregion.Variables.CO2 - ciElev) / V) * 0.00001);
-                //JCO2_spp.Add(spc.Name, JCO2);
                 float JH2O = ecoregion.Variables[species.Name].JH2O * ciModifier;
                 float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
-                //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * species.FolN);
-                //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * FRad[index])); // Linear reduction in FolN with canopy depth
-                //float Amax = delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * (species.FolN * (float)(Math.Pow(FRad[index],2)+0.7))); // Exponential reduction in FolN with canopy depth
-                
                 float Amax = (float)(delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * adjFolN)); 
 
-                //Amax_spp.Add(spc.Name, Amax);
                 //Reference net Psn (lab conditions) in gC/g Fol/month
                 float RefNetPsn = ecoregion.Variables.DaySpan * (Amax * ecoregion.Variables[species.Name].DVPD * ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;
 
                 // PSN (gC/g Fol/month) reference net psn in a given temperature
                 float FTempPSNRefNetPsn = ecoregion.Variables[species.Name].FTempPSN * RefNetPsn;
-                //FTempPSNRefNetPSN_spp.Add(species.Name, FTempPSNRefNetPsn);
 
                 // Compute net psn from stress factors and reference net psn (gC/g Fol/month)
                 // FTempPSNRefNetPsn units are gC/g Fol/mo
                 float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefNetPsn * fol;  // gC/m2 ground/mo
-                
-                //determine gc (conductance to CO2) from Psn/(Ca-Ci)=gc
-                //float gc = nonOzoneNetPsn / (Ca_Ci);
-                //convert gc to gwv (conductance to water vapor) in mm^3 H2O/mm^2 ground/month
-                //Use the universal gas law: Pv=nRT
-                //Assume pressure to be 1 atmosphere.  
-                // v = (grams C / 12) * (T+273) * 0.08206 * 1000000 *1.6
-                //The first term converts grams of C to moles
-                //The second term converts degrees Celsius to degrees K
-                //Third term is the gas constant
-                //Fourth term converts liters to mm^3
-                //Fifth term converts gc to gwv
-                //float gwv_ground_month = (float)((gc / 12) * (ecoregion.Variables.Tave + 273) * 0.08206 * 1000000 * 1.6);
-                // Convert to mm^3/mm^2 leaf/month
-                //float gwv_month = gwv_ground_month * LAI[index];
-                // Convert to mm^3/mm^2 leaf/sec
-                //float gwv = gwv_month /(ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan);
-              
-                
+               
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 // netPsn_ground = LayerNestPsn*1000000umol*(1mol/12gC) * (1/(60s*60min*14hr*30day))
                 float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan));
@@ -586,12 +567,16 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Calculate gwv from Psn using Ollinger equation
                 // g = -0.3133+0.8126*NetPsn_leaf_s
-                float g = (float) (-0.3133 + 0.8126 * netPsn_leaf_s);
+                //float g = (float) (-0.3133 + 0.8126 * netPsn_leaf_s);
 
                 // Reduction factor for ozone on photosynthesis
-                //FOzone[index] = ComputeFOzone(o3, species.NoO3Effect, species.O3HaltPsn, species.PsnO3Red);  // Old version
-                float o3Coeff = species.O3Coeff;
-                O3Effect = ComputeO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, fol, lastO3Effect, gwv, LAI[index], o3Coeff);
+                if (o3_month > 0)
+                {
+                    float o3Coeff = species.O3Coeff;
+                    O3Effect = ComputeO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, fol, lastO3Effect, gwv, LAI[index], o3Coeff);
+                }
+                else
+                { O3Effect = 0; }
                 FOzone[index] = 1 - O3Effect;
                
 
@@ -609,16 +594,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Gross psn depends on net psn and foliage respiration
                 GrossPsn[index] = NetPsn[index] + FolResp[index];
 
-                // Old method
-                // Transpiration depends on gross psn, water use efficiency (gCO2/mm water) and molecular weight (gC/gCO2)
-                //Transpiration[index] = Math.Min(hydrology.Water,   GrossPsn[index] * Constants.MCO2_MC / ecoregion.Variables[Species.Name].WUE_CO2_corr);
-
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
-                // JH2O was been modified by CiModifier to reduce water use efficiency
+                // JH2O has been modified by CiModifier to reduce water use efficiency
                 Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (JCO2 / JH2O)));
-                // Use Psn before ozone reduction to reflect lower water use efficiency with ozone - course way to inflate transpiration
-                //Transpiration[index] = (float)(0.01227 * (nonOzoneNetPsn / (JCO2 / JH2O)));
-
  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
@@ -657,17 +635,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             else if (pressurehead < H2) return pressurehead / H2;
             else return 1;
         }
-        public static float ComputeFOzone(float o3, float NoO3Effect, float O3HaltPsn, float PsnO3Red)
-        {
-            if (o3 <= NoO3Effect)
-            {
-                return (float)1.0;
-            }
-            else
-            {
-                return Math.Max(0, 1 - (float)Math.Pow(((o3 - NoO3Effect) / (O3HaltPsn - NoO3Effect)), PsnO3Red));
-            }
-        }
+
         public static float ComputeO3Effect_PnET(float o3, float delAmax, float netPsn_leaf_s, int Layer, int nLayers, float FolMass, float lastO3Effect, float gwv, float layerLAI, float o3Coeff)
         {
             float currentO3Effect = 1.0F;
@@ -678,32 +646,30 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             float O3Prof = (float)(0.6163 + (0.00105 * FolMass));
             float RelLayer = (float)Layer / (float)nLayers;
-            //float relO3=MIN(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
             float relO3 = Math.Min(1,1 - (RelLayer * O3Prof) * (RelLayer * O3Prof) * (RelLayer * O3Prof));
-            //float relO3=Math.Min(1,1-(((C3/($D$37*$D$22))*$D$35)^3));
-
-            // Calculations for gsSlope and gsInt could be moved back to EcoregionPnETVariables since they only depend on delamax
-            float gsSlope=(float)((-1.1309*delAmax)+1.9762);
-            float gsInt = (float)((0.4656 * delAmax) - 0.9701);
-            //float conductance =MAX(0,($D$34+($D$33*K3))*(1-$N$2));
-            float conductance = Math.Max(0, (gsInt + (gsSlope * netPsn_leaf_s)) * (1 - lastO3Effect));
-           
-            //float O3Effect =MIN(1,($N$2*$T$2)+(0.0026*M3*$D$29*L3));
-            float currentO3Effect_conductance = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * conductance * o3 * relO3));
+            // Kubiske method (using gwv in place of conductance
             currentO3Effect = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * gwv * o3 * relO3));
 
-            string OzoneConductance = ((Parameter<string>)PlugIn.GetParameter(Names.OzoneConductance)).Value;
+            // Ollinger method
+            // Calculations for gsSlope and gsInt could be moved back to EcoregionPnETVariables since they only depend on delamax
+            //float gsSlope=(float)((-1.1309*delAmax)+1.9762);
+            //float gsInt = (float)((0.4656 * delAmax) - 0.9701);
+            //float conductance = Math.Max(0, (gsInt + (gsSlope * netPsn_leaf_s)) * (1 - lastO3Effect));
+            //float currentO3Effect_conductance = (float)Math.Min(1, (lastO3Effect * droughtO3Frac) + (kO3Eff * conductance * o3 * relO3));
 
-            if (OzoneConductance == "Kubiske")
-                return currentO3Effect;
-            else if (OzoneConductance == "Ollinger")
-                return currentO3Effect_conductance;
-            else
-            {
-                System.Console.WriteLine("OzoneConductance is not Kubiske or Ollinger.  Using Kubiske by default");
-                return currentO3Effect;
-            }
+            // Tested here but removed for release v3.0
+            //string OzoneConductance = ((Parameter<string>)PlugIn.GetParameter(Names.OzoneConductance)).Value;
+            //if (OzoneConductance == "Kubiske")
+            //    return currentO3Effect;
+            //else if (OzoneConductance == "Ollinger")
+            //    return currentO3Effect_conductance;
+            //else
+            //{
+            //    System.Console.WriteLine("OzoneConductance is not Kubiske or Ollinger.  Using Kubiske by default");
+            //    return currentO3Effect;
+            //}
 
+            return currentO3Effect;
             
         }
         public int ComputeNonWoodyBiomass(ActiveSite site)

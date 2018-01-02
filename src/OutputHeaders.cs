@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Landis.Extension.Succession.BiomassPnET
 {
     public class OutputHeaders
@@ -64,7 +60,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string WoodySenescence = "WoodSenescence(gDW_m2)";
         public const string FoliageSenescence = "FoliageSenescence(gDW_m2)";
         public const string DelAMax = "DelAMax(-)";
-        public const string AdjHalfSat = "AdjHalfSat(-)";
+        //public const string AdjHalfSat = "AdjHalfSat(-)";// Tested here but removed for release v3.0
         public const string AdjFolN = "AdjFolN(-)";
         public const string CiModifier = "CiModifier(-)";
     }
