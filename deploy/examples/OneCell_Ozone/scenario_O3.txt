@@ -1,0 +1,31 @@
+LandisData  Scenario
+	  
+Duration  50
+Species   species.txt
+
+Ecoregions      ecoregion.txt
+EcoregionsMap   ecoregion.img
+
+CellLength  30 << meters, so cell area = 900 m2
+
+
+
+>> Succession Extension     Initialization File
+>> --------------------     -------------------
+   "PnET-Succession"    pnetsuccession_O3.txt
+ 
+
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------   -------------------
+   
+
+>> Output Extensions        Initialization File
+>> -----------------        -------------------
+>>  "Output Max Species Age"      max-spp-age.output.txt
+>>  "Output Biomass Reclass"	BiomReclass.txt
+  "Output-PnET"		biomass.output.txt
+>>  "Output Cohort Statistics"    cohort-stats.output.txt
+
+
+RandomNumberSeed 1111

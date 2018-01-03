@@ -60,5 +60,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float FoliageSum { get; }
 
         float NSCSum { get; }
+
+        float AETSum { get; }
     }
 }

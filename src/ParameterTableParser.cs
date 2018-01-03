@@ -128,7 +128,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             RowLabel = var;
                             if (ExpectedRowLabels != null && ListContains(ExpectedRowLabels, RowLabel.Value) == false)
                             {
-                                throw new System.Exception("Unknown assignment label " + var.Value + " expecting " + string.Join("\n", ExpectedRowLabels.ToArray()));
+                                throw new System.Exception("Unknown assignment label [" + var.Value + "] expecting [" + string.Join(" ,", ExpectedRowLabels.ToArray())+"].");
                             }
 
                             continue;
@@ -155,7 +155,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         }
                         if (parameter.ContainsKey(valuekey))
                         {
-                            throw new System.Exception("Duplicate parameter label " + var.Value + " for parameter " + parameterlabel);
+                            throw new System.Exception("Duplicate parameter label [" + var.Value + "] for parameter " + parameterlabel);
                         }
 
                         parameter.Add(valuekey, var.Value);

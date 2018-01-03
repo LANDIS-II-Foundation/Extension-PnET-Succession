@@ -47,9 +47,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _fracfol;
         private float _fractWd;
         private float _psnagered;
-        private ushort _h2;
-        private ushort _h3;
-        private ushort _h4;
+        private float _h2;
+        private float _h3;
+        private float _h4;
         private float _slwdel;
         private float _slwmax;
         private float _tofol;
@@ -103,9 +103,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
         private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
         private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h2;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h3;
-        private static Landis.Library.Parameters.Species.AuxParm<ushort> h4;
+        private static Landis.Library.Parameters.Species.AuxParm<float> h2;
+        private static Landis.Library.Parameters.Species.AuxParm<float> h3;
+        private static Landis.Library.Parameters.Species.AuxParm<float> h4;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
   
@@ -154,9 +154,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             fracfol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracfol"));
             fractWd = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fractWd"));
             psnagered = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psnagered"));
-            h2 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h2"));
-            h3 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h3"));
-            h4 = ((Landis.Library.Parameters.Species.AuxParm<ushort>)(Parameter<ushort>)PlugIn.GetParameter("h4"));
+            h2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h2"));
+            h3 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h3"));
+            h4 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h4"));
             slwdel = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwdel"));
             slwmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("slwmax"));
             tofol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("tofol"));
@@ -209,9 +209,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             float fracfol,
             float fractWd,
             float psnagered,
-            ushort h2,
-            ushort h3,
-            ushort h4,
+            float h2,
+            float h3,
+            float h4,
             float slwdel,
             float slwmax,
             float tofol,
@@ -546,21 +546,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _slwmax;
             }
         }
-        public ushort H4
+        public float H4
         {
             get
             {
                 return _h4;
             }
         }
-        public ushort H3
+        public float H3
         {
             get
             {
                 return _h3;
             }
         }
-        public ushort H2
+        public float H2
         {
             get
             {

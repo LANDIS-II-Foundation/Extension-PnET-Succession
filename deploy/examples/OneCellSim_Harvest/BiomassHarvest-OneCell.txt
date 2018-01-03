@@ -1,0 +1,33 @@
+LandisData  "Biomass Harvest"
+
+
+Timestep    10
+
+ManagementAreas "ecoregion.img"
+
+Stands      "ecoregion.img"
+
+>> -----------------------------------------
+>> PRESCRIPTIONS
+
+Prescription MaxAgeClearcut
+    StandRanking 	MaxCohortAge
+    SiteSelection 	Complete
+    CohortsRemoved 	ClearCut
+
+
+>>-----------------------------------------------------------------
+>> PRESCRIPTION IMPLEMENTATION 
+
+    HarvestImplementations
+>>  Mgmt Area   Prescription    		Harvest Area    Begin Time  End Time
+>>  ---------   ------------    		------------    ----------  --------
+	1	MaxAgeClearcut			100%
+	
+>>-----------------------------------------------------------------
+>> OUTPUTS
+
+PrescriptionMaps    harvest/prescripts-{timestep}.img
+BiomassMaps         harvest/biomass-removed-{timestep}.img
+EventLog            harvest/biomass-harvest-event-log.csv
+SummaryLog	    harvest/biomass-harvest-summary-log.csv

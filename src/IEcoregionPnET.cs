@@ -17,6 +17,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         float FieldCap { get; set; }
         float WiltPnt { get; set; }
         float Porosity { get; set; }
+        float SnowSublimFrac { get; }
+        int PrecipEvents { get; }
+        float Latitude { get; } 
         
        
         IEcoregionPnETVariables Variables { get; set; }

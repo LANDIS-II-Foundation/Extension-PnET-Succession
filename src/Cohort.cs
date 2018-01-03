@@ -318,31 +318,49 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect)
          {            
             bool success = true;
             float lastO3Effect = O3Effect;
             O3Effect = 0;
 
-            // Incoming precipitation
-            float waterIn = PrecInByCanopyLayer; //mm 
 
-            // Add incoming precipitation to soil moisture
-            success = hydrology.AddWater(waterIn);
-            if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
-           
-            // Instantaneous runoff (excess of porosity)
-            float runoff = Math.Max(hydrology.Water - ecoregion.Porosity, 0);
-            success = hydrology.AddWater(-1 * runoff);
-            if (success == false) throw new System.Exception("Error adding water, runoff = " + runoff + " water = " + hydrology.Water);
-
-            // Fast Leakage 
-            Hydrology.Leakage = Math.Max(LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
+            // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
+            // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
+            LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
             
-            // Remove fast leakage
-            success = hydrology.AddWater(-1 * Hydrology.Leakage);
-            if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+            // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
+            //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
+            //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
+            
+            // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
+            for (int p = 1; p <= precipCount; p++)
+            {
+                // Incoming precipitation
+                //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
+                float waterIn = PrecInByCanopyLayer; //mm 
 
+                // Add incoming precipitation to soil moisture
+                success = hydrology.AddWater(waterIn);
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
+
+                // Instantaneous runoff (excess of porosity)
+                float runoff = Math.Max(hydrology.Water - ecoregion.Porosity, 0);
+                Hydrology.RunOff += runoff;
+                success = hydrology.AddWater(-1 * runoff);
+                if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
+
+                // Fast Leakage only occurs following precipitation events
+                if (waterIn > 0)
+                {
+                    float leakage = Math.Max((float)LeakagePerCohort * (hydrology.Water - ecoregion.FieldCap), 0);
+                    Hydrology.Leakage += leakage;
+
+                    // Remove fast leakage
+                    success = hydrology.AddWater(-1 * leakage);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+                }
+            }
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
             MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
             
@@ -428,10 +446,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             //float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
             //adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
-            //FRad[index] = CumputeFrad(SubCanopyPar, adjHalfSat);
+            //FRad[index] = ComputeFrad(SubCanopyPar, adjHalfSat);
             
             // Reduction factor for radiation on photosynthesis
-            FRad[index] = CumputeFrad(SubCanopyPar, species.HalfSat);
+            FRad[index] = ComputeFrad(SubCanopyPar, species.HalfSat);
             
 
             // Below-canopy PAR if updated after each subcanopy layer
@@ -441,8 +459,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             float PressureHead = hydrology.GetPressureHead(ecoregion);
 
             // Reduction water for sub or supra optimal soil water content
-            float fWater = CumputeFWater(species.H2, species.H3, species.H4, PressureHead);
-            FWater[index] = fWater;
+            if(PlugIn.ModelCore.CurrentTime > 0)
+                FWater[index] = ComputeFWater(species.H2, species.H3, species.H4, PressureHead);
+            else // Ignore H2 parameter during spinup
+                FWater[index] = ComputeFWater(0, species.H3, species.H4, PressureHead);
+            float fWater = FWater[index];
 
             // FoliarN adjusted based on canopy position (FRad)
             float folN_slope = species.FolNSlope; //Slope for linear FolN relationship
@@ -556,8 +577,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 // netPsn_ground = LayerNestPsn*1000000umol*(1mol/12gC) * (1/(60s*60min*14hr*30day))
                 float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan));
-                // nesPsn_leaf_s = NetPsn_ground*(1/LAI){m2 fol/m2 ground}
-                float netPsn_leaf_s = netPsn_ground * (1F / LAI[index]);
+                float netPsn_leaf_s = 0;
+                if (netPsn_ground > 0 && LAI[index] > 0)
+                {
+                    // nesPsn_leaf_s = NetPsn_ground*(1/LAI){m2 fol/m2 ground}
+                    netPsn_leaf_s = netPsn_ground * (1F / LAI[index]);
+                }
 
                 //Calculate water vapor conductance (gwv) from Psn and Ci; Kubiske Conductance_5.xlsx
                 //gwv_mol = NetPsn_leaf_s /(Ca-Ci) {umol/mol} * 1.6(molH20/molCO2)*1000 {mmol/mol}
@@ -613,21 +638,24 @@ namespace Landis.Extension.Succession.BiomassPnET
                 FolResp[index] = 0;
                 GrossPsn[index] = 0;
                 Transpiration[index] = 0;
+                FOzone[index] = 1;
 
             }
            
             if (index < PlugIn.IMAX - 1) index++;
             return success;
         }
- 
-        public static float CumputeFrad(float Radiation, float HalfSat)
+
+        // Based on Michaelis-Menten saturation curve
+        // https://en.wikibooks.org/wiki/Structural_Biochemistry/Enzyme/Michaelis_and_Menten_Equation
+        public static float ComputeFrad(float Radiation, float HalfSat)
         {
             // Derived from Michaelis-Menton equation
             // https://en.wikibooks.org/wiki/Structural_Biochemistry/Enzyme/Michaelis_and_Menten_Equation
 
             return Radiation / (Radiation + HalfSat);
         }
-        public static float CumputeFWater(float H2, float H3, float H4, float pressurehead)
+        public static float ComputeFWater(float H2, float H3, float H4, float pressurehead)
         {
             // Compute water stress
             if (pressurehead < 0 || pressurehead > H4) return 0;
@@ -832,17 +860,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 ActiveSite site,
                                 ExtensionType disturbanceType)
         {
-            if (AgeOnlyDeathEvent != null)
-            {
-                AgeOnlyDeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
-            }
+            //if (AgeOnlyDeathEvent != null)
+            //{
+            //    AgeOnlyDeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
+            //}
             if (DeathEvent != null)
             {
                 DeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
             }
            
         }
- 
+
         
     } 
 }

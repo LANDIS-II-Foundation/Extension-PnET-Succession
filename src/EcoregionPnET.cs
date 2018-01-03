@@ -21,6 +21,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _fieldcap;
         private float _wiltpnt;
         private float _porosity;
+        private float _snowsublimfrac;
+        private float _latitude;
+        private int _precipEvents;
         IEcoregionPnETVariables _variables;
         #endregion
 
@@ -34,7 +37,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> latitude;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
         #endregion
 
         #region accessors for private static variables
@@ -167,6 +173,27 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Name;
             }
         }
+        public float SnowSublimFrac
+        {
+            get
+            {
+                return _snowsublimfrac;
+            }
+        }
+        public float Latitude
+        {
+            get
+            {
+                return _latitude;
+            }
+        }
+        public int PrecipEvents
+        {
+            get
+            {
+                return _precipEvents;
+            }
+        }
         #endregion
 
         public static List<string> ParameterNames
@@ -198,7 +225,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
 
-                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species);
+                    IEcoregionPnETVariables ecoregion_variables = new EcoregionPnETVariables(observedClimate, date, wythers, dtemp, species, ecoregion.Latitude);
 
                     all_values[ecoregion].Add(date, ecoregion_variables);
 
@@ -217,11 +244,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RootingDepth", 0, 1000);
             precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
             preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
+            snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("SnowSublimFrac", 0, 1);
+            latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("Latitude", -90, 90);
+            precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("PrecipEvents", 1, 100);
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
-
-
+            
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
@@ -244,6 +273,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._precintconst = precintconst[ecoregion];
             this._preclossfrac = preclossfrac[ecoregion];
             this._leakagefrac = leakagefrac[ecoregion];
+            this._snowsublimfrac = snowsublimfrac[ecoregion];
+            this._latitude = latitude[ecoregion];
+            this._precipEvents = precipEvents[ecoregion];
+          
         }
     }
 }

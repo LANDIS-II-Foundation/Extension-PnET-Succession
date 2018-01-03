@@ -256,7 +256,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPNET> Species)
+        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPNET> Species, float Latitude)
         {
             
             this._date = Date;
@@ -269,7 +269,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             _dayspan = EcoregionPnETVariables.Calculate_DaySpan(Date.Month);
 
-            float hr = Calculate_hr(Date.DayOfYear, PlugIn.Latitude);
+            float hr = Calculate_hr(Date.DayOfYear, Latitude);
             _daylength = Calculate_DayLength(hr);
             float nightlength = Calculate_NightLength(hr);
 

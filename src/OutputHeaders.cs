@@ -9,13 +9,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PAR0 = "PAR0";  
         public const string NrOfCohorts = "NrOfCohorts";  
         public const string MaxLayerStdev = "MaxLayerStdev";  
-        public const string layers = "layers";  
+        public const string Layers = "Layers";  
         public const string Tday = "Tday(C)";  
         public const string Precip = "Precip(mm/mo)";
         public const string CO2 = "CO2";
         public const string O3 = "O3";  
         public const string RunOff = "RunOff(mm/mo)";
-        public const string SurfaceRunOff = "SurfaceRunOff(mm/mo)"; 
+        public const string SurfaceRunOff = "PrecLoss(mm/mo)"; 
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
         public const string FolResp = "FolResp(gC_m2_mo)";
@@ -34,7 +34,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string CWD = "CWD(gDW_m2)";
         public const string Age = "Age(yr)";
         public const string ConductanceCO2 = "ConductanceCO2";    
-        public const string Layer = "Layer(-)"; 
+        public const string Layer = "TopLayer(-)"; 
         public const string ReleasedNSC = "ReleasedNSC(gC_m2_mo)";                  
         public const string Folalloc = "Folalloc(gC_m2_mo)";                  
         public const string RootAlloc = "RootAlloc(gC_m2_mo)";                       
@@ -63,5 +63,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public const string AdjHalfSat = "AdjHalfSat(-)";// Tested here but removed for release v3.0
         public const string AdjFolN = "AdjFolN(-)";
         public const string CiModifier = "CiModifier(-)";
+        public const string SubCanopyPAR = "SubCanopyPAR";
     }
 }
