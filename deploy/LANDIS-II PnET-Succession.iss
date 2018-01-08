@@ -13,9 +13,9 @@ LicenseFile={#LandisSDK}\licenses\LANDIS-II_Binary_license.rtf
 Source: {#LandisExtDir}\{#ExtensionAssembly}.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Landis.Library.AgeOnlyCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.BiomassCohorts-v2.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\..\Support-Library-Dlls\Landis.Library.Biomass-v1.0.1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\..\Support-Library-Dlls\Landis.Library.BiomassCohorts-v2.0.1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\..\Support-Library-Dlls\Landis.Library.Succession-v5.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: ..\..\Support-Library-Dlls\Landis.Library.Parameters-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 
 Source: ..\..\Support-Library-Dlls\Defaults\PnETGenericDefaultParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion

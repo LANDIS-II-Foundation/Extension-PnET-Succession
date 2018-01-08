@@ -36,7 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public IEcoregionPnET Ecoregion;
         public LocalOutput siteoutput;
 
-        static float[] AET = new float[12];
+        static float[] AET = new float[12]; // mm/mo
         private static IDictionary<uint, SiteCohorts> initialSites;
         private static byte MaxCanopyLayers;
         private static ushort MaxDevLyrAv;

@@ -40,7 +40,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public const string OzoneConductance = "OzoneConductance";
         public const string FolNSlope = "FolNSlope";
         public const string FolNInt = "FolNInt";
-        public const string O3Coeff = "O3Coeff";
+        public const string O3Coeff = "O3GrowthSens";
         public const string PrecipEvents = "PrecipEvents";
         public const string Latitude = "Latitude";
         public const string climateFileName = "climateFileName";

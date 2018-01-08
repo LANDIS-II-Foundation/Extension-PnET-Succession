@@ -14,7 +14,7 @@ PNEToutputsites 	PnEToutputsites_onecell.txt
 InitialCommunities      initial-communities.txt											
 InitialCommunitiesMap   initial-communities.img	
 
-PnETSpeciesParameters	SpeciesParameters.txt		
+PnETSpeciesParameters	SpeciesParameters_O3.txt		
 											
 EcoregionParameters	EcoregionParameters_O3.txt	
    								

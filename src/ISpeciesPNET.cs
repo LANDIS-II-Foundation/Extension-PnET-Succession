@@ -93,8 +93,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Vapor pressure deficit response parameter 
         float DVPD2 { get; }
 
-        // Water use efficiency constant
-        float WUEcnst { get; }
 
         // Reference photosynthesis (g)
         float AmaxA { get; }
@@ -109,11 +107,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         float CO2AMaxBEff { get; }
 
         // Effect of CO2 on HalfSat (change in HalfSat with increase of 1 ppm CO2 [slope])
-        // Tested here but removed for release v3.0
-        //float CO2HalfSatEff { get; }
+        float CO2HalfSatEff { get; }
 
-        // Ozone sensitivity class (Sensitive, Intermediate, Tolerant)
-        string OzoneSens { get; }
+        // Ozone stomatal sensitivity class (Sensitive, Intermediate, Tolerant)
+        string O3StomataSens { get; }
 
         // Slope for linear FolN relationship
         float FolNSlope { get; }
@@ -122,6 +119,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         float FolNInt { get; }
 
         // Slope coefficient for O3Effect
-        float O3Coeff { get; }
+        float O3GrowthSens { get; }
     }
 }

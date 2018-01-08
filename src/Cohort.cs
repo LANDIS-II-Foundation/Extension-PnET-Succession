@@ -36,7 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float defolProp; //BRM
         private float lastWoodySenescence; // last recorded woody senescence
         private float lastFoliageSenescence; // last recorded foliage senescence
-        //private float adjHalfSat; // Tested here but removed for release v3.0
+        private float adjHalfSat;
         private float adjFolN;
 
         public ushort index;
@@ -442,14 +442,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             // Adjust HalfSat for CO2 effect
-            // Tested here, but removed for release v3.0
-            //float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
-            //adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
+            float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
+            float adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
-            //FRad[index] = ComputeFrad(SubCanopyPar, adjHalfSat);
+            FRad[index] = ComputeFrad(SubCanopyPar, adjHalfSat);
             
-            // Reduction factor for radiation on photosynthesis
-            FRad[index] = ComputeFrad(SubCanopyPar, species.HalfSat);
             
 
             // Below-canopy PAR if updated after each subcanopy layer
@@ -472,31 +469,37 @@ namespace Landis.Extension.Succession.BiomassPnET
             AdjFolN[index] = adjFolN;  // Stored for output
 
 
-            // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
-            // https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
-            // Uses data provided by Yasutomo Hoshika and Elena Paoletti
-            float ciMod_tol = (float)(fWater + (-0.021 * fWater+0.0087) * o3_cum);
-            ciMod_tol = Math.Min(ciMod_tol, 1.0f);
-            float ciMod_int = (float)(fWater + (-0.0148 * fWater + 0.0062) * o3_cum);
-            ciMod_int = Math.Min(ciMod_int, 1.0f);
-            float ciMod_sens = (float)(fWater + (-0.0176 * fWater + 0.0118) * o3_cum);
-            ciMod_sens = Math.Min(ciMod_sens, 1.0f);
-            
-            // CO2 ratio internal to the leaf versus external
-            float cicaRatio = (-0.075f * adjFolN) + 0.875f;
-            float ciModifier = 1.0f;
-            if ((species.OzoneSens == "Sensitive") || (species.OzoneSens == "Sens"))
-                ciModifier = ciMod_sens;
-            else if ((species.OzoneSens == "Tolerant") || (species.OzoneSens == "Tol"))
-                ciModifier = ciMod_tol;
-            else if ((species.OzoneSens == "Intermediate") || (species.OzoneSens == "Int"))
-                ciModifier = ciMod_int;
+            float ciModifier = fWater; // if no ozone, ciModifier defaults to fWater
+            if (o3_cum > 0)
+            {
+                // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
+                // https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
+                // Uses data provided by Yasutomo Hoshika and Elena Paoletti
+                float ciMod_tol = (float)(fWater + (-0.021 * fWater + 0.0087) * o3_cum);
+                ciMod_tol = Math.Min(ciMod_tol, 1.0f);
+                float ciMod_int = (float)(fWater + (-0.0148 * fWater + 0.0062) * o3_cum);
+                ciMod_int = Math.Min(ciMod_int, 1.0f);
+                float ciMod_sens = (float)(fWater + (-0.0176 * fWater + 0.0118) * o3_cum);
+                ciMod_sens = Math.Min(ciMod_sens, 1.0f);                              
+                if ((species.O3StomataSens == "Sensitive") || (species.O3StomataSens == "Sens"))
+                    ciModifier = ciMod_sens;
+                else if ((species.O3StomataSens == "Tolerant") || (species.O3StomataSens == "Tol"))
+                    ciModifier = ciMod_tol;
+                else if ((species.O3StomataSens == "Intermediate") || (species.O3StomataSens == "Int"))
+                    ciModifier = ciMod_int;
+                else
+                {
+                    throw new System.Exception("Ozone data provided, but species O3StomataSens is not set to Sensitive, Tolerant or Intermediate");
+                }
+            }
 
             CiModifier[index] = ciModifier;  // Stored for output
 
             // If trees are physiologically active
             if (leaf_on)
-            {                 
+            {
+                // CO2 ratio internal to the leaf versus external
+                float cicaRatio = (-0.075f * adjFolN) + 0.875f;  
                 float modCiCaRatio = cicaRatio * ciModifier;
                 // Reference co2 ratio
                 float ci350 = 350 * modCiCaRatio;
@@ -597,7 +600,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Reduction factor for ozone on photosynthesis
                 if (o3_month > 0)
                 {
-                    float o3Coeff = species.O3Coeff;
+                    float o3Coeff = species.O3GrowthSens;
                     O3Effect = ComputeO3Effect_PnET(o3_month, delamaxCi, netPsn_leaf_s, subCanopyIndex, layerCount, fol, lastO3Effect, gwv, LAI[index], o3Coeff);
                 }
                 else
@@ -733,7 +736,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             string s = Math.Round(monthdata.Year, 2) + "," +
                         Age + "," +
                         Layer + "," +
-                //canopy.ConductanceCO2 + "," +
                        SumLAI + "," +
                        GrossPsn.Sum() + "," +
                        FolResp.Sum() + "," +
@@ -771,7 +773,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Cohort output file header
                 string hdr = OutputHeaders.Time + "," +
                             OutputHeaders.Age + "," +
-                    //OutputHeaders.ConductanceCO2 + "," + 
                             OutputHeaders.Layer + "," +
                             OutputHeaders.LAI + "," +
                             OutputHeaders.GrossPsn + "," +
@@ -795,8 +796,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                             OutputHeaders.LeafOn + "," +
                             OutputHeaders.FActiveBiom + "," +
                             OutputHeaders.AdjFolN + "," +
-                            OutputHeaders.CiModifier + ",";
-                            //OutputHeaders.AdjHalfSat + ",";
+                            OutputHeaders.CiModifier + ","+
+                            OutputHeaders.AdjHalfSat + ",";
 
                 return hdr;
             }

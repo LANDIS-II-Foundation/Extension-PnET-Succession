@@ -61,6 +61,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         float NSCSum { get; }
 
-        float AETSum { get; }
+        float AETSum { get; } //mm
     }
 }
