@@ -296,8 +296,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 subcanopypar = this.Ecoregion.Variables.PAR0;                
                 interception = 0;
 
-                float frostFreeSoilDepth = this.Ecoregion.RootingDepth;
-                float frostFreeProp = 1.0F;
+                float frostFreeSoilDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
 
                 bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
@@ -350,8 +349,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             testDepth += 0.25F;
                         }
                     }
-                    frostFreeSoilDepth = Math.Min(freezeDepth, this.Ecoregion.RootingDepth);
-                    frostFreeProp = frostFreeSoilDepth / this.Ecoregion.RootingDepth;
+                    frostFreeSoilDepth = Math.Min(freezeDepth, frostFreeSoilDepth);                   
                 }
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
@@ -425,7 +423,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             //success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
                             //success = c.CalculatePhotosynthesis(subCanopyPrecip, leakagePerCohort, hydrology, ref subcanopypar);
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, frostFreeProp);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, frostFreeSoilDepth);
                             if (success == false)
                             {
                                 throw new System.Exception("Error CalculatePhotosynthesis");

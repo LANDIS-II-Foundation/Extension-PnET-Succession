@@ -32,6 +32,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static bool wythers;
         private static bool dtemp;
         private static bool permafrost;
+        private static float leakageFrostDepth;
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;

@@ -32,6 +32,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";
         public const string Permafrost = "Permafrost";
+        public const string LeakageFrostDepth = "LeakageFrostDepth";
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
         public const string PrecLossFrac = "PrecLossFrac";

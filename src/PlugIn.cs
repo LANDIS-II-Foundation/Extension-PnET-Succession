@@ -27,6 +27,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
+        public static float LeakageFrostDepth;
         //public static float PrecipEvents;// Now an ecoregion parameter
         
         
@@ -280,6 +281,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
+            LeakageFrostDepth = ((Parameter<float>)GetParameter(Names.LeakageFrostDepth)).Value;
             //PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;// Now an ecoregion parameter
           
 
