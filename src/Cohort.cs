@@ -306,19 +306,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 // Incoming precipitation
                 //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
-                float waterIn = PrecInByCanopyLayer; //mm 
+                float precipIn = PrecInByCanopyLayer; //mm 
+
+                // Instantaneous runoff (excess of porosity)
+                float runoff = Math.Min(precipIn, Math.Max(hydrology.Water - (ecoregion.Porosity * frostFreeProp), 0));
+                Hydrology.RunOff += runoff;
+
+                float waterIn = precipIn - runoff;
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(waterIn);
                 if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
-
-                // Instantaneous runoff (excess of porosity)
-                float runoff = Math.Max(hydrology.Water - (ecoregion.Porosity * frostFreeProp), 0);
-                Hydrology.RunOff += runoff;
-                success = hydrology.AddWater(-1 * runoff);
-                if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
-
-                // Fast Leakage only occurs following precipitation events
+                               
+                // Leakage only occurs following precipitation events
                 if (waterIn > 0)
                 {
                     float leakageFrostReduction = 1.0F;
@@ -334,8 +334,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                         }
                     }
                     float leakage = Math.Max((float)LeakageFrac * leakageFrostReduction * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
-
-
                     Hydrology.Leakage += leakage;
 
                     // Remove fast leakage

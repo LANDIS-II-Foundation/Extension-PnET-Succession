@@ -302,9 +302,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (permafrost)
                 {
                     // Permafrost calculations
-                    float clay = PressureHeadSaxton_Rawls.GetClay(this.Ecoregion.SoilType);
-                    float porosity = this.Ecoregion.Porosity;
-                    float waterContent = hydrology.Water / this.Ecoregion.RootingDepth;
+                    float porosity = this.Ecoregion.Porosity / this.Ecoregion.RootingDepth;  //m3/m3
+                    float waterContent = hydrology.Water / this.Ecoregion.RootingDepth;  //m3/m3
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
                     float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
                     float Fs = PressureHeadSaxton_Rawls.GetFs(this.Ecoregion.SoilType);
@@ -315,7 +314,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float ks = Dmonth * 1000000F / (this.Ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24)); // mm2/s
                     float d = (float)Math.Pow((Constants.omega / 2.0F * Dmonth), (0.5));
 
-                    float maxDepth = this.Ecoregion.RootingDepth + 3.0F;
+                    float maxDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
                     float freezeDepth = maxDepth;
                     float testDepth = 0;
                     if (m == 0)
@@ -327,7 +326,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             tSum += data[z].Tave;
                         }
                         float annualTavg = tSum / mCount;
-                        while (testDepth <= maxDepth)
+                        while (testDepth <= (maxDepth/1000.0))
                         {
                             float DRz = (float)Math.Exp(-1.0F * testDepth * d);
                             float zTemp = annualTavg + (this.Ecoregion.Variables.Tave - annualTavg) * DRz;
@@ -339,7 +338,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                     else
                     {
-                        while (testDepth <= maxDepth)
+                        while (testDepth <= (maxDepth/1000.0))
                         {
                             float DRz = (float)Math.Exp(-1.0F * testDepth * d);
                             float zTemp = depthTempDict[testDepth] + (this.Ecoregion.Variables.Tave - depthTempDict[testDepth]) * DRz;
@@ -349,7 +348,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             testDepth += 0.25F;
                         }
                     }
-                    frostFreeSoilDepth = Math.Min(freezeDepth, frostFreeSoilDepth);                   
+                    frostFreeSoilDepth = Math.Min(freezeDepth*1000.0F, frostFreeSoilDepth);                   
                 }
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
