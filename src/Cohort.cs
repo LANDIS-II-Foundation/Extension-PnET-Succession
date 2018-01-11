@@ -758,8 +758,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                        leaf_on + "," +
                        FActiveBiom + "," +
                        AdjFolN.Average() + "," +
-                       CiModifier.Average() + ",";
-                       //adjHalfSat + ",";
+                       CiModifier.Average() + ","+
+                       adjHalfSat + ",";
              
             cohortoutput.Add(s);
 

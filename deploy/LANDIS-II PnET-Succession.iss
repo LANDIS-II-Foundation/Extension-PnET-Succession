@@ -25,6 +25,8 @@ Source: ..\..\Support-Library-Dlls\Defaults\SaxtonAndRawlsParameters.txt; DestDi
 #define UserGuideSrc "LANDIS-II " + ExtensionName + " vX.Y User Guide.pdf"
 #define UserGuide    StringChange(UserGuideSrc, "X.Y", MajorMinor)
 Source: docs\{#UserGuide}; DestDir: {app}\docs; DestName: {#UserGuide}
+#define Worksheet "PnET-Succession function worksheet.xlsx"
+Source: docs\{#Worksheet}; DestDir:  {app}\docs; DestName: {#Worksheet}
 
 Source: examples\*; DestDir: {app}\examples\{#ExtensionName}\{#MajorMinor}; Flags: recursesubdirs
 
