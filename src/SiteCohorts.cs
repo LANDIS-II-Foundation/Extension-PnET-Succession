@@ -88,16 +88,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             Timestep = ((Parameter<byte>)PlugIn.GetParameter(Names.Timestep)).Value;
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
-
-            
             
         }
 
         // Create SiteCohorts in SpinUp
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
-            
-
             Cohort.SetSiteAccessFunctions(this);
 
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
@@ -238,7 +234,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
-
             establishmentProbability.ResetPerTimeStep();
             Cohort.SetSiteAccessFunctions(this);
 
@@ -264,7 +259,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                         CumCohortBiomass += k;
                     }
                     SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);
-                    
                 }
             }
 
@@ -346,10 +340,13 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 float subCanopyPrecip = 0;
                 int subCanopyIndex = 0;
+
                 if (bins != null)
                 {
                     for (int b = bins.Count() - 1; b >= 0; b--)
                     {
+                        
+
                         foreach (int r in random_range[b])
                         {
                             subCanopyIndex++;
@@ -379,6 +376,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else // When no cohorts are present
                 {
+                    Console.WriteLine("In fact, nothing");
                     // Add incoming precipitation to soil moisture
                     success = hydrology.AddWater(precin);
                     if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + " water = " + hydrology.Water);
