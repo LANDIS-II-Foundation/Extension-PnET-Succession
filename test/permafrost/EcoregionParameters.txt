@@ -1,5 +1,5 @@
 LandisData  EcoregionParameters
 
-EcoregionParameters	 RootingDepth	SoilType LeakageFrac  PrecLossFrac  SnowSublimFrac 
+EcoregionParameters	 RootingDepth	SoilType LeakageFrac  PrecLossFrac  SnowSublimFrac WinterSTD
 
-eco0	1000	SAND	1	0	0.15
+eco0	1000	SAND	1	0	0.15	12

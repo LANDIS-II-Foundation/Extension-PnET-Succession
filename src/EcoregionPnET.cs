@@ -25,6 +25,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _snowsublimfrac;
         private float _latitude;
         private int _precipEvents;
+        private float _winterSTD;
         IEcoregionPnETVariables _variables;
         #endregion
 
@@ -44,6 +45,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> latitude;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
         #endregion
 
         #region accessors for private static variables
@@ -197,6 +199,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _precipEvents;
             }
         }
+        public float WinterSTD
+        {
+            get
+            {
+                return _winterSTD;
+            }
+        }
         #endregion
 
         public static List<string> ParameterNames
@@ -250,6 +259,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("SnowSublimFrac", 0, 1);
             latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("Latitude", -90, 90);
             precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("PrecipEvents", 1, 100);
+            winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WinterSTD", 0, 100);
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
@@ -280,6 +290,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._snowsublimfrac = snowsublimfrac[ecoregion];
             this._latitude = latitude[ecoregion];
             this._precipEvents = precipEvents[ecoregion];
+            this._winterSTD = winterSTD[ecoregion];
           
         }
     }

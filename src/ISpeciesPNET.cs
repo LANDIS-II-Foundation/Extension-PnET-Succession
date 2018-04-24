@@ -105,5 +105,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Referece maintenance respiration 
         float MaintResp { get; }
          
+        // Cold tolerance
+        float ColdTol { get; }
     }
 }

@@ -69,6 +69,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _amaxb;
         private float _maintresp;
         private float _bfolresp;
+        private float _coldTol;
         private string name;
         private int index;
         
@@ -124,7 +125,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
-        
+        private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
+
+
         #endregion
 
         public SpeciesPnET()
@@ -163,6 +166,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
+            coldTol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("ColdTol"));
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -176,10 +180,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         }
-      
+
 
         SpeciesPnET(PostFireRegeneration postFireGeneration,
-            float wuecnst, 
+            float wuecnst,
             float dnsc,
             float cfracbiomass,
             float kwdlit,
@@ -212,6 +216,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float amaxb,
             float maintresp,
             float bfolresp,
+            float coldTol,
             int Index,
             string name,
             int maxSproutAge,
@@ -259,6 +264,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._amaxb = amaxb;
             this._maintresp = maintresp;
             this._bfolresp = bfolresp;
+            this._coldTol = coldTol;
             this.index = Index;
             this.name = name;
             this.maxSproutAge = maxSproutAge;
@@ -309,6 +315,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _amaxb = amaxb[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
+            _coldTol = coldTol[species];
             index = species.Index;
             name = species.Name;
 
@@ -341,6 +348,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _bfolresp;
+            }
+        }
+        public float ColdTol
+        {
+            get
+            {
+                return _coldTol;
             }
         }
         public float AmaxA

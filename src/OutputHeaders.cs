@@ -59,6 +59,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string DeliveryPotential = "DeliveryPotential";
         public const string MaxWater = "MaxWater";
         public const string SoilType = "SoilType";
+        public const string FrostDepth = "FrostDepth(mm)";
 
         public const string WoodySenescence = "WoodSenescence(gDW_m2)";
         public const string FoliageSenescence = "FoliageSenescence(gDW_m2)";
