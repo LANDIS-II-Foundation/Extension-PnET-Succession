@@ -443,7 +443,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Adjust HalfSat for CO2 effect
             float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
-            float adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
+            adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
             FRad[index] = ComputeFrad(SubCanopyPar, adjHalfSat);
             
@@ -456,11 +456,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             float PressureHead = hydrology.GetPressureHead(ecoregion);
 
             // Reduction water for sub or supra optimal soil water content
-            if(PlugIn.ModelCore.CurrentTime > 0)
+            float fWaterOzone = 1.0f;  //fWater for ozone functions; ignores H2 parameter because only impacts when drought-stressed
+            if (PlugIn.ModelCore.CurrentTime > 0)
+            {
                 FWater[index] = ComputeFWater(species.H2, species.H3, species.H4, PressureHead);
+                fWaterOzone = ComputeFWater(0, species.H3, species.H4, PressureHead);
+            }
             else // Ignore H2 parameter during spinup
+            {
                 FWater[index] = ComputeFWater(0, species.H3, species.H4, PressureHead);
-            float fWater = FWater[index];
+                fWaterOzone = FWater[index];
+            }
+            
+      
 
             // FoliarN adjusted based on canopy position (FRad)
             float folN_slope = species.FolNSlope; //Slope for linear FolN relationship
@@ -469,17 +477,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             AdjFolN[index] = adjFolN;  // Stored for output
 
 
-            float ciModifier = fWater; // if no ozone, ciModifier defaults to fWater
+            float ciModifier = fWaterOzone; // if no ozone, ciModifier defaults to fWater
             if (o3_cum > 0)
             {
                 // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
                 // https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
                 // Uses data provided by Yasutomo Hoshika and Elena Paoletti
-                float ciMod_tol = (float)(fWater + (-0.021 * fWater + 0.0087) * o3_cum);
+                float ciMod_tol = (float)(fWaterOzone + (-0.021 * fWaterOzone + 0.0087) * o3_cum);
                 ciMod_tol = Math.Min(ciMod_tol, 1.0f);
-                float ciMod_int = (float)(fWater + (-0.0148 * fWater + 0.0062) * o3_cum);
+                float ciMod_int = (float)(fWaterOzone + (-0.0148 * fWaterOzone + 0.0062) * o3_cum);
                 ciMod_int = Math.Min(ciMod_int, 1.0f);
-                float ciMod_sens = (float)(fWater + (-0.0176 * fWater + 0.0118) * o3_cum);
+                float ciMod_sens = (float)(fWaterOzone + (-0.0176 * fWaterOzone + 0.0118) * o3_cum);
                 ciMod_sens = Math.Min(ciMod_sens, 1.0f);                              
                 if ((species.O3StomataSens == "Sensitive") || (species.O3StomataSens == "Sens"))
                     ciModifier = ciMod_sens;
@@ -624,7 +632,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
-                Transpiration[index] = (float)(0.01227 * (NetPsn[index] / (JCO2 / JH2O)));
+                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O)));
  
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
