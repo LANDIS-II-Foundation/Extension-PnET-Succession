@@ -252,9 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float FTimeStep;
 
         public override void Initialize()
-        {
-            PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
-
+        { 
             Cohort.DeathEvent += DeathEvent;
 
             Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
@@ -295,10 +293,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             base.Initialize(ModelCore, SeedAlgorithm);
              
-             
             StartDate = new DateTime(((Parameter<int>)GetParameter(Names.StartYear)).Value, 1, 15);
-
-            PlugIn.ModelCore.UI.WriteLine("Spinning up biomass");
 
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;

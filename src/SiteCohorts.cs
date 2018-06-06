@@ -376,7 +376,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else // When no cohorts are present
                 {
-                    Console.WriteLine("In fact, nothing");
                     // Add incoming precipitation to soil moisture
                     success = hydrology.AddWater(precin);
                     if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + " water = " + hydrology.Water);

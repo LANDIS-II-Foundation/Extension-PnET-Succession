@@ -1,5 +1,5 @@
-C:\Users\Adam\Documents\Extension-PnET-Succession\Assembly\Landis.Extension.Succession.BiomassPnET.dll
-C:\Users\Adam\Documents\Extension-PnET-Succession\Assembly\Landis.Extension.Succession.BiomassPnET.pdb
 C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\PnET-Succession.csprojResolveAssemblyReference.cache
-C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.dll
-C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.pdb
+C:\Users\Adam\Documents\Extension-PnET-Succession\Assembly\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll
+C:\Users\Adam\Documents\Extension-PnET-Succession\Assembly\Landis.Extension.Succession.BiomassPnET.LUv2.0.pdb
+C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll
+C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.pdb

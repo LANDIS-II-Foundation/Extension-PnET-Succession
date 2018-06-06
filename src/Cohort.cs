@@ -7,9 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Landis.Extension.Succession.BiomassPnET 
+namespace Landis.Extension.Succession.BiomassPnET
 {
-    public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort 
+    public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort
     {
         public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> DeathEvent;
         public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> AgeOnlyDeathEvent;
@@ -25,9 +25,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static IEcoregionPnET ecoregion;
 
         public static AddWoodyDebris addwoodydebris;
-        
+
         public static AddLitter addlitter;
-        
+
         private float biomassmax;
         private float biomass; // root + wood
         private float fol;
@@ -42,7 +42,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float lastFoliageSenescence; // last recorded foliage senescence
 
         public ushort index;
-        
+
         private ISpeciesPNET species;
         private LocalOutput cohortoutput;
 
@@ -63,10 +63,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Transpiration (mm/mo)
         public float[] Transpiration = null;
-        
+
         // Reduction factor for suboptimal radiation on growth
         public float[] FRad = null;
-        
+
         // Reduction factor for suboptimal or supra optimal water 
         public float[] FWater = null;
 
@@ -100,7 +100,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaintenanceRespiration = null;
             Interception = null;
         }
-      
+
         public ushort Age
         {
             get
@@ -126,7 +126,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             private set
             {
-                fol = value;       
+                fol = value;
             }
         }
         // Aboveground Biomass (g/m2)
@@ -161,7 +161,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return (uint)(species.FracBelowG * biomass);
             }
         }
-        
+
         // Max biomass achived in the cohorts' life time. 
         // This value remains high after the cohort has reached its 
         // peak biomass. It is used to determine canopy layers where
@@ -183,7 +183,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Add dead wood to last senescence
-        public void AccumulateWoodySenescence (int senescence)
+        public void AccumulateWoodySenescence(int senescence)
         {
             lastWoodySenescence += senescence;
         }
@@ -255,14 +255,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Constructor
         public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
         {
-            this.species =  species;
-            age = 0; 
-           
+            this.species = species;
+            age = 0;
+
             this.nsc = (ushort)species.InitialNSC;
-           
+
             // Initialize biomass assuming fixed concentration of NSC
             this.biomass = (uint)(1F / species.DNSC * (ushort)species.InitialNSC);
-            
+
             biomassmax = biomass;
 
             // Then overwrite them if you need stuff for outputs
@@ -284,11 +284,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {
-             Cohort.addlitter = sitecohorts.AddLitter;
-             Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
-             Cohort.ecoregion = sitecohorts.Ecoregion;
+            Cohort.addlitter = sitecohorts.AddLitter;
+            Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
+            Cohort.ecoregion = sitecohorts.Ecoregion;
         }
-        
+
 
         public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
         {
@@ -296,18 +296,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, double LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
-        { 
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, int precipCount, double LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
+        {
             bool success = true;
 
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
             LAI[index] = (1 / (float)PlugIn.IMAX) * Fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * Fol);
-            
+
             // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
             //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
             //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
-            
+
             // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
             for (int p = 1; p <= precipCount; p++)
             {
@@ -365,9 +365,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     expectedAlloc = 0;
                 }
             }
-            
+
             // When LeafOn becomes false for the first time in a year - Shouldn't happen January, February, March? 
-            if (ecoregion.Variables.Tmin < this.SpeciesPNET.PsnTMin) 
+            if (ecoregion.Variables.Tmin < this.SpeciesPNET.PsnTMin)
             {
                 if (leaf_on)
                 {
@@ -399,7 +399,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Fol += Folalloc / species.CFracBiomass;// gDW
                         // Subtract from NSC
                         nsc -= Folalloc;
-                    }     
+                    }
                 }
                 else if (ecoregion.Variables.Month == (int)Constants.Months.June) //Apply defoliation only in June
                 {
@@ -407,44 +407,50 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         ReduceFoliage(defolProp);
                     }
-                    else if (species.TOfol < 1)
+                    /*else if (species.TOfol < 1)
                     {
-                        ReduceFoliage(species.TOfol);           //Other defoliating processes in the community: needlefall in conifers
-                    }
+                        float adjDefol = species.TOfol;
+                        if (adjDefol > species.TOfol)
+                        {
+                            expectedAlloc = Folalloc;
+                        }
+                        else
+                            Folalloc = 0;
+                        ReduceFoliage(adjDefol);
+                        //ReduceFoliage(species.TOfol);           //Other defoliating processes in the community: needlefall in conifers
+                    } */
                     expectedDefol = Fol;                //Order is very important here so that defoliation is not iterated within a cohort
                 }
                 else if (ecoregion.Variables.Month > (int)Constants.Months.June) //During and after defoliation events
                 {
                     if (defolProp > 0)
                     {
-                        if (defolProp > 0.6 && species.TOfol == 1)  // Refoliation at >60% reduction in foliage for deciduous trees - MGM
+                        if (defolProp > 0.60 && species.TOfol == 1)  // Refoliation at >60% reduction in foliage for deciduous trees - MGM
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
-                            float Folalloc = Math.Max(0f, Math.Min(nsc, 0.9f * species.CFracBiomass * (IdealFol - Fol)));
+                            float Folalloc = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * ((0.70f * IdealFol) - Fol)));  // 70% refoliation
                             if (Folalloc > expectedAlloc)
                             {
                                 expectedAlloc = Folalloc;
                             }
                             else
+                            {
                                 Folalloc = 0;
-                            
+                            }
+
                             Fol += Folalloc / species.CFracBiomass;// gDW
 
                             // Subtract from NSC
-                            nsc -= Folalloc;
-   
+                            float Folalloc2 = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * (0.95f * IdealFol - Fol)));  // cost of refol is the cost of getting to IdealFol
+                            nsc -= Folalloc2; // resource intensive to reflush in middle of growing season
+
                         }
-                        else //No attempted refoliation but carbon loss after defoliation -             12% x
+                        else //No attempted refoliation but carbon loss after defoliation
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
-                            float carbon_cost = 0.05f;
-                            if (ecoregion.Variables.Month > (int)Constants.Months.June)
-                            { }
-                            else
-                            { }
-                            float Folalloc = Math.Max(0f, Math.Min(nsc, carbon_cost * species.CFracBiomass * (IdealFol))); // gC/mo 5% of IdealFol to take out NSC - estimated from Palacio et al 2012 - MGM 
+                            float Folalloc = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
 
                             // Subtract from NSC do not add Fol
                             nsc -= Folalloc;
@@ -461,7 +467,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         // Subtract from NSC
                         nsc -= Folalloc;
-                    }     
+                    }
                 }
             }
             /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Adam's restructuring 3/1/2018 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -499,29 +505,23 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * Fol);
 
-            //  Apply defoliation in month of june -- generalize to all months (Adam 1/13/2018) ecoregion.Variables.Month == (int)Constants.Months.June
-            /*  Merged with ideal foliation block to achieve proper foliage balance AKC - 2/8/2018
-             * if (PlugIn.ModelCore.CurrentTime > 0)
+            /* // Apply leaf turnover in month of june // evergreens seem to already be dumping leaves in the fall, so eliminated this section.
+            if ((PlugIn.ModelCore.CurrentTime > 0) && (ecoregion.Variables.Month == (int)Constants.Months.June))
             {
-                if (ecoregion.Variables.Month > (int)Constants.Months.May)
+                if (DefolProp > 0)
                 {
-                    if (DefolProp > 0)
-                    {
-                        //Adjust defol prop for foliage longevity - defol only affects current foliage
-                        float adjDefol = DefolProp * species.TOfol;
-                        ReduceFoliage(adjDefol);
-                        
-                        // Update LAI after defoliation
-                        LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
-
-                        leaf_on = false;
-                    }
+                    //Adjust defol prop for foliage longevity - defol only affects current foliage
+                    float adjDefol = species.TOfol;
+                    ReduceFoliage(adjDefol);
+                    // Update LAI after defoliation
+                    LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
                 }
-            }*/
+
+            } */
 
             // Reduction factor for radiation on photosynthesis
             FRad[index] = ComputeFrad(SubCanopyPar, species.HalfSat);
-            
+
             // Below-canopy PAR if updated after each subcanopy layer
             SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
 
@@ -529,11 +529,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             float PressureHead = hydrology.GetPressureHead(ecoregion);
 
             // Reduction water for sub or supra optimal soil water content
-            if(PlugIn.ModelCore.CurrentTime > 0)
+            if (PlugIn.ModelCore.CurrentTime > 0)
                 FWater[index] = ComputeFWater(species.H2, species.H3, species.H4, PressureHead);
             else // Ignore H2 parameter during spinup
                 FWater[index] = ComputeFWater(0, species.H3, species.H4, PressureHead);
-            
+
             // If trees are physiologically active
             if (leaf_on)
             {
@@ -545,26 +545,23 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
                 //Subistitute 24 hours in place of DayLength because foliar respiration does occur at night.  FTempRespDay uses Tave temps reflecting both day and night temperatures.
                 float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
-                
+
                 // Actal foliage respiration (growth respiration) 
                 FolResp[index] = FWater[index] * FTempRespDayRefResp * Fol / (float)PlugIn.IMAX;
-                
+
                 // Gross psn depends on net psn and foliage respiration
                 GrossPsn[index] = NetPsn[index] + FolResp[index];
 
                 // Transpiration depends on gross psn, water use efficiency (gCO2/mm water) and molecular weight (gC/gCO2)
                 Transpiration[index] = Math.Min(hydrology.Water, GrossPsn[index] / ecoregion.Variables[Species.Name].WUE / ecoregion.Variables[Species.Name].DelAmax * Constants.MCO2_MC);
-                 
+
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
                 if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water);
 
                 // Add net psn to non soluble carbons
                 nsc += NetPsn[index];
-                
-                Console.WriteLine("Month: " + ecoregion.Variables.Month);
-                Console.WriteLine(NetPsn[index]);
-             
+
             }
             else
             {
@@ -575,7 +572,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Transpiration[index] = 0;
 
             }
-           
+
             if (index < PlugIn.IMAX - 1) index++;
             return success;
         }
@@ -605,22 +602,23 @@ namespace Landis.Extension.Succession.BiomassPnET
         public void InitializeOutput(string SiteName, ushort YearOfBirth)
         {
             cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + "_" + YearOfBirth + ".csv", OutputHeader);
-       
+
         }
         public float SumLAI
         {
-            get {
+            get
+            {
                 return LAI.Sum();
             }
 
         }
-        public void UpdateCohortData(IEcoregionPnETVariables monthdata )
+        public void UpdateCohortData(IEcoregionPnETVariables monthdata)
         {
             // Cohort output file
-            string s = Math.Round(monthdata.Year, 2) + "," + 
+            string s = Math.Round(monthdata.Year, 2) + "," +
                         Age + "," +
-                        Layer + "," + 
-                       //canopy.ConductanceCO2 + "," +
+                        Layer + "," +
+                //canopy.ConductanceCO2 + "," +
                        SumLAI + "," +
                        GrossPsn.Sum() + "," +
                        FolResp.Sum() + "," +
@@ -628,9 +626,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                        NetPsn.Sum() + "," +                  // Sum over canopy layers
                        Transpiration.Sum() + "," +
                        ((Transpiration.Sum() > 0) ? NetPsn.Sum() / Transpiration.Sum() : 0).ToString() + "," +
-                       Fol + "," + 
-                       Root + "," + 
-                       Wood + "," + 
+                       Fol + "," +
+                       Root + "," +
+                       Wood + "," +
                        NSC + "," +
                        NSCfrac + "," +
                        FWater.Average() + "," +
@@ -640,39 +638,39 @@ namespace Landis.Extension.Succession.BiomassPnET
                        Fage + "," +
                        leaf_on + "," +
                        FActiveBiom;
-             
+
             cohortoutput.Add(s);
 
-       
+
         }
 
         public string OutputHeader
         {
             get
-            { 
+            {
                 // Cohort output file header
-                string hdr = OutputHeaders.Time + "," + 
+                string hdr = OutputHeaders.Time + "," +
                             OutputHeaders.Age + "," +
-                            //OutputHeaders.ConductanceCO2 + "," + 
-                            OutputHeaders.Layer + "," + 
+                    //OutputHeaders.ConductanceCO2 + "," + 
+                            OutputHeaders.Layer + "," +
                             OutputHeaders.LAI + "," +
-                            OutputHeaders.GrossPsn + "," + 
-                            OutputHeaders.FolResp + "," + 
-                            OutputHeaders.MaintResp + "," + 
+                            OutputHeaders.GrossPsn + "," +
+                            OutputHeaders.FolResp + "," +
+                            OutputHeaders.MaintResp + "," +
                             OutputHeaders.NetPsn + "," +
                             OutputHeaders.Transpiration + "," +
                             OutputHeaders.WUE + "," +
-                            OutputHeaders.Fol + "," + 
-                            OutputHeaders.Root + "," + 
+                            OutputHeaders.Fol + "," +
+                            OutputHeaders.Root + "," +
                             OutputHeaders.Wood + "," +
-                            OutputHeaders.NSC + "," + 
-                            OutputHeaders.NSCfrac + "," + 
-                            OutputHeaders.fWater + "," +  
-                            OutputHeaders.fRad + "," + 
+                            OutputHeaders.NSC + "," +
+                            OutputHeaders.NSCfrac + "," +
+                            OutputHeaders.fWater + "," +
+                            OutputHeaders.fRad + "," +
                             OutputHeaders.fTemp_psn + "," +
-                            OutputHeaders.fTemp_resp + "," + 
-                            OutputHeaders.fage + "," + 
-                            OutputHeaders.LeafOn + "," + 
+                            OutputHeaders.fTemp_resp + "," +
+                            OutputHeaders.fage + "," +
+                            OutputHeaders.LeafOn + "," +
                             OutputHeaders.FActiveBiom + ",";
 
                 return hdr;
@@ -681,9 +679,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public void WriteCohortData()
         {
             cohortoutput.Write();
-         
+
         }
-         
+
         public float FActiveBiom
         {
             get
@@ -707,7 +705,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Fol -= Litter;
             return Litter;
         }
-        
+
         public float Senescence()
         {
             float senescence = ((Root * species.TOroot) + Wood * species.TOwood);
@@ -718,7 +716,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private void ReduceFoliage(double fraction)
         {
-            Fol *= (float)(1.0 - fraction);
+            Fol *= (float)(1.0f - fraction);
             //fol = fol * 0.9
         }
         public void ReduceBiomass(double fraction)
@@ -732,7 +730,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// Raises a Cohort.AgeOnlyDeathEvent.
         /// </summary>
         public static void RaiseDeathEvent(object sender,
-                                Cohort cohort, 
+                                Cohort cohort,
                                 ActiveSite site,
                                 ExtensionType disturbanceType)
         {
@@ -744,9 +742,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 DeathEvent(sender, new Landis.Library.BiomassCohorts.DeathEventArgs(cohort, site, disturbanceType));
             }
-           
+
         }
 
-        
-    } 
+
+    }
 }
