@@ -78,14 +78,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Allocation.cs" />
+    <Compile Include="age-only-disturbances\DatasetParser.cs" />
     <Compile Include="EcoregionPnET.cs" />
     <Compile Include="EcoregionPnETVariables.cs" />
-    <Compile Include="Events.cs" />
+    <Compile Include="age-only-disturbances\Events.cs" />
     <Compile Include="IEcoregionPnET.cs" />
     <Compile Include="IEcoregionPnETVariables.cs" />
     <Compile Include="IEstablishmentProbability.cs" />
     <Compile Include="IHydrology.cs" />
     <Compile Include="IObservedClimate.cs" />
+    <Compile Include="age-only-disturbances\IParameterDataset.cs" />
+    <Compile Include="age-only-disturbances\Module.cs" />
+    <Compile Include="age-only-disturbances\NoParameters.cs" />
     <Compile Include="ObservedClimate.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ISiteCohorts.cs" />
@@ -93,6 +97,9 @@
     <Compile Include="MyClock.cs" />
     <Compile Include="OutputHeaders.cs" />
     <Compile Include="AssignOutputFiles.cs" />
+    <Compile Include="age-only-disturbances\ParameterDataset.cs" />
+    <Compile Include="age-only-disturbances\PercentageTable.cs" />
+    <Compile Include="age-only-disturbances\PoolPercentages.cs" />
     <Compile Include="PressureHeadSaxton_Rawls.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Names.cs" />

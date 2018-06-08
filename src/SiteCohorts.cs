@@ -45,6 +45,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static byte Timestep;
         private static int nlayers;
 
+        /// <summary>
+        /// Occurs when a site is disturbed by an age-only disturbance.
+        /// </summary>
+        public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
+
+        //---------------------------------------------------------------------
+
         public float Transpiration
         {
             get
