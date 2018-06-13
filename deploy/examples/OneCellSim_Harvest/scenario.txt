@@ -18,7 +18,7 @@ CellLength  30 << meters, so cell area = 900 m2
 
 >> Disturbance Extensions   Initialization File
 >> ----------------------   -------------------
-   "Biomass Harvest"			BiomassHarvest-OneCell_Partial.txt
+   "Biomass Harvest"			BiomassHarvest-OneCell.txt
 
 >> Output Extensions        Initialization File
 >> -----------------        -------------------

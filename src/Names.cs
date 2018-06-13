@@ -8,7 +8,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string ExtensionName = "PnET-Succession";
         public const string PNEToutputsites = "PNEToutputsites";
         public const string EcoregionParameters = "EcoregionParameters";
-        public const string AgeOnlyDisturbances = "AgeOnlyDisturbances";
+        public const string DisturbanceReductions = "DisturbanceReductions";
         public const string PnETGenericParameters = "PnETGenericParameters";
         public const string PnETGenericDefaultParameters = "PnETGenericDefaultParameters";
         public const string VanGenuchten = "VanGenuchten";

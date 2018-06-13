@@ -20,6 +20,6 @@ EcoregionParameters	EcoregionParameters.txt
    								
 PnETGenericParameters		PnETGenericParameters.txt
 
-AgeOnlyDisturbances	age-only-disturbances.txt
+DisturbanceReductions	disturbance_reductions.txt
  											
  										

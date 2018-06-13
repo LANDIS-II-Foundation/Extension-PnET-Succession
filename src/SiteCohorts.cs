@@ -1112,7 +1112,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<int> reduction = new List<int>();
 
             List<Cohort> ToRemove = new List<Cohort>();
-
+            
             foreach (List<Cohort> species_cohort in cohorts.Values)
             {
                 Landis.Library.BiomassCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
@@ -1133,7 +1133,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     else
                     {
                         double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;  //Proportion of aboveground biomass
-                        species_cohort[c].ReduceBiomass(reductionProp);  // Reduction applies to all biomass
+                        species_cohort[c].ReduceBiomass(this, reductionProp, disturbance.Type);  // Reduction applies to all biomass
                     }
                     //
                 }
@@ -1202,6 +1202,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             */
 
+            // Does this only occur when a site is disturbed?
+            Allocation.ReduceDeadPools(this, disturbance.Type); 
+
             //  Go through list of species cohorts from back to front so that
             //  a removal does not mess up the loop.
             int totalReduction = 0;
@@ -1237,7 +1240,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        private void RemoveMarkedCohorts()
+        private void RemoveMarkedCohorts()  // Cohorts that die due to succession processes
         {
 
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
@@ -1272,7 +1275,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 cohorts.Remove(cohort.Species);
             }
 
-            Allocation.Allocate(this, cohort, disturbanceType);
+            Allocation.Allocate(this, cohort, disturbanceType, 1.0);  //Allocation fraction is 1.0 for complete removals
 
         }
 
@@ -1329,7 +1332,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             PlugIn.WoodyDebris[Site].AddMass(Litter, KWdLit);
         }
-
+        public void RemoveWoodyDebris(double percentReduction)
+        {
+            PlugIn.WoodyDebris[Site].ReduceMass(percentReduction);
+        }
         public void AddLitter(float AddLitter, ISpeciesPNET spc)
         {
             
@@ -1337,7 +1343,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             PlugIn.Litter[Site].AddMass(AddLitter, KNwdLitter);
         }
-
+        public void RemoveLitter(double percentReduction)
+        {
+            PlugIn.Litter[Site].ReduceMass(percentReduction);
+        }
         string Header(Landis.SpatialModeling.ActiveSite site)
         {
             

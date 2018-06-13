@@ -854,10 +854,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             fol *= (float)(1.0 - fraction);
         }
-        public void ReduceBiomass(double fraction)
+        public void ReduceBiomass(object sitecohorts, double fraction, ExtensionType disturbanceType)
         {
+            Allocation.Allocate(sitecohorts, this, disturbanceType, fraction);
+
             biomass *= (float)(1.0 - fraction);
             fol *= (float)(1.0 - fraction);
+
+            
+
         }
 
         //---------------------------------------------------------------------
