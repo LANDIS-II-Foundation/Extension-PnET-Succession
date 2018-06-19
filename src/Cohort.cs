@@ -373,6 +373,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // In the first month
                 if (ecoregion.Variables.Month == (int)Constants.Months.January)
                 {
+                    //Check if nscfrac is below threshold to determine if cohort is alive
+                    if (!this.IsAlive)
+                    {
+                        nsc = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
+                    }
                     float woodSenescence = Senescence();
                     addwoodydebris(woodSenescence, species.KWdLit);
                     lastWoodySenescence = woodSenescence;
@@ -397,6 +402,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float foliageSenescence = FoliageSenescence();
                     addlitter(foliageSenescence, SpeciesPNET);
                     lastFoliageSenescence = foliageSenescence;
+
                 }
             }
             else  
@@ -593,6 +599,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     // nesPsn_leaf_s = NetPsn_ground*(1/LAI){m2 fol/m2 ground}
                     netPsn_leaf_s = netPsn_ground * (1F / LAI[index]);
+                    if(float.IsInfinity(netPsn_leaf_s))
+                    {
+                        netPsn_leaf_s = 0;
+                    }
                 }
 
                 //Calculate water vapor conductance (gwv) from Psn and Ci; Kubiske Conductance_5.xlsx
@@ -836,6 +846,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             // If it is fall 
             float Litter = species.TOfol * fol;
+            // If cohort is dead, then all foliage is lost
+            if (NSCfrac <= 0.01F)
+                Litter = fol;
             fol -= Litter;
 
             return Litter;
