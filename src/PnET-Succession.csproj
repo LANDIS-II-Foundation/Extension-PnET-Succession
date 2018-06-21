@@ -46,9 +46,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\LANDIS-II\v6\bin\extensions\Landis.Library.AgeOnlyCohorts.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Biomass-v1.0.1, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Landis.Library.Biomass-v1, Version=1.0.5590.23483, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II\v6\bin\extensions\Landis.Library.Biomass-v1.0.1.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\LANDIS-II\v6\bin\extensions\Landis.Library.Biomass-v1.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.BiomassCohorts-v2.0.1">
       <HintPath>..\..\..\..\..\Program Files\LANDIS-II\v6\bin\extensions\Landis.Library.BiomassCohorts-v2.0.1.dll</HintPath>
