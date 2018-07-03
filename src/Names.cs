@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -11,7 +8,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string ExtensionName = "PnET-Succession";
         public const string PNEToutputsites = "PNEToutputsites";
         public const string EcoregionParameters = "EcoregionParameters";
-        public const string AgeOnlyDisturbances = "AgeOnlyDisturbances";
+        public const string DisturbanceReductions = "DisturbanceReductions";
         public const string PnETGenericParameters = "PnETGenericParameters";
         public const string PnETGenericDefaultParameters = "PnETGenericDefaultParameters";
         public const string VanGenuchten = "VanGenuchten";
@@ -31,6 +28,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
         public const string DTemp = "DTemp";
+        public const string CO2AMaxBEff = "CO2AMaxBEff";
+       
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         //Ecoregion parameters
@@ -39,11 +38,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string RootingDepth = "RootingDepth";
         public const string SoilType = "SoilType";
         public const string PrecIntConst = "PrecIntConst";
+        public const string SnowSublimFrac = "SnowSublimFrac";
+        public const string FolNSlope = "FolNSlope";
+        public const string FolNInt = "FolNInt";
+        public const string O3Coeff = "O3GrowthSens";
         public const string PrecipEvents = "PrecipEvents";
         public const string Latitude = "Latitude";
         public const string climateFileName = "climateFileName";
-        
-    
         
      
         public static void AssureIsName(string name)

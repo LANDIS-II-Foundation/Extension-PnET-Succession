@@ -34,12 +34,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Edu.Wisc.Forest.Flel.Util, Version=1.1.400.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Edu.Wisc.Forest.Flel.Util">
       <HintPath>..\..\Support-Library-Dlls\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Core, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Landis.Core">
       <HintPath>..\..\Support-Library-Dlls\Landis.Core.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts, Version=2.1.5520.27591, Culture=neutral, processorArchitecture=MSIL">
@@ -62,12 +60,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Support-Library-Dlls\Landis.Library.Parameters-v1.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession-v5, Version=5.0.6491.14006, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Landis.Library.Succession-v5">
       <HintPath>..\..\Support-Library-Dlls\Landis.Library.Succession-v5.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.SpatialModeling, Version=1.0.4815.34359, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Landis.SpatialModeling">
       <HintPath>..\..\Support-Library-Dlls\Landis.SpatialModeling.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -76,8 +72,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Troschuetz.Random, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Troschuetz.Random">
       <HintPath>..\..\Support-Library-Dlls\Troschuetz.Random.dll</HintPath>
     </Reference>
   </ItemGroup>

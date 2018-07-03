@@ -1,26 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Landis.Core;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
     public class EcoregionPnETVariables : IEcoregionPnETVariables
     {
-        #region private variables
+         
         private DateTime _date;
         private IObservedClimate obs_clim;
         private float _vpd;
         private float _dayspan;
         private float _tave;
         private float _tday;
-        
-        float _daylength;
+        private float _daylength;
          
-        #endregion
-
-        #region public accessors
 
         public float VPD
         {
@@ -51,7 +44,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return obs_clim.Prec;
             }
         }
+        public float O3
+        {
+            get
+            {
+                return obs_clim.O3;
+            }
+
+        }
+        public float CO2 {
+            get {
+                return obs_clim.CO2;
+            }
         
+        }
         public float PAR0 {
             get 
             {
@@ -101,7 +107,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         
 
-        # endregion
+       
 
         #region static computation functions
         private static int Calculate_DaySpan(int Month)
@@ -286,51 +292,21 @@ namespace Landis.Extension.Succession.BiomassPnET
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
 
             // Gradient of effect of vapour pressure deficit on growth. 
-            float DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
+            speciespnetvars.DVPD = Math.Max(0, 1 - spc.DVPD1 * (float)Math.Pow(VPD, spc.DVPD2));
 
-            // Co2 ratio internal to the leave versus external
-            float cicaRatio = (-0.075f * spc.FolN) + 0.875f;
-
-            // Reference co2 ratio
-            float ci350 = 350 * cicaRatio;
-
-            // Elevated co2 effect
-            float Arel350 = 1.22f * ((ci350 - 68) / (ci350 + 136));
-
-            // Elevated leaf internal co2 concentration
-            float ciElev = climate_dataset.CO2 * cicaRatio;
-
-            float ArelElev = 1.22f * ((ciElev - 68) / (ciElev + 136));
-
-            // CO2 effect on growth
-            float delamax = 1 + ((ArelElev - Arel350) / Arel350);
-            speciespnetvars.DelAmax = delamax;
-
-            // CO2 effect on photosynthesis
-            // Calculate CO2 effect on conductance and set slope and intercept for A-gs relationship
-            //float Ci = climate_dataset.CO2 * (1 - cicaRatio);
-            //float Delgs = delamax / ((Ci / (350.0f - ci350))); // denominator -> CO2 conductance effect
-            float Delgs = delamax / ((climate_dataset.CO2 - climate_dataset.CO2 * cicaRatio) / (350.0f - ci350));
-
-            //_gsSlope = (float)((-1.1309 * delamax) + 1.9762);   // used to determine ozone uptake
-            //_gsInt = (float)((0.4656 * delamax) - 0.9701);
-
-            //DWUE determined from CO2 effects on conductance
-            float wue = (spc.WUEcnst / VPD) * (1 + 1 - Delgs);
-            speciespnetvars.WUE = wue;
-              
-            // water use efficiency in a co2 enriched atmosphere
-            //speciespnetvars.WUE_CO2_corr = wue / delamax;
-
-            //speciespnetvars.WUE_CO2_corr = (climate_dataset.CO2 - Ci) / 1.6f;
+            // ** CO2 effect on growth **
+            // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
+            float JH2O = (float) (0.239 *((VPD/(8314.47 *(climate_dataset.Tmin + 273)))));
+            speciespnetvars.JH2O = JH2O;
 
             // NETPSN net photosynthesis
-            speciespnetvars.Amax = speciespnetvars.DelAmax * (spc.AmaxA + spc.AmaxB * spc.FolN);
-
-            //Reference net Psn (lab conditions) in gC/m2 leaf area/timestep
-            float RefNetPsn = _dayspan * (speciespnetvars.Amax * DVPD * daylength * Constants.MC) / Constants.billion;
-
-           
+            // Modify AmaxB based on CO2 level
+            // Equations solved from 2 known points: (350, AmaxB) and (550, AmaxB * CO2AmaxBEff)
+            float AmaxB_slope = (float)(((spc.CO2AMaxBEff - 1.0) * spc.AmaxB) / 200.0);  // Derived from m = [(AmaxB*CO2AMaxBEff) - AmaxB]/[550 - 350]
+            float AmaxB_int = (float)(-1.0*(((spc.CO2AMaxBEff - 1.0)*1.75)-1.0) * spc.AmaxB);  // Derived from b = AmaxB - (AmaxB_slope * 350)
+            float AmaxB_CO2 = AmaxB_slope * climate_dataset.CO2 + AmaxB_int;
+            speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
+                       
             //-------------------FTempPSN (public for output file)
             if (DTemp)
             {
@@ -341,12 +317,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Modified 051216(BRM)
             }
-
-            // PSN (gC/m2 leaf area/tstep) reference net psn in a given temperature
-            speciespnetvars.FTempPSNRefNetPsn =  speciespnetvars.FTempPSN * RefNetPsn;
- 
-            //EcoregionPnETVariables.RespTempResponse(spc, Tday, climate_dataset.Tmin, daylength, nightlength);
-
+            
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
 
@@ -354,10 +325,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             float fTempRespNight = CalcQ10Factor(spc.Q10, Tmin , spc.PsnTOpt);
            
             // Unitless respiration adjustment: public for output file only
-            speciespnetvars.FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
-
+            float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
+            speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
             // Scaling factor of respiration given day and night temperature and day and night length
-            speciespnetvars.MaintRespFTempResp = spc.MaintResp * speciespnetvars.FTempRespWeightedDayAndNight;
+            speciespnetvars.MaintRespFTempResp = spc.MaintResp * FTempRespWeightedDayAndNight;
 
             // Respiration gC/timestep (RespTempResponses[0] = day respiration factor)
             // Respiration acclimation subroutine From: Tjoelker, M.G., Oleksyn, J., Reich, P.B. 1999.

@@ -1,9 +1,8 @@
 
 using Landis.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Landis.SpatialModeling;
-using System;
 
 namespace Landis.Extension.Succession.BiomassPnET 
 {

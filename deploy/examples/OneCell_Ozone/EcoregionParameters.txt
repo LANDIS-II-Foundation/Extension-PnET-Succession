@@ -1,0 +1,3 @@
+LandisData  EcoregionParameters					
+EcoregionParameters	 RootingDepth	SoilType LeakageFrac PrecLossFrac  ClimateFileName			
+eco0	1000	SAND	1	0	climate.txt

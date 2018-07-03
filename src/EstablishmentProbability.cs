@@ -1,6 +1,4 @@
-﻿using Landis.SpatialModeling;
-using Landis.Core;
-using System.Linq;
+﻿using Landis.Core;
 using System;
 using System.Collections.Generic;
 
@@ -60,7 +58,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (pnetvars.Tmin > spc.PsnTMin)
                 {
-                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
+                    // Adjust HalfSat for CO2 effect
+                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
+                    float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat), spc.EstRad);
+
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
                         
@@ -105,7 +107,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 if (pnetvars.Tmin > spc.PsnTMin)
                 {
-                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
+                    // Adjust HalfSat for CO2 effect
+                    float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
+                    float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
+                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat), spc.EstRad);
+
+                    //float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
 

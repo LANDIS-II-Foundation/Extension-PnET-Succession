@@ -1,7 +1,6 @@
+using Landis.Core;
 using System.Collections.Generic;
 using System.Linq;
-using Landis.Core;
-using System;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -12,31 +11,34 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         static List<Tuple<ISpecies, ISpeciesPNET>> SpeciesCombinations;
 
-        public List<ISpeciesPNET> AllSpecies
-        {
-            get
-            {
-                return SpeciesCombinations.Select(combination => combination.Item2).ToList();
-            }
-        }
+         
+         public List<ISpeciesPNET> AllSpecies 
+         { 
+             get
+             { 
+                 return SpeciesCombinations.Select(combination => combination.Item2).ToList(); 
+             } 
+         } 
+ 
+ 
+         public ISpeciesPNET this[ISpecies species] 
+         { 
+             get
+             { 
+                 return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2; 
+             } 
+         } 
+         public ISpecies this[ISpeciesPNET species] 
+         { 
+             get
+             { 
+                 return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1; 
+             } 
+         } 
 
-        public ISpeciesPNET this[ISpecies species]
-        {
-            get
-            {
-                return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2;
-            }
-        }
-        public ISpecies this[ISpeciesPNET species]
-        {
-            get
-            {
-                return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1;
-            }
-        }
 
         #region private variables
-        private float _wuecnst;
+        private float _co2HalfSatEff;
         private float _cfracbiomass;
         private float _kwdlit;
         private float _dnsc;
@@ -67,8 +69,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _dvpd2;
         private float _amaxa;
         private float _amaxb;
+        private float _co2AMaxBEff;
         private float _maintresp;
         private float _bfolresp;
+        private string _ozoneSens;
         private string name;
         private int index;
         
@@ -82,11 +86,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         private byte shadeTolerance;
         int maturity;
         int longevity;
-
+        private float _folNSlope;
+        private float _folNInt;
+        private float _o3Coeff;
         # endregion
 
+
         #region private static species variables
-        private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
+        private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
@@ -121,16 +129,23 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> foln;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
+        private static Landis.Library.Parameters.Species.AuxParm<float> co2AMaxBEff;
         
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
-        
+        private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
+
+        private static Landis.Library.Parameters.Species.AuxParm<float> folNSlope;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folNInt;
+
+        private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         #endregion
 
         public SpeciesPnET()
         {
             #region initialization of private static species variables
-            wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
+            co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2HalfSatEff"));
+            //wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
             cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
             kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("kwdlit"));
@@ -161,8 +176,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
             amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxa"));
             amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
+            co2AMaxBEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2AMaxBEff"));
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
+            ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("O3StomataSens"));
+            folNSlope = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNSlope"));
+            folNInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNInt"));
+            o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));
+            
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -179,7 +200,7 @@ namespace Landis.Extension.Succession.BiomassPnET
       
 
         SpeciesPnET(PostFireRegeneration postFireGeneration,
-            float wuecnst, 
+            //float wuecnst, 
             float dnsc,
             float cfracbiomass,
             float kwdlit,
@@ -210,8 +231,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             float foln,
             float amaxa,
             float amaxb,
+            float co2AMaxBEff,
             float maintresp,
             float bfolresp,
+            string ozoneSens,
             int Index,
             string name,
             int maxSproutAge,
@@ -222,11 +245,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             byte fireTolerance,
             byte shadeTolerance,
             int maturity,
-            int longevity
+            int longevity,
+            float folNSlope,
+            float folNInt,
+            float o3Coeff
             )
         {
             this.postfireregeneration = postFireGeneration;
-            this._wuecnst = wuecnst;
+            //this._wuecnst = wuecnst;
             this._dnsc = dnsc;
             this._cfracbiomass = cfracbiomass;
             this._kwdlit = kwdlit;
@@ -257,8 +283,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._dvpd2 = dvpd2;
             this._amaxa = amaxa;
             this._amaxb = amaxb;
+            this._co2AMaxBEff = co2AMaxBEff;
             this._maintresp = maintresp;
             this._bfolresp = bfolresp;
+            this._ozoneSens = ozoneSens;
             this.index = Index;
             this.name = name;
             this.maxSproutAge = maxSproutAge;
@@ -271,12 +299,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.shadeTolerance = shadeTolerance;
             this.maturity = maturity;
             this.longevity = longevity;
+            this._folNSlope = folNSlope;
+            this._folNInt = folNInt;
+            this._o3Coeff = o3Coeff;
         
         }
        
         SpeciesPnET(ISpecies species)
         {
-            _wuecnst = wuecnst[species];
+            //_wuecnst = wuecnst[species];
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _kwdlit = kwdlit[species];
@@ -307,8 +338,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             _dvpd2 = dvpd2[species];
             _amaxa = amaxa[species];
             _amaxb = amaxb[species];
+            _co2AMaxBEff = co2AMaxBEff[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
+            _co2HalfSatEff = co2HalfSatEff[species];
+            _ozoneSens = ozoneSens[species];
             index = species.Index;
             name = species.Name;
 
@@ -322,7 +356,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             shadeTolerance = species.ShadeTolerance;
             maturity = species.Maturity;
             longevity = species.Longevity;
-        
+
+            _folNSlope = folNSlope[species];
+            _folNInt = folNInt[species];
+            _o3Coeff = o3Coeff[species];
           
         }
         
@@ -355,6 +392,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _amaxb;
+            }
+        }
+        public float CO2AMaxBEff
+        {
+            get
+            {
+                return _co2AMaxBEff;
             }
         }
        
@@ -445,13 +489,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public float WUEcnst
-        {
-            get
-            {
-                return _wuecnst;
-            }
-        }
+
         public float K
         {
             get
@@ -595,6 +633,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return  minSproutAge;
             }
         }
+
+        public float CO2HalfSatEff
+        {
+            get
+            {
+                return _co2HalfSatEff;
+            }
+        }
         public Landis.Core.PostFireRegeneration PostFireRegeneration
         {
             get
@@ -654,8 +700,37 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return longevity;
             }
         }
-         #endregion
+        public string O3StomataSens
+        {
+            get
+            {
+                return _ozoneSens;
+            }
+        }
 
+        public float FolNSlope
+        {
+            get
+            {
+                return _folNSlope;
+            }
+        }
+        public float FolNInt
+        {
+            get
+            {
+                return _folNInt;
+            }
+        }
+        public float O3GrowthSens
+        {
+            get
+            {
+                return _o3Coeff;
+            }
+        }
+        # endregion
+        
         public static List<string> ParameterNames
         {
             get
@@ -667,5 +742,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return names;
             }
         }
+       
     }
 }

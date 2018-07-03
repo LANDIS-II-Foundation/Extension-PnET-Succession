@@ -1,13 +1,14 @@
 ﻿//  Copyright ...
 //  Authors:  Arjan de Bruijn
+
+using Edu.Wisc.Forest.Flel.Util;
 using Landis.Core;
+using Landis.Library.InitialCommunities;
+using Landis.SpatialModeling;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Landis.SpatialModeling;
 using System.Linq;
-using Landis.Library.InitialCommunities;
-using Edu.Wisc.Forest.Flel.Util;
-using System;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -35,7 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public IEcoregionPnET Ecoregion;
         public LocalOutput siteoutput;
 
-        static float[] AET = new float[12];
+        static float[] AET = new float[12]; // mm/mo
         private static IDictionary<uint, SiteCohorts> initialSites;
         private static byte MaxCanopyLayers;
         private static ushort MaxDevLyrAv;
@@ -43,6 +44,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static float precLoss;
         private static byte Timestep;
         private static int nlayers;
+
+        /// <summary>
+        /// Occurs when a site is disturbed by an age-only disturbance.
+        /// </summary>
+        public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
+
+        //---------------------------------------------------------------------
 
         public float Transpiration
         {
@@ -88,16 +96,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             Timestep = ((Parameter<byte>)PlugIn.GetParameter(Names.Timestep)).Value;
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
-
-            
-            
         }
 
         // Create SiteCohorts in SpinUp
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
-            
-
             Cohort.SetSiteAccessFunctions(this);
 
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
@@ -248,13 +251,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.Biomass);
 
+            List<int> cohortAges = new List<int>();
+
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
                     AllCohorts[cohort].CalculateDefoliation(Site, SiteAboveGroundBiomass);
                 }
-                for (int i = 0; i < PlugIn.IMAX; i++)
+                for (int i = 1; i <= PlugIn.IMAX; i++)
                 {
                     double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
                     while (SubCanopyCohorts.ContainsKey(CumCohortBiomass))
@@ -263,12 +268,110 @@ namespace Landis.Extension.Succession.BiomassPnET
                         double k =1e-10 * 2.0 * (PlugIn.ContinuousUniformRandom() - 0.5);
                         CumCohortBiomass += k;
                     }
-                    SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);
-                    
+                    SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);                    
+                }
+                if(!cohortAges.Contains(AllCohorts[cohort].Age))
+                {
+                    cohortAges.Add(AllCohorts[cohort].Age);
                 }
             }
 
-            List<List<int>> bins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+     
+            List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+
+            // Sort through bins to put cohort sublayers in the same bin based on majority
+            List<List<int>> bins = new List<List<int>>();
+            if((rawBins != null) && (rawBins.Count > 1))
+            {
+                Dictionary<string, Dictionary<int,int>> speciesLayerIndex = new Dictionary<string, Dictionary<int,int>>();
+                List<int> addedValues = new List<int>();
+                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                {
+                    foreach (int thisAge in cohortAges)
+                    {
+                        Dictionary<int, double> sumBio = new Dictionary<int, double>();
+                        for (int i = 0; i < rawBins.Count(); i++)
+                        {
+                            double sumLayerBio = 0;
+                            List<int> binLayers = rawBins[i];
+                            for (int b = 0; b < binLayers.Count(); b++)
+                            {
+                                int layerKey = binLayers[b];
+                                Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
+                                if ((layerCohort.SpeciesPNET.Name == spc.Name) && (layerCohort.Age == thisAge))
+                                {
+                                    sumLayerBio += ((double)layerCohort.TotalBiomass) / ((double)PlugIn.IMAX);
+                                }
+                            }
+                            sumBio.Add(i, sumLayerBio);
+                        }
+
+                        int layerMaxBio = sumBio.LastOrDefault(x => x.Value == sumBio.Values.Max()).Key;
+
+                        if (sumBio.Values.Max() > 0)
+                        {
+                            if (speciesLayerIndex.Keys.Contains(spc.Name))
+                            {
+                                Dictionary<int, int> ageIndex = speciesLayerIndex[spc.Name];
+                                ageIndex.Add(thisAge, layerMaxBio);
+                                speciesLayerIndex[spc.Name] = ageIndex;
+                            }
+                            else
+                            {
+                                Dictionary<int, int> ageIndex = new Dictionary<int, int>();
+                                ageIndex.Add(thisAge, layerMaxBio);
+                                speciesLayerIndex.Add(spc.Name, ageIndex);
+                            }
+                            addedValues.Add(layerMaxBio);
+                        }
+                    }
+                }
+                //step through subcanopycohorts
+                int subLayerKey = 0;
+
+                // There shouldn't be more layers than cohorts
+                int numberOfLayers = Math.Min(addedValues.Max()+1, (int)((float)SubCanopyCohorts.Count() / (float)PlugIn.IMAX));
+
+                // Final layer indices should not skip any layers
+                List<int> distinctValues = addedValues.Distinct().ToList();
+                distinctValues.Sort();
+                Dictionary<int, int> indexLookup = new Dictionary<int, int>();
+                for (int j = 0; j < distinctValues.Count(); j++ )
+                {
+                    indexLookup.Add(distinctValues[j], j);
+                }
+
+                for (int i = 0; i < numberOfLayers; i++)
+                {
+                    bins.Add(new List<int>());
+                }
+                foreach (KeyValuePair<double, Cohort> entry in SubCanopyCohorts)
+                {
+                    ISpecies spc = entry.Value.SpeciesPNET;
+                    int thisAge = entry.Value.Age;
+                    int tempIndex = indexLookup[speciesLayerIndex[spc.Name][thisAge]];
+                    int layerIndex = Math.Max(tempIndex,entry.Value.Layer);  //Once a cohort reaches a canopy layer it cannot be dropped below that position
+                    if(layerIndex > MaxCanopyLayers - 1)
+                    {
+                        throw new System.Exception("layerIndex  " + layerIndex + " is greater than MaxCanopyLayers - 1: " + (MaxCanopyLayers-1));
+                    }
+                    if (bins.ElementAtOrDefault(layerIndex) == null)
+                    {
+                        while (bins.ElementAtOrDefault(layerIndex) == null)
+                        {
+                            bins.Add(new List<int>());                           
+                        }
+                    }
+                    bins[layerIndex].Add(subLayerKey);
+                    
+                    subLayerKey += 1;
+                }
+
+            }
+            else
+            {
+                bins = rawBins;
+            }
 
             List<List<int>> random_range = GetRandomRange(bins);
              
@@ -286,6 +389,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 monthlyCount[spc] = 0;
             }
 
+            float[] lastOzoneEffect = new float[SubCanopyCohorts.Count()];
+            for (int i = 0; i < lastOzoneEffect.Length; i++)
+            {
+                lastOzoneEffect[i] = 0;
+            }
 
             int monthCount = 0;
             Dictionary<float,float> depthTempDict = new Dictionary<float,float>();  //for permafrost
@@ -295,6 +403,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 transpiration = 0;
                 subcanopypar = this.Ecoregion.Variables.PAR0;                
                 interception = 0;
+
+                float ozoneD40 = 0;
+                if (m > 0)
+                    ozoneD40 = Math.Max(0,this.Ecoregion.Variables.O3 - data[m - 1].O3);
+                else
+                    ozoneD40 = this.Ecoregion.Variables.O3;
+                float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
+
 
                 float frostFreeSoilDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
 
@@ -400,6 +516,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.Leakage = 0;
                 Hydrology.Evaporation = 0;
 
+
+
+                float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert AOT40 units to ppm h
+                float lastO3 = 0;
+                if(m > 0)
+                    lastO3 = (data[m-1].O3/1000f);
+                float O3_ppmh_month = Math.Max(0,O3_ppmh - lastO3);
+
+                List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+                Dictionary<string, float> DelAmax_spp = new Dictionary<string, float>();
+                Dictionary<string, float> JCO2_spp = new Dictionary<string, float>();
+                Dictionary<string, float> Amax_spp = new Dictionary<string, float>();
+                Dictionary<string, float> FTempPSNRefNetPSN_spp = new Dictionary<string, float>();
+                Dictionary<string, float> Ca_Ci_spp = new Dictionary<string, float>();
+
                 float subCanopyPrecip = 0;
                 int subCanopyIndex = 0;
                 if (bins != null)
@@ -420,16 +551,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 }
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                            //success = c.CalculatePhotosynthesis(PrecInByCanopyLayer, Ecoregion.LeakageFrac, hydrology, ref subcanopypar);
-                            //success = c.CalculatePhotosynthesis(subCanopyPrecip, leakagePerCohort, hydrology, ref subcanopypar);
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, frostFreeSoilDepth);
+                            ISpeciesPNET spc = c.SpeciesPNET;
+                            float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
+
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, frostFreeSoilDepth);
+                            lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
+
                             if (success == false)
                             {
                                 throw new System.Exception("Error CalculatePhotosynthesis");
                             }
-                            if (c.Layer > bins.Count())
-                                c.Layer = (byte)bins.Count();
-                            c.Layer = (byte)Math.Max(b+1, c.Layer);
+                            // A cohort cannot be reduced to a lower layer once it reaches a higher layer
+                            //if (c.Layer > bins.Count())
+                            //    c.Layer = (byte)bins.Count();
+                            c.Layer = (byte)Math.Max(b, c.Layer);
                         }
                     }
                 }
@@ -668,52 +803,52 @@ namespace Landis.Extension.Succession.BiomassPnET
         { 
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o=>o.TotalBiomass);
+                    BiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.TotalBiomass);
                 }
-                return SpeciesPresent;
+                return BiomassPerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.Biomass);
+                    AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.Biomass);
                 }
-                return SpeciesPresent;
+                return AbovegroundBiomassPerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.LastWoodySenescence);
+                    WoodySenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastWoodySenescence);
                 }
-                return SpeciesPresent;
+                return WoodySenescencePerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies
         {
             get
             {
-                Landis.Library.Parameters.Species.AuxParm<int> SpeciesPresent = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
+                Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
 
                 foreach (ISpecies spc in cohorts.Keys)
                 {
-                    SpeciesPresent[spc] = cohorts[spc].Sum(o => o.LastFoliageSenescence);
+                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastFoliageSenescence);
                 }
-                return SpeciesPresent;
+                return FoliageSenescencePerSpecies;
             }
         }
         public Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies 
@@ -808,6 +943,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return cohorts.Values.Sum(o => o.Count());
             }
         }
+        
 
         public int AverageAge 
         {
@@ -817,6 +953,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
+        public float AETSum
+        {
+            get
+            {
+                return AET.Sum();
+            }
+        }
         class SubCanopyComparer : IComparer<int[]>
         {
             // Compare second int (cumulative cohort biomass)
@@ -971,7 +1114,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
             }
-            while (layerstdev.Max() >= MaxDevLyrAv && nlayers < MaxCanopyLayers);
+            while (layerstdev.Max() >= MaxDevLyrAv && nlayers < MaxCanopyLayers && nlayers < (CumCohortBiomass.Count()/PlugIn.IMAX));
             //=====================OPTIMIZATION LOOP====================================
 
 
@@ -1026,7 +1169,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<int> reduction = new List<int>();
 
             List<Cohort> ToRemove = new List<Cohort>();
-
+            
             foreach (List<Cohort> species_cohort in cohorts.Values)
             {
                 Landis.Library.BiomassCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
@@ -1047,7 +1190,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     else
                     {
                         double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Biomass;  //Proportion of aboveground biomass
-                        species_cohort[c].ReduceBiomass(reductionProp);  // Reduction applies to all biomass
+                        species_cohort[c].ReduceBiomass(this, reductionProp, disturbance.Type);  // Reduction applies to all biomass
                     }
                     //
                 }
@@ -1116,6 +1259,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             */
 
+            // Does this only occur when a site is disturbed?
+            Allocation.ReduceDeadPools(this, disturbance.Type); 
+
             //  Go through list of species cohorts from back to front so that
             //  a removal does not mess up the loop.
             int totalReduction = 0;
@@ -1151,7 +1297,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        private void RemoveMarkedCohorts()
+        private void RemoveMarkedCohorts()  // Cohorts that die due to succession processes
         {
 
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
@@ -1186,7 +1332,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 cohorts.Remove(cohort.Species);
             }
 
-            Allocation.Allocate(this, cohort, disturbanceType);
+            Allocation.Allocate(this, cohort, disturbanceType, 1.0);  //Allocation fraction is 1.0 for complete removals
 
         }
 
@@ -1196,7 +1342,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             bool speciesPresent = cohorts.ContainsKey(species);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[species].Min(o => o.Age) > species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }
@@ -1209,7 +1355,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // This should deliver only one KeyValuePair
                 KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == cohort.Species))[0];
 
-                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age <= Timestep));
+                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < Timestep));
 
                 Cohorts.ForEach(a => cohort.Accumulate(a)); ;
 
@@ -1243,7 +1389,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             PlugIn.WoodyDebris[Site].AddMass(Litter, KWdLit);
         }
-
+        public void RemoveWoodyDebris(double percentReduction)
+        {
+            PlugIn.WoodyDebris[Site].ReduceMass(percentReduction);
+        }
         public void AddLitter(float AddLitter, ISpeciesPNET spc)
         {
             
@@ -1251,7 +1400,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             PlugIn.Litter[Site].AddMass(AddLitter, KNwdLitter);
         }
-
+        public void RemoveLitter(double percentReduction)
+        {
+            PlugIn.Litter[Site].ReduceMass(percentReduction);
+        }
         string Header(Landis.SpatialModeling.ActiveSite site)
         {
             
@@ -1264,6 +1416,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                        OutputHeaders.PAR0  + "," + 
                        OutputHeaders.Tday + "," + 
                        OutputHeaders.Precip + "," +
+                        OutputHeaders.CO2 + "," +
+                         OutputHeaders.O3 + "," +
                        OutputHeaders.RunOff + "," + 
                        OutputHeaders.Leakage + "," + 
                        OutputHeaders.PET + "," +
@@ -1308,6 +1462,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         monthdata.PAR0 + "," +
                         monthdata.Tday + "," +
                         monthdata.Prec + "," +
+                        monthdata.CO2 + "," +
+                         monthdata.O3 + "," +
                         Hydrology.RunOff + "," +
                         Hydrology.Leakage + "," +
                         Hydrology.PET + "," +

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Landis.Core;
 
 
 namespace Landis.Extension.Succession.BiomassPnET 
@@ -61,5 +60,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float FoliageSum { get; }
 
         float NSCSum { get; }
+
+        float AETSum { get; } //mm
     }
 }

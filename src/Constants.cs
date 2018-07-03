@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Landis.Extension.Succession.BiomassPnET 
 {
     public class Constants 
@@ -37,7 +33,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float lambda_clay = 80F;          //thermal conductivity clay    kJ/m/d/K (Michot et al. 2008 in vanLier and Durigon 2013)
         public static float lambda_0 = 360F;            //thermal conductivity sand-silt	kJ/m/d/K (Gemant 1950 in vanLier and Durigon 2013)
         public static float gs = 0.125F;                //(Farouki 1986 in vanLier and Durigon 2013)
-        public static float omega = (float) Math.PI * 2 / 12;   // angular velocity of earth (monthly rotation) radians/month
+        public static float omega = (float) System.Math.PI * 2 / 12;   // angular velocity of earth (monthly rotation) radians/month
         public static float tau = 12F;                  //length of temp record     months
     }
 }

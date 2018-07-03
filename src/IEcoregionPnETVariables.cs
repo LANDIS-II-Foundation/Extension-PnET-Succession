@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface IEcoregionPnETVariables
@@ -18,7 +14,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         byte Month { get; }
         float Tave { get; }
         float Tmin { get; }
-       
+        float CO2 { get; }
+        float O3 { get; }
+        
         SpeciesPnETVariables this[string species] { get; }
     }
 }

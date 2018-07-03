@@ -1,17 +1,17 @@
 //  Copyright 2005-2010 Portland State University, University of Wisconsin
-//  Authors:  Arjan de Bruijn
+//  Authors:    Arjan de Bruijn
+//              Brian R. Miranda
 
-using Landis.Core;
-using Landis.SpatialModeling;
-using Landis.Library.Succession;
-using Landis.Library.InitialCommunities;
-using System.Collections.Generic;
+
 using Edu.Wisc.Forest.Flel.Util;
+using Landis.Core;
+using Landis.Library.InitialCommunities;
+using Landis.Library.Succession;
+using Landis.SpatialModeling;
 using System;
-using Landis.Library;
+using System.Collections.Generic;
 using System.Linq;
-using Landis.Library.Parameters.Species;
- 
+
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -190,12 +190,12 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
 
-            //---------------AgeOnlyDisturbancesParameterFile
-            Parameter<string> AgeOnlyDisturbancesParameterFile;
-            if (TryGetParameter(Names.AgeOnlyDisturbances, out AgeOnlyDisturbancesParameterFile))
+            //---------------DisturbanceReductionsParameterFile
+            Parameter<string> DisturbanceReductionsParameterFile;
+            if (TryGetParameter(Names.DisturbanceReductions, out DisturbanceReductionsParameterFile))
             {
-                Allocation.Initialize(AgeOnlyDisturbancesParameterFile.Value,  parameters);
-                Cohort.AgeOnlyDeathEvent += Events.CohortDied;
+                Allocation.Initialize(DisturbanceReductionsParameterFile.Value, parameters);
+                Cohort.AgeOnlyDeathEvent += DisturbanceReductions.Events.CohortDied;
             }
 
              
@@ -448,6 +448,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return true;
            
         }
+        //---------------------------------------------------------------------
 
     }
 }
