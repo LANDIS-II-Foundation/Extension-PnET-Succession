@@ -120,5 +120,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Slope coefficient for O3Effect
         float O3GrowthSens { get; }
+        // Cold tolerance
+        float ColdTol { get; }
     }
 }

@@ -73,6 +73,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _maintresp;
         private float _bfolresp;
         private string _ozoneSens;
+        private float _coldTol;
         private string name;
         private int index;
         
@@ -133,6 +134,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
+        private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
+
+
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
 
         private static Landis.Library.Parameters.Species.AuxParm<float> folNSlope;
@@ -184,6 +188,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             folNInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNInt"));
             o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));
             
+            coldTol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("ColdTol"));
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -197,7 +202,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         }
-      
+
 
         SpeciesPnET(PostFireRegeneration postFireGeneration,
             //float wuecnst, 
@@ -234,6 +239,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float co2AMaxBEff,
             float maintresp,
             float bfolresp,
+            float coldTol,
             string ozoneSens,
             int Index,
             string name,
@@ -286,6 +292,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._co2AMaxBEff = co2AMaxBEff;
             this._maintresp = maintresp;
             this._bfolresp = bfolresp;
+            this._coldTol = coldTol;
             this._ozoneSens = ozoneSens;
             this.index = Index;
             this.name = name;
@@ -341,6 +348,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _co2AMaxBEff = co2AMaxBEff[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
+            _coldTol = coldTol[species];
             _co2HalfSatEff = co2HalfSatEff[species];
             _ozoneSens = ozoneSens[species];
             index = species.Index;
@@ -378,6 +386,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _bfolresp;
+            }
+        }
+        public float ColdTol
+        {
+            get
+            {
+                return _coldTol;
             }
         }
         public float AmaxA

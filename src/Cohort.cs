@@ -318,7 +318,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeSoilDepth)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float LeakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeSoilDepth, float MeltInByCanopyLayer)
          {            
 
             
@@ -326,8 +326,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             float lastO3Effect = O3Effect;
             O3Effect = 0;
 
+            
+            // permafrost
             float frostFreeProp = Math.Min(1.0F,frostFreeSoilDepth / ecoregion.RootingDepth);
 
+
+          
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
             LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
@@ -339,6 +343,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
             for (int p = 1; p <= precipCount; p++)
             {
+
+                // Add thawed soil water to soil moisture - assumes frozen soil is at field capacity
+                success = hydrology.AddWater(MeltInByCanopyLayer);
+                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + " water = " + hydrology.Water);
+
+
                 // Incoming precipitation
                 //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
                 float precipIn = PrecInByCanopyLayer; //mm 
@@ -368,12 +378,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                             leakageFrostReduction = 1.0F / PlugIn.LeakageFrostDepth * (frostFreeSoilDepth - ecoregion.RootingDepth);
                         }
                     }
-                    float leakage = Math.Max((float)LeakagePerCohort * leakageFrostReduction * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
+                    float leakage = Math.Max((float)LeakageFrac * leakageFrostReduction * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
                     Hydrology.Leakage += leakage;
 
                     // Remove fast leakage
                     success = hydrology.AddWater(-1 * leakage);
                     if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+                }
+                if (frostFreeProp < 1.0)
+                {
+                    // water in frozen soil is not accessible - treat it as if it leaked out
+                    float frozenLimit = ecoregion.FieldCap * frostFreeProp;
+                    float frozenWater = hydrology.Water - frozenLimit;
+                    // Remove froxen water
+                    success = hydrology.AddWater(-1 * frozenWater);
+                    if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + " water = " + hydrology.Water);
                 }
             }
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature

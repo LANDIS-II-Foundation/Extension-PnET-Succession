@@ -20,6 +20,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float SnowSublimFrac { get; }
         int PrecipEvents { get; }
         float Latitude { get; } 
+        float WinterSTD { get; }
         
        
         IEcoregionPnETVariables Variables { get; set; }

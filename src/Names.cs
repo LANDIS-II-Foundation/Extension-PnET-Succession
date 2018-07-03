@@ -45,6 +45,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PrecipEvents = "PrecipEvents";
         public const string Latitude = "Latitude";
         public const string climateFileName = "climateFileName";
+        public const string WinterSTD = "WinterSTD";
         
      
         public static void AssureIsName(string name)

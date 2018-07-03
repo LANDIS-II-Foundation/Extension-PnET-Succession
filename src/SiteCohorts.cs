@@ -20,6 +20,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float CanopyLAI;
         private float subcanopypar;
         private float subcanopyparmax;
+        private float frostFreeSoilDepth;
 
         private float[] netpsn = null;
         private float[] grosspsn = null;
@@ -396,7 +397,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             int monthCount = 0;
+            float minTemp = float.MaxValue;
             Dictionary<float,float> depthTempDict = new Dictionary<float,float>();  //for permafrost
+            float lastFrostDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
             for (int m = 0; m < data.Count(); m++ )
             {
                 this.Ecoregion.Variables = data[m];
@@ -413,11 +416,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
                 float frostFreeSoilDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
+                frostFreeSoilDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
+                float thawedDepth = 0;
 
                 bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
                 {
                     // Permafrost calculations
+                    if (this.Ecoregion.Variables.Tave < minTemp)
+                        minTemp = this.Ecoregion.Variables.Tave;
                     float porosity = this.Ecoregion.Porosity / this.Ecoregion.RootingDepth;  //m3/m3
                     float waterContent = hydrology.Water / this.Ecoregion.RootingDepth;  //m3/m3
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
@@ -464,11 +471,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                             testDepth += 0.25F;
                         }
                     }
-                    frostFreeSoilDepth = Math.Min(freezeDepth*1000.0F, frostFreeSoilDepth);                   
+                    frostFreeSoilDepth = Math.Min(freezeDepth*1000.0F, frostFreeSoilDepth);
+                    thawedDepth = Math.Max(0,Math.Min(this.Ecoregion.RootingDepth,frostFreeSoilDepth) - lastFrostDepth);
+                    lastFrostDepth = frostFreeSoilDepth;
                 }
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
+                
                 if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
 
                 float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan)); // mm
@@ -500,7 +510,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 int numEvents = this.Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
                 float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
                 if (PrecInByEvent < 0) throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent);
-                
+
+                //permafrost - assume melting permafrost water is available in the same way as precip
+                // melting permafrost water - assumes soil at field capacity when thawing
+                float thawedWater = thawedDepth * (this.Ecoregion.FieldCap / this.Ecoregion.RootingDepth);
+                float MeltInByEvent = thawedWater / numEvents;
+
+
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
                 List<int> randomNumbers = new List<int>();
@@ -532,6 +548,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Dictionary<string, float> Ca_Ci_spp = new Dictionary<string, float>();
 
                 float subCanopyPrecip = 0;
+                float subCanopyMelt = 0;
                 int subCanopyIndex = 0;
                 if (bins != null)
                 {
@@ -542,19 +559,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                             subCanopyIndex++;
                             int precipCount = 0;
                             subCanopyPrecip = 0;
+                            subCanopyMelt = 0;
                             foreach (var g in groupList)
                             {
                                 if(g.Key == subCanopyIndex)
                                 {
                                     precipCount = g.Count();
                                     subCanopyPrecip = PrecInByEvent;
+                                    subCanopyMelt = MeltInByEvent;
                                 }
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
                             ISpeciesPNET spc = c.SpeciesPNET;
                             float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
 
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, frostFreeSoilDepth);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, frostFreeSoilDepth, subCanopyMelt);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
 
                             if (success == false)
@@ -674,7 +693,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AllCohorts.ForEach(cohort => { cohort.WriteCohortData(); });
             }
 
-            RemoveMarkedCohorts();
+            float ecoColdTol = this.Ecoregion.WinterSTD;
+            RemoveMarkedCohorts(minTemp,ecoColdTol);
 
             //HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//Moved within m loop to trigger once per year
 
@@ -1297,8 +1317,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        private void RemoveMarkedCohorts()  // Cohorts that die due to succession processes
+        private void RemoveMarkedCohorts(float minTemp, float winterSTD)
         {
+
+            bool permafrost = true; // Needs to link to input parameter
 
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
             {
@@ -1311,6 +1333,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                       
                         RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
 
+                    }
+                    else
+                    {
+                        if(permafrost)
+                        {
+                            // Check if low temp kills cohorts
+                            if((minTemp - (3.0 * winterSTD)) < species_cohort[cc].SpeciesPNET.ColdTol)
+                            {
+                                RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
+                            }
+                        }
                     }
                 
                 }
@@ -1442,7 +1475,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         OutputHeaders.CWD + "," +
                         OutputHeaders.WoodySenescence + "," + 
                         OutputHeaders.FoliageSenescence + ","+
-                        OutputHeaders.SubCanopyPAR;
+                        OutputHeaders.SubCanopyPAR+","+
+                        OutputHeaders.FrostDepth;
 
             return s;
         }
@@ -1488,7 +1522,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         PlugIn.WoodyDebris[Site].Mass + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence))+ "," +
-                        subcanopypar;
+                        subcanopypar +","+
+                        frostFreeSoilDepth;
            
             this.siteoutput.Add(s);
         }
