@@ -38,13 +38,16 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string SoilType = "SoilType";
         public const string PrecIntConst = "PrecIntConst";
         public const string SnowSublimFrac = "SnowSublimFrac";
-        public const string FolNSlope = "FolNSlope";
-        public const string FolNInt = "FolNInt";
-        public const string O3Coeff = "O3GrowthSens";
         public const string PrecipEvents = "PrecipEvents";
         public const string Latitude = "Latitude";
         public const string climateFileName = "climateFileName";
-        
+
+        //Species parameters
+        public const string FolNSlope = "FolNSlope";
+        public const string FolNInt = "FolNInt";
+        public const string FracFolSlope = "FracFolSlope";
+        public const string FracFolInt = "FracFolInt";
+        public const string O3Coeff = "O3GrowthSens";
      
         public static void AssureIsName(string name)
         {

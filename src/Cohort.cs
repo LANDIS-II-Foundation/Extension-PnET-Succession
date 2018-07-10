@@ -36,6 +36,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float defolProp; //BRM
         private float lastWoodySenescence; // last recorded woody senescence
         private float lastFoliageSenescence; // last recorded foliage senescence
+        private float lastFRad;  //last month's average FRad
+        private List<float> lastSeasonFRad;  // last growing season FRad
+        private float adjFracFol;
+        private bool firstYear;
         private float adjHalfSat;
         private float adjFolN;
 
@@ -80,6 +84,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Adjustment folN based on fRad
         public float[] AdjFolN = null;
 
+        // Adjustment fracFol based on fRad
+        public float[] AdjFracFol = null;
+
         // Modifier of CiCa ratio based on fWater and Ozone
         public float[] CiModifier = null;
 
@@ -103,11 +110,39 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaintenanceRespiration = new float[PlugIn.IMAX];
             Interception = new float[PlugIn.IMAX];
             AdjFolN = new float[PlugIn.IMAX];
+            AdjFracFol = new float[PlugIn.IMAX];
             CiModifier = new float[PlugIn.IMAX];
             DelAmax = new float[PlugIn.IMAX];
         }
-        public void NullSubLayers()
+
+        public void StoreFRad()
         {
+            // Filter for growing season months only
+            if (leaf_on)
+            {
+                lastFRad = FRad.Average();
+                lastSeasonFRad.Add(lastFRad);
+            }
+        }
+
+        public void CalcAdjFracFol()
+        {
+            if (lastSeasonFRad.Count() > 0)
+            {
+                float lastSeasonAvgFRad = lastSeasonFRad.ToArray().Average();
+                float folN_slope = species.FracFolSlope;
+                float folN_int = species.FracFolInt;
+                adjFracFol = (lastSeasonAvgFRad * folN_slope + folN_int) * species.FracFol;
+                firstYear = false;
+            }
+            else
+                adjFracFol = species.FracFol;
+            lastSeasonFRad = new List<float>();
+
+        }
+
+        public void NullSubLayers()
+        {           
             // Reset values for subcanopy layers
             LAI = null;
             GrossPsn = null;
@@ -120,6 +155,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaintenanceRespiration = null;
             Interception = null;
             AdjFolN = null;
+            AdjFracFol = null;
             CiModifier = null;
             DelAmax = null;
         }
@@ -275,6 +311,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
+        // Last average FRad
+        public float LastFRad
+        {
+            get
+            {
+                return lastFRad;
+            }
+        }
+
         // Constructor
         public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
         {
@@ -293,6 +338,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 InitializeOutput(SiteName, year_of_birth);
             }
+
+            lastSeasonFRad = new List<float>();
+            firstYear = true;
         }
         public Cohort(Cohort cohort)
         {
@@ -367,6 +415,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Subtract mainenance respiration (gC/mo)
             nsc -= MaintenanceRespiration[index];
 
+            
             // Woody decomposition: do once per year to reduce unnescessary computation time so with the last subcanopy layer 
             if (index == PlugIn.IMAX - 1)
             {
@@ -391,6 +440,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     age++;
                 }
+
             }
             
             // When LeafOn becomes false for the first time in a year
@@ -413,7 +463,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (leaf_on)
             {
                 // Foliage linearly increases with active biomass
-                float IdealFol = (species.FracFol * FActiveBiom * biomass);
+                //float IdealFol = (species.FracFol * FActiveBiom * biomass);
+                if (firstYear)
+                    adjFracFol = species.FracFol;
+                float IdealFol = (adjFracFol * FActiveBiom * biomass); // Using adjusted FracFol
 
                 // If the tree should have more filiage than it currently has
                 if (IdealFol > fol)
@@ -481,6 +534,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float folN_int = species.FolNInt; //Intercept for linear FolN relationship
             adjFolN = (FRad[index] * folN_slope + folN_int) * species.FolN; // Linear reduction (with intercept) in FolN with canopy depth (FRad)
             AdjFolN[index] = adjFolN;  // Stored for output
+            AdjFracFol[index] = adjFracFol; //Stored for output
 
 
             float ciModifier = fWaterOzone; // if no ozone, ciModifier defaults to fWater
@@ -776,6 +830,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        leaf_on + "," +
                        FActiveBiom + "," +
                        AdjFolN.Average() + "," +
+                       AdjFracFol.Average() + "," +
                        CiModifier.Average() + ","+
                        adjHalfSat + ",";
              
@@ -814,6 +869,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             OutputHeaders.LeafOn + "," +
                             OutputHeaders.FActiveBiom + "," +
                             OutputHeaders.AdjFolN + "," +
+                            OutputHeaders.AdjFracFol + "," +
                             OutputHeaders.CiModifier + ","+
                             OutputHeaders.AdjHalfSat + ",";
 

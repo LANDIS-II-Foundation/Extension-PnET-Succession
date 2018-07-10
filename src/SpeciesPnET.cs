@@ -88,6 +88,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         int longevity;
         private float _folNSlope;
         private float _folNInt;
+        private float _fracFolSlope;
+        private float _fracFolInt;
         private float _o3Coeff;
         # endregion
 
@@ -137,6 +139,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private static Landis.Library.Parameters.Species.AuxParm<float> folNSlope;
         private static Landis.Library.Parameters.Species.AuxParm<float> folNInt;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fracFolSlope;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fracFolInt;
 
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         #endregion
@@ -182,6 +186,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("O3StomataSens"));
             folNSlope = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNSlope"));
             folNInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNInt"));
+            fracFolSlope = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolSlope"));
+            fracFolInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolInt"));
             o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));
             
             #endregion
@@ -248,6 +254,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             int longevity,
             float folNSlope,
             float folNInt,
+            float fracFolSlope,
+            float fracFolInt,
             float o3Coeff
             )
         {
@@ -301,6 +309,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.longevity = longevity;
             this._folNSlope = folNSlope;
             this._folNInt = folNInt;
+            this._fracFolSlope = fracFolSlope;
+            this._fracFolInt = fracFolInt;
             this._o3Coeff = o3Coeff;
         
         }
@@ -359,6 +369,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             _folNSlope = folNSlope[species];
             _folNInt = folNInt[species];
+            _fracFolSlope = fracFolSlope[species];
+            _fracFolInt = fracFolInt[species];
             _o3Coeff = o3Coeff[species];
           
         }
@@ -720,6 +732,20 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _folNInt;
+            }
+        }
+        public float FracFolSlope
+        {
+            get
+            {
+                return _fracFolSlope;
+            }
+        }
+        public float FracFolInt
+        {
+            get
+            {
+                return _fracFolInt;
             }
         }
         public float O3GrowthSens
