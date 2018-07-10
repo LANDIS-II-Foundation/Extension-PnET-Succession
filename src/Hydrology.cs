@@ -27,6 +27,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float Evaporation;
         public static float Leakage;
         public static float RunOff;
+        public static float FrozenDepth;
+        public static float FrozenWaterPct;
         
         public bool AddWater(float addwater)
         {

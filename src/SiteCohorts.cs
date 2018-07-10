@@ -414,8 +414,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     ozoneD40 = this.Ecoregion.Variables.O3;
                 float O3_D40_ppmh = ozoneD40 / 1000; // convert D40 units to ppm h
 
-
-                float frostFreeSoilDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
                 frostFreeSoilDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
                 float thawedDepth = 0;
 
@@ -473,6 +471,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                     frostFreeSoilDepth = Math.Min(freezeDepth*1000.0F, frostFreeSoilDepth);
                     thawedDepth = Math.Max(0,Math.Min(this.Ecoregion.RootingDepth,frostFreeSoilDepth) - lastFrostDepth);
+                    float newFrozenSoil = 0;
+                    if (frostFreeSoilDepth < this.Ecoregion.RootingDepth)
+                    {
+                        if (lastFrostDepth > 0)
+                        {
+                            newFrozenSoil = Math.Min(this.Ecoregion.RootingDepth, lastFrostDepth) - frostFreeSoilDepth;
+                            Hydrology.FrozenWaterPct = ((Hydrology.FrozenDepth * Hydrology.FrozenWaterPct) + (newFrozenSoil * waterContent)) / (Hydrology.FrozenDepth + newFrozenSoil);
+                            Hydrology.FrozenDepth += newFrozenSoil;
+                        }
+                    }
+                  
+                    
+                   
                     lastFrostDepth = frostFreeSoilDepth;
                 }
 
@@ -513,7 +524,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 //permafrost - assume melting permafrost water is available in the same way as precip
                 // melting permafrost water - assumes soil at field capacity when thawing
-                float thawedWater = thawedDepth * (this.Ecoregion.FieldCap / this.Ecoregion.RootingDepth);
+                //float thawedWater = thawedDepth * (this.Ecoregion.FieldCap / this.Ecoregion.RootingDepth);
+                
+                // melting permafrost water - uses water % stored from when it froze
+                float thawedWater = thawedDepth * Hydrology.FrozenWaterPct;
+                
+
+                   if (!(frostFreeSoilDepth < this.Ecoregion.RootingDepth))
+                    {
+                        Hydrology.FrozenWaterPct = 0;
+                        Hydrology.FrozenDepth = 0;
+                    }
                 float MeltInByEvent = thawedWater / numEvents;
 
 
