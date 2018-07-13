@@ -69,6 +69,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _date;
             }
         }
+
+        // Number of days in the month
         public float DaySpan
         {
             get
@@ -96,6 +98,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return obs_clim.Tmin;
+            }
+        }
+        public float Tmax
+        {
+            get
+            {
+                return obs_clim.Tmax;
             }
         }
         public float Daylength

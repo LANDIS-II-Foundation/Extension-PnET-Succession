@@ -400,6 +400,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float minTemp = float.MaxValue;
             Dictionary<float,float> depthTempDict = new Dictionary<float,float>();  //for permafrost
             float lastFrostDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
+            int daysOfWinter = 0;
             for (int m = 0; m < data.Count(); m++ )
             {
                 this.Ecoregion.Variables = data[m];
@@ -420,6 +421,37 @@ namespace Landis.Extension.Succession.BiomassPnET
                 bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
                 {
+                    // snow calculations - from "Soil thawing worksheet.xlsx"
+                    if (this.Ecoregion.Variables.Tave <= 0)
+                    {
+                        daysOfWinter += (int)this.Ecoregion.Variables.DaySpan;
+                    }
+                    else
+                    {
+                        daysOfWinter = 0;
+                    }
+                    float bulkIntercept = 165.0f; //kg/m3
+                    float bulkSlope = 1.3f; //kg/m3
+                    float Pwater = 1000.0f;
+                    float lambAir = 0.023f;
+                    float lambIce = 2.29f;
+                    float omega = (float)(2*Math.PI/12.0);
+
+                    float Psno_kg_m3 = bulkIntercept + (bulkSlope * daysOfWinter); //kg/m3
+                    float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
+
+                    float sno_dep = Pwater * snowPack / Psno_kg_m3 / 1000; //m
+                    if (this.Ecoregion.Variables.Tave >= 0)
+                    {
+                        float fracAbove0 = this.Ecoregion.Variables.Tmax / (this.Ecoregion.Variables.Tmax - this.Ecoregion.Variables.Tmin);
+                        sno_dep = sno_dep * fracAbove0;
+                    }
+                    float K_CLM = (float) (lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(lambIce-lambAir));
+                    float damping = (float) Math.Sqrt(2*K_CLM/omega);
+                    
+                    // TODO
+                    //float tempBelowSnow = 
+
                     // Permafrost calculations
                     if (this.Ecoregion.Variables.Tave < minTemp)
                         minTemp = this.Ecoregion.Variables.Tave;
