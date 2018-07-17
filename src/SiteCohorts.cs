@@ -399,6 +399,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             int monthCount = 0;
             float minTemp = float.MaxValue;
             Dictionary<float,float> depthTempDict = new Dictionary<float,float>();  //for permafrost
+            float lastTempBelowSnow = new float();
             float lastFrostDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
             int daysOfWinter = 0;
             for (int m = 0; m < data.Count(); m++ )
@@ -421,7 +422,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
                 {
-                    // snow calculations - from "Soil thawing worksheet.xlsx"
+                    // snow calculations - from "Soil thawing worksheet with snow.xlsx"
                     if (this.Ecoregion.Variables.Tave <= 0)
                     {
                         daysOfWinter += (int)this.Ecoregion.Variables.DaySpan;
@@ -446,13 +447,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                         float fracAbove0 = this.Ecoregion.Variables.Tmax / (this.Ecoregion.Variables.Tmax - this.Ecoregion.Variables.Tmin);
                         sno_dep = sno_dep * fracAbove0;
                     }
-                    float K_CLM = (float) (lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(lambIce-lambAir));
-                    float damping = (float) Math.Sqrt(2*K_CLM/omega);
-                    
-                    // TODO
-                    //float tempBelowSnow = 
+                    // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
+                    // Eq. 85 - Jordan (1991)
+                    float lambda_Snow = (float) (lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(lambIce-lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
+                    float damping = (float) Math.Sqrt(omega/(2.0F*lambda_Snow));
+                    float DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
 
-                    // Permafrost calculations
+                    
+
+                    // Permafrost calculations - from "Soil thawing worksheet.xlsx"
+                    // 
                     if (this.Ecoregion.Variables.Tave < minTemp)
                         minTemp = this.Ecoregion.Variables.Tave;
                     float porosity = this.Ecoregion.Porosity / this.Ecoregion.RootingDepth;  //m3/m3
@@ -465,7 +469,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float D = lambda_theta / PressureHeadSaxton_Rawls.GetCTheta(this.Ecoregion.SoilType);  //m2/day
                     float Dmonth = D * this.Ecoregion.Variables.DaySpan; // m2/month
                     float ks = Dmonth * 1000000F / (this.Ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24)); // mm2/s
-                    float d = (float)Math.Pow((Constants.omega / 2.0F * Dmonth), (0.5));
+                    float d = (float)Math.Pow((Constants.omega / (2.0F * Dmonth)), (0.5));
 
                     float maxDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
                     float freezeDepth = maxDepth;
@@ -479,10 +483,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                             tSum += data[z].Tave;
                         }
                         float annualTavg = tSum / mCount;
+                        float tempBelowSnow = this.Ecoregion.Variables.Tave;
+                        if(sno_dep > 0)
+                        {
+                            tempBelowSnow = annualTavg + (this.Ecoregion.Variables.Tave - annualTavg) * DRz_snow;
+                        }
+                        lastTempBelowSnow = tempBelowSnow;
                         while (testDepth <= (maxDepth/1000.0))
                         {
-                            float DRz = (float)Math.Exp(-1.0F * testDepth * d);
-                            float zTemp = annualTavg + (this.Ecoregion.Variables.Tave - annualTavg) * DRz;
+                            float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
+                            float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
                             depthTempDict[testDepth] = zTemp;
                             if ((zTemp <= 0) && (testDepth < freezeDepth))
                                 freezeDepth = testDepth;
@@ -491,10 +501,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                     else
                     {
+                        float tempBelowSnow = this.Ecoregion.Variables.Tave;
+                        if (sno_dep > 0)
+                        {
+                            tempBelowSnow = lastTempBelowSnow + (this.Ecoregion.Variables.Tave - lastTempBelowSnow) * DRz_snow;
+                        }
+                        lastTempBelowSnow = tempBelowSnow;
                         while (testDepth <= (maxDepth/1000.0))
                         {
-                            float DRz = (float)Math.Exp(-1.0F * testDepth * d);
-                            float zTemp = depthTempDict[testDepth] + (this.Ecoregion.Variables.Tave - depthTempDict[testDepth]) * DRz;
+                            float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
+                            float zTemp = depthTempDict[testDepth] + (tempBelowSnow - depthTempDict[testDepth]) * DRz;
                             depthTempDict[testDepth] = zTemp;
                             if ((zTemp <= 0) && (testDepth < freezeDepth))
                                 freezeDepth = testDepth;
