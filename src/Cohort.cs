@@ -130,9 +130,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (lastSeasonFRad.Count() > 0)
             {
                 float lastSeasonAvgFRad = lastSeasonFRad.ToArray().Average();
-                float folN_slope = species.FracFolSlope;
-                float folN_int = species.FracFolInt;
-                adjFracFol = (lastSeasonAvgFRad * folN_slope + folN_int) * species.FracFol;
+                float fracFol_slope = species.FracFolSlope;
+                float fracFol_int = species.FracFolInt;
+                // linear version
+                //adjFracFol = (lastSeasonAvgFRad * fracFol_slope + fracFol_int) * species.FracFol;
+                //exponential version
+                adjFracFol = (float)Math.Pow((lastSeasonAvgFRad + 0.2), fracFol_slope) * species.FracFol + species.FracFol * fracFol_int;
                 firstYear = false;
             }
             else
