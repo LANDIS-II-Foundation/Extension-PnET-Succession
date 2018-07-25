@@ -1,6 +1,8 @@
-C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Release\PnET-Succession.csproj.CoreCompileInputs.cache
-C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll
-C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.pdb
+C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\PnET-Succession.csprojResolveAssemblyReference.cache
+C:\Users\Adam\Documents\Extension-PnET-Succession\Assembly\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll
+C:\Users\Adam\Documents\Extension-PnET-Succession\Assembly\Landis.Extension.Succession.BiomassPnET.LUv2.0.pdb
+C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll
+C:\Users\Adam\Documents\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.pdb
 C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Debug\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll
 C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Debug\Landis.Extension.Succession.BiomassPnET.LUv2.0.pdb
 C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Debug\Edu.Wisc.Forest.Flel.Util.dll
@@ -14,3 +16,7 @@ C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Debug\Landis.Libr
 C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Debug\Landis.SpatialModeling.dll
 C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Debug\Troschuetz.Random.dll
 C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Debug\log4net.dll
+C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Release\PnET-Succession.csprojResolveAssemblyReference.cache
+C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Release\PnET-Succession.csproj.CoreCompileInputs.cache
+C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll
+C:\Users\mem446\Source\Repos\Extension-PnET-Succession\src\obj\Release\Landis.Extension.Succession.BiomassPnET.LUv2.0.pdb
