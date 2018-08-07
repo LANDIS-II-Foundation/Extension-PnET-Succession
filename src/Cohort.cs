@@ -135,7 +135,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // linear version
                 //adjFracFol = (lastSeasonAvgFRad * fracFol_slope + fracFol_int) * species.FracFol;
                 //exponential version
-                adjFracFol = (float)Math.Pow((lastSeasonAvgFRad + 0.2), fracFol_slope) * species.FracFol + species.FracFol * fracFol_int;
+                //adjFracFol = (float)Math.Pow((lastSeasonAvgFRad + 0.2), fracFol_slope) * species.FracFol + species.FracFol * fracFol_int;
+                //modified exponential version - controls lower and upper limit of function
+                adjFracFol = species.FracFol + ((fracFol_int - species.FracFol) * (float)Math.Pow(lastSeasonAvgFRad, fracFol_slope)); //slope is shape parm; fracFol is minFracFol; int is maxFracFol. EJG-7-24-18
+
                 firstYear = false;
             }
             else
@@ -353,6 +356,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.biomass = cohort.biomass;
             biomassmax = cohort.biomassmax;
             this.fol = cohort.fol;
+            this.lastSeasonFRad = cohort.lastSeasonFRad;
         }
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
@@ -378,8 +382,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
-            LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
-            
+            //LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+            LAI[index] = CalculateLAI(species, fol, index);
+
             // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
             //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
             //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
@@ -486,8 +491,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
-            // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
-            LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+            LAI[index] = CalculateLAI(species, fol, index);
             
             //  Apply defoliation in month of june
             if ((PlugIn.ModelCore.CurrentTime > 0) && (ecoregion.Variables.Month == (int)Constants.Months.June))
@@ -498,7 +502,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float adjDefol = DefolProp * species.TOfol;
                     ReduceFoliage(adjDefol);
                     // Update LAI after defoliation
-                    LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+                    //LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+                    LAI[index] = CalculateLAI(species, fol, index);
                 }
             
             }
@@ -535,7 +540,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             // FoliarN adjusted based on canopy position (FRad)
             float folN_slope = species.FolNSlope; //Slope for linear FolN relationship
             float folN_int = species.FolNInt; //Intercept for linear FolN relationship
-            adjFolN = (FRad[index] * folN_slope + folN_int) * species.FolN; // Linear reduction (with intercept) in FolN with canopy depth (FRad)
+            //adjFolN = (FRad[index] * folN_slope + folN_int) * species.FolN; // Linear reduction (with intercept) in FolN with canopy depth (FRad)
+            //adjFolN = (float)Math.Pow((FRad[index]), folN_slope) * species.FolN + species.FolN * folN_int; // Expontential reduction
+            // Non-Linear reduction in FolN with canopy depth (FRad)
+            adjFolN = species.FolN + ((folN_int - species.FolN) * (float)Math.Pow(FRad[index], folN_slope)); //slope is shape parm; FolN is minFolN; intcpt is max FolN. EJG-7-24-18
+            
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFracFol[index] = adjFracFol; //Stored for output
 
@@ -933,10 +942,29 @@ namespace Landis.Extension.Succession.BiomassPnET
             biomass *= (float)(1.0 - fraction);
             fol *= (float)(1.0 - fraction);
 
-            
-
         }
 
+        public float CalculateLAI(ISpeciesPNET species, float fol, int index)
+        {
+            // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
+            // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
+            float LAISum = 0;
+            for (int i = 0; i < index; i++)
+            {
+                LAISum += LAI[i];
+            }
+            float LAIlayerMax = (float)Math.Max(0.01, 25.0F - LAISum); // Cohort LAI is capped at 25; once LAI reaches 25 subsequent sublayers get LAI of 0.01
+            float LAIlayer = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
+            if (fol > 0 && LAIlayer <= 0)
+            {
+                PlugIn.ModelCore.UI.WriteLine("\n Warning: LAI was calculated to be negative for " + species.Name + ". This could be caused by a low value for SLWmax.  LAI applied in this case is a max of 25 for each cohort.");
+                LAIlayer = LAIlayerMax/(PlugIn.IMAX - index);
+            }
+            else
+                LAIlayer = (float)Math.Min(LAIlayerMax, LAIlayer);
+
+            return LAIlayer;
+        }
         //---------------------------------------------------------------------
         /// <summary>
         /// Raises a Cohort.AgeOnlyDeathEvent.
