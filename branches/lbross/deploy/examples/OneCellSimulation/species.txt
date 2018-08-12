@@ -1,7 +1,0 @@
-LandisData	Species									
-										
->>							Seed 			
->>				Sexual	Shade	Fire	Dispersal Dist  Vegetative	Sprout	Age	Post-Fire
->>	Name	Longevity	MaturityTol.	Tol.	EffectiveMaximumReprod Prob	Min	Max	Regen		
->>	----	---------	-------------	----	---------	-------		-----------	----------	--------
-querrubr	100	50	3	2	30	3000	0.5	20	100	resprout

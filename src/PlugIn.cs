@@ -1,9 +1,8 @@
-//  Copyright 2005-2010 Portland State University, University of Wisconsin
 //  Authors:    Arjan de Bruijn
 //              Brian R. Miranda
 
 
-using Edu.Wisc.Forest.Flel.Util;
+using Landis.Utilities;
 using Landis.Core;
 using Landis.Library.InitialCommunities;
 using Landis.Library.Succession;
@@ -260,7 +259,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
-            Edu.Wisc.Forest.Flel.Util.Directory.EnsureExists("output");
+            Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
 

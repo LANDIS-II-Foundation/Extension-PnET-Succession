@@ -1,132 +1,59 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{17896667-BAB5-4F18-9DDF-8761E06C55E0}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>biomass_succession</RootNamespace>
-    <AssemblyName>Landis.Extension.Succession.BiomassPnET</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <RootNamespace>Landis.Extension.Succession.BiomassPnET</RootNamespace>
+    <AssemblyName>Landis.Extension.Succession.BiomassPnET-v4</AssemblyName>
+    <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v4</AssemblyTitle>
+    <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
+    <AssemblyVersion>4.0</AssemblyVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://www.landis-ii.org</PackageProjectUrl>
+    <NeutralLanguage>English</NeutralLanguage>
+    <Authors>LANDIS-II Foundation</Authors>
+    <Product>Landis.Extension.Succession.Biomass-v5</Product>
+    <Copyright>Landis-II-Foundation</Copyright>
+    <Version>4.0</Version>
+    <PackageTags>LANDIS-II;Landis;Extension;Succession;PnET</PackageTags>
+    <Description></Description>
+    <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
+    <FileVersion>7.0</FileVersion>
+    <Company>LANDIS-II Foundation</Company>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Assembly\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Edu.Wisc.Forest.Flel.Util">
-      <HintPath>..\..\Support-Library-Dlls\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
+    <PackageReference Include="Landis.Core" Version="2.0.0" />
+    <PackageReference Include="Landis.Core.Implementation" Version="2.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
+      <HintPath>lib\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Core">
-      <HintPath>..\..\Support-Library-Dlls\Landis.Core.dll</HintPath>
+    <Reference Include="Landis.Library.Biomass-v2">
+      <HintPath>lib\Landis.Library.Biomass-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.AgeOnlyCohorts, Version=2.1.5520.27591, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Support-Library-Dlls\Landis.Library.AgeOnlyCohorts.dll</HintPath>
+    <Reference Include="Landis.Library.BiomassCohorts-v3">
+      <HintPath>lib\Landis.Library.BiomassCohorts-v3.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Biomass-v1, Version=1.0.5590.23483, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Support-Library-Dlls\Landis.Library.Biomass-v1.dll</HintPath>
+    <Reference Include="Landis.Library.Climate-v3">
+      <HintPath>lib\Landis.Library.Climate-v3.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.BiomassCohorts-v2, Version=1.3.6473.19713, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Support-Library-Dlls\Landis.Library.BiomassCohorts-v2.dll</HintPath>
+    <Reference Include="Landis.Library.Cohorts-v2">
+      <HintPath>lib\Landis.Library.Cohorts-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Cohorts, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Support-Library-Dlls\Landis.Library.Cohorts.dll</HintPath>
+    <Reference Include="Landis.Library.Metadata-v2">
+      <HintPath>lib\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Parameters-v1, Version=1.0.5504.21730, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Support-Library-Dlls\Landis.Library.Parameters-v1.dll</HintPath>
+    <Reference Include="Landis.Library.Parameters-v2">
+      <HintPath>lib\Landis.Library.Parameters-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession-v5">
-      <HintPath>..\..\Support-Library-Dlls\Landis.Library.Succession-v5.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.SpatialModeling">
-      <HintPath>..\..\Support-Library-Dlls\Landis.SpatialModeling.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Troschuetz.Random">
-      <HintPath>..\..\Support-Library-Dlls\Troschuetz.Random.dll</HintPath>
+    <Reference Include="Landis.Library.Succession-v6">
+      <HintPath>lib\Landis.Library.Succession-v6.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Allocation.cs" />
-    <Compile Include="EcoregionPnET.cs" />
-    <Compile Include="EcoregionPnETVariables.cs" />
-    <Compile Include="Events.cs" />
-    <Compile Include="IEcoregionPnET.cs" />
-    <Compile Include="IEcoregionPnETVariables.cs" />
-    <Compile Include="IEstablishmentProbability.cs" />
-    <Compile Include="IHydrology.cs" />
-    <Compile Include="IObservedClimate.cs" />
-    <Compile Include="ObservedClimate.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="ISiteCohorts.cs" />
-    <Compile Include="LocalOutput.cs" />
-    <Compile Include="MyClock.cs" />
-    <Compile Include="OutputHeaders.cs" />
-    <Compile Include="AssignOutputFiles.cs" />
-    <Compile Include="PressureHeadSaxton_Rawls.cs" />
-    <Compile Include="Parameter.cs" />
-    <Compile Include="Names.cs" />
-    <Compile Include="ParameterTableParser.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SiteCohorts.cs" />
-    <Compile Include="EstablishmentProbability.cs" />
-    <Compile Include="Hydrology.cs" />
-    <Compile Include="Cohort.cs" />
-    <Compile Include="PlugIn.cs" />
-    <Compile Include="ISpeciesPNET.cs" />
-    <Compile Include="SpeciesPnET.cs" />
-    <Compile Include="SpeciesPnETVariables.cs" />
-    <Compile Include="Tuple.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy $(TargetName).* "C:\Program Files\LANDIS-II\v6\bin\extensions"</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
