@@ -978,7 +978,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             foreach (List<Cohort> species_cohort in cohorts.Values)
             {
                 Landis.Library.BiomassCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
-                
                 for (int c =0;c< species_cohort.Count(); c++)
                 {
                     Landis.Library.BiomassCohorts.ICohort cohort = species_cohort[c];

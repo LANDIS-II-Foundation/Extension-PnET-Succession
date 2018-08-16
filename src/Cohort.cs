@@ -253,7 +253,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Constructor
-        public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
+        public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)// : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species = species;
             age = 0;
@@ -272,7 +272,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public Cohort(Cohort cohort)
+        public Cohort(Cohort cohort)// : base(cohort.species, new Landis.Library.BiomassCohorts.CohortData(cohort.age, cohort.Biomass))
         {
             this.species = cohort.species;
             this.age = cohort.age;
@@ -281,6 +281,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             biomassmax = cohort.biomassmax;
             this.fol = cohort.fol;
         }
+
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {
@@ -293,7 +294,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
         {
             int abovegroundBiomass = (int)((1 - species.FracBelowG) * biomass) + (int)Fol;
-            defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
+            //defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
+            defolProp = (float)Landis.Library.BiomassCohorts.CohortDefoliation.Compute(this, site, SiteAboveGroundBiomass);
         }
 
         public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, int precipCount, double LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar)
