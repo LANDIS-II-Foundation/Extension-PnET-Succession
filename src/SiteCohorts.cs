@@ -45,6 +45,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static float precLoss;
         private static byte Timestep;
         private static int nlayers;
+        private static bool permafrost;
 
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
@@ -97,6 +98,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Timestep = ((Parameter<byte>)PlugIn.GetParameter(Names.Timestep)).Value;
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
+            permafrost = ((Parameter<bool>)PlugIn.GetParameter("Permafrost")).Value;
         }
 
         // Create SiteCohorts in SpinUp
@@ -419,7 +421,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 frostFreeSoilDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
                 float thawedDepth = 0;
 
-                bool permafrost = true; // Needs to link to input parameter
+                //bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
                 {
                     // snow calculations - from "Soil thawing worksheet with snow.xlsx"
@@ -1389,7 +1391,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private void RemoveMarkedCohorts(float minTemp, float winterSTD)
         {
 
-            bool permafrost = true; // Needs to link to input parameter
+            //bool permafrost = true; // Needs to link to input parameter
 
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
             {

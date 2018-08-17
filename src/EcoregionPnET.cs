@@ -31,7 +31,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
-        private static bool permafrost;
+
         private static float leakageFrostDepth;
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
@@ -262,7 +262,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
-            permafrost = ((Parameter<bool>)PlugIn.GetParameter("Permafrost")).Value;
             
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
