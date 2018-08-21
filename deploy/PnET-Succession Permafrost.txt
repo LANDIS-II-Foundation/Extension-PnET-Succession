@@ -2,7 +2,7 @@ LandisData   Extension
 
 Name         "PnET-Succession"
 
-Version      "3.1 (alpha release 3)"
+Version      "3.2 (alpha release 4)"
 
 Type         succession
 
