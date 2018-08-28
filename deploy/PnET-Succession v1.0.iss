@@ -23,9 +23,9 @@
 #define ConfigOutDir '..\src\bin\Debug'
 
 ; The extension's assembly
-Source: {#LandisExtDir}\Landis.Extension.Succession.BiomassPnET.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: {#LandisExtDir}\Landis.Extension.Succession.BiomassPnET.LUv2.0.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: {#LandisExtDir}\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: {#LandisExtDir}\Landis.Library.BiomassCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: {#LandisExtDir}\Landis.Library.BiomassCohorts-v2.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
  
 
 ; The user guide

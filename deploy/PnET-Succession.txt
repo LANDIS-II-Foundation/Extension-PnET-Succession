@@ -2,7 +2,7 @@ LandisData   Extension
 
 Name         "PnET-Succession"
 
-Version      "2.2"
+Version      "2.3"
 
 Type         succession
 
@@ -12,6 +12,6 @@ Class        Landis.Extension.Succession.BiomassPnET.PlugIn
 
 Description  "Version of biomass succession that uses a PnET to calculate cohort development, with modifications for insect defoliation paired with the Land Use Change Extension"
 
-UserGuide    "LANDIS-II PnET-Succession v2.1 User Guide.pdf"
+UserGuide    "LANDIS-II PnET-Succession v2.3 User Guide.pdf"
 
 CoreVersion  6.2
