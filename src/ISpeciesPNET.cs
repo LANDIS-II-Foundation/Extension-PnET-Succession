@@ -21,7 +21,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Fraction active biomass to total biomass 
         float FrActWd { get; }
 
-        // Water stress parameter for excess water
+        // Water stress parameter for excess water: pressurehead below which growth halts
+        float H1 { get; }
+
+        // Water stress parameter for excess water: pressurehead below which growth declines
         float H2 { get; }
 
         // Water stress parameter for water shortage: pressurehead above which growth declines

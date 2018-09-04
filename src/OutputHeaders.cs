@@ -57,7 +57,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string SoilType = "SoilType";
         public const string FOzone = "fOzone(-)";
         public const string FrostDepth = "FrostDepth(mm)";
-
+        public const string LeakageFrac = "LeakageFrac(-)";
         public const string WoodySenescence = "WoodSenescence(gDW_m2)";
         public const string FoliageSenescence = "FoliageSenescence(gDW_m2)";
         public const string DelAMax = "DelAMax(-)";
@@ -65,5 +65,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string AdjFolN = "AdjFolN(gN_gC)";
         public const string CiModifier = "CiModifier(-)";
         public const string SubCanopyPAR = "SubCanopyPAR";
+        public const string LimitingFactor = "Limiting Factor";
     }
 }

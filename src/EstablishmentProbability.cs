@@ -66,7 +66,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
                         
-                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
+                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
                     if (!spc.PreventEstablishment)
@@ -116,7 +116,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
 
-                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
+                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
                     estabDict[spc] = pest;

@@ -46,6 +46,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _fracfol;
         private float _fractWd;
         private float _psnagered;
+        private float _h1;
         private float _h2;
         private float _h3;
         private float _h4;
@@ -103,6 +104,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
         private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
         private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
+        private static Landis.Library.Parameters.Species.AuxParm<float> h1;
         private static Landis.Library.Parameters.Species.AuxParm<float> h2;
         private static Landis.Library.Parameters.Species.AuxParm<float> h3;
         private static Landis.Library.Parameters.Species.AuxParm<float> h4;
@@ -157,6 +159,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             fracfol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fracfol"));
             fractWd = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("fractWd"));
             psnagered = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psnagered"));
+            h1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h1"));
             h2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h2"));
             h3 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h3"));
             h4 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("h4"));
@@ -213,6 +216,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float fracfol,
             float fractWd,
             float psnagered,
+            float h1,
             float h2,
             float h3,
             float h4,
@@ -266,6 +270,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._fracfol = fracfol;
             this._fractWd = fractWd;
             this._psnagered = psnagered;
+            this._h1 = h1;
             this._h2 = h2;
             this._h3 = h3;
             this._h4 = h4;
@@ -322,6 +327,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _fracfol = fracfol[species];
             _fractWd = fractWd[species];
             _psnagered = psnagered[species];
+            _h1 = h1[species];
             _h2 = h2[species];
             _h3 = h3[species];
             _h4 = h4[species];
@@ -573,6 +579,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _h2;
+            }
+        }
+        public float H1
+        {
+            get
+            {
+                return _h1;
             }
         }
         public float PsnAgeRed
