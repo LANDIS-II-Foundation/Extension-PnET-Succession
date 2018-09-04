@@ -43,10 +43,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string climateFileName = "climateFileName";
 
         //Species parameters
-        public const string FolNSlope = "FolNSlope";
-        public const string FolNInt = "FolNInt";
-        public const string FracFolSlope = "FracFolSlope";
-        public const string FracFolInt = "FracFolInt";
+        public const string FolNShape = "FolNShape";
+        public const string MaxFolN = "MaxFolN";
+        public const string FracFolShape = "FracFolShape";
+        public const string MaxFracFol = "MaxFracFol";
         public const string O3Coeff = "O3GrowthSens";
      
         public static void AssureIsName(string name)

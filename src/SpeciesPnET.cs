@@ -86,10 +86,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private byte shadeTolerance;
         int maturity;
         int longevity;
-        private float _folNSlope;
-        private float _folNInt;
-        private float _fracFolSlope;
-        private float _fracFolInt;
+        private float _folNShape;
+        private float _maxFolN;
+        private float _fracFolShape;
+        private float _maxFracFol;
         private float _o3Coeff;
         # endregion
 
@@ -137,10 +137,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
 
-        private static Landis.Library.Parameters.Species.AuxParm<float> folNSlope;
-        private static Landis.Library.Parameters.Species.AuxParm<float> folNInt;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracFolSlope;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracFolInt;
+        private static Landis.Library.Parameters.Species.AuxParm<float> folNShape;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
+        private static Landis.Library.Parameters.Species.AuxParm<float> fracFolShape;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxFracFol;
 
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         #endregion
@@ -184,10 +184,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
             ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("O3StomataSens"));
-            folNSlope = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNSlope"));
-            folNInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNInt"));
-            fracFolSlope = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolSlope"));
-            fracFolInt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolInt"));
+            folNShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNShape"));
+            maxFolN = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFolN"));
+            if (maxFolN[this] == -9999F)
+                maxFolN = foln;
+            fracFolShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolShape"));
+            maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFracFol"));
+            if (maxFracFol[this] == -9999F)
+                maxFracFol = fracfol;
             o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));
             
             #endregion
@@ -252,10 +256,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             byte shadeTolerance,
             int maturity,
             int longevity,
-            float folNSlope,
-            float folNInt,
-            float fracFolSlope,
-            float fracFolInt,
+            float folNShape,
+            float maxFolN,
+            float fracFolShape,
+            float maxFracFol,
             float o3Coeff
             )
         {
@@ -307,10 +311,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.shadeTolerance = shadeTolerance;
             this.maturity = maturity;
             this.longevity = longevity;
-            this._folNSlope = folNSlope;
-            this._folNInt = folNInt;
-            this._fracFolSlope = fracFolSlope;
-            this._fracFolInt = fracFolInt;
+            this._folNShape = folNShape;
+            this._maxFolN = maxFolN;
+            this._fracFolShape = fracFolShape;
+            this._maxFracFol = maxFracFol;
             this._o3Coeff = o3Coeff;
         
         }
@@ -367,10 +371,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             maturity = species.Maturity;
             longevity = species.Longevity;
 
-            _folNSlope = folNSlope[species];
-            _folNInt = folNInt[species];
-            _fracFolSlope = fracFolSlope[species];
-            _fracFolInt = fracFolInt[species];
+            _folNShape = folNShape[species];
+            _maxFolN = maxFolN[species];
+            _fracFolShape = fracFolShape[species];
+            _maxFracFol = maxFracFol[species];
             _o3Coeff = o3Coeff[species];
           
         }
@@ -720,32 +724,32 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public float FolNSlope
+        public float FolNShape
         {
             get
             {
-                return _folNSlope;
+                return _folNShape;
             }
         }
-        public float FolNInt
+        public float MaxFolN
         {
             get
             {
-                return _folNInt;
+                return _maxFolN;
             }
         }
-        public float FracFolSlope
+        public float FracFolShape
         {
             get
             {
-                return _fracFolSlope;
+                return _fracFolShape;
             }
         }
-        public float FracFolInt
+        public float MaxFracFol
         {
             get
             {
-                return _fracFolInt;
+                return _maxFracFol;
             }
         }
         public float O3GrowthSens

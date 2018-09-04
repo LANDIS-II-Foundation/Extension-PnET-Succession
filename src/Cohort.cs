@@ -130,8 +130,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (lastSeasonFRad.Count() > 0)
             {
                 float lastSeasonAvgFRad = lastSeasonFRad.ToArray().Average();
-                float fracFol_slope = species.FracFolSlope;
-                float fracFol_int = species.FracFolInt;
+                float fracFol_slope = species.FracFolShape;
+                float fracFol_int = species.MaxFracFol;
                 // linear version
                 //adjFracFol = (lastSeasonAvgFRad * fracFol_slope + fracFol_int) * species.FracFol;
                 //exponential version
@@ -538,12 +538,12 @@ namespace Landis.Extension.Succession.BiomassPnET
       
 
             // FoliarN adjusted based on canopy position (FRad)
-            float folN_slope = species.FolNSlope; //Slope for linear FolN relationship
-            float folN_int = species.FolNInt; //Intercept for linear FolN relationship
+            float folN_shape = species.FolNShape; //Slope for linear FolN relationship
+            float maxFolN = species.MaxFolN; //Intercept for linear FolN relationship
             //adjFolN = (FRad[index] * folN_slope + folN_int) * species.FolN; // Linear reduction (with intercept) in FolN with canopy depth (FRad)
             //adjFolN = (float)Math.Pow((FRad[index]), folN_slope) * species.FolN + species.FolN * folN_int; // Expontential reduction
             // Non-Linear reduction in FolN with canopy depth (FRad)
-            adjFolN = species.FolN + ((folN_int - species.FolN) * (float)Math.Pow(FRad[index], folN_slope)); //slope is shape parm; FolN is minFolN; intcpt is max FolN. EJG-7-24-18
+            adjFolN = species.FolN + ((maxFolN - species.FolN) * (float)Math.Pow(FRad[index], folN_shape)); //slope is shape parm; FolN is minFolN; intcpt is max FolN. EJG-7-24-18
             
             AdjFolN[index] = adjFolN;  // Stored for output
             AdjFracFol[index] = adjFracFol; //Stored for output
@@ -710,6 +710,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O)));
  
+                // It is possible for transpiration to calculate to exceed available water
+                // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
+                if(Transpiration[index] > hydrology.Water)
+                {
+                    Transpiration[index] = hydrology.Water;
+                    GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JH2O / JCO2);
+                    NetPsn[index] = GrossPsn[index] - FolResp[index];
+                }
+
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
                 if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water);
