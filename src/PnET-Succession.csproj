@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>Landis.Extension.Succession.BiomassPnET</RootNamespace>
-    <AssemblyName>Landis.Extension.Succession.BiomassPnET</AssemblyName>
+    <AssemblyName>Landis.Extension.Succession.BiomassPnET-v3</AssemblyName>
     <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v4</AssemblyTitle>
     <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
     <AssemblyVersion>3.1</AssemblyVersion>

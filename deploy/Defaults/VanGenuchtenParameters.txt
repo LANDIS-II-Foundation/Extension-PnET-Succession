@@ -1,0 +1,30 @@
+LandisData   VanGenuchtenParameters				
+VanGenuchtenParameters	ThetaR	ThetaS	Alpha	n
+>>---------------------------------------				
+SAND	0.045	0.43	14.5	2.68  <<UNSODA - Sand
+LOSA	0.057	0.41	12.4	2.28  <<UNSODA - Loamy sand
+SALO	0.065	0.41	7.5	1.89  <<UNSODA - Sandy loam
+LOAM	0.078	0.43	3.6	1.56  <<UNSODA - Loam
+SILT	0.034	0.46	1.6	1.37  <<UNSODA - Silt
+SILO	0.067	0.45	2	1.41  <<UNSODA - Silt loam
+SNCL	0.1	0.39	5.9	1.48  <<UNSODA - Sandy clay loam
+CLLO	0.095	0.41	1.9	1.31  <<UNSODA - Clay loam
+SLCL	0.089	0.43	1	1.23  <<UNSODA - Silty clay loam
+SACL	0.1	0.38	2.7	1.23  <<UNSODA - Sandy clay
+SICL	0.08	0.36	0.5	1.09  <<UNSODA - Silty clay
+CLAY	0.068	0.38	0.8	1.09  <<UNSODA - Clay
+PEAT	0	0.72	1.8	1.14  << Same as PECL_1
+SAND_ls	0.020	0.417	0.138	1.592	<< sand 	
+LOSA_ls 0.035	0.401	0.115	1.474	<<loamy sand	
+SALO_ls 0.041 0.412 0.068 1.322		<< sandy loam
+LOAM_LS	0.027 0.434 0.090 1.220		<<loam
+SILO_ls	0.015 0.486 0.048 1.211 	<< silt loam	
+SNCL_ls	0.068 0.330 0.036 1.250		<<sandy clay loam	
+CLLO_ls	0.075 0.390 0.039 1.194		<< clay loam
+SLCL_ls	0.040 0.432 0.031 1.151 	<< silty clay loam		
+SACL_ls	0.109 0.321 0.034 1.168		<< sandy clay	
+SICL_ls	0.056 0.423 0.029 1.127		<< silty clay	
+CLAY_ls 0.090 0.385 0.027 1.131		<< clay
+
+
+ 
