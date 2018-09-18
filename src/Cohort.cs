@@ -440,9 +440,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             if (coldKillBoolean)
             {
-                coldKill = (int)Math.Round(ecoregion.Variables.Tave);
+                coldKill = (int)Math.Round(ecoregion.Variables.Tave - (3.0 * ecoregion.WinterSTD));
                 leaf_on = false;
                 nsc = 0.0F;
+                float foliageSenescence = FoliageSenescence();
+                addlitter(foliageSenescence, SpeciesPNET);
+                lastFoliageSenescence = foliageSenescence;
             }
             else
             {
