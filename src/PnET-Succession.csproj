@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <RootNamespace>Landis.Extension.Succession.BiomassPnET</RootNamespace>
-    <AssemblyName>Landis.Extension.Succession.BiomassPnET-v4</AssemblyName>
+    <AssemblyName>Landis.Extension.Succession.BiomassPnET</AssemblyName>
     <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v4</AssemblyTitle>
     <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
-    <AssemblyVersion>4.0</AssemblyVersion>
+    <AssemblyVersion>3.1</AssemblyVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession</RepositoryUrl>
@@ -14,9 +14,9 @@
     <PackageProjectUrl>http://www.landis-ii.org</PackageProjectUrl>
     <NeutralLanguage>English</NeutralLanguage>
     <Authors>LANDIS-II Foundation</Authors>
-    <Product>Landis.Extension.Succession.Biomass-v5</Product>
+    <Product>Landis.Extension.Succession.BiomassPnET</Product>
     <Copyright>Landis-II-Foundation</Copyright>
-    <Version>4.0</Version>
+    <Version>3.1</Version>
     <PackageTags>LANDIS-II;Landis;Extension;Succession;PnET</PackageTags>
     <Description></Description>
     <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
@@ -54,6 +54,10 @@
     <Reference Include="Landis.Library.Succession-v6">
       <HintPath>lib\Landis.Library.Succession-v6.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

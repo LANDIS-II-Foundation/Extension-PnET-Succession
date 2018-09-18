@@ -579,13 +579,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
 
                 }
-
+                // Store growing season FRad values                
+                AllCohorts.ForEach(x => x.StoreFRad());
+                // Reset all cohort values
                 AllCohorts.ForEach(x => x.NullSubLayers());
 
-                //  Decompose litter once per year
+                //  Processes that happen only once per year
                 if (data[m].Month == (int)Constants.Months.December)
                 {
+                    //  Decompose litter
                     HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());
+
+                    // Calculate AdjFolFrac
+                    AllCohorts.ForEach(x => x.CalcAdjFracFol());
                 }
             }
             if (PlugIn.ModelCore.CurrentTime > 0)
