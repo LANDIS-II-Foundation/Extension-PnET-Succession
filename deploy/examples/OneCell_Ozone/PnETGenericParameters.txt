@@ -3,5 +3,5 @@ LandisData PnETGenericParameters
 
 PnETGenericParameters Value
 DTemp	false
-FolNSlope	0.6
-FolNInt	0.7
+>>FolNShape	0.6
+>>MaxFolN	0.7
