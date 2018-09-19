@@ -6,17 +6,14 @@ Timestep  		10
 StartYear		2000
 SeedingAlgorithm  	WardSeedDispersal
 Latitude		42
->>MaxDevLyrAv		8000
-Wythers			True
-DTemp			True
-PrecipEvents		10
 
 PNEToutputsites		PNEToutputsites.txt
  	
 InitialCommunities      "./initial-communities.txt"
 InitialCommunitiesMap   "./initial-communities.gis"
 
-PnETSpeciesParameters	SpeciesParameters.txt
+PnETGenericParameters		GenericPnETParameters.txt
+PnETSpeciesParameters		PnETSpeciesParameters.txt
 
 EcoregionParameters 	EcoregionParameters.txt
  
