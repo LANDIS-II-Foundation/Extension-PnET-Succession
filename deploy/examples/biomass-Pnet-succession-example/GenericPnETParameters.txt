@@ -1,0 +1,14 @@
+LandisData	PnETGenericParameters
+PnETGenericParameters		Value
+MaxCanopyLayers			2
+MaxDevLyrAv 			8000
+IMAX				5
+BFolResp			0.1
+MaintResp			0.005	
+DNSC				0.05
+FracBelowG			0.33
+PrecipEvents			11
+PreventEstablishment		true
+Wythers				true
+DTEMP				true
+CO2AmaxBeff			1.0
