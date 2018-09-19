@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Landis.Extension.Succession.BiomassPnET</RootNamespace>
     <AssemblyName>Landis.Extension.Succession.BiomassPnET-v3</AssemblyName>
-    <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v4</AssemblyTitle>
+    <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v3</AssemblyTitle>
     <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
     <AssemblyVersion>3.1</AssemblyVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -13,15 +13,15 @@
     <PackageLicenseUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://www.landis-ii.org</PackageProjectUrl>
     <NeutralLanguage>English</NeutralLanguage>
-    <Authors>LANDIS-II Foundation</Authors>
+    <Authors>Brian Miranda, Eric Gustafson, Arjan de Bruijn</Authors>
     <Product>Landis.Extension.Succession.BiomassPnET</Product>
     <Copyright>Landis-II-Foundation</Copyright>
     <Version>3.1</Version>
     <PackageTags>LANDIS-II;Landis;Extension;Succession;PnET</PackageTags>
     <Description></Description>
     <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
-    <FileVersion>7.0</FileVersion>
-    <Company>LANDIS-II Foundation</Company>
+    <FileVersion>3.1</FileVersion>
+    <Company>USDA Forest Service</Company>
   </PropertyGroup>
 
   <ItemGroup>
