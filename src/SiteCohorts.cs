@@ -1,7 +1,7 @@
 ﻿//  Copyright ...
 //  Authors:  Arjan de Bruijn
 
-using Edu.Wisc.Forest.Flel.Util;
+using Landis.Utilities;
 using Landis.Core;
 using Landis.Library.InitialCommunities;
 using Landis.SpatialModeling;
@@ -48,7 +48,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
         /// </summary>
-        public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
+        //public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
 
         //---------------------------------------------------------------------
 
@@ -395,7 +395,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 lastOzoneEffect[i] = 0;
             }
 
-            int monthCount = 0;
+            //int monthCount = 0;
             for (int m = 0; m < data.Count(); m++ )
             {
                 this.Ecoregion.Variables = data[m];
