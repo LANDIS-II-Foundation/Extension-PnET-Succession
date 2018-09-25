@@ -36,6 +36,7 @@ OutputDir={#SourcePath}
 OutputBaseFilename={#CoreRelease} {#ExtensionName} {#AppVersion}-setup
 Compression=lzma
 SolidCompression=yes
+VersionInfoVersion={#AppVersion}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
