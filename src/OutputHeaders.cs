@@ -63,6 +63,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string DelAMax = "DelAMax(-)";
         public const string AdjHalfSat = "AdjHalfSat";
         public const string AdjFolN = "AdjFolN(gN_gC)";
+        public const string AdjFracFol = "AdjFracFol(-)";
         public const string CiModifier = "CiModifier(-)";
         public const string SubCanopyPAR = "SubCanopyPAR";
         public const string LimitingFactor = "Limiting Factor";

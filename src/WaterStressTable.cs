@@ -39,24 +39,24 @@ namespace Landis.Extension.Succession.BiomassPnET
             else if (pressurehead < H2[species]) return pressurehead / H2[species];
             else return 1;
         }
-        public WaterStressTable(InputParameters parameters)
-        {
-            H2 = parameters.GetSpeciesParameterValues<float>("H2", 0, float.MaxValue);
-            H3 = parameters.GetSpeciesParameterValues<float>("H3", 0, float.MaxValue);
-            H4 = parameters.GetSpeciesParameterValues<float>("H4", 0, float.MaxValue);
+        //public WaterStressTable(InputParameters parameters)
+        //{
+        //    H2 = parameters.GetSpeciesParameterValues<float>("H2", 0, float.MaxValue);
+        //    H3 = parameters.GetSpeciesParameterValues<float>("H3", 0, float.MaxValue);
+        //    H4 = parameters.GetSpeciesParameterValues<float>("H4", 0, float.MaxValue);
 
-            foreach (ISpecies species in PlugIn.ModelCore.Species)
-            {
-                List<float> values = new List<float>();
-                for (int ph = 0; ph <= H4[species]; ph++)
-                {
-                    values.Add(GetFWater(species, ph));
-                }
-                table[species] = values.ToArray();
-                table2[species.Index] = values.ToArray();
-            }
+        //    foreach (ISpecies species in PlugIn.ModelCore.Species)
+        //    {
+        //        List<float> values = new List<float>();
+        //        for (int ph = 0; ph <= H4[species]; ph++)
+        //        {
+        //            values.Add(GetFWater(species, ph));
+        //        }
+        //        table[species] = values.ToArray();
+        //        table2[species.Index] = values.ToArray();
+        //    }
 
 
-        }
+        //}
     }
 }

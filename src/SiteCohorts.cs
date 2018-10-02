@@ -1,7 +1,7 @@
 ﻿//  Copyright ...
 //  Authors:  Arjan de Bruijn
 
-using Edu.Wisc.Forest.Flel.Util;
+using Landis.Utilities;
 using Landis.Core;
 using Landis.Library.InitialCommunities;
 using Landis.SpatialModeling;
@@ -51,7 +51,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
         /// </summary>
-        public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
+        //public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
 
         //---------------------------------------------------------------------
 
@@ -402,7 +402,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 lastOzoneEffect[i] = 0;
             }
 
-            int monthCount = 0;
+            //int monthCount = 0;
             float minMonthlyAvgTemp = float.MaxValue;
             Dictionary<float,float> depthTempDict = new Dictionary<float,float>();  //for permafrost
             float lastTempBelowSnow = new float();
@@ -763,13 +763,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
 
                 }
-
+                // Store growing season FRad values                
+                AllCohorts.ForEach(x => x.StoreFRad());
+                // Reset all cohort values
                 AllCohorts.ForEach(x => x.NullSubLayers());
 
-                //  Decompose litter once per year
+                //  Processes that happen only once per year
                 if (data[m].Month == (int)Constants.Months.December)
                 {
+                    //  Decompose litter
                     HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());
+
+                    // Calculate AdjFolFrac
+                    AllCohorts.ForEach(x => x.CalcAdjFracFol());
                 }
             }
             if (PlugIn.ModelCore.CurrentTime > 0)

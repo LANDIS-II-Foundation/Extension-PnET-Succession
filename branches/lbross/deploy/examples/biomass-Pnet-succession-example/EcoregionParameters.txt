@@ -1,4 +1,0 @@
-LandisData  EcoregionParameters
-EcoregionParameters	 RootingDepth	SoilType LeakageFrac PrecLossFrac   ClimateFileName
-eco1	1000	CLAY	1000	0.0	climate.txt
-eco2	800	SAND	1000	0.0	climate.txt

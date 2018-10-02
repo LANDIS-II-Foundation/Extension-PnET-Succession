@@ -1,9 +1,9 @@
 ﻿using Landis.Core;
 using Landis.SpatialModeling;
 using Landis.Library.InitialCommunities;
-using Landis.Library.BiomassCohortsPnET;
+//using Landis.Library.BiomassCohortsPnET;
 using System.Collections.Generic;
-using Edu.Wisc.Forest.Flel.Util;
+using Landis.Utilities;
 using System;
 using System.Linq;
 

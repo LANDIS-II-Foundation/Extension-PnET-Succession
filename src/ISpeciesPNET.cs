@@ -116,11 +116,17 @@ namespace Landis.Extension.Succession.BiomassPnET
         string O3StomataSens { get; }
 
         // Slope for linear FolN relationship
-        float FolNSlope { get; }
+        float FolNShape { get; }
 
         //Intercept for linear FolN relationship
-        float FolNInt { get; }
+        float MaxFolN { get; }
 
+        // Slope for linear FracFol relationship
+        float FracFolShape { get; }
+
+        //Intercept for linear FracFol relationship
+        float MaxFracFol { get; }
+        
         // Slope coefficient for O3Effect
         float O3GrowthSens { get; }
         // Cold tolerance
