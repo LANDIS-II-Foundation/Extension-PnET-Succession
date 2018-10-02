@@ -499,7 +499,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float maxDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
                     float freezeDepth = maxDepth;
                     float testDepth = 0;
-                    if (m == 0)
+                    if (m == 0 && PlugIn.ModelCore.CurrentTime == 0)
                     {
                         int mCount = Math.Min(12, data.Count());
                         float tSum = 0;

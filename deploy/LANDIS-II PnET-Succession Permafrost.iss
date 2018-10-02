@@ -10,7 +10,7 @@
 LicenseFile={#LandisSDK}\licenses\LANDIS-II_Binary_license.rtf
 
 [Files]
-Source: {#LandisExtDir}\{#ExtensionAssembly}.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: C:\BRM\LANDIS_II\GitCode\Extension-PnET-Succession\src\bin\Debug\{#ExtensionAssembly}.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: C:\BRM\LANDIS_II\GitCode\Support-Library-Dlls\Landis.Library.AgeOnlyCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: C:\BRM\LANDIS_II\GitCode\Support-Library-Dlls\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
 Source: C:\BRM\LANDIS_II\GitCode\Support-Library-Dlls\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
