@@ -47,6 +47,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static byte Timestep;
         private static int nlayers;
         private static bool permafrost;
+        Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
 
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
@@ -404,7 +405,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //int monthCount = 0;
             float minMonthlyAvgTemp = float.MaxValue;
-            Dictionary<float,float> depthTempDict = new Dictionary<float,float>();  //for permafrost
+
             float lastTempBelowSnow = new float();
             float lastFrostDepth = this.Ecoregion.RootingDepth + PlugIn.LeakageFrostDepth;
             int daysOfWinter = 0;

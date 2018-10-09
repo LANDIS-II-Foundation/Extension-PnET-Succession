@@ -523,7 +523,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     leaf_on = true;
                 }
-
+            }
             if (leaf_on)
             {
                 // Foliage linearly increases with active biomass
