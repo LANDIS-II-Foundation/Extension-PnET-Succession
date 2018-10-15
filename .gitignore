@@ -1,2 +1,8 @@
 /src/packages
 .vs/
+PnET_TestProjects/
+Assembly/
+src/bin/
+src/obj/
+src/Properties/
+PnET_TestProjects/

@@ -10,7 +10,7 @@ Assembly     Landis.Extension.Succession.BiomassPnET.LUv2.0
 
 Class        Landis.Extension.Succession.BiomassPnET.PlugIn
 
-Description  "Version of biomass succession that uses a PnET to calculate cohort development, with modifications for insect defoliation paired with the Land Use Change Extension"
+Description  "Version of biomass succession that uses a PnET to calculate cohort development, with modifications for insect defoliation paired with the Land Use Change 2.0 Extension"
 
 UserGuide    "LANDIS-II PnET-Succession v2.3 User Guide.pdf"
 
