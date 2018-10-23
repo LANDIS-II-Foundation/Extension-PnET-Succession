@@ -1574,10 +1574,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                        OutputHeaders.Ecoregion + "," + 
                        OutputHeaders.SoilType +"," +
                        OutputHeaders.NrOfCohorts + "," +
-                       OutputHeaders.MaxLayerStdev + "," + 
-                       OutputHeaders.Layers + "," + 
-                       OutputHeaders.PAR0  + "," + 
-                       OutputHeaders.Tday + "," + 
+                       OutputHeaders.MaxLayerStdev + "," +
+                       OutputHeaders.Layers + "," +
+                       OutputHeaders.PAR0 + "," +
+                       OutputHeaders.Tmin + "," +
+                       OutputHeaders.Tave + "," +
+                       OutputHeaders.Tday + "," +
+                       OutputHeaders.Tmax + "," +
                        OutputHeaders.Precip + "," +
                         OutputHeaders.CO2 + "," +
                          OutputHeaders.O3 + "," +
@@ -1624,8 +1627,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                         cohorts.Values.Sum(o => o.Count) + "," +
                         maxLayerStdev + "," +
                         nlayers + "," +
-                        monthdata.PAR0 + "," +
+                        monthdata.PAR0 + "," + 
+                        monthdata.Tmin + "," +
+                        monthdata.Tave + "," +
                         monthdata.Tday + "," +
+                        monthdata.Tmax + "," +
                         monthdata.Prec + "," +
                         monthdata.CO2 + "," +
                          monthdata.O3 + "," +

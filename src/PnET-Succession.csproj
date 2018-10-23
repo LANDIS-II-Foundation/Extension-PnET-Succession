@@ -22,12 +22,14 @@
     <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
     <FileVersion>3.1</FileVersion>
     <Company>USDA Forest Service</Company>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\BRM\LANDIS_II\GitCode\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>
   </PropertyGroup>
   
   <ItemGroup>
-    <Reference Include="Landis.Core">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
     </Reference>
@@ -65,6 +67,11 @@
   
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Landis.Core" Version="2.0.0" />
+    <PackageReference Include="Landis.SpatialModeling" Version="2.0.0" />
   </ItemGroup>
 
 </Project>

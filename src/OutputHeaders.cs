@@ -7,10 +7,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Time = "Time";
         public const string Ecoregion = "Ecoregion";
         public const string PAR0 = "PAR0";  
-        public const string NrOfCohorts = "NrOfCohorts";  
-        public const string MaxLayerStdev = "MaxLayerStdev";  
-        public const string Layers = "Layers";  
-        public const string Tday = "Tday(C)";  
+        public const string NrOfCohorts = "NrOfCohorts";
+        public const string MaxLayerStdev = "MaxLayerStdev";
+        public const string Layers = "Layers";
+        public const string Tmin = "Tmin(C)";
+        public const string Tave = "Tave(C)";
+        public const string Tday = "Tday(C)";
+        public const string Tmax = "Tmax(C)";
         public const string Precip = "Precip(mm/mo)";
         public const string CO2 = "CO2(ppm)";
         public const string O3 = "O3(cum_ppb_h";  
