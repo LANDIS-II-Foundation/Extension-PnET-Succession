@@ -252,6 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public override void Initialize()
         {
+            Console.ReadLine();
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
 
             Cohort.DeathEvent += DeathEvent;
