@@ -101,7 +101,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Create SiteCohorts in SpinUp
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
-            Cohort.SetSiteAccessFunctions(this);
+             Cohort.SetSiteAccessFunctions(this);
 
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
             this.Site = site;
