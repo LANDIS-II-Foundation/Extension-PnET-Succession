@@ -784,7 +784,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
                     bool estab = false;
-                    annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
+                    bool count0 = true;
+                    if (monthlyCount[spc] > 0)
+                    {
+                        annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
+                        count0 = false;
+                    }
                     float pest = annualEstab[spc];
                     if (!spc.PreventEstablishment)
                     {
@@ -796,7 +801,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         }
                     }
-                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, estab);
+                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, estab, count0);
 
                 }
             }

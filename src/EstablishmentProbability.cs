@@ -38,7 +38,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater" +"," + "FRad" +"," + "Est";
+                return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater_Min" +"," + "FRad_Min" +"," + "Est";
             }
         }
         
@@ -174,7 +174,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _hasEstablished.Add(spc);
         }
         
-        public void RecordPest(int year, ISpeciesPNET spc, float annualPest, bool estab)
+        public void RecordPest(int year, ISpeciesPNET spc, float annualPest, bool estab, bool count0)
         {
             if (estab)
             {
@@ -185,9 +185,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             if (establishment_siteoutput != null)
             {
-               
-                establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + _fwater[spc] + "," + _frad[spc] + "," + HasEstablished(spc));
-
+                if (count0)
+                {
+                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + 0 + "," + 0 + "," + HasEstablished(spc));
+                }
+                else
+                {
+                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + _fwater[spc] + "," + _frad[spc] + "," + HasEstablished(spc));
+                }
                 // TODO: win time by reducing calls to write
                 establishment_siteoutput.Write();
             }

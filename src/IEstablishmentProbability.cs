@@ -16,6 +16,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         void EstablishmentTrue(ISpeciesPNET spc);
 
-        void RecordPest(int year, ISpeciesPNET spc, float pest, bool estab);
+        void RecordPest(int year, ISpeciesPNET spc, float pest, bool estab, bool count0);
     }
 }
