@@ -106,6 +106,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
+            PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
+            PlugIn.Litter[Site] = new Library.Biomass.Pool();
             uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
 
             if (initialSites.ContainsKey(key) && SiteOutputName == null)
@@ -117,8 +119,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
 
-                PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
-                PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
                 this.canopylaimax = initialSites[key].CanopyLAImax;
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -137,9 +137,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     initialSites.Add(key, this);
                 }
                 hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
-                
-                PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
-                PlugIn.Litter[Site] = new Library.Biomass.Pool();
 
                 if (SiteOutputName != null)
                 {

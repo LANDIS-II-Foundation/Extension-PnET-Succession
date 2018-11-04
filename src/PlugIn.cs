@@ -303,7 +303,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
             InitializeSites(InitialCommunitiesTXTFile, InitialCommunitiesMapFile, ModelCore);
-             
+            MapReader.ReadLitterFromMap(Names.InitialLitterMap);
+            MapReader.ReadWoodyDebrisFromMap(Names.InitialWoodyDebrisMap);
+
             // Convert PnET cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
             

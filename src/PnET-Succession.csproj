@@ -30,6 +30,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Reference Include="Edu.Wisc.Forest.Flel.Util">
+      <HintPath>lib\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
+    </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
       <HintPath>lib\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
     </Reference>
@@ -45,14 +48,17 @@
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>lib\Landis.Library.Cohorts-v2.dll</HintPath>
     </Reference>
+    <Reference Include="Landis.Library.LeafBiomassCohorts-v2">
+      <HintPath>lib\Landis.Library.LeafBiomassCohorts-v2.dll</HintPath>
+    </Reference>
     <Reference Include="Landis.Library.Metadata-v2">
       <HintPath>lib\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Parameters-v2">
       <HintPath>lib\Landis.Library.Parameters-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession-v6">
-      <HintPath>lib\Landis.Library.Succession-v6.dll</HintPath>
+    <Reference Include="Landis.Library.Succession-InputAGB">
+      <HintPath>lib\Landis.Library.Succession-InputAGB.dll</HintPath>
     </Reference>
   </ItemGroup>
   
