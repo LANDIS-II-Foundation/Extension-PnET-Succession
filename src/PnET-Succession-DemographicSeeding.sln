@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PnET-Succession", "PnET-Succession.csproj", "{17896667-BAB5-4F18-9DDF-8761E06C55E0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F} = {DE8FD469-F80C-4B11-9E55-F99D001E563F}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "output-biomass-pnet", "..\..\Extension-Output-Biomass-PnET\src\output-biomass-pnet.csproj", "{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0} = {17896667-BAB5-4F18-9DDF-8761E06C55E0}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "succession", "..\..\Library-Succession\succession-library\trunk\src\succession.csproj", "{DE8FD469-F80C-4B11-9E55-F99D001E563F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937} = {09F964F5-3D75-4B3F-A31A-C898D1B63937}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seed Dispersal", "..\..\seed_dispersal\Seed Dispersal\Seed Dispersal\Seed Dispersal.csproj", "{09F964F5-3D75-4B3F-A31A-C898D1B63937}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|x86.Build.0 = Debug|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|x86.ActiveCfg = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|x86.Build.0 = Release|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Debug|x86.Build.0 = Debug|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6D3498D-F5E8-495D-881E-6E1BA7CB9D6B}.Release|x86.Build.0 = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Debug|x86.Build.0 = Debug|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE8FD469-F80C-4B11-9E55-F99D001E563F}.Release|x86.Build.0 = Release|Any CPU
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Debug|x86.ActiveCfg = Debug|x86
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Debug|x86.Build.0 = Debug|x86
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Release|x86.ActiveCfg = Release|x86
+		{09F964F5-3D75-4B3F-A31A-C898D1B63937}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF913D78-F97A-4D4F-88F7-63A674E04003}
+	EndGlobalSection
+EndGlobal

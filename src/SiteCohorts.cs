@@ -805,6 +805,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
+        public float AETSum
+        {
+            get
+            {
+                return AET.Sum();
+            }
+        }
+
         class SubCanopyComparer : IComparer<int[]>
         {
             // Compare second int (cumulative cohort biomass)

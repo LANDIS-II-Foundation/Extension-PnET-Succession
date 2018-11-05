@@ -2,7 +2,7 @@ LandisData   Extension
 
 Name         "PnET-Succession"
 
-Version      "2.2 (beta 3 release)"
+Version      "3.0.1"
 
 Type         succession
 
@@ -10,8 +10,8 @@ Assembly     Landis.Extension.Succession.BiomassPnET
 
 Class        Landis.Extension.Succession.BiomassPnET.PlugIn
 
-Description  "Version of biomass succession that uses a PnET to calculate cohort development"
+Description  "PnET-Succession with demographic seeding"
 
-UserGuide    "LANDIS-II PnET-Succession v2.1 User Guide.pdf"
+UserGuide    "LANDIS-II PnET-Succession v3.0 User Guide.pdf"
 
 CoreVersion  6.0
