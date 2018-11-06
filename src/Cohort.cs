@@ -603,7 +603,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 FWater[index] = ComputeFWater(species.H1,species.H2, species.H3, species.H4, PressureHead);
                 Water[index] = hydrology.Water;
                 PressHead[index] = PressureHead;
-                fWaterOzone = ComputeFWater(0, 0, species.H3, species.H4, PressureHead);
+                fWaterOzone = ComputeFWater(-1, -1, species.H3, species.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
             }
             else // Ignore H1 and H2 parameters during spinup
             {
