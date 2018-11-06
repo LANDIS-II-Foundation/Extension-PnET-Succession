@@ -33,7 +33,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return probability;
             }
         }
-        
+        public float Get_FWater(ISpeciesPNET species)
+        {
+            {
+                return _fwater[species];
+            }
+        }
+        public float Get_FRad(ISpeciesPNET species)
+        {
+            {
+                return _frad[species];
+            }
+        }
+
         public string Header
         {
             get
@@ -50,7 +62,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              
         }
      
-        public void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
+        /*public void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
         {
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
@@ -99,9 +111,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
         }
+        */
+
         public Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
         {
             Dictionary<ISpeciesPNET, float> estabDict = new Dictionary<ISpeciesPNET, float>();
+            _fwater = new Dictionary<ISpeciesPNET, float>();
+            _pest = new Dictionary<ISpeciesPNET, float>();
+            _frad = new Dictionary<ISpeciesPNET, float>();
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
@@ -120,7 +137,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
                     estabDict[spc] = pest;
-                    if (fwater < _fwater[spc])
+                    _pest[spc] = pest;
+                    _fwater[spc] = fwater;
+                    _frad[spc] = frad;
+                    /*if (fwater < _fwater[spc])
                     {
                         _fwater[spc] = fwater;
                     }
@@ -128,7 +148,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         _frad[spc] = frad;
                     }
-
+                    */
                     /*if (establishment_siteoutput != null)
                     {
 
@@ -174,7 +194,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _hasEstablished.Add(spc);
         }
         
-        public void RecordPest(int year, ISpeciesPNET spc, float annualPest, bool estab, bool count0)
+        public void RecordPest(int year, ISpeciesPNET spc, float annualPest, float annualfWater, float annualfRad, bool estab, bool count0)
         {
             if (estab)
             {
@@ -191,7 +211,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else
                 {
-                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + _fwater[spc] + "," + _frad[spc] + "," + HasEstablished(spc));
+                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + annualfWater + "," + annualfRad + "," + HasEstablished(spc));
                 }
                 // TODO: win time by reducing calls to write
                 establishment_siteoutput.Write();

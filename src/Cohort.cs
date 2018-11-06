@@ -396,75 +396,74 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float LeakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeSoilDepth, float MeltInByCanopyLayer, bool coldKillBoolean)
-         {            
-
-            
+         {      
             bool success = true;
             float lastO3Effect = O3Effect;
             O3Effect = 0;
-
             
             // permafrost
             float frostFreeProp = Math.Min(1.0F,frostFreeSoilDepth / ecoregion.RootingDepth);
 
-
-          
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
-            //LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
             LAI[index] = CalculateLAI(species, fol, index);
 
             // Precipitation interception has a max in the upper canopy and decreases exponentially through the canopy
             //Interception[index] = PrecInByCanopyLayer * (float)(1 - Math.Exp(-1 * ecoregion.PrecIntConst * LAI[index]));
             //if (Interception[index] > PrecInByCanopyLayer) throw new System.Exception("Error adding water, PrecInByCanopyLayer = " + PrecInByCanopyLayer + " Interception[index] = " + Interception[index]);
-            
+
+            if (MeltInByCanopyLayer > 0)
+            {
+                // Add thawed soil water to soil moisture
+                // Instantaneous runoff (excess of porosity)
+                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - (ecoregion.Porosity * frostFreeProp), 0));
+                Hydrology.RunOff += meltrunoff;
+
+                success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
+                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + " water = " + hydrology.Water + "meltrunoff = " + meltrunoff);
+            }
+            float precipIn = 0;
             // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
             for (int p = 1; p <= precipCount; p++)
             {
-
-                // Add thawed soil water to soil moisture - assumes frozen soil is at field capacity
-                success = hydrology.AddWater(MeltInByCanopyLayer);
-                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + " water = " + hydrology.Water);
-
-
                 // Incoming precipitation
                 //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
-                float precipIn = PrecInByCanopyLayer; //mm 
+                precipIn = PrecInByCanopyLayer; //mm 
 
                 // Instantaneous runoff (excess of porosity)
-                float runoff = Math.Min(precipIn, Math.Max(hydrology.Water - (ecoregion.Porosity * frostFreeProp), 0));
-                Hydrology.RunOff += runoff;
+                float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - (ecoregion.Porosity * frostFreeProp), 0));
+                Hydrology.RunOff += rainrunoff;
 
-                float waterIn = precipIn - runoff;
+                float waterIn = precipIn - rainrunoff;
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(waterIn);
-                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water);
-                               
-                // Leakage only occurs following precipitation events
-                if (waterIn > 0)
-                {
-                    float leakageFrostReduction = 1.0F;
-                    if(frostFreeSoilDepth < ecoregion.RootingDepth + PlugIn.LeakageFrostDepth)
-                    {
-                        if(frostFreeSoilDepth < ecoregion.RootingDepth)
-                        {
-                            leakageFrostReduction = 0.0F;
-                        }
-                        else
-                        {
-                            leakageFrostReduction = 1.0F / PlugIn.LeakageFrostDepth * (frostFreeSoilDepth - ecoregion.RootingDepth);
-                        }
-                    }
-                    float leakage = Math.Max((float)LeakageFrac * leakageFrostReduction * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
-                    Hydrology.Leakage += leakage;
-
-                    // Remove fast leakage
-                    success = hydrology.AddWater(-1 * leakage);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
-                }
-               
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water + " rainrunoff = " + rainrunoff);
             }
+
+            // Leakage only occurs following precipitation events or incoming melt water
+            if (precipIn > 0 || MeltInByCanopyLayer > 0)
+            {
+                float leakageFrostReduction = 1.0F;
+                if (frostFreeSoilDepth < ecoregion.RootingDepth + PlugIn.LeakageFrostDepth)
+                {
+                    if (frostFreeSoilDepth < ecoregion.RootingDepth)
+                    {
+                        leakageFrostReduction = 0.0F;
+                    }
+                    else
+                    {
+                        leakageFrostReduction = 1.0F / PlugIn.LeakageFrostDepth * (frostFreeSoilDepth - ecoregion.RootingDepth);
+                    }
+                }
+                float leakage = Math.Max((float)LeakageFrac * leakageFrostReduction * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
+                Hydrology.Leakage += leakage;
+
+                // Remove fast leakage
+                success = hydrology.AddWater(-1 * leakage);
+                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+            }               
+            
             // Adjust soil water for freezing
             if (frostFreeProp < 1.0)
             {
@@ -909,6 +908,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // determine the limiting factor 
             float fWaterAvg = FWater.Average();
+            float PressHeadAvg = PressHead.Average();
             float fRadAvg = FRad.Average();
             float fOzoneAvg = FOzone.Average();
             float fTemp = monthdata[Species.Name].FTempPSN;
@@ -921,15 +921,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                List<float> factorList = new List<float>(new float[]{fWaterAvg,fRadAvg,fOzoneAvg,Fage,fTemp});
                float minFactor = factorList.Min();
-                if(minFactor == fTemp)
+                if (minFactor == fTemp)
                     limitingFactor = "fTemp";
-                else if(minFactor == Fage)
+                else if (minFactor == Fage)
                     limitingFactor = "fAge";
-                else if(minFactor == fWaterAvg)
-                    limitingFactor = "fWater";
-                else if(minFactor == fRadAvg)
+                else if (minFactor == fWaterAvg)
+                {
+                    if(PressHeadAvg > this.SpeciesPNET.H3)
+                    {
+                        limitingFactor = "Too dry";
+                    }
+                    else if (PressHeadAvg < this.SpeciesPNET.H2)
+                    {
+                        limitingFactor = "Too wet";
+                    }
+                    else
+                        limitingFactor = "fWater";
+                }
+                else if (minFactor == fRadAvg)
                     limitingFactor = "fRad";
-                else if(minFactor == fOzoneAvg)
+                else if (minFactor == fOzoneAvg)
                     limitingFactor = "fOzone";
             }
 

@@ -386,6 +386,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             maintresp = new float[13];
 
             Dictionary<ISpeciesPNET, float> annualEstab = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, float> annualFwater = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, float> annualFrad = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, float> monthlyEstab = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, int> monthlyCount = new Dictionary<ISpeciesPNET, int>();
             Dictionary<ISpeciesPNET, int> coldKillMonth = new Dictionary<ISpeciesPNET, int>(); // month in which cold kills each species
@@ -393,6 +395,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
                 annualEstab[spc] = 0;
+                annualFwater[spc] = 0;
+                annualFrad[spc] = 0;
                 monthlyCount[spc] = 0;
                 coldKillMonth[spc] = int.MaxValue;
             }
@@ -600,8 +604,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 precLoss = surfaceRain * this.Ecoregion.PrecLossFrac;
                 float availableRain = surfaceRain  - precLoss;
 
-                float precin = availableRain + snowmelt;  
-                if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
+                float precin = availableRain;  
+                if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow);
 
                 int numEvents = this.Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
                 float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
@@ -620,7 +624,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Hydrology.FrozenWaterPct = 0;
                         Hydrology.FrozenDepth = 0;
                     }
-                float MeltInByEvent = thawedWater / numEvents;
+                float MeltInWater = thawedWater + snowmelt;
 
 
                 // Randomly choose which layers will receive the precip events
@@ -665,7 +669,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             subCanopyIndex++;
                             int precipCount = 0;
                             subCanopyPrecip = 0;
-                            subCanopyMelt = 0;
+                            subCanopyMelt = MeltInWater/ SubCanopyCohorts.Count();
                             bool coldKillBoolean = false;
                             foreach (var g in groupList)
                             {
@@ -673,7 +677,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 {
                                     precipCount = g.Count();
                                     subCanopyPrecip = PrecInByEvent;
-                                    subCanopyMelt = MeltInByEvent;
                                 }
                             }
                             Cohort c = SubCanopyCohorts.Values.ToArray()[r];
@@ -759,6 +762,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         if (monthlyEstab.ContainsKey(spc))
                         {
                             annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
+                            annualFwater[spc] = annualFwater[spc] + establishmentProbability.Get_FWater(spc);
+                            annualFrad[spc] = annualFrad[spc] + establishmentProbability.Get_FRad(spc);
+
                             monthlyCount[spc] = monthlyCount[spc] + 1;
                         }
                     }
@@ -788,6 +794,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (monthlyCount[spc] > 0)
                     {
                         annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
+                        annualFwater[spc] = annualFwater[spc] / monthlyCount[spc];
+                        annualFrad[spc] = annualFrad[spc] / monthlyCount[spc];
                         count0 = false;
                     }
                     float pest = annualEstab[spc];
@@ -801,7 +809,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         }
                     }
-                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, estab, count0);
+                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, annualFwater[spc],annualFrad[spc], estab, count0);
 
                 }
             }
