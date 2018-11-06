@@ -50,7 +50,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater_Min" +"," + "FRad_Min" +"," + "Est";
+                return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater_Avg" +"," + "FRad_Avg" +"," + "Est";
             }
         }
         
