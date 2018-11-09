@@ -250,6 +250,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         public static float FTimeStep;
 
+        // this is what begins spin-up
         public override void Initialize()
         {
             Console.ReadLine();
@@ -303,8 +304,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
             InitializeSites(InitialCommunitiesTXTFile, InitialCommunitiesMapFile, ModelCore);
-            MapReader.ReadLitterFromMap(Names.InitialLitterMap);
-            MapReader.ReadWoodyDebrisFromMap(Names.InitialWoodyDebrisMap);
+            MapReader.ReadLitterFromMap(Names.InitialCommunitiesMap);
+            MapReader.ReadWoodyDebrisFromMap(Names.InitialCommunitiesMap);
 
             // Convert PnET cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
@@ -339,10 +340,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PnETCohorts[site] = sitecohorts[site];
             }
 
-            ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
-            
-            
-             
+            ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET"); 
         }
   
          
@@ -359,6 +357,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             bool IsMaturePresent = sitecohorts[site].IsMaturePresent(species);
             return IsMaturePresent;
         }
+
+        //this is where spin up happens, this is called from initialize by initializesites in library.succession
         protected override void InitializeSite(ActiveSite site,
                                                ICommunity initialCommunity)
         {
@@ -370,11 +370,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             m.Next();
             m.WriteUpdate();
 
-             // Create new sitecohorts
-            sitecohorts[site] = new SiteCohorts(StartDate,site,initialCommunity, SiteOutputNames.ContainsKey(site)? SiteOutputNames[site] :null);
-
-           
-           
+            sitecohorts[site] = new SiteCohorts(StartDate,site,initialCommunity, 
+                SiteOutputNames.ContainsKey(site)? SiteOutputNames[site] :null);
         }
         protected override void AgeCohorts(ActiveSite site,
                                             ushort years,

@@ -101,18 +101,28 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Create SiteCohorts in SpinUp
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
-             Cohort.SetSiteAccessFunctions(this);
+            Cohort.SetSiteAccessFunctions(this);
 
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
             PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
             PlugIn.Litter[Site] = new Library.Biomass.Pool();
-            uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
 
-            if (initialSites.ContainsKey(key) && SiteOutputName == null)
+            if (SiteOutputName != null)
+            {
+                this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
+
+                establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
+            }
+            else
             {
                 establishmentProbability = new EstablishmentProbability(null, null);
+            }
+
+            // this if is never executed before spin-up, it is done after spin up. can get rid of it
+            if (initialSites.ContainsKey(key) && SiteOutputName == null)
+            {
                 subcanopypar = initialSites[key].subcanopypar;
                 subcanopyparmax = initialSites[key].SubCanopyParMAX;
                 watermax = initialSites[key].watermax;
@@ -129,25 +139,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                 }
             }
+            
             else
             {
-                 
-                if (initialSites.ContainsKey(key) == false)
-                {
-                    initialSites.Add(key, this);
-                }
                 hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
-
-                if (SiteOutputName != null)
-                {
-                    this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
-
-                    establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
-                }
-                else
-                {
-                    establishmentProbability = new EstablishmentProbability(null, null);
-                }
 
                 List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
                 foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
@@ -165,6 +160,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
  
+                // the actual spin up
                 while (date.CompareTo(StartDate) < 0)
                 {
                     //  Add those cohorts that were born at the current year
@@ -235,6 +231,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
+
+        // check here for variables that need to be initialized instead of spun up
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
@@ -1090,12 +1088,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             return Bins;
         }
-         
-        public static uint ComputeKey(uint a, ushort b)
-        {
-            uint value = (uint)((a << 16) | b);
-            return value;
-        }
         
         public List<Cohort> AllCohorts
         {
@@ -1295,7 +1287,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public void AddNewCohort(Cohort cohort)
         {
-
             if (cohorts.ContainsKey(cohort.Species))
             {
                 // This should deliver only one KeyValuePair
