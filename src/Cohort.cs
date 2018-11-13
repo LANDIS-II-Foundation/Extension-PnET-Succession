@@ -793,7 +793,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if(Transpiration[index] > hydrology.Water)
                 {
                     Transpiration[index] = hydrology.Water;
-                    GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JH2O / JCO2);
+                    GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
                     NetPsn[index] = GrossPsn[index] - FolResp[index];
                 }
 
