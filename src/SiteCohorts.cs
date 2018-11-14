@@ -685,7 +685,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 coldKillBoolean = true;
                             float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
 
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, Ecoregion.LeakageFrac, hydrology, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, frostFreeSoilDepth, subCanopyMelt, coldKillBoolean);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, leakageFrac, hydrology, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, frostFreeSoilDepth, subCanopyMelt, coldKillBoolean);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
 
                             if (success == false)
@@ -711,7 +711,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
 
                     // Fast Leakage 
-                    Hydrology.Leakage = Math.Max(Ecoregion.LeakageFrac * leakageFrac * (hydrology.Water - Ecoregion.FieldCap), 0);
+                    Hydrology.Leakage = Math.Max(leakageFrac * (hydrology.Water - Ecoregion.FieldCap), 0);
 
                     // Remove fast leakage
                     success = hydrology.AddWater(-1 * Hydrology.Leakage);

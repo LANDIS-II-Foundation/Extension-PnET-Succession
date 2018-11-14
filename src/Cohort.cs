@@ -395,7 +395,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float LeakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeSoilDepth, float MeltInByCanopyLayer, bool coldKillBoolean)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeSoilDepth, float MeltInByCanopyLayer, bool coldKillBoolean)
          {      
             bool success = true;
             float lastO3Effect = O3Effect;
@@ -444,19 +444,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Leakage only occurs following precipitation events or incoming melt water
             if (precipIn > 0 || MeltInByCanopyLayer > 0)
             {
-                float leakageFrostReduction = 1.0F;
-                if (frostFreeSoilDepth < ecoregion.RootingDepth + PlugIn.LeakageFrostDepth)
-                {
-                    if (frostFreeSoilDepth < ecoregion.RootingDepth)
-                    {
-                        leakageFrostReduction = 0.0F;
-                    }
-                    else
-                    {
-                        leakageFrostReduction = 1.0F / PlugIn.LeakageFrostDepth * (frostFreeSoilDepth - ecoregion.RootingDepth);
-                    }
-                }
-                float leakage = Math.Max((float)LeakageFrac * leakageFrostReduction * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
+                float leakage = Math.Max((float)leakageFrac * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
                 Hydrology.Leakage += leakage;
 
                 // Remove fast leakage
@@ -470,7 +458,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // water in frozen soil is not accessible - treat it as if it leaked out
                 float frozenLimit = ecoregion.FieldCap * frostFreeProp;
                 float frozenWater = hydrology.Water - frozenLimit;
-                // Remove froxen water
+                // Remove frozen water
                 success = hydrology.AddWater(-1 * frozenWater);
                 if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + " water = " + hydrology.Water);
             }
