@@ -50,7 +50,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater_Avg" +"," + "FRad_Avg" +"," + "Est";
+                return "Year" + "," + "Species" + "," + "Pest" + "," + "FWater_Avg" +"," + "FRad_Avg" +","+"ActiveMonths"+"," + "Est";
             }
         }
         
@@ -194,7 +194,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _hasEstablished.Add(spc);
         }
         
-        public void RecordPest(int year, ISpeciesPNET spc, float annualPest, float annualfWater, float annualfRad, bool estab, bool count0)
+        public void RecordPest(int year, ISpeciesPNET spc, float annualPest, float annualfWater, float annualfRad, bool estab, int monthCount)
         {
             if (estab)
             {
@@ -205,13 +205,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             if (establishment_siteoutput != null)
             {
-                if (count0)
+                if (monthCount == 0)
                 {
-                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + 0 + "," + 0 + "," + HasEstablished(spc));
+                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + 0 + "," + 0 + ","+0+"," + HasEstablished(spc));
                 }
                 else
                 {
-                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + annualfWater + "," + annualfRad + "," + HasEstablished(spc));
+                    establishment_siteoutput.Add(year.ToString() + "," + spc.Name + "," + annualPest + "," + annualfWater + "," + annualfRad + ","+monthCount+"," + HasEstablished(spc));
                 }
                 // TODO: win time by reducing calls to write
                 establishment_siteoutput.Write();
