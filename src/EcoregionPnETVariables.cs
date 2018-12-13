@@ -200,7 +200,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (tday < PsnTMin)
                 return 0;
             else{
-                return ((PsnTMax-tday)*(tday-PsnTMin))/(float)Math.Pow(((PsnTMax-PsnTMin)/2),2);
+                return (float) Math.Max(0.0,((PsnTMax-tday)*(tday-PsnTMin))/(float)Math.Pow(((PsnTMax-PsnTMin)/2),2));
             }
 
         }
