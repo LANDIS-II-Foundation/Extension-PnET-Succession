@@ -98,14 +98,43 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
         }
 
-        // edit to make spin up optional
-        public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null, bool SpinUp = false)
+        public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
-            if (!SpinUp)
+            Cohort.SetSiteAccessFunctions(this);
+            this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+            this.Site = site;
+            cohorts = new Dictionary<ISpecies, List<Cohort>>();
+            uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
+
+            if (initialSites.ContainsKey(key) && SiteOutputName == null)
             {
-                this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
-                this.Site = site;
-                cohorts = new Dictionary<ISpecies, List<Cohort>>();
+                establishmentProbability = new EstablishmentProbability(null, null);
+                subcanopypar = initialSites[key].subcanopypar;
+                subcanopyparmax = initialSites[key].SubCanopyParMAX;
+                watermax = initialSites[key].watermax;
+
+                hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
+
+                PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
+                PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
+                this.canopylaimax = initialSites[key].CanopyLAImax;
+
+                foreach (ISpecies spc in initialSites[key].cohorts.Keys)
+                {
+                    foreach (Cohort cohort in initialSites[key].cohorts[spc])
+                    {
+                        AddNewCohort(new Cohort(cohort));
+                    }
+                }
+            }
+            else
+            {
+                if (initialSites.ContainsKey(key) == false)
+                {
+                    initialSites.Add(key, this);
+                }
+                hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
+
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
 
@@ -120,171 +149,79 @@ namespace Landis.Extension.Succession.BiomassPnET
                     establishmentProbability = new EstablishmentProbability(null, null);
                 }
 
-                // this if is never executed before spin-up, it is done after spin up. can get rid of it
-                if (initialSites.ContainsKey(key) && SiteOutputName == null)
+                bool biomassProvided = false;
+                foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                 {
-                    subcanopypar = initialSites[key].subcanopypar;
-                    subcanopyparmax = initialSites[key].SubCanopyParMAX;
-                    watermax = initialSites[key].watermax;
-
-                    hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
-
-                    this.canopylaimax = initialSites[key].CanopyLAImax;
-
-                    foreach (ISpecies spc in initialSites[key].cohorts.Keys)
+                    foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                     {
-                        foreach (Cohort cohort in initialSites[key].cohorts[spc])
+                        if (cohort.Biomass > 0)  // 0 biomass indicates biomass value was not read in
                         {
-                            AddNewCohort(new Cohort(cohort));
+                            biomassProvided = true;
+                            break;
                         }
                     }
                 }
 
-                else
+                if (biomassProvided)
                 {
-                    hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
-
-                    List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
-                    foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                    foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
-                        foreach (Landis.Library.AgeOnlyCohorts.ICohort cohort in speciesCohorts)
+                        foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
-                            sortedAgeCohorts.Add(cohort);
-                        }
-                    }
-                    sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
-
-                    if (sortedAgeCohorts.Count == 0) return;
-
-                    DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age));
-
-                    Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
-
-                    // the actual spin up
-                    while (date.CompareTo(StartDate) < 0)
-                    {
-                        //  Add those cohorts that were born at the current year
-                        while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == sortedAgeCohorts[0].Age)
-                        {
-                            Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
-
-                            AddNewCohort(cohort);
-
-                            sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
-                        }
-
-                        // Simulation time runs untill the next cohort is added
-                        DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
-
-                        List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, date, EndDate);
-
-                        Grow(climate_vars);
-
-                        date = EndDate;
-
-                    }
-                    if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
-                }
-                Cohort.SetSiteAccessFunctions(this);
-            }
-            // spin up
-            else
-            {
-                Cohort.SetSiteAccessFunctions(this);
-
-                this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
-                this.Site = site;
-                cohorts = new Dictionary<ISpecies, List<Cohort>>();
-                uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
-
-                if (initialSites.ContainsKey(key) && SiteOutputName == null)
-                {
-                    establishmentProbability = new EstablishmentProbability(null, null);
-                    subcanopypar = initialSites[key].subcanopypar;
-                    subcanopyparmax = initialSites[key].SubCanopyParMAX;
-                    watermax = initialSites[key].watermax;
-
-                    hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
-
-                    PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
-                    PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
-                    this.canopylaimax = initialSites[key].CanopyLAImax;
-
-                    foreach (ISpecies spc in initialSites[key].cohorts.Keys)
-                    {
-                        foreach (Cohort cohort in initialSites[key].cohorts[spc])
-                        {
-                            AddNewCohort(new Cohort(cohort));
+                            AddNewCohort(new Cohort(cohort.Species, cohort.Age, cohort.Biomass));
                         }
                     }
                 }
                 else
                 {
-
-                    if (initialSites.ContainsKey(key) == false)
-                    {
-                        initialSites.Add(key, this);
-                    }
-                    hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
-
-                    PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
-                    PlugIn.Litter[Site] = new Library.Biomass.Pool();
-
-                    if (SiteOutputName != null)
-                    {
-                        this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
-
-                        establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
-                    }
-                    else
-                    {
-                        establishmentProbability = new EstablishmentProbability(null, null);
-                    }
-
-                    List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
-                    foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
-                    {
-                        foreach (Landis.Library.AgeOnlyCohorts.ICohort cohort in speciesCohorts)
-                        {
-                            sortedAgeCohorts.Add(cohort);
-                        }
-                    }
-                    sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
-
-                    if (sortedAgeCohorts.Count == 0) return;
-
-                    DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age));
-
-                    Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
-
-                    while (date.CompareTo(StartDate) < 0)
-                    {
-                        //  Add those cohorts that were born at the current year
-                        while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == sortedAgeCohorts[0].Age)
-                        {
-                            Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
-
-                            AddNewCohort(cohort);
-
-                            sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
-                        }
-
-                        // Simulation time runs untill the next cohort is added
-                        DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
-
-                        List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, date, EndDate);
-
-                        Grow(climate_vars);
-
-                        date = EndDate;
-
-                    }
-                    if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
+                    SpinUp(StartDate, site, initialCommunity, SiteOutputName);
                 }
             }
         }
-        
-        
+
+        //spins up sites if no biomass is provided
+        private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
+        {
+            List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
+            foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+            {
+                foreach (Landis.Library.AgeOnlyCohorts.ICohort cohort in speciesCohorts)
+                {
+                    sortedAgeCohorts.Add(cohort);
+                }
+            }
+            sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
+
+            if (sortedAgeCohorts.Count == 0) return;
+
+            DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age));
+
+            Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
+
+            while (date.CompareTo(StartDate) < 0)
+            {
+                //  Add those cohorts that were born at the current year
+                while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == sortedAgeCohorts[0].Age)
+                {
+                    Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
+
+                    AddNewCohort(cohort);
+
+                    sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
+                }
+
+                // Simulation time runs untill the next cohort is added
+                DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
+
+                List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, date, EndDate);
+
+                Grow(climate_vars);
+
+                date = EndDate;
+
+            }
+            if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
+        }
 
         List<List<int>> GetRandomRange(List<List<int>> bins)
         {

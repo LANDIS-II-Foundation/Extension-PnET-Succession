@@ -26,10 +26,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     int mapValue = (int)pixel.MapCode.Value;
                     if (site.IsActive)
                     {
-                        if (mapValue < 0 || mapValue > 300)
+                        if (mapValue < 0 || mapValue > 100000)
                             throw new InputValueException(mapValue.ToString(),
-                                                          "Soil depth value {0} is not between {1:0.0} and {2:0.0}. Site_Row={3:0}, Site_Column={4:0}",
-                                                          mapValue, 0, 300, site.Location.Row, site.Location.Column);
+                                                          "Down dead value {0} is not between {1:0.0} and {2:0.0}. Site_Row={3:0}, Site_Column={4:0}",
+                                                          mapValue, 0, 100000, site.Location.Row, site.Location.Column);
                         PlugIn.WoodyDebris[site].InitialMass = mapValue;
                         PlugIn.WoodyDebris[site].Mass = mapValue;
                     }
