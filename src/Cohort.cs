@@ -417,7 +417,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Add thawed soil water to soil moisture
                 // Instantaneous runoff (excess of porosity)
                 float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - (ecoregion.Porosity * frostFreeProp), 0));
-                Hydrology.RunOff += meltrunoff;
+                Hydrology.RunOff += meltrunoff*ecoregion.RunoffFrac;
 
                 success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + " water = " + hydrology.Water + "meltrunoff = " + meltrunoff);
@@ -432,7 +432,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Instantaneous runoff (excess of porosity)
                 float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - (ecoregion.Porosity * frostFreeProp), 0));
-                Hydrology.RunOff += rainrunoff;
+                Hydrology.RunOff += rainrunoff*ecoregion.RunoffFrac;
 
                 float waterIn = precipIn - rainrunoff;
 

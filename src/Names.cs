@@ -34,6 +34,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
+        public const string RunoffFrac = "RunoffFrac";
         public const string PrecLossFrac = "PrecLossFrac";
         public const string RootingDepth = "RootingDepth";
         public const string SoilType = "SoilType";

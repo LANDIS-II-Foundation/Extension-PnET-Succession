@@ -4,14 +4,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface IEcoregionPnET : IEcoregion
     {
-        float LeakageFrac
-        {
-            get;
-          
-        }
+        float LeakageFrac{ get;}
+        float RunoffFrac { get; }
         float PrecLossFrac { get; }
-        string SoilType { get; }
-        
+        string SoilType { get; }        
         float PrecIntConst { get;  }
         float RootingDepth { get;   }
         float FieldCap { get; set; }

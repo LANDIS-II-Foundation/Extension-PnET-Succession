@@ -22,6 +22,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float subcanopyparmax;
         private float frostFreeSoilDepth;
         private float leakageFrac;
+        private float runoffFrac;
 
         private float[] netpsn = null;
         private float[] grosspsn = null;
@@ -706,7 +707,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + " water = " + hydrology.Water);
 
                     // Instantaneous runoff (excess of porosity)
-                    Hydrology.RunOff = Math.Max(hydrology.Water - Ecoregion.Porosity, 0);
+                    float tempRunoff = Math.Max(hydrology.Water - Ecoregion.Porosity, 0);
+                    Hydrology.RunOff = tempRunoff * Ecoregion.RunoffFrac;
                     success = hydrology.AddWater(-1 * Hydrology.RunOff);
                     if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
 
