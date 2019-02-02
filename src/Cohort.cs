@@ -360,9 +360,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.lastSeasonFRad = cohort.lastSeasonFRad;
         }
 
-        public Cohort(ISpecies species, ushort age, int biomass)
+        public Cohort(ISpeciesPNET species, ushort age, int biomass)
         {
-            this.species = new SpeciesPnET(species);
+            this.species = species;
             this.age = age;
             this.biomass = biomass;
             this.nsc = this.species.DNSC * this.FActiveBiom * this.biomass;

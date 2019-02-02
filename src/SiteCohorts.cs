@@ -168,7 +168,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
-                            AddNewCohort(new Cohort(cohort.Species, cohort.Age, cohort.Biomass));
+                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass));
                         }
                     }
                 }
@@ -266,7 +266,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
 
-        // check here for variables that need to be initialized instead of spun up
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
