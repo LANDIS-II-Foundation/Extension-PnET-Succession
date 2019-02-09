@@ -26,9 +26,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
+        public static float FTimeStep;
         //public static float PrecipEvents;// Now an ecoregion parameter
-        
-        
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
 
@@ -248,9 +247,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
         }
-        public static float FTimeStep;
 
-        // this is what begins spin-up
         public override void Initialize()
         {
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
@@ -298,7 +295,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              
             StartDate = new DateTime(((Parameter<int>)GetParameter(Names.StartYear)).Value, 1, 15);
 
-            PlugIn.ModelCore.UI.WriteLine("Spinning up biomass");
+            PlugIn.ModelCore.UI.WriteLine("Spinning up biomass or reading from maps...");
 
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
@@ -360,7 +357,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             return IsMaturePresent;
         }
 
-        //this is where spin up happens, this is called from initialize by initializesites in library.succession
         protected override void InitializeSite(ActiveSite site,
                                                ICommunity initialCommunity)
         {

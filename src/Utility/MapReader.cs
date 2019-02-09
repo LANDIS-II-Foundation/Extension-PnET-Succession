@@ -13,6 +13,11 @@ namespace Landis.Extension.Succession.BiomassPnET
     /// </summary>
     public static class MapReader
     {
+        static private double maxLitter = 5176.124;
+        static private double maxWoodyDebris = 95007.64;
+        static private double minLitter = 0;
+        static private double minWoodyDebris = 0;
+
         public static void ReadWoodyDebrisFromMap(string path)
         {
             IInputRaster<DoublePixel> map = MakeDoubleMap(path);
@@ -26,10 +31,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     int mapValue = (int)pixel.MapCode.Value;
                     if (site.IsActive)
                     {
-                        if (mapValue < 0 || mapValue > 100000)
+                        if (mapValue < minWoodyDebris || mapValue > maxWoodyDebris)
                             throw new InputValueException(mapValue.ToString(),
                                                           "Down dead value {0} is not between {1:0.0} and {2:0.0}. Site_Row={3:0}, Site_Column={4:0}",
-                                                          mapValue, 0, 100000, site.Location.Row, site.Location.Column);
+                                                          mapValue, minWoodyDebris, maxWoodyDebris, site.Location.Row, site.Location.Column);
                         PlugIn.WoodyDebris[site].InitialMass = mapValue;
                         PlugIn.WoodyDebris[site].Mass = mapValue;
                     }
@@ -50,10 +55,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     int mapValue = (int)pixel.MapCode.Value;
                     if (site.IsActive)
                     {
-                        if (mapValue < 0 || mapValue > 300)
+                        if (mapValue < minLitter || mapValue > maxLitter)
                             throw new InputValueException(mapValue.ToString(),
-                                                          "Soil depth value {0} is not between {1:0.0} and {2:0.0}. Site_Row={3:0}, Site_Column={4:0}",
-                                                          mapValue, 0, 300, site.Location.Row, site.Location.Column);
+                                                          "Litter value {0} is not between {1:0.0} and {2:0.0}. Site_Row={3:0}, Site_Column={4:0}",
+                                                          mapValue, minLitter, maxLitter, site.Location.Row, site.Location.Column);
 
                         PlugIn.Litter[site].InitialMass = mapValue;
                         PlugIn.Litter[site].Mass = mapValue;

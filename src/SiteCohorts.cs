@@ -168,7 +168,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
-                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass));
+                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName));
                         }
                     }
                 }
@@ -179,7 +179,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        //spins up sites if no biomass is provided
+        // Spins up sites if no biomass is provided
         private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
         {
             List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
