@@ -1,12 +1,34 @@
 //  Authors:    Arjan de Bruijn
 //              Brian R. Miranda
 
+// John McNabb: (02.04.2019)
+//
+//  Summary of changes to allow the climate library to be used with PnET-Succession:
+//   (1) Added ClimateRegionData class based on that of NECN to hold the climate library data. This is Initialized by a call
+//       to InitialClimateLibrary() in Plugin.Initialize().
+//   (2) Modified EcoregionPnET to add GetClimateRegionData() which grabs climate data from ClimateRegionData.  This uses an intermediate
+//       MonthlyClimateRecord instance which is similar to ObservedClimate.
+//   (3) Added ClimateRegionPnETVariables class which is a copy of the EcoregionPnETVariables class which uses MonthlyClimateRecord rather than
+//       ObserverdClimate. I had hoped to use the same class, but the definition of IObservedClimate prevents MonthlyClimateRecord from implementing it.
+//       IMPORTANT NOTE: The climate library precipation is in cm/month, so that it is converted to mm/month in MonthlyClimateRecord.
+//   (4) Modified Plugin.AgeCohorts() and SiteCohorts.SiteCohorts() to call either EcoregionPnET.GetClimateRegoinData() or EcoregionPnET.GetData()
+//       depending on whether the climate library is enabled.
 
-using Landis.Utilities;
+//   Enabling the climate library with PnET:
+//   (1) Indicate the climate library configuration file in the 'PnET-succession' configuration file using the 'ClimateConfigFile' parameter, e.g.
+//        ClimateConfigFile	"./climate-generator-baseline.txt"
+//
+//   NOTE: Use of the climate library is OPTIONAL.  If the 'ClimateConfigFile' parameter is missing (or commented-out) of the 'PnET-succession'
+//   configuration file, then PnET reverts to using climate data as specified by the 'ClimateFileName' column in the 'EcoregionParameters' file
+//   given in the 'PnET-succession' configuration file.
+//
+//   NOTE: This uses a version (v4?) of the climate library that exposes AnnualClimate_Monthly.MonthlyOzone[] and .MonthlyCO2[].
+
 using Landis.Core;
 using Landis.Library.InitialCommunities;
 using Landis.Library.Succession;
 using Landis.SpatialModeling;
+using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,10 +48,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
-        public static float LeakageFrostDepth;
+        //public static float LeakageFrostDepth; // Now an ecoregion parameter
         //public static float PrecipEvents;// Now an ecoregion parameter
-        
-        
+        public static bool UsingClimateLibrary;
+
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
 
@@ -268,7 +290,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
 
-            
             ObservedClimate.Initialize();
 
             SpeciesPnET = new SpeciesPnET();
@@ -276,11 +297,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             EcoregionPnET.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
-            
+ 
+            // John McNabb: initialize climate library after EcoregionPnET has been initialized
+            InitializeClimateLibrary();
+
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
-            LeakageFrostDepth = ((Parameter<float>)GetParameter(Names.LeakageFrostDepth)).Value;
+            //LeakageFrostDepth = ((Parameter<float>)GetParameter(Names.LeakageFrostDepth)).Value; //Now an ecoregion parameter
             //PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;// Now an ecoregion parameter
           
 
@@ -343,7 +367,21 @@ namespace Landis.Extension.Succession.BiomassPnET
             
              
         }
-           
+
+        /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>
+        private void InitializeClimateLibrary()
+        {
+            // John McNabb: initialize ClimateRegionData after initializing EcoregionPnet
+
+            Parameter<string> climateLibraryFileName;
+            UsingClimateLibrary = TryGetParameter(Names.ClimateConfigFile, out climateLibraryFileName);
+            if (UsingClimateLibrary)
+            {
+                Climate.Initialize(climateLibraryFileName.Value, false, ModelCore);
+                ClimateRegionData.Initialize();
+            }
+        }
+
         public void AddNewCohort(ISpecies species, ActiveSite site)
         {
             ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
@@ -369,7 +407,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             m.WriteUpdate();
 
              // Create new sitecohorts
-            sitecohorts[site] = new SiteCohorts(StartDate,site,initialCommunity, SiteOutputNames.ContainsKey(site)? SiteOutputNames[site] :null);
+            sitecohorts[site] = new SiteCohorts(StartDate,site,initialCommunity, UsingClimateLibrary, SiteOutputNames.ContainsKey(site)? SiteOutputNames[site] :null);
 
            
            
@@ -385,7 +423,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
-            List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
+            List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
 
             sitecohorts[site].Grow(climate_vars);
 
@@ -403,9 +441,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             base.Run();
         }
-        
 
-        
+
+
         public void AddLittersAndCheckResprouting(object sender, Landis.Library.AgeOnlyCohorts.DeathEventArgs eventArgs)
         {
             if (eventArgs.DisturbanceType != null)
