@@ -12,7 +12,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PnETGenericParameters = "PnETGenericParameters";
         public const string PnETGenericDefaultParameters = "PnETGenericDefaultParameters";
         public const string VanGenuchten = "VanGenuchten";
-        public const string SaxtonAndRawls = "SaxtonAndRawls";
+        public const string SaxtonAndRawls = "SaxtonAndRawlsParameters";
         public const string PnETSpeciesParameters = "PnETSpeciesParameters";
         public const string StartYear = "StartYear";
         public const string Timestep = "Timestep";

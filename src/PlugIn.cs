@@ -42,6 +42,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public static float Latitude;// Now an ecoregion parameter
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
+        public static ISiteVar<Double> FineFuels;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
@@ -282,6 +283,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
@@ -345,27 +347,24 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
             ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
             ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
-            
+
             ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
-              
+            ISiteVar<ISiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<ISiteCohorts>();
+          
+
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
                 AgeCohortSiteVar[site] = sitecohorts[site];
+                PnETCohorts[site] = sitecohorts[site];
+                FineFuels[site] = Litter[site].Mass;
             }
 
             ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
-
-            ISiteVar<ISiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<ISiteCohorts>();
-
-            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
-            {
-                PnETCohorts[site] = sitecohorts[site];
-            }
-
             ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
-            
-            
-             
+            ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
+
+
+
         }
 
         /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>
@@ -377,8 +376,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             UsingClimateLibrary = TryGetParameter(Names.ClimateConfigFile, out climateLibraryFileName);
             if (UsingClimateLibrary)
             {
+                PlugIn.ModelCore.UI.WriteLine($"Using climate library: {climateLibraryFileName.Value}.");
                 Climate.Initialize(climateLibraryFileName.Value, false, ModelCore);
                 ClimateRegionData.Initialize();
+                
+            }
+            else
+            {
+                PlugIn.ModelCore.UI.WriteLine($"Using climate files in ecoregion parameters: {PlugIn.parameters["EcoregionParameters"].Value}.");
             }
         }
 

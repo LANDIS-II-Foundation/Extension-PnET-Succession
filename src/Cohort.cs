@@ -23,6 +23,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private bool leaf_on = true;
 
         public static IEcoregionPnET ecoregion;
+        public static ActiveSite site;
 
         public static AddWoodyDebris addwoodydebris;
         
@@ -386,6 +387,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              Cohort.addlitter = sitecohorts.AddLitter;
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
              Cohort.ecoregion = sitecohorts.Ecoregion;
+             Cohort.site = sitecohorts.Site;
         }
         
 
@@ -420,7 +422,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.RunOff += meltrunoff*ecoregion.RunoffFrac;
 
                 success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
-                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + " water = " + hydrology.Water + "meltrunoff = " + meltrunoff);
+                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
             float precipIn = 0;
             // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
@@ -438,7 +440,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(waterIn);
-                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + " water = " + hydrology.Water + " rainrunoff = " + rainrunoff);
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
 
             // Leakage only occurs following precipitation events or incoming melt water
@@ -449,7 +451,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Remove fast leakage
                 success = hydrology.AddWater(-1 * leakage);
-                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }               
             
             // Adjust soil water for freezing
@@ -460,7 +462,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float frozenWater = hydrology.Water - frozenLimit;
                 // Remove frozen water
                 success = hydrology.AddWater(-1 * frozenWater);
-                if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + " water = " + hydrology.Water);
+                if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
             MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
@@ -787,7 +789,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
-                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water);
+                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
 
                 // Add net psn to non soluble carbons
                 nsc += NetPsn[index];

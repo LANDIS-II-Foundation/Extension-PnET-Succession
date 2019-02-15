@@ -256,7 +256,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     if (date.Year != oldYear)
                     {
-                        PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
+                        //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
 
                         if (spinupOrfuture == Climate.Phase.Future_Climate)
                         {

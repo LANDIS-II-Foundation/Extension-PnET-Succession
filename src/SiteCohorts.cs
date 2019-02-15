@@ -32,7 +32,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float[] maintresp = null;
         private float transpiration;
         private double HeterotrophicRespiration;
-        private ActiveSite Site;
+        public ActiveSite Site;
         private Dictionary<ISpecies, List<Cohort>> cohorts = null;
         IEstablishmentProbability establishmentProbability = null;
         private IHydrology hydrology = null;
@@ -126,6 +126,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
                 PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
+                PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
                 this.canopylaimax = initialSites[key].CanopyLAImax;
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -147,6 +148,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
+                PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
 
                 if (SiteOutputName != null)
                 {
@@ -578,10 +580,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
-                if (Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + Ecoregion.Variables.Prec);
+                if (Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + Ecoregion.Variables.Prec + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(Ecoregion.Variables.Tave, Ecoregion.Variables.DaySpan)); // mm
-                if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt );
+                if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 float newsnow = CumputeSnowFraction(Ecoregion.Variables.Tave) * Ecoregion.Variables.Prec;
                 float newsnowpack = newsnow * (1 - Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
@@ -591,7 +593,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
 
                 snowPack += newsnowpack - snowmelt;
-                if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack);
+                if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 float newrain = Ecoregion.Variables.Prec - newsnow;
 
@@ -604,11 +606,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float availableRain = surfaceRain  - precLoss;
 
                 float precin = availableRain;  
-                if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow);
+                if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 int numEvents = Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
                 float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
-                if (PrecInByEvent < 0) throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent);
+                if (PrecInByEvent < 0) throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 //permafrost - assume melting permafrost water is available in the same way as precip
                 // melting permafrost water - assumes soil at field capacity when thawing
@@ -702,20 +704,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     // Add incoming precipitation to soil moisture
                     success = hydrology.AddWater(precin);
-                    if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + " water = " + hydrology.Water);
+                    if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                     // Instantaneous runoff (excess of porosity)
                     float tempRunoff = Math.Max(hydrology.Water - Ecoregion.Porosity, 0);
                     Hydrology.RunOff = tempRunoff * Ecoregion.RunoffFrac;
                     success = hydrology.AddWater(-1 * Hydrology.RunOff);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + " water = " + hydrology.Water);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                     // Fast Leakage 
                     Hydrology.Leakage = Math.Max(leakageFrac * (hydrology.Water - Ecoregion.FieldCap), 0);
 
                     // Remove fast leakage
                     success = hydrology.AddWater(-1 * Hydrology.Leakage);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + " water = " + hydrology.Water);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 }
 
@@ -743,7 +745,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 success = hydrology.AddWater(-1 * Hydrology.Evaporation);
                 if (success == false)
                 {
-                    throw new System.Exception("Error adding water, evaporation = " + Hydrology.Evaporation + " water = " + hydrology.Water);
+                    throw new System.Exception("Error adding water, evaporation = " + Hydrology.Evaporation + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                 }
 
                 if (siteoutput != null)
