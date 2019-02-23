@@ -360,8 +360,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.lastSeasonFRad = cohort.lastSeasonFRad;
         }
 
-        public Cohort(ISpeciesPNET species, ushort age, int biomass, string SiteName)
+        public Cohort(ISpeciesPNET species, ushort age, int biomass, string SiteName, ushort firstYear)
         {
+            InitializeSubLayers();
             this.species = species;
             this.age = age;
             this.biomass = biomass;
@@ -369,9 +370,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.biomassmax = biomass;
             this.lastSeasonFRad = new List<float>();
 
+            if (this.leaf_on)
+            {
+                this.fol = (adjFracFol * FActiveBiom * biomass);
+                LAI[index] = CalculateLAI(this.species, this.fol, index);
+            }
+
             if (SiteName != null)
             {
-                InitializeOutput(SiteName);
+                InitializeOutput(SiteName, firstYear);
             }
         }
         // Makes sure that litters are allocated to the appropriate site
