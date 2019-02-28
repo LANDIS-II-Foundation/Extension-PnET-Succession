@@ -369,6 +369,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.nsc = this.species.DNSC * this.FActiveBiom * this.biomass;
             this.biomassmax = biomass;
             this.lastSeasonFRad = new List<float>();
+            this.adjFracFol = species.FracFol;
 
             if (this.leaf_on)
             {

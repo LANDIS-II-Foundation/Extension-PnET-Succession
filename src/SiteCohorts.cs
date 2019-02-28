@@ -133,7 +133,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     initialSites.Add(key, this);
                 }
+                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
                 hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
+                watermax = (ushort)hydrology.Water;
+                subcanopypar = ecoregionInitializer[0].PAR0;
+                subcanopyparmax = subcanopypar;
 
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
@@ -168,9 +172,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
-                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)StartDate.Year));
+                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
                         }
                     }
+
+                    AllCohorts.ForEach(x =>
+                    {
+                        CanopyLAI += x.LAI.Sum();
+                    }
+                    );
+                    this.canopylaimax = (byte)CanopyLAI;
 
                     //CalculateInitialWater(StartDate);
                 }
