@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extension_Admin", "..\..\br
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "..\..\brmiranda\Core-Model-v7\Tool-Console\src\Console.csproj", "{E6C0B701-0253-4C21-8AA3-DEF358246C97}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "scrapple", "..\..\brmiranda\Extension-SCRPPLE\src\scrapple.csproj", "{318BF72B-D470-4029-BA97-0979CA45B0DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,14 @@ Global
 		{E6C0B701-0253-4C21-8AA3-DEF358246C97}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E6C0B701-0253-4C21-8AA3-DEF358246C97}.Release|x64.ActiveCfg = Release|x64
 		{E6C0B701-0253-4C21-8AA3-DEF358246C97}.Release|x64.Build.0 = Release|x64
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Debug|x64.Build.0 = Debug|Any CPU
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Release|x64.ActiveCfg = Release|Any CPU
+		{318BF72B-D470-4029-BA97-0979CA45B0DC}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1409,7 +1409,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             */
 
             // Does this only occur when a site is disturbed?
-            Allocation.ReduceDeadPools(this, disturbance.Type); 
+            //Allocation.ReduceDeadPools(this, disturbance.Type); 
 
             //  Go through list of species cohorts from back to front so that
             //  a removal does not mess up the loop.
