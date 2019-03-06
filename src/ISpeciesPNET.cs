@@ -84,8 +84,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Base foliar respiration (g respired / g photosynthesis)
         float BFolResp { get; }
 
-        //Minimum temperatyre for photosynthesis
+        //Minimum temperature for photosynthesis
         float PsnTMin { get; }
+
+        //Maximum temperature for photosynthesis
+        float PsnTMax { get; }
 
         // Foliar nitrogen (gN/gC)
         float FolN { get; }

@@ -65,6 +65,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _psntopt;
         private float _q10;
         private float _psntmin;
+        private float _psntmax;
         private float _dvpd1;
         private float _foln;
         private float _dvpd2;
@@ -129,6 +130,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private static Landis.Library.Parameters.Species.AuxParm<float> q10;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
+        private static Landis.Library.Parameters.Species.AuxParm<float> psntmax;
         private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
         private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
         private static Landis.Library.Parameters.Species.AuxParm<float> foln;
@@ -182,6 +184,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             psntopt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntopt"));
             q10 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("q10"));
             psntmin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmin"));
+            psntmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmax"));
             dvpd1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd1"));
             dvpd2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd2"));
             foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
@@ -245,6 +248,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float psntopt,
             float q10,
             float psntmin,
+            float psntmax,
             float dvpd1,
             float dvpd2,
             float foln,
@@ -301,6 +305,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._psntopt = psntopt;
             this._q10 = q10;
             this._psntmin = psntmin;
+            this._psntmax = psntmax;
             this._dvpd1 = dvpd1;
             this._foln = foln;
             this._dvpd2 = dvpd2;
@@ -360,6 +365,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _psntopt = psntopt[species];
             _q10 = q10[species]; 
             _psntmin = psntmin[species];
+            _psntmax = psntmax[species];
             _dvpd1 = dvpd1[species];
             _foln = foln[species];
             _dvpd2 = dvpd2[species];
@@ -452,6 +458,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _psntmin;
+            }
+        }
+        public float PsnTMax
+        {
+            get
+            {
+                return _psntmax;
             }
         }
         public float DVPD1

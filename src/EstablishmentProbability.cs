@@ -122,7 +122,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
-                if (pnetvars.Tmin > spc.PsnTMin)
+                if (pnetvars.Tmin > spc.PsnTMin && pnetvars.Tmax < spc.PsnTMax)
                 {
                     // Adjust HalfSat for CO2 effect
                     float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
