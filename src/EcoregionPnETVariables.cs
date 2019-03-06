@@ -210,7 +210,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else
                 {
-                    float PsnTMinestimate = PsnTOpt - (PsnTOpt - PsnTMax);
+                    float PsnTMinestimate = PsnTOpt + (PsnTOpt - PsnTMax);
                     return (float)Math.Max(0.0, ((PsnTMax - tday) * (tday - PsnTMinestimate)) / (float)Math.Pow(((PsnTMax - PsnTMinestimate) / 2), 2));
                 }
             }
