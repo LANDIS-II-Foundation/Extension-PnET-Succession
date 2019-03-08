@@ -360,7 +360,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.lastSeasonFRad = cohort.lastSeasonFRad;
         }
 
-        public Cohort(ISpeciesPNET species, ushort age, int biomass, string SiteName, ushort firstYear)
+        public Cohort(ISpeciesPNET species, ushort age, int biomass, string SiteName, ushort firstYear, ref float subCanopyPAR)
         {
             InitializeSubLayers();
             this.species = species;
@@ -374,7 +374,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (this.leaf_on)
             {
                 this.fol = (adjFracFol * FActiveBiom * biomass);
-                LAI[index] = CalculateLAI(this.species, this.fol, index);
+                while(index < PlugIn.IMAX)
+                {
+                    LAI[index] = CalculateLAI(this.species, this.fol, index);
+                    subCanopyPAR *= (float)Math.Exp(-species.K * LAI[index]);
+                    index++;
+                }
             }
 
             if (SiteName != null)
@@ -398,7 +403,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float LeakagePerCohort, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect)
-         {            
+        {            
             bool success = true;
             float lastO3Effect = O3Effect;
             O3Effect = 0;

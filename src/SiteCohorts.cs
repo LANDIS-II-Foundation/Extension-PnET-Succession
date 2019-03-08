@@ -133,11 +133,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     initialSites.Add(key, this);
                 }
-                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate.AddMonths(-1), StartDate);
                 hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
                 watermax = (ushort)hydrology.Water;
                 subcanopypar = ecoregionInitializer[0].PAR0;
-                subcanopyparmax = subcanopypar;
 
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
@@ -172,7 +171,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
-                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), ref subcanopypar));
                         }
                     }
 
@@ -182,8 +181,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                     );
                     this.canopylaimax = (byte)CanopyLAI;
-
-                    //CalculateInitialWater(StartDate);
+                    subcanopyparmax = Math.Max(subcanopypar, ecoregionInitializer[0].PAR0);
                 }
                 else
                 {
@@ -669,243 +667,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             //HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//Moved within m loop to trigger once per year
 
             return success;
-        }
-
-        private void CalculateInitialWater(DateTime StartDate)
-        {
-            canopylaimax = byte.MinValue;
-
-            SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
-
-            List<int> cohortAges = new List<int>();
-
-            for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
-            {
-                for (int i = 1; i <= PlugIn.IMAX; i++)
-                {
-                    double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
-                    while (SubCanopyCohorts.ContainsKey(CumCohortBiomass))
-                    {
-                        // Add a negligable value [-1e-10; + 1e-10] to CumCohortBiomass in order to prevent duplicate keys
-                        double k = 1e-10 * 2.0 * (PlugIn.ContinuousUniformRandom() - 0.5);
-                        CumCohortBiomass += k;
-                    }
-                    SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);
-                }
-                if (!cohortAges.Contains(AllCohorts[cohort].Age))
-                {
-                    cohortAges.Add(AllCohorts[cohort].Age);
-                }
-            }
-
-
-            List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
-
-            // Sort through bins to put cohort sublayers in the same bin based on majority
-            List<List<int>> bins = new List<List<int>>();
-            if ((rawBins != null) && (rawBins.Count > 1))
-            {
-                Dictionary<string, Dictionary<int, int>> speciesLayerIndex = new Dictionary<string, Dictionary<int, int>>();
-                List<int> addedValues = new List<int>();
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
-                {
-                    foreach (int thisAge in cohortAges)
-                    {
-                        Dictionary<int, double> sumBio = new Dictionary<int, double>();
-                        for (int i = 0; i < rawBins.Count(); i++)
-                        {
-                            double sumLayerBio = 0;
-                            List<int> binLayers = rawBins[i];
-                            for (int b = 0; b < binLayers.Count(); b++)
-                            {
-                                int layerKey = binLayers[b];
-                                Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
-                                if ((layerCohort.SpeciesPNET.Name == spc.Name) && (layerCohort.Age == thisAge))
-                                {
-                                    sumLayerBio += ((double)layerCohort.TotalBiomass) / ((double)PlugIn.IMAX);
-                                }
-                            }
-                            sumBio.Add(i, sumLayerBio);
-                        }
-
-                        int layerMaxBio = sumBio.LastOrDefault(x => x.Value == sumBio.Values.Max()).Key;
-
-                        if (sumBio.Values.Max() > 0)
-                        {
-                            if (speciesLayerIndex.Keys.Contains(spc.Name))
-                            {
-                                Dictionary<int, int> ageIndex = speciesLayerIndex[spc.Name];
-                                ageIndex.Add(thisAge, layerMaxBio);
-                                speciesLayerIndex[spc.Name] = ageIndex;
-                            }
-                            else
-                            {
-                                Dictionary<int, int> ageIndex = new Dictionary<int, int>();
-                                ageIndex.Add(thisAge, layerMaxBio);
-                                speciesLayerIndex.Add(spc.Name, ageIndex);
-                            }
-                            addedValues.Add(layerMaxBio);
-                        }
-                    }
-                }
-                //step through subcanopycohorts
-                int subLayerKey = 0;
-
-                // There shouldn't be more layers than cohorts
-                int numberOfLayers = Math.Min(addedValues.Max() + 1, (int)((float)SubCanopyCohorts.Count() / (float)PlugIn.IMAX));
-
-                // Final layer indices should not skip any layers
-                List<int> distinctValues = addedValues.Distinct().ToList();
-                distinctValues.Sort();
-                Dictionary<int, int> indexLookup = new Dictionary<int, int>();
-                for (int j = 0; j < distinctValues.Count(); j++)
-                {
-                    indexLookup.Add(distinctValues[j], j);
-                }
-
-                for (int i = 0; i < numberOfLayers; i++)
-                {
-                    bins.Add(new List<int>());
-                }
-                foreach (KeyValuePair<double, Cohort> entry in SubCanopyCohorts)
-                {
-                    ISpecies spc = entry.Value.SpeciesPNET;
-                    int thisAge = entry.Value.Age;
-                    int tempIndex = indexLookup[speciesLayerIndex[spc.Name][thisAge]];
-                    int layerIndex = Math.Max(tempIndex, entry.Value.Layer);  //Once a cohort reaches a canopy layer it cannot be dropped below that position
-                    if (layerIndex > MaxCanopyLayers - 1)
-                    {
-                        throw new System.Exception("layerIndex  " + layerIndex + " is greater than MaxCanopyLayers - 1: " + (MaxCanopyLayers - 1));
-                    }
-                    if (bins.ElementAtOrDefault(layerIndex) == null)
-                    {
-                        while (bins.ElementAtOrDefault(layerIndex) == null)
-                        {
-                            bins.Add(new List<int>());
-                        }
-                    }
-                    bins[layerIndex].Add(subLayerKey);
-
-                    subLayerKey += 1;
-                }
-
-            }
-            else
-            {
-                bins = rawBins;
-            }
-
-            List<List<int>> random_range = GetRandomRange(bins);
-
-            List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
-
-            if (climate_vars != null && climate_vars.Count > 0)
-            {
-                this.Ecoregion.Variables = climate_vars.First();
-            }
-            else
-            {
-                return;
-            }
-            transpiration = 0;
-            subcanopypar = this.Ecoregion.Variables.PAR0;
-            interception = 0;
-
-            AllCohorts.ForEach(x => x.InitializeSubLayers());
-
-            if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
-
-            float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan)); // mm
-            if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt);
-
-            float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec;
-            float newsnowpack = newsnow * (1 - this.Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
-            if (newsnowpack < 0 || newsnowpack > this.Ecoregion.Variables.Prec)
-            {
-                throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + this.Ecoregion.Variables.Prec);
-            }
-
-            snowPack += newsnowpack - snowmelt;
-            if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack);
-
-            float newrain = this.Ecoregion.Variables.Prec - newsnow;
-
-            // Reduced by interception
-            interception = newrain * (float)(1 - Math.Exp(-1 * this.Ecoregion.PrecIntConst * CanopyLAI));
-            float surfaceRain = newrain - interception;
-
-            // Reduced by PrecLossFrac
-            precLoss = surfaceRain * this.Ecoregion.PrecLossFrac;
-            float availableRain = surfaceRain - precLoss;
-
-            float precin = availableRain + snowmelt;
-            if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
-
-            int numEvents = this.Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
-            float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
-            if (PrecInByEvent < 0) throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent);
-
-            // Randomly choose which layers will receive the precip events
-            // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
-            List<int> randomNumbers = new List<int>();
-            while (randomNumbers.Count < numEvents)
-            {
-                int rand = PlugIn.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
-                randomNumbers.Add(rand);
-            }
-            var groupList = randomNumbers.GroupBy(i => i);
-
-            // Reset Hydrology values
-            Hydrology.RunOff = 0;
-            Hydrology.Leakage = 0;
-            Hydrology.Evaporation = 0;
-
-            float subCanopyPrecip = 0;
-            int subCanopyIndex = 0;
-            if (bins != null)
-            {
-                for (int b = bins.Count() - 1; b >= 0; b--)
-                {
-                    foreach (int r in random_range[b])
-                    {
-                        subCanopyIndex++;
-                        int precipCount = 0;
-                        subCanopyPrecip = 0;
-                        foreach (var g in groupList)
-                        {
-                            if (g.Key == subCanopyIndex)
-                            {
-                                precipCount = g.Count();
-                                subCanopyPrecip = PrecInByEvent;
-                            }
-                        }
-                        Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                        ISpeciesPNET spc = c.SpeciesPNET;
-
-                        
-
-                        // A cohort cannot be reduced to a lower layer once it reaches a higher layer
-                        //if (c.Layer > bins.Count())
-                        //    c.Layer = (byte)bins.Count();
-                        c.Layer = (byte)Math.Max(b, c.Layer);
-                    }
-                }
-            }
-            else // When no cohorts are present
-            {
-                return;
-            }
-
-            // Surface PAR is effectively 0 when snowpack is present
-            if (snowPack > 0)
-                subcanopypar = 0;
-
-            canopylaimax = (byte)Math.Max(canopylaimax, CanopyLAI);
-            watermax = (ushort)Math.Max(hydrology.Water, watermax);
-            subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
-
-            Hydrology.Evaporation = hydrology.CalculateEvaporation(this);
-            hydrology.AddWater(-1 * Hydrology.Evaporation);
         }
 
         
