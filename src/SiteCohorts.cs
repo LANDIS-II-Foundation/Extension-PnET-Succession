@@ -1443,7 +1443,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             string s = monthdata.Year + "," +
                         Ecoregion.Name + "," +
                         Ecoregion.SoilType + "," +
-                        cohorts.Values.Sum(o => o.Count) + "," +
+                        CohortCount + "," +
                         maxLayerStdev + "," +
                         nlayers + "," +
                         monthdata.PAR0 + "," +

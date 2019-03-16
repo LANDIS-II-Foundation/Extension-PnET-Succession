@@ -301,7 +301,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
             string LitterMapFile = GetParameter(Names.LitterMap).Value;
             string WoodyDebrisMapFile = GetParameter(Names.WoodyDebrisMap).Value;
-            Console.ReadLine();
             InitializeSites(InitialCommunitiesTXTFile, InitialCommunitiesMapFile, ModelCore);
             MapReader.ReadLitterFromMap(LitterMapFile);
             MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile);
