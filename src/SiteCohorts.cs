@@ -165,7 +165,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                 }
 
-                if (biomassProvided)
+                if (biomassProvided && PlugIn.HasLitterMap && PlugIn.HasWoodyDebrisMap)
                 {
                     foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {

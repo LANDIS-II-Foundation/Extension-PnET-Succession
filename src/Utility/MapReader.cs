@@ -20,6 +20,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static void ReadWoodyDebrisFromMap(string path)
         {
+            if (path == string.Empty)
+            {
+                return;
+            }
             IInputRaster<DoublePixel> map = MakeDoubleMap(path);
 
             using (map)
@@ -44,6 +48,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static void ReadLitterFromMap(string path)
         {
+            if (path == string.Empty)
+            {
+                return;
+            }
             IInputRaster<DoublePixel> map = MakeDoubleMap(path);
 
             using (map)

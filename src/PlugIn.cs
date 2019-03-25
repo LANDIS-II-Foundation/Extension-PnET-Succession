@@ -20,6 +20,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public static float Latitude;// Now an ecoregion parameter
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
+        public static bool HasLitterMap = false;
+        public static bool HasWoodyDebrisMap = false;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
@@ -52,7 +54,22 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             if (parameters.ContainsKey(label) == false)
             {
+                if (label == Names.LitterMap || label == Names.WoodyDebrisMap)
+                {
+                    return new Parameter<string>("N/A", string.Empty, "N/A");
+                }
                 throw new System.Exception("No value provided for parameter " + label);
+            }
+            else
+            {
+                if (label == Names.LitterMap)
+                {
+                    HasLitterMap = true;
+                }
+                else if (label == Names.WoodyDebrisMap)
+                {
+                    HasWoodyDebrisMap = true;
+                }
             }
 
             return parameters[label];

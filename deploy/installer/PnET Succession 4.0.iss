@@ -6,11 +6,12 @@
 #define AppURL "http://www.landis-ii.org/"
 
 ; Build directory
-#define BuildDir "..\..\src\bin\Debug\netstandard2.0"
+#define BuildDir "..\..\src\bin\Release\netstandard2.0"
 
 ; LANDIS-II installation directories
 #define ExtDir "C:\Program Files\LANDIS-II-v7\extensions"
 #define AppDir "C:\Program Files\LANDIS-II-v7"
+#define MainDir "C:\Program Files\LANDIS-II-v7\v7"
 #define LandisPlugInDir "C:\Program Files\LANDIS-II-v7\plug-ins-installer-files"
 #define ExtensionsCmd AppDir + "\commands\landis-ii-extensions.cmd"
 
@@ -56,12 +57,18 @@ Source: {#BuildDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: u
 Source: {#BuildDir}\Landis.Library.Parameters-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
 Source: {#BuildDir}\Landis.Library.Biomass-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
 Source: {#BuildDir}\Landis.Library.Climate-v3.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
-Source: {#BuildDir}\Landis.Library.Succession-v6.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
+Source: {#BuildDir}\Landis.Library.Succession-InputAGB.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
+Source: {#BuildDir}\Landis.Library.LeafBiomassCohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
+Source: {#BuildDir}\Edu.Wisc.Forest.Flel.Util.dll; DestDir: {#ExtDir}; Flags: replacesameversion
 
 ; Complete example for testing the extension
 Source: ..\examples\biomass-Pnet-succession-example\*.txt; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: replacesameversion
 Source: ..\examples\biomass-Pnet-succession-example\*.gis; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: replacesameversion
 Source: ..\examples\biomass-Pnet-succession-example\*.bat; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: replacesameversion
+
+Source: ..\Defaults\PnETGenericDefaultParameters.txt; DestDir: {#ExtDir}\Defaults; Flags: replacesameversion
+Source: ..\Defaults\VanGenuchtenParameters.txt; DestDir: {#ExtDir}\Defaults; Flags: replacesameversion
+Source: ..\Defaults\SaxtonAndRawlsParameters.txt; DestDir: {#ExtDir}\Defaults; Flags: replacesameversion
 
 
 ; LANDIS-II identifies the extension with the info in this .txt file
