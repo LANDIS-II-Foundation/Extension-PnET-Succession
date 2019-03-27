@@ -2,9 +2,10 @@
 //              Brian R. Miranda
 
 
+extern alias NoSpin;
+extern alias SpinUp;
 using Landis.Utilities;
 using Landis.Core;
-using Landis.Library.InitialCommunities;
 using Landis.Library.Succession;
 using Landis.SpatialModeling;
 using System;
@@ -32,6 +33,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public static float PrecipEvents;// Now an ecoregion parameter
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
+        private NoSpin.Landis.Library.InitialCommunities.ICommunity NoSpinInitialCommunity;
+        private SpinUp.Landis.Library.InitialCommunities.ICommunity SpinUpInitialCommunity;
 
         public static bool TryGetParameter(string label, out Parameter<string> parameter)
         {
@@ -373,20 +376,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             return IsMaturePresent;
         }
 
-        protected override void InitializeSite(ActiveSite site,
-                                               ICommunity initialCommunity)
-        {
-            if (m == null)
-            {
-                m = new MyClock(PlugIn.ModelCore.Landscape.ActiveSiteCount);
-            }
-
-            m.Next();
-            m.WriteUpdate();
-
-            sitecohorts[site] = new SiteCohorts(StartDate,site,initialCommunity, 
-                SiteOutputNames.ContainsKey(site)? SiteOutputNames[site] :null);
-        }
         protected override void AgeCohorts(ActiveSite site,
                                             ushort years,
                                             int? successionTimestep
@@ -416,9 +405,90 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             base.Run();
         }
-        
 
-        
+        protected override void InitializeSite(ActiveSite site)
+        {
+            if (m == null)
+            {
+                m = new MyClock(PlugIn.ModelCore.Landscape.ActiveSiteCount);
+            }
+
+            m.Next();
+            m.WriteUpdate();
+
+            if (!HasLitterMap || !HasWoodyDebrisMap)
+            {
+                sitecohorts[site] = new SiteCohorts(StartDate, site, SpinUpInitialCommunity,
+                SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+                return;
+            }
+
+            sitecohorts[site] = new SiteCohorts(StartDate, site, NoSpinInitialCommunity,
+                SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+        }
+
+        public override void InitializeSites(string initialCommunitiesText, string initialCommunitiesMap, ICore modelCore)
+        {
+            ModelCore.UI.WriteLine("   Loading initial communities from file \"{0}\" ...", initialCommunitiesText);
+
+            // There are different parsers and communities for no-spin and spin-up versions
+            NoSpin.Landis.Library.InitialCommunities.DatasetParser NoSpinParser = null;
+            NoSpin.Landis.Library.InitialCommunities.IDataset NoSpinCommunities = null;
+            SpinUp.Landis.Library.InitialCommunities.DatasetParser SpinUpParser = null;
+            SpinUp.Landis.Library.InitialCommunities.IDataset SpinUpCommunities = null;
+
+            if (HasLitterMap && HasWoodyDebrisMap)
+            {
+                NoSpinParser = new NoSpin.Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
+                NoSpinCommunities = Landis.Data.Load<NoSpin.Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, NoSpinParser);
+            }
+            else
+            {
+                SpinUpParser = new SpinUp.Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
+                SpinUpCommunities = Landis.Data.Load<SpinUp.Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, SpinUpParser);
+            }
+
+            ModelCore.UI.WriteLine("   Reading initial communities map \"{0}\" ...", initialCommunitiesMap);
+            IInputRaster<uintPixel> map;
+            map = ModelCore.OpenRaster<uintPixel>(initialCommunitiesMap);
+            using (map)
+            {
+                uintPixel pixel = map.BufferPixel;
+                foreach (Site site in ModelCore.Landscape.AllSites)
+                {
+                    map.ReadBufferPixel();
+                    uint mapCode = pixel.MapCode.Value;
+                    if (!site.IsActive)
+                        continue;
+
+                    //if (!modelCore.Ecoregion[site].Active)
+                    //    continue;
+
+                    //modelCore.Log.WriteLine("ecoregion = {0}.", modelCore.Ecoregion[site]);
+
+                    ActiveSite activeSite = (ActiveSite)site;
+                    if (HasLitterMap && HasWoodyDebrisMap)
+                    {
+                        NoSpinInitialCommunity = NoSpinCommunities.Find(mapCode);
+                        if (NoSpinInitialCommunity == null)
+                        {
+                            throw new ApplicationException(string.Format("Unknown map code for initial community: {0}", mapCode));
+                        }
+                    }
+                    else
+                    {
+                        SpinUpInitialCommunity = SpinUpCommunities.Find(mapCode);
+                        if (SpinUpInitialCommunity == null)
+                        {
+                            throw new ApplicationException(string.Format("Unknown map code for initial community: {0}", mapCode));
+                        }
+                    }
+
+                    InitializeSite(activeSite);
+                }
+            }
+        }
+
         public void AddLittersAndCheckResprouting(object sender, Landis.Library.AgeOnlyCohorts.DeathEventArgs eventArgs)
         {
             if (eventArgs.DisturbanceType != null)

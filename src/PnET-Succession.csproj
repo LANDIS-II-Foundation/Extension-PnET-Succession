@@ -48,6 +48,14 @@
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>lib\Landis.Library.Cohorts-v2.dll</HintPath>
     </Reference>
+    <Reference Include="Landis.Library.InitialCommunity-v1">
+      <HintPath>lib\Landis.Library.InitialCommunity-v1.dll</HintPath>
+      <Aliases>SpinUp</Aliases>
+    </Reference>
+    <Reference Include="Landis.Library.InitialCommunity-vInputBiomass">
+      <HintPath>lib\Landis.Library.InitialCommunity-vInputBiomass.dll</HintPath>
+      <Aliases>NoSpin</Aliases>
+    </Reference>
     <Reference Include="Landis.Library.LeafBiomassCohorts-v2">
       <HintPath>lib\Landis.Library.LeafBiomassCohorts-v2.dll</HintPath>
     </Reference>
@@ -57,8 +65,8 @@
     <Reference Include="Landis.Library.Parameters-v2">
       <HintPath>lib\Landis.Library.Parameters-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession-InputAGB">
-      <HintPath>lib\Landis.Library.Succession-InputAGB.dll</HintPath>
+    <Reference Include="Landis.Library.Succession-v7">
+      <HintPath>lib\Landis.Library.Succession-v7.dll</HintPath>
     </Reference>
   </ItemGroup>
   
