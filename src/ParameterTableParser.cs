@@ -89,7 +89,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     foreach (string label in ReadHeaderLabels) if (ListContains(ExpectedColumnHeaders, label) == false)
                     {
-                            throw new System.Exception("Unrecognized column header " + label + " in " + FileName + " expected headers are " + string.Join(",", ExpectedColumnHeaders.ToArray()));
+                            throw new PnetSpeciesParameterFileFormatException("Unrecognized column header " + label + " in " + FileName + "./nExpected headers are: " + string.Join(",", ExpectedColumnHeaders.ToArray()));
                     }
                 }
 
@@ -128,7 +128,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             RowLabel = var;
                             if (ExpectedRowLabels != null && ListContains(ExpectedRowLabels, RowLabel.Value) == false)
                             {
-                                throw new System.Exception("Unknown assignment label [" + var.Value + "] expecting [" + string.Join(" ,", ExpectedRowLabels.ToArray())+"].");
+                                throw new PnetSpeciesParameterFileFormatException("Unknown parameter label [" + var.Value + "] in "+ FileName + ".\nExpected labels are: [" + string.Join(" ,", ExpectedRowLabels.ToArray())+"].");
                             }
 
                             continue;
@@ -169,13 +169,32 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             catch (System.Exception e)
             {
-                throw new System.Exception("Unexpected file format (dir,file) (" + 
-                    System.IO.Directory.GetCurrentDirectory() +  ","+
-                    this.FileName + ")"+
-                    " " + e.Message + "\n\nNOTE header line is mandatory");
+                if (e is PnetSpeciesParameterFileFormatException)
+                {
+                    throw e;
+                }
+                else
+                {
+                    throw new System.Exception("Unexpected file format (dir,file) (" +
+                        System.IO.Directory.GetCurrentDirectory() + "," +
+                        this.FileName + ")" +
+                        " " + e.Message + "\n\nNOTE header line is mandatory");
+                }
             }
         }
         
 
+    }
+    class PnetSpeciesParameterFileFormatException : Exception
+    {
+        public PnetSpeciesParameterFileFormatException()
+        {
+            
+        }
+        public PnetSpeciesParameterFileFormatException(string msg)
+            :base(msg)
+        {
+
+        }
     }
 }
