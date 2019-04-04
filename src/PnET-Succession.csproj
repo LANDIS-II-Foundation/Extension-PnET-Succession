@@ -22,16 +22,22 @@
     <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
     <FileVersion>4.0</FileVersion>
     <Company>USDA Forest Service</Company>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Landis.Core" Version="2.0.0" />
-    <PackageReference Include="Landis.Core.Implementation" Version="2.0.0" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\Users\Austen\Documents\GitHub\Core-Model-v7\Tool-Console\src\bin\extensions\</OutputPath>
+  </PropertyGroup>
   
   <ItemGroup>
     <Reference Include="Edu.Wisc.Forest.Flel.Util">
       <HintPath>lib\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Core">
+      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Core.Implementation">
+      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.Implementation.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
       <HintPath>lib\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
@@ -67,6 +73,15 @@
     </Reference>
     <Reference Include="Landis.Library.Succession-v7">
       <HintPath>lib\Landis.Library.Succession-v7.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.SpatialModeling">
+      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.SpatialModeling.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Utilities">
+      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Troschuetz.Random">
+      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Troschuetz.Random.dll</HintPath>
     </Reference>
   </ItemGroup>
   
