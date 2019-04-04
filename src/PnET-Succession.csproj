@@ -25,8 +25,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\Users\Austen\Documents\GitHub\Core-Model-v7\Tool-Console\src\bin\extensions\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\Release\netstandard2.0\</OutputPath>
   </PropertyGroup>
   
   <ItemGroup>
@@ -34,10 +34,10 @@
       <HintPath>lib\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Core">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Core.Implementation">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.Implementation.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.Implementation.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
       <HintPath>lib\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
@@ -75,13 +75,13 @@
       <HintPath>lib\Landis.Library.Succession-v7.dll</HintPath>
     </Reference>
     <Reference Include="Landis.SpatialModeling">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.SpatialModeling.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.SpatialModeling.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Utilities">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Utilities.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="Troschuetz.Random">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Troschuetz.Random.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Troschuetz.Random.dll</HintPath>
     </Reference>
   </ItemGroup>
   

@@ -908,7 +908,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
         }
-        public void UpdateCohortData(IEcoregionPnETVariables monthdata )
+        public void UpdateCohortData(IEcoregionPnETVariables monthdata, bool timeZero = false)
         {
             float netPsnSum = NetPsn.Sum();
             float transpirationSum = Transpiration.Sum();
@@ -917,8 +917,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 JCO2_JH2O = (float) (0.01227 * (netPsnSum / transpirationSum));
             float WUE = JCO2_JH2O * ((float)44 / (float)18); //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
 
+            double year = Math.Round(monthdata.Year, 2);
+
+            if (timeZero)
+            {
+                year = 0;
+            }
+
             // Cohort output file
-            string s = Math.Round(monthdata.Year, 2) + "," +
+            string s =  year + "," +
                         Age + "," +
                         Layer + "," +
                        SumLAI + "," +

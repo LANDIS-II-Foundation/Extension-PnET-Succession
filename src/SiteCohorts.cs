@@ -168,6 +168,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 );
                 this.canopylaimax = (byte)CanopyLAI;
                 subcanopyparmax = Math.Max(subcanopypar, ecoregionInitializer[0].PAR0);
+
+                // Ensures that the initial values at t0 are recorded in the .csv files
+                if (siteoutput != null)
+                {
+                    AddSiteOutput(ecoregionInitializer[0], true);
+
+                    AllCohorts.ForEach(a => a.UpdateCohortData(ecoregionInitializer[0], true));
+                }
             }
         }
 
@@ -263,6 +271,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
                 if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
+
+                // Ensures that the initial values at t0 are recorded in the .csv files
+                if (siteoutput != null)
+                {
+                    List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate.AddMonths(-1), StartDate);
+                    AddSiteOutput(ecoregionInitializer[0], true);
+
+                    AllCohorts.ForEach(a => a.UpdateCohortData(ecoregionInitializer[0], true));
+                }
             }
         }
 
@@ -1466,13 +1483,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             return s;
         }
 
-        private void AddSiteOutput(IEcoregionPnETVariables monthdata)
+        private void AddSiteOutput(IEcoregionPnETVariables monthdata, bool timeZero = false)
         {
             uint maxLayerStdev = 0;
             if (layerstdev.Count() > 0)
                 maxLayerStdev = layerstdev.Max();
+            float year = monthdata.Year;
 
-            string s = monthdata.Year + "," +
+            if (timeZero)
+            {
+                year = 0;
+            }
+
+            string s =  year + "," +
                         Ecoregion.Name + "," +
                         Ecoregion.SoilType + "," +
                         CohortCount + "," +
