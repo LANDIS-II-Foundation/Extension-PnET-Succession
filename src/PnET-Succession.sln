@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "scrapple", "..\..\brmiranda
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "climate-generator", "..\..\Library-Climate\src\climate-generator.csproj", "{030CBF3B-0716-461B-B3F3-B47EB407DF39}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "output-biomass-pnet", "..\..\Extension-Output-Biomass-PnET\src\output-biomass-pnet.csproj", "{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,14 @@ Global
 		{030CBF3B-0716-461B-B3F3-B47EB407DF39}.Release|Any CPU.Build.0 = Release|Any CPU
 		{030CBF3B-0716-461B-B3F3-B47EB407DF39}.Release|x64.ActiveCfg = Release|Any CPU
 		{030CBF3B-0716-461B-B3F3-B47EB407DF39}.Release|x64.Build.0 = Release|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Debug|x64.Build.0 = Debug|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Release|x64.ActiveCfg = Release|Any CPU
+		{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

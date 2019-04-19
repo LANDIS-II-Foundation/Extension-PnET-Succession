@@ -36,6 +36,16 @@ namespace Landis.Extension.Succession.BiomassPnET
         private Dictionary<ISpecies, List<Cohort>> cohorts = null;
         IEstablishmentProbability establishmentProbability = null;
         private IHydrology hydrology = null;
+        public List<ISpecies> SpeciesEstablishedByPlant = null;
+        public List<ISpecies> SpeciesEstablishedBySerotiny = null;
+        public List<ISpecies> SpeciesEstablishedByResprout = null;
+        public List<ISpecies> SpeciesEstablishedBySeed = null;
+
+        public List<ISiteCohorts> CohortsKilledBySuccession = null;
+        public List<ISiteCohorts> CohortsKilledByHarvest = null;
+        public List<ISiteCohorts> CohortsKilledByFire = null;
+        public List<ISiteCohorts> CohortsKilledByWind = null;
+        public List<ISiteCohorts> CohortsKilledByOther = null;
 
         public IEcoregionPnET Ecoregion;
         public LocalOutput siteoutput;
@@ -56,6 +66,114 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// </summary>
         //public static event Landis.Library.BiomassCohorts.DisturbanceEventHandler AgeOnlyDisturbanceEvent;
 
+        //---------------------------------------------------------------------
+        public List<ISpecies> SpeciesByPlant
+        {
+            get
+            {
+                return SpeciesEstablishedByPlant;
+            }
+            set
+            {
+                SpeciesEstablishedByPlant = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISpecies> SpeciesBySerotiny
+        {
+            get
+            {
+                return SpeciesEstablishedBySerotiny;
+            }
+            set
+            {
+                SpeciesEstablishedBySerotiny = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISpecies> SpeciesByResprout
+        {
+            get
+            {
+                return SpeciesEstablishedByResprout;
+            }
+            set
+            {
+                SpeciesEstablishedByResprout = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISpecies> SpeciesBySeed
+        {
+            get
+            {
+                return SpeciesEstablishedBySeed;
+            }
+            set
+            {
+                SpeciesEstablishedBySeed = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISiteCohorts> CohortsBySuccession
+        {
+            get
+            {
+                return CohortsKilledBySuccession;
+            }
+            set
+            {
+                CohortsKilledBySuccession = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISiteCohorts> CohortsByHarvest
+        {
+            get
+            {
+                return CohortsKilledByHarvest;
+            }
+            set
+            {
+                CohortsKilledByHarvest = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISiteCohorts> CohortsByFire
+        {
+            get
+            {
+                return CohortsKilledByFire;
+            }
+            set
+            {
+                CohortsKilledByFire = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISiteCohorts> CohortsByWind
+        {
+            get
+            {
+                return CohortsKilledByWind;
+            }
+            set
+            {
+                CohortsKilledByWind = value;
+            }
+        }
+        //---------------------------------------------------------------------
+        public List<ISiteCohorts> CohortsByOther
+        {
+            get
+            {
+                return CohortsKilledByOther;
+            }
+            set
+            {
+                CohortsKilledByOther = value;
+            }
+        }
         //---------------------------------------------------------------------
 
         public float Transpiration
@@ -103,6 +221,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
             permafrost = ((Parameter<bool>)PlugIn.GetParameter("Permafrost")).Value;
+
         }
 
         // Create SiteCohorts in SpinUp
@@ -113,6 +232,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
+            SpeciesEstablishedByPlant = new List<ISpecies>();
+            SpeciesEstablishedBySerotiny = new List<ISpecies>();
+            SpeciesEstablishedByResprout = new List<ISpecies>();
+            SpeciesEstablishedBySeed = new List<ISpecies>();
+            CohortsKilledBySuccession = new List<ISiteCohorts>();
+            CohortsKilledByHarvest = new List<ISiteCohorts>();
+            CohortsKilledByFire = new List<ISiteCohorts>();
+            CohortsKilledByWind = new List<ISiteCohorts>();
+            CohortsKilledByOther = new List<ISiteCohorts>();
             uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
 
             if (initialSites.ContainsKey(key) && SiteOutputName == null)

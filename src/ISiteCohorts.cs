@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Landis.Core;
 
 
 namespace Landis.Extension.Succession.BiomassPnET 
@@ -62,5 +63,17 @@ namespace Landis.Extension.Succession.BiomassPnET
         float NSCSum { get; }
 
         float AETSum { get; } //mm
+
+        List<ISpecies> SpeciesByPlant { get; set; }
+        List<ISpecies> SpeciesBySerotiny { get; set; }
+        List<ISpecies> SpeciesByResprout { get; set; }
+        List<ISpecies> SpeciesBySeed { get; set; }
+
+        List<ISiteCohorts> CohortsBySuccession { get; set; }
+        List<ISiteCohorts> CohortsByHarvest { get; set; }
+        List<ISiteCohorts> CohortsByFire { get; set; }
+        List<ISiteCohorts> CohortsByWind { get; set; }
+        List<ISiteCohorts> CohortsByOther { get; set; }
+
     }
 }

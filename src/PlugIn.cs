@@ -387,12 +387,34 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public void AddNewCohort(ISpecies species, ActiveSite site)
+        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType)
         {
             ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
             Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
             
             sitecohorts[site].AddNewCohort(cohort);
+
+            if (reproductionType == "plant")
+            {
+                if (!sitecohorts[site].SpeciesEstablishedByPlant.Contains(species))
+                    sitecohorts[site].SpeciesEstablishedByPlant.Add(species);
+            }
+            else if(reproductionType == "serotiny")
+            {
+                if (!sitecohorts[site].SpeciesEstablishedBySerotiny.Contains(species))
+                    sitecohorts[site].SpeciesEstablishedBySerotiny.Add(species);
+            }
+            else if(reproductionType == "resprout")
+            {
+                if (!sitecohorts[site].SpeciesEstablishedByResprout.Contains(species))
+                    sitecohorts[site].SpeciesEstablishedByResprout.Add(species);
+            }
+            else if(reproductionType == "seed")
+            {
+                if (!sitecohorts[site].SpeciesEstablishedBySeed.Contains(species))
+                    sitecohorts[site].SpeciesEstablishedBySeed.Add(species);
+            }
+
 
         }
         public bool MaturePresent(ISpecies species, ActiveSite site)
