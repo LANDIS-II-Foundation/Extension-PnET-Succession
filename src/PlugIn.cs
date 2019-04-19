@@ -43,6 +43,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
         public static ISiteVar<Double> FineFuels;
+        public static ISiteVar<float> PressureHead;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
@@ -284,6 +285,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
             FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
+            PressureHead = ModelCore.Landscape.NewSiteVar<float>();
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
@@ -357,12 +359,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AgeCohortSiteVar[site] = sitecohorts[site];
                 PnETCohorts[site] = sitecohorts[site];
                 FineFuels[site] = Litter[site].Mass;
+                IEcoregionPnET ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+                IHydrology hydrology = new Hydrology((ushort)ecoregion.FieldCap);
+                PressureHead[site] = hydrology.GetPressureHead(ecoregion);
             }
 
             ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
             ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
             ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
-
+            ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
 
 
         }

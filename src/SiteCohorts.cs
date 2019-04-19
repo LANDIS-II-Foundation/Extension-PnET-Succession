@@ -255,6 +255,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
                 PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                PlugIn.PressureHead[Site] = hydrology.GetPressureHead(this.Ecoregion);
                 this.canopylaimax = initialSites[key].CanopyLAImax;
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -277,6 +278,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                PlugIn.PressureHead[Site] = hydrology.GetPressureHead(Ecoregion);
 
                 if (SiteOutputName != null)
                 {
