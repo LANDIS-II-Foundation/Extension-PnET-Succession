@@ -28,6 +28,7 @@ AgeDistribution output/AgeDist/Age{timestep}.img
 CohortBalance	"output/TotalCohorts.txt"
 
 EstablishmentTable	"output/EstablishmentTable.txt"
+MortalityTable		"output/MortalityTable.txt"
 
 MonthlyNetPsn output/MonthlyNetPsn/{species}/MonthlyNetPsn{timestep}.img
 

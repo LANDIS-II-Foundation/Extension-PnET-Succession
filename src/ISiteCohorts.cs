@@ -69,11 +69,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         List<ISpecies> SpeciesByResprout { get; set; }
         List<ISpecies> SpeciesBySeed { get; set; }
 
-        List<ISiteCohorts> CohortsBySuccession { get; set; }
-        List<ISiteCohorts> CohortsByHarvest { get; set; }
-        List<ISiteCohorts> CohortsByFire { get; set; }
-        List<ISiteCohorts> CohortsByWind { get; set; }
-        List<ISiteCohorts> CohortsByOther { get; set; }
+        List<int> CohortsBySuccession { get; set; }
+        List<int> CohortsByHarvest { get; set; }
+        List<int> CohortsByFire { get; set; }
+        List<int> CohortsByWind { get; set; }
+        List<int> CohortsByOther { get; set; }
 
     }
 }
