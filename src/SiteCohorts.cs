@@ -255,7 +255,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
                 PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
-                PlugIn.PressureHead[Site] = hydrology.GetPressureHead(this.Ecoregion);
+                //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(this.Ecoregion);
                 this.canopylaimax = initialSites[key].CanopyLAImax;
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -278,7 +278,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
-                PlugIn.PressureHead[Site] = hydrology.GetPressureHead(Ecoregion);
+                //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(Ecoregion);
 
                 if (SiteOutputName != null)
                 {
@@ -378,6 +378,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
+            float sumPressureHead = 0;
+            int countPressureHead = 0;
 
             establishmentProbability.ResetPerTimeStep();
             Cohort.SetSiteAccessFunctions(this);
@@ -772,8 +774,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.RunOff = 0;
                 Hydrology.Leakage = 0;
                 Hydrology.Evaporation = 0;
-
-
+                float sumPressureHead = 0;
+                int countPressureHead = 0;
+                
 
                 float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert AOT40 units to ppm h
                 float lastO3 = 0;
@@ -884,7 +887,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     AllCohorts.ForEach(a => a.UpdateCohortData(data[m]));
                 }
-
+                if (data[m].Tave > 0)
+                {
+                    sumPressureHead += hydrology.GetPressureHead(Ecoregion);
+                    countPressureHead += 1;
+                }
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
                     monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology);
@@ -952,7 +959,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 AllCohorts.ForEach(cohort => { cohort.WriteCohortData(); });
             }
-
+            float avgPH = sumPressureHead / countPressureHead;
+            PlugIn.PressureHead[Site] = avgPH;
+            
             RemoveMarkedCohorts();
 
             //HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//Moved within m loop to trigger once per year
