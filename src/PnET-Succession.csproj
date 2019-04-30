@@ -30,9 +30,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Reference Include="Edu.Wisc.Forest.Flel.Util">
-      <HintPath>lib\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
-    </Reference>
     <Reference Include="Landis.Core">
       <HintPath>..\..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Core.dll</HintPath>
     </Reference>

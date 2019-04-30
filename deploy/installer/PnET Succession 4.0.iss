@@ -62,7 +62,7 @@ Source: {#BuildDir}\Landis.Library.Succession-v7.dll; DestDir: {#ExtDir}; Flags:
 Source: {#BuildDir}\Landis.Library.InitialCommunity-v1.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
 Source: {#BuildDir}\Landis.Library.InitialCommunity-vInputBiomass.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
 Source: {#BuildDir}\Landis.Library.LeafBiomassCohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall replacesameversion
-Source: {#BuildDir}\Edu.Wisc.Forest.Flel.Util.dll; DestDir: {#ExtDir}; Flags: replacesameversion
+Source: {#BuildDir}\Landis.Utilities.dll; DestDir: {#ExtDir}; Flags: replacesameversion
 Source: {#LibraryDir}\Landis.Library.SiteHarvest-v2.dll; DestDir: {#ExtDir}; Flags: replacesameversion
 
 ; Complete example for testing the extension
