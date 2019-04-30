@@ -41,11 +41,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         public List<ISpecies> SpeciesEstablishedByResprout = null;
         public List<ISpecies> SpeciesEstablishedBySeed = null;
 
-        public List<ISiteCohorts> CohortsKilledBySuccession = null;
-        public List<ISiteCohorts> CohortsKilledByHarvest = null;
-        public List<ISiteCohorts> CohortsKilledByFire = null;
-        public List<ISiteCohorts> CohortsKilledByWind = null;
-        public List<ISiteCohorts> CohortsKilledByOther = null;
+        public List<int> CohortsKilledBySuccession = null;
+        public List<int> CohortsKilledByHarvest = null;
+        public List<int> CohortsKilledByFire = null;
+        public List<int> CohortsKilledByWind = null;
+        public List<int> CohortsKilledByOther = null;
 
         public IEcoregionPnET Ecoregion;
         public LocalOutput siteoutput;
@@ -115,7 +115,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         //---------------------------------------------------------------------
-        public List<ISiteCohorts> CohortsBySuccession
+        public List<int> CohortsBySuccession
         {
             get
             {
@@ -127,7 +127,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         //---------------------------------------------------------------------
-        public List<ISiteCohorts> CohortsByHarvest
+        public List<int> CohortsByHarvest
         {
             get
             {
@@ -139,7 +139,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         //---------------------------------------------------------------------
-        public List<ISiteCohorts> CohortsByFire
+        public List<int> CohortsByFire
         {
             get
             {
@@ -151,7 +151,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         //---------------------------------------------------------------------
-        public List<ISiteCohorts> CohortsByWind
+        public List<int> CohortsByWind
         {
             get
             {
@@ -163,7 +163,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         //---------------------------------------------------------------------
-        public List<ISiteCohorts> CohortsByOther
+        public List<int> CohortsByOther
         {
             get
             {
@@ -236,11 +236,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             SpeciesEstablishedBySerotiny = new List<ISpecies>();
             SpeciesEstablishedByResprout = new List<ISpecies>();
             SpeciesEstablishedBySeed = new List<ISpecies>();
-            CohortsKilledBySuccession = new List<ISiteCohorts>();
-            CohortsKilledByHarvest = new List<ISiteCohorts>();
-            CohortsKilledByFire = new List<ISiteCohorts>();
-            CohortsKilledByWind = new List<ISiteCohorts>();
-            CohortsKilledByOther = new List<ISiteCohorts>();
+            CohortsKilledBySuccession = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
+            CohortsKilledByHarvest = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
+            CohortsKilledByFire = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
+            CohortsKilledByWind = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
+            CohortsKilledByOther = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
+
             uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
 
             if (initialSites.ContainsKey(key) && SiteOutputName == null)
@@ -1644,6 +1645,28 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public void RemoveCohort(Cohort cohort, ExtensionType disturbanceType)
         {
+
+            if(disturbanceType.Name == Names.ExtensionName)
+            {
+                CohortsKilledBySuccession[cohort.Species.Index] += 1;
+            }
+            else if(disturbanceType.Name == "disturbance:harvest")
+            {
+                CohortsKilledByHarvest[cohort.Species.Index] += 1;
+            }
+            else if(disturbanceType.Name == "disturbance:fire")
+            {
+                CohortsKilledByFire[cohort.Species.Index] += 1;
+            }
+            else if (disturbanceType.Name == "disturbance:wind")
+            {
+                CohortsKilledByWind[cohort.Species.Index] += 1;
+            }
+            else
+            {
+                CohortsKilledByOther[cohort.Species.Index] += 1;
+            }
+
             if (disturbanceType.Name != Names.ExtensionName)
             {
                 Cohort.RaiseDeathEvent(this, cohort, Site, disturbanceType);
