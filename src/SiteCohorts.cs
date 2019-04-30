@@ -551,17 +551,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (PlugIn.ModelCore.CurrentTime > 0) // cold can only kill after spinup
             {
                 // Loop through months & species to determine if cold temp would kill any species
+                float extremeMinTemp = float.MaxValue;
+                int extremeMonth = 0;
+                for (int m = 0; m < data.Count(); m++)
+                {
+                    float minTemp = data[m].Tave - (float)(3.0 * Ecoregion.WinterSTD);
+                    if(minTemp < extremeMinTemp)
+                    {
+                        extremeMinTemp = minTemp;
+                        extremeMonth = m;
+                    }
+                }
+                PlugIn.ExtremeMinTemp[Site] = extremeMinTemp;
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
-                    for (int m = 0; m < data.Count(); m++)
+                    // Check if low temp kills species
+                    if (extremeMinTemp < spc.ColdTol)
                     {
-                        // Check if low temp kills species
-                        if ((data[m].Tave - (3.0 * Ecoregion.WinterSTD)) < spc.ColdTol)
-                        {
-                            coldKillMonth[spc] = m;
-                            break;
-                        }
+                        coldKillMonth[spc] = extremeMonth;
                     }
+
                 }
             }
 
@@ -774,8 +783,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.RunOff = 0;
                 Hydrology.Leakage = 0;
                 Hydrology.Evaporation = 0;
-                float sumPressureHead = 0;
-                int countPressureHead = 0;
+                sumPressureHead = 0;
+                countPressureHead = 0;
                 
 
                 float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert AOT40 units to ppm h
