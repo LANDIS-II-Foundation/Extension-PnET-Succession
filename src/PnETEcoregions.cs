@@ -1,9 +1,9 @@
 ﻿using Landis.Core;
 using Landis.SpatialModeling;
 using Landis.Library.InitialCommunities;
-using Landis.Library.BiomassCohortsPnET;
+//using Landis.Library.BiomassCohortsPnET;
 using System.Collections.Generic;
-using Edu.Wisc.Forest.Flel.Util;
+using Landis.Utilities;
 using System;
 using System.Linq;
 
@@ -68,6 +68,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public readonly float AET;
         public readonly float LeakageFrac;
+        public readonly float RunoffFrac;
         public readonly float PrecLossFrac;
         public readonly float RootingDepth;
         public readonly string SoilType;
@@ -99,11 +100,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore = mCore;
         }
 
-        public PnETEcoregions(IEcoregion ecoregion, float AET, float LeakageFrac, float PrecLossFrac, float RootingDepth, string SoilType, string ClimateFileName)
+        public PnETEcoregions(IEcoregion ecoregion, float AET, float LeakageFrac, float RunoffFrac, float PrecLossFrac, float RootingDepth, string SoilType, string ClimateFileName)
         {
             this.ecoregion = ecoregion;
             this.AET = AET;
             this.LeakageFrac = LeakageFrac;
+            this.RunoffFrac = RunoffFrac;
             this.PrecLossFrac=PrecLossFrac;
             this.RootingDepth=RootingDepth;
             this.SoilType=SoilType;

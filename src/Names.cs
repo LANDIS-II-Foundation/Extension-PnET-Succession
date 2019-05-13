@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -11,11 +8,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string ExtensionName = "PnET-Succession";
         public const string PNEToutputsites = "PNEToutputsites";
         public const string EcoregionParameters = "EcoregionParameters";
-        public const string AgeOnlyDisturbances = "AgeOnlyDisturbances";
+        public const string DisturbanceReductions = "DisturbanceReductions";
         public const string PnETGenericParameters = "PnETGenericParameters";
         public const string PnETGenericDefaultParameters = "PnETGenericDefaultParameters";
         public const string VanGenuchten = "VanGenuchten";
-        public const string SaxtonAndRawls = "SaxtonAndRawls";
+        public const string SaxtonAndRawls = "SaxtonAndRawlsParameters";
         public const string PnETSpeciesParameters = "PnETSpeciesParameters";
         public const string StartYear = "StartYear";
         public const string Timestep = "Timestep";
@@ -25,6 +22,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string IMAX = "IMAX";
         public const string InitialCommunities = "InitialCommunities";
         public const string InitialCommunitiesMap = "InitialCommunitiesMap";
+        public const string ClimateConfigFile = "ClimateConfigFile";
         public const string MapCoordinates = "MapCoordinates";
         public const string PNEToutputSiteCoordinates = "PNEToutputSiteCoordinates";
         public const string PNEToutputSiteLocation = "PNEToutputSiteLocation";
@@ -32,18 +30,30 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Wythers = "Wythers";
 
         public const string DTemp = "DTemp";
+        public const string CO2AMaxBEff = "CO2AMaxBEff";
+       
+        public const string Permafrost = "Permafrost";
+        public const string LeakageFrostDepth = "LeakageFrostDepth";
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
+        public const string RunoffFrac = "RunoffFrac";
         public const string PrecLossFrac = "PrecLossFrac";
         public const string RootingDepth = "RootingDepth";
         public const string SoilType = "SoilType";
         public const string PrecIntConst = "PrecIntConst";
+        public const string SnowSublimFrac = "SnowSublimFrac";
         public const string PrecipEvents = "PrecipEvents";
         public const string Latitude = "Latitude";
         public const string climateFileName = "climateFileName";
+        public const string WinterSTD = "WinterSTD";
         
-    
-        
+
+        //Species parameters
+        public const string FolNShape = "FolNShape";
+        public const string MaxFolN = "MaxFolN";
+        public const string FracFolShape = "FracFolShape";
+        public const string MaxFracFol = "MaxFracFol";
+        public const string O3Coeff = "O3GrowthSens";
      
         public static void AssureIsName(string name)
         {

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Landis.Core;
-
-using Landis.SpatialModeling;
+﻿
 
 
- namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface IHydrology
     {

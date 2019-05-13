@@ -1,0 +1,17 @@
+LandisData   Extension
+
+Name         "PnET-Succession"
+
+Version      "2.1.1.26"
+
+Type         succession
+
+Assembly     Landis.Extension.Succession.BiomassPnET
+
+Class        Landis.Extension.Succession.BiomassPnET.PlugIn
+
+Description  "PnET-Succession with Ozone"
+
+UserGuide    "LANDIS-II PnET-Succession v2.1 User Guide.pdf"
+
+CoreVersion  6.0

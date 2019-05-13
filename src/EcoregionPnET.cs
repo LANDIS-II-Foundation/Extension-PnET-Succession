@@ -1,9 +1,9 @@
 
 using Landis.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Landis.SpatialModeling;
-using System;
+using Landis.Library.Climate;
 
 namespace Landis.Extension.Succession.BiomassPnET 
 {
@@ -19,18 +19,22 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _rootingdepth;
         private string _soiltype;
         private float _leakagefrac;
+        private float _runofffrac;
         private float _fieldcap;
         private float _wiltpnt;
         private float _porosity;
         private float _snowsublimfrac;
         private float _latitude;
         private int _precipEvents;
+        private float _leakageFrostDepth;
+        private float _winterSTD;
         IEcoregionPnETVariables _variables;
         #endregion
 
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
+
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
@@ -38,10 +42,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> runofffrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> latitude;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
         #endregion
 
         #region accessors for private static variables
@@ -52,9 +59,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return AllEcoregions.Values.ToList();
             }
         }
-        public static IEcoregionPnET GetPnETEcoregion(IEcoregion ecoregion)
+
+        /// <summary>Returns the PnET Ecoregion for a given Landis Core Ecoregion</summary>
+        /// <param name="landisCoreEcoregion"></param>
+        public static IEcoregionPnET GetPnETEcoregion(IEcoregion landisCoreEcoregion)
         {
-            return AllEcoregions[ecoregion];
+            return AllEcoregions[landisCoreEcoregion];
         }
         #endregion
 
@@ -109,6 +119,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get {
                 return _leakagefrac;
+            }
+        }
+        public float RunoffFrac
+        {
+            get
+            {
+                return _runofffrac;
             }
         }
         public float PrecIntConst
@@ -195,6 +212,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _precipEvents;
             }
         }
+        public float LeakageFrostDepth
+        {
+            get
+            {
+                return _leakageFrostDepth;
+            }
+        }
+        public float WinterSTD
+        {
+            get
+            {
+                return _winterSTD;
+            }
+        }
         #endregion
 
         public static List<string> ParameterNames
@@ -209,6 +240,54 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
+        public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end, Climate.Phase spinupOrfuture)
+        {
+            // Monthly simulation data untill but not including end
+            List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
+
+            // Date: the last date in the collection of running data
+            DateTime date = new DateTime(start.Ticks);
+
+            var oldYear = -1;
+
+            while (end.Ticks > date.Ticks)
+            {
+                if (!all_values[ecoregion].ContainsKey(date))
+                {
+                    if (date.Year != oldYear)
+                    {
+                        //PlugIn.ModelCore.UI.WriteLine($"Retrieving Climate Library for year {date.Year}.");
+
+                        if (spinupOrfuture == Climate.Phase.Future_Climate)
+                        {
+                            if (Climate.Future_MonthlyData.ContainsKey(date.Year))
+                                ClimateRegionData.AnnualWeather[ecoregion] = Climate.Future_MonthlyData[date.Year][ecoregion.Index];
+                        }
+                        else
+                        {
+                            if (Climate.Spinup_MonthlyData.ContainsKey(date.Year))
+                                ClimateRegionData.AnnualWeather[ecoregion] = Climate.Spinup_MonthlyData[date.Year][ecoregion.Index];
+                        }
+
+                        oldYear = date.Year;
+                    }
+
+                    var monthlyData = new MonthlyClimateRecord(ecoregion, date);
+
+                    List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
+
+                    IEcoregionPnETVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
+
+                    all_values[ecoregion].Add(date, ecoregion_variables);
+
+                }
+                data.Add(all_values[ecoregion][date]);
+
+                date = date.AddMonths(1);
+            }
+            return data;
+        }
+
         public static List<IEcoregionPnETVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
@@ -217,12 +296,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Date: the last date in the collection of running data
             DateTime date = new DateTime(start.Ticks);
 
-             
+
             while (end.Ticks > date.Ticks)
             {
                 if (all_values[ecoregion].ContainsKey(date) == false)
                 {
-                    IObservedClimate observedClimate =  ObservedClimate.GetData(ecoregion, date);
+                    IObservedClimate observedClimate = ObservedClimate.GetData(ecoregion, date);
 
                     List<ISpeciesPNET> species = PlugIn.SpeciesPnET.AllSpecies.ToList();
 
@@ -232,7 +311,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
                 data.Add(all_values[ecoregion][date]);
- 
+
                 date = date.AddMonths(1);
             }
             return data;
@@ -247,12 +326,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
             snowsublimfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("SnowSublimFrac", 0, 1);
             latitude = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("Latitude", -90, 90);
+            leakageFrostDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrostDepth", 0, 999999);
             precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("PrecipEvents", 1, 100);
+            winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WinterSTD", 0, 100);
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
             
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
+            runofffrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RunoffFrac", 0, 1);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
             {
@@ -274,9 +356,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._precintconst = precintconst[ecoregion];
             this._preclossfrac = preclossfrac[ecoregion];
             this._leakagefrac = leakagefrac[ecoregion];
+            this._runofffrac = runofffrac[ecoregion];
             this._snowsublimfrac = snowsublimfrac[ecoregion];
             this._latitude = latitude[ecoregion];
             this._precipEvents = precipEvents[ecoregion];
+            this._leakageFrostDepth = leakageFrostDepth[ecoregion];
+            this._winterSTD = winterSTD[ecoregion];
           
         }
     }

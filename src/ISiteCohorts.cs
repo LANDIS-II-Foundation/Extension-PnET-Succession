@@ -68,6 +68,18 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         float NSCSum { get; }
 
-        float AETSum { get; }
+        float AETSum { get; } //mm
+
+        List<ISpecies> SpeciesByPlant { get; set; }
+        List<ISpecies> SpeciesBySerotiny { get; set; }
+        List<ISpecies> SpeciesByResprout { get; set; }
+        List<ISpecies> SpeciesBySeed { get; set; }
+
+        List<int> CohortsBySuccession { get; set; }
+        List<int> CohortsByHarvest { get; set; }
+        List<int> CohortsByFire { get; set; }
+        List<int> CohortsByWind { get; set; }
+        List<int> CohortsByOther { get; set; }
+
     }
 }
