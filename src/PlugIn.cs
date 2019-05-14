@@ -391,7 +391,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType)
+        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType,double propBiomass)
         {
             ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
             Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null, propBiomass);
