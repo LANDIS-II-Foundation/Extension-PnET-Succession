@@ -1,6 +1,5 @@
 ﻿using Landis.Core;
 using Landis.SpatialModeling;
-using Landis.Library.InitialCommunities;
 //using Landis.Library.BiomassCohortsPnET;
 using System.Collections.Generic;
 using Landis.Utilities;

@@ -319,7 +319,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         }
        
-        SpeciesPnET(ISpecies species)
+        private SpeciesPnET(ISpecies species)
         {
             //_wuecnst = wuecnst[species];
             _dnsc = dnsc[species];

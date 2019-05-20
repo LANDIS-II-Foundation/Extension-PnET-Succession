@@ -17,8 +17,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         public LocalOutput(string SiteName, string FileName, string Header)
         {
-            
-
             this.SiteName = SiteName;
             this.Path = "Output/" + PNEToutputsites + "/" + SiteName + "/";
             this.FileName = FileName;

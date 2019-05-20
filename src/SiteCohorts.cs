@@ -1,9 +1,10 @@
 ﻿//  Copyright ...
 //  Authors:  Arjan de Bruijn
 
+extern alias NoSpin;
+extern alias SpinUp;
 using Landis.Utilities;
 using Landis.Core;
-using Landis.Library.InitialCommunities;
 using Landis.SpatialModeling;
 using System;
 using System.Collections;
@@ -98,8 +99,92 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
         }
 
+        public SiteCohorts(DateTime StartDate, ActiveSite site, NoSpin.Landis.Library.InitialCommunities.ICommunity initialCommunity, string SiteOutputName = null)
+        {
+            Cohort.SetSiteAccessFunctions(this);
+            this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+            this.Site = site;
+            cohorts = new Dictionary<ISpecies, List<Cohort>>();
+            uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
+
+            if (initialSites.ContainsKey(key) && SiteOutputName == null)
+            {
+                establishmentProbability = new EstablishmentProbability(null, null);
+                subcanopypar = initialSites[key].subcanopypar;
+                subcanopyparmax = initialSites[key].SubCanopyParMAX;
+                watermax = initialSites[key].watermax;
+
+                hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
+
+                PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
+                PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
+                this.canopylaimax = initialSites[key].CanopyLAImax;
+
+                foreach (ISpecies spc in initialSites[key].cohorts.Keys)
+                {
+                    foreach (Cohort cohort in initialSites[key].cohorts[spc])
+                    {
+                        AddNewCohort(new Cohort(cohort));
+                    }
+                }
+            }
+            else
+            {
+                if (initialSites.ContainsKey(key) == false)
+                {
+                    initialSites.Add(key, this);
+                }
+                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate.AddMonths(-1), StartDate);
+                hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
+                watermax = (ushort)hydrology.Water;
+                subcanopypar = ecoregionInitializer[0].PAR0;
+
+                PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
+                PlugIn.Litter[Site] = new Library.Biomass.Pool();
+
+                if (SiteOutputName != null)
+                {
+                    this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
+
+                    establishmentProbability = new EstablishmentProbability(SiteOutputName, "Establishment.csv");
+                }
+                else
+                {
+                    establishmentProbability = new EstablishmentProbability(null, null);
+                }
+
+                foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                {
+                    foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
+                    {
+                        AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), ref subcanopypar));
+                    }
+                }
+
+                AllCohorts.ForEach(x =>
+                {
+                    CanopyLAI += x.LAI.Sum();
+                }
+                );
+                this.canopylaimax = (byte)CanopyLAI;
+                subcanopyparmax = Math.Max(subcanopypar, ecoregionInitializer[0].PAR0);
+
+                // Ensures that the initial values at t0 are recorded in the .csv files
+                if (siteoutput != null)
+                {
+                    AddSiteOutput(ecoregionInitializer[0], true);
+
+                    AllCohorts.ForEach(a => a.UpdateCohortData(ecoregionInitializer[0], true));
+
+                    siteoutput.Write();
+
+                    AllCohorts.ForEach(cohort => { cohort.WriteCohortData(); });
+                }
+            }
+        }
+
         // Create SiteCohorts in SpinUp
-        public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
+        public SiteCohorts(DateTime StartDate, ActiveSite site, SpinUp.Landis.Library.InitialCommunities.ICommunity initialCommunity, string SiteOutputName = null)
         {
             Cohort.SetSiteAccessFunctions(this);
 
@@ -131,13 +216,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             else
             {
-                 
                 if (initialSites.ContainsKey(key) == false)
                 {
                     initialSites.Add(key, this);
                 }
                 hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
-                
+
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
 
@@ -163,11 +247,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
 
                 if (sortedAgeCohorts.Count == 0) return;
-                
+
                 DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age));
 
                 Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
- 
+
                 while (date.CompareTo(StartDate) < 0)
                 {
                     //  Add those cohorts that were born at the current year
@@ -179,7 +263,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
                     }
-                    
+
                     // Simulation time runs untill the next cohort is added
                     DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
 
@@ -193,8 +277,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
             }
         }
-        
-        
 
         List<List<int>> GetRandomRange(List<List<int>> bins)
         {
@@ -238,6 +320,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
+
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
@@ -304,7 +387,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 }
                             }
                             sumBio.Add(i, sumLayerBio);
-                        }
+                        }                      
 
                         int layerMaxBio = sumBio.LastOrDefault(x => x.Value == sumBio.Values.Max()).Key;
 
@@ -1093,13 +1176,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             return Bins;
         }
-         
+
         public static uint ComputeKey(uint a, ushort b)
         {
             uint value = (uint)((a << 16) | b);
             return value;
         }
-        
+
         public List<Cohort> AllCohorts
         {
             get
@@ -1298,7 +1381,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public void AddNewCohort(Cohort cohort)
         {
-
             if (cohorts.ContainsKey(cohort.Species))
             {
                 // This should deliver only one KeyValuePair
@@ -1396,16 +1478,22 @@ namespace Landis.Extension.Succession.BiomassPnET
             return s;
         }
 
-        private void AddSiteOutput(IEcoregionPnETVariables monthdata)
+        private void AddSiteOutput(IEcoregionPnETVariables monthdata, bool timeZero = false)
         {
             uint maxLayerStdev = 0;
             if (layerstdev.Count() > 0)
                 maxLayerStdev = layerstdev.Max();
+            float year = monthdata.Year;
 
-            string s = monthdata.Year + "," +
+            if (timeZero)
+            {
+                year = 0;
+            }
+
+            string s = year + "," +
                         Ecoregion.Name + "," +
                         Ecoregion.SoilType + "," +
-                        cohorts.Values.Sum(o => o.Count) + "," +
+                        CohortCount + "," +
                         maxLayerStdev + "," +
                         nlayers + "," +
                         monthdata.PAR0 + "," +
@@ -1419,9 +1507,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Hydrology.Evaporation + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +
                         interception + "," +
-                        precLoss +"," +
+                        precLoss + "," +
                         hydrology.Water + "," +
-                         hydrology.GetPressureHead(Ecoregion) + "," +
+                        hydrology.GetPressureHead(Ecoregion) + "," +
                         snowPack + "," +
                         this.CanopyLAI + "," +
                         monthdata.VPD + "," +
@@ -1436,9 +1524,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         PlugIn.Litter[Site].Mass + "," +
                         PlugIn.WoodyDebris[Site].Mass + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence))+ "," +
+                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence)) + "," +
                         subcanopypar;
-           
+
             this.siteoutput.Add(s);
         }
  
