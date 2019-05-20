@@ -175,6 +175,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     AddSiteOutput(ecoregionInitializer[0], true);
 
                     AllCohorts.ForEach(a => a.UpdateCohortData(ecoregionInitializer[0], true));
+
+                    siteoutput.Write();
+
+                    AllCohorts.ForEach(cohort => { cohort.WriteCohortData(); });
                 }
             }
         }
@@ -271,15 +275,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
                 if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
-
-                // Ensures that the initial values at t0 are recorded in the .csv files
-                if (siteoutput != null)
-                {
-                    List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate.AddMonths(-1), StartDate);
-                    AddSiteOutput(ecoregionInitializer[0], true);
-
-                    AllCohorts.ForEach(a => a.UpdateCohortData(ecoregionInitializer[0], true));
-                }
             }
         }
 
@@ -1495,7 +1490,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 year = 0;
             }
 
-            string s =  year + "," +
+            string s = year + "," +
                         Ecoregion.Name + "," +
                         Ecoregion.SoilType + "," +
                         CohortCount + "," +
@@ -1512,9 +1507,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Hydrology.Evaporation + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +
                         interception + "," +
-                        precLoss +"," +
+                        precLoss + "," +
                         hydrology.Water + "," +
-                         hydrology.GetPressureHead(Ecoregion) + "," +
+                        hydrology.GetPressureHead(Ecoregion) + "," +
                         snowPack + "," +
                         this.CanopyLAI + "," +
                         monthdata.VPD + "," +
@@ -1529,9 +1524,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         PlugIn.Litter[Site].Mass + "," +
                         PlugIn.WoodyDebris[Site].Mass + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence))+ "," +
+                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence)) + "," +
                         subcanopypar;
-           
+
             this.siteoutput.Add(s);
         }
  
