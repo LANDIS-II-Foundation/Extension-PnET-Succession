@@ -70,6 +70,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         float AETSum { get; } //mm
 
+        int NetPsnSum { get; }
+
         List<ISpecies> SpeciesByPlant { get; set; }
         List<ISpecies> SpeciesBySerotiny { get; set; }
         List<ISpecies> SpeciesByResprout { get; set; }

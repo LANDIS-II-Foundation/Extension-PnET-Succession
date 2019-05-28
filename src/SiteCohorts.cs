@@ -26,6 +26,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float runoffFrac;
 
         private float[] netpsn = null;
+        private int netpsnsum;
         private float[] grosspsn = null;
         private float[] folresp = null;
         
@@ -513,7 +514,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<List<int>> random_range = GetRandomRange(bins);
              
             folresp = new float[13];
-            netpsn = new float[13];
+            netpsn = new float[13];            
             grosspsn = new float[13];
             maintresp = new float[13];
 
@@ -1039,7 +1040,25 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
         }
-
+        public int NetPsnSum
+        {
+            get
+            {
+                if (netpsn == null)
+                {
+                    int[] netpsn_array = new int[12];
+                    for (int i = 0; i < netpsn_array.Length; i++)
+                    {
+                        netpsn_array[i] = 0;
+                    }
+                    return netpsn_array.Sum();
+                }
+                else
+                {
+                    return netpsn.Select(psn => (int)psn).ToArray().Sum();
+                }
+            }
+        }
         public byte CanopyLAImax
         {
             get
