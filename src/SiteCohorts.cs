@@ -252,6 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 subcanopyparmax = initialSites[key].SubCanopyParMAX;
                 watermax = initialSites[key].watermax;
 
+               
                 hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
 
                 PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
@@ -266,6 +267,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         AddNewCohort(new Cohort(cohort));
                     }
                 }
+                // Calculate AdjFolFrac
+                AllCohorts.ForEach(x => x.CalcAdjFracFol());
             }
             else
             {
