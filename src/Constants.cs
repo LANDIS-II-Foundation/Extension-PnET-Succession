@@ -25,7 +25,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             December
         }
 
-        
-         
+        // For Permafrost
+        public static float cs = 1942;                  //heat capacity solid	kJ/m3/K (Farouki 1986 in vanLier and Durigon 2013)
+        public static float cw = 4186;                  //heat capacity water	kJ/m3/K (vanLier and Durigon 2013)
+        public static float lambda_a = 2.25F;           //thermal conductivity air	kJ/m/d/K (vanLier and Durigon 2013)
+        public static float lambda_w = 51.51F;          //thermal conductivity water    kJ/m/d/K (vanLier and Durigon 2013)
+        public static float lambda_clay = 80F;          //thermal conductivity clay    kJ/m/d/K (Michot et al. 2008 in vanLier and Durigon 2013)
+        public static float lambda_0 = 360F;            //thermal conductivity sand-silt	kJ/m/d/K (Gemant 1950 in vanLier and Durigon 2013)
+        public static float gs = 0.125F;                //(Farouki 1986 in vanLier and Durigon 2013)
+        public static float omega = (float) System.Math.PI * 2 / 12;   // angular velocity of earth (monthly rotation) radians/month
+        public static float tau = 12F;                  //length of temp record     months
     }
 }

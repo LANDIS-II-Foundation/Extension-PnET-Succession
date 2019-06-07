@@ -21,7 +21,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Fraction active biomass to total biomass 
         float FrActWd { get; }
 
-        // Water stress parameter for excess water
+        // Water stress parameter for excess water: pressurehead below which growth halts
+        float H1 { get; }
+
+        // Water stress parameter for excess water: pressurehead below which growth declines
         float H2 { get; }
 
         // Water stress parameter for water shortage: pressurehead above which growth declines
@@ -81,8 +84,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Base foliar respiration (g respired / g photosynthesis)
         float BFolResp { get; }
 
-        //Minimum temperatyre for photosynthesis
+        //Minimum temperature for photosynthesis
         float PsnTMin { get; }
+
+        //Maximum temperature for photosynthesis
+        float PsnTMax { get; }
 
         // Foliar nitrogen (gN/gC)
         float FolN { get; }
@@ -126,5 +132,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         // Slope coefficient for O3Effect
         float O3GrowthSens { get; }
+        // Cold tolerance
+        float ColdTol { get; }
     }
 }

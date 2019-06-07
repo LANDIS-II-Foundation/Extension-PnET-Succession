@@ -14,6 +14,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         byte Month { get; }
         float Tave { get; }
         float Tmin { get; }
+        float Tmax { get; }
         float CO2 { get; }
         float O3 { get; }
         

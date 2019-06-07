@@ -37,6 +37,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
         {
+
+
             if (sitecohorts == null)
             {
                 throw new System.Exception("sitecohorts should not be null");
@@ -61,6 +63,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             ((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
             ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
+
+
         }
         public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double fraction)
         {
@@ -68,6 +72,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 throw new System.Exception("sitecohorts should not be null");
             }
+
+            ReduceDeadPools(sitecohorts, disturbanceType);
+
             // By default, all material is allocated to the woody debris or the litter pool
             float pwoodlost = 0;
             float prootlost = 0;
