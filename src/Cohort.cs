@@ -397,6 +397,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
         }
 
+        // Photosynthesis by canopy layer
         public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeSoilDepth, float MeltInByCanopyLayer, bool coldKillBoolean)
          {      
             bool success = true;
@@ -421,7 +422,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - (ecoregion.Porosity * frostFreeProp), 0));
                 Hydrology.RunOff += meltrunoff*ecoregion.RunoffFrac;
 
-                success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
+                success = hydrology.AddWater(MeltInByCanopyLayer - (meltrunoff * ecoregion.RunoffFrac));
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
             float precipIn = 0;
@@ -436,7 +437,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - (ecoregion.Porosity * frostFreeProp), 0));
                 Hydrology.RunOff += rainrunoff*ecoregion.RunoffFrac;
 
-                float waterIn = precipIn - rainrunoff;
+                float waterIn = precipIn - (rainrunoff * ecoregion.RunoffFrac);
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(waterIn);
