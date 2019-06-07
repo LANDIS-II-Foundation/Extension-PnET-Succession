@@ -37,6 +37,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Reference Include="Edu.Wisc.Forest.Flel.Util">
+      <HintPath>lib\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
+    </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
     </Reference>
@@ -63,15 +66,6 @@
     </Reference>
     <Reference Include="Landis.Library.Succession-v8">
       <HintPath>..\..\Library-Succession\deploy\Landis.Library.Succession-v8.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.SpatialModeling">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.SpatialModeling.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.Utilities">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Utilities.dll</HintPath>
-    </Reference>
-    <Reference Include="Troschuetz.Random">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Troschuetz.Random.dll</HintPath>
     </Reference>
   </ItemGroup>
   

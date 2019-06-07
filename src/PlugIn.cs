@@ -49,8 +49,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
-        //public static float LeakageFrostDepth; // Now an ecoregion parameter
-        //public static float PrecipEvents;// Now an ecoregion parameter
+        public static float FTimeStep;
+
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
 
@@ -273,7 +273,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
         }
-        public static float FTimeStep;
 
         public override void Initialize()
         {
@@ -326,12 +325,17 @@ namespace Landis.Extension.Succession.BiomassPnET
              
             StartDate = new DateTime(((Parameter<int>)GetParameter(Names.StartYear)).Value, 1, 15);
 
-            PlugIn.ModelCore.UI.WriteLine("Spinning up biomass");
+            PlugIn.ModelCore.UI.WriteLine("Spinning up biomass or reading from maps...");
 
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
+            string LitterMapFile = GetParameter(Names.LitterMap).Value;
+            string WoodyDebrisMapFile = GetParameter(Names.WoodyDebrisMap).Value;
+            Console.ReadLine();
             InitializeSites(InitialCommunitiesTXTFile, InitialCommunitiesMapFile, ModelCore);
-             
+            MapReader.ReadLitterFromMap(LitterMapFile);
+            MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile);
+
             // Convert PnET cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
             

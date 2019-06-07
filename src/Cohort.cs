@@ -371,6 +371,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             lastSeasonFRad = new List<float>();
             firstYear = true;
         }
+
         public Cohort(Cohort cohort)
         {
             this.species = cohort.species;
@@ -380,6 +381,29 @@ namespace Landis.Extension.Succession.BiomassPnET
             biomassmax = cohort.biomassmax;
             this.fol = cohort.fol;
             this.lastSeasonFRad = cohort.lastSeasonFRad;
+        }
+
+        public Cohort(ISpeciesPNET species, ushort age, int biomass, string SiteName, ushort firstYear)
+        {
+            InitializeSubLayers();
+            this.species = species;
+            this.age = age;
+            this.biomass = biomass;
+            this.nsc = this.species.DNSC * this.FActiveBiom * this.biomass;
+            this.biomassmax = biomass;
+            this.lastSeasonFRad = new List<float>();
+            this.adjFracFol = species.FracFol;
+
+            if (this.leaf_on)
+            {
+                this.fol = (adjFracFol * FActiveBiom * biomass);
+                LAI[index] = CalculateLAI(this.species, this.fol, index);
+            }
+
+            if (SiteName != null)
+            {
+                InitializeOutput(SiteName, firstYear);
+            }
         }
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
@@ -881,6 +905,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + "_" + YearOfBirth + ".csv", OutputHeader);
        
         }
+
+        public void InitializeOutput(string SiteName)
+        {
+            cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + ".csv", OutputHeader);
+
+        }
+
         public float SumLAI
         {
             get {
