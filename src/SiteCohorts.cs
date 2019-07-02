@@ -330,13 +330,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else
                 {
-                    SpinUp(StartDate, site, initialCommunity, SiteOutputName);
+                    SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, SiteOutputName);
                 }
             }
         }
 
         // Spins up sites if no biomass is provided
-        private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, string SiteOutputName = null)
+        private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
         {
                 List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
                 foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
