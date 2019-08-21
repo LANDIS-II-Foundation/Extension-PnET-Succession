@@ -53,6 +53,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public static float PrecipEvents;// Now an ecoregion parameter
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
+        public static int BinSize;
 
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -288,6 +289,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
+            BinSize = Timestep;
 
             FTimeStep = 1.0F / Timestep;
 
@@ -442,8 +444,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public override void InitializeSites(string initialCommunitiesText, string initialCommunitiesMap, ICore modelCore)
         {
+
             ModelCore.UI.WriteLine("   Loading initial communities from file \"{0}\" ...", initialCommunitiesText);
-            Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
+            Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(BinSize, ModelCore.Species);
+
+            //Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
             Landis.Library.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, parser);
 
             ModelCore.UI.WriteLine("   Reading initial communities map \"{0}\" ...", initialCommunitiesMap);

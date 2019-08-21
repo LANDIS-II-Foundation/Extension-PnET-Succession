@@ -58,6 +58,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static float interception;
         private static float precLoss;
         private static byte Timestep;
+        private static int BinSize;
         private static int nlayers;
         private static bool permafrost;
         Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
@@ -222,7 +223,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
             permafrost = ((Parameter<bool>)PlugIn.GetParameter("Permafrost")).Value;
-
+            BinSize = Timestep;
         }
 
         // Create SiteCohorts in SpinUp
@@ -1706,7 +1707,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // This should deliver only one KeyValuePair
                 KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == cohort.Species))[0];
 
-                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < Timestep));
+                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < BinSize));
+                //List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < Timestep));
 
                 Cohorts.ForEach(a => cohort.Accumulate(a)); ;
 
