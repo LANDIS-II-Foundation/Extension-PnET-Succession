@@ -58,7 +58,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static float interception;
         private static float precLoss;
         private static byte Timestep;
-        private static int BinSize;
+        private static int CohortBinSize;
         private static int nlayers;
         private static bool permafrost;
         Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
@@ -223,7 +223,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
             permafrost = ((Parameter<bool>)PlugIn.GetParameter("Permafrost")).Value;
-            BinSize = Timestep;
+            Parameter<string> CohortBinSizeParm = null;
+            if (PlugIn.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
+            {
+                if (!Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
+                {             
+                    throw new System.Exception("CohortBinSize is not an integer value.");
+                }
+            }
+            else
+                CohortBinSize = Timestep;
         }
 
         // Create SiteCohorts in SpinUp
@@ -1699,30 +1708,36 @@ namespace Landis.Extension.Succession.BiomassPnET
             return IsMaturePresent;
         }
 
-        public void AddNewCohort(Cohort cohort)
+        public void AddNewCohort(Cohort newCohort)
         {
 
-            if (cohorts.ContainsKey(cohort.Species))
+            if (cohorts.ContainsKey(newCohort.Species))
             {
                 // This should deliver only one KeyValuePair
-                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == cohort.Species))[0];
+                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == newCohort.Species))[0];
 
-                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < BinSize));
+                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
                 //List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < Timestep));
 
-                Cohorts.ForEach(a => cohort.Accumulate(a)); ;
+                if(Cohorts.Count > 1)
+                {
+                    foreach(Cohort Cohort in Cohorts.Skip(1))
+                    {
+                        newCohort.Accumulate(Cohort);
+                    }
+                }                
 
                 if (Cohorts.Count() > 0)
                 {
-                    Cohorts[0].Accumulate(cohort);
+                    Cohorts[0].Accumulate(newCohort);
                     return;
                 }
 
-                cohorts[cohort.Species].Add(cohort);
+                cohorts[newCohort.Species].Add(newCohort);
 
                 return;
             }
-            cohorts.Add(cohort.Species, new List<Cohort>(new Cohort[] { cohort }));
+            cohorts.Add(newCohort.Species, new List<Cohort>(new Cohort[] { newCohort }));
         }
 
         Landis.Library.BiomassCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)

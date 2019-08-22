@@ -500,6 +500,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     biomassmax = Math.Max(biomassmax, biomass);
                     nsc -= Allocation;
 
+                }
+                // In the last month
+                if (ecoregion.Variables.Month == (int)Constants.Months.December)
+                {
                     age++;
                 }
 
