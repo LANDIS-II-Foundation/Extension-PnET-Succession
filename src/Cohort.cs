@@ -20,7 +20,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public delegate void AddWoodyDebris(float Litter, float KWdLit);
         public delegate void AddLitter(float AddLitter, ISpeciesPNET Species);
 
-        private bool leaf_on = true;
+        private bool leaf_on = false;
 
         public static IEcoregionPnET ecoregion;
         public static ActiveSite site;
@@ -393,6 +393,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.biomassmax = biomass;
             this.lastSeasonFRad = new List<float>();
             this.adjFracFol = species.FracFol;
+            this.coldKill = int.MaxValue;
 
             if (this.leaf_on)
             {

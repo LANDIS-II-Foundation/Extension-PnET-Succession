@@ -61,6 +61,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static int nlayers;
         private static bool permafrost;
         Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
+        float lastTempBelowSnow = float.MaxValue;
 
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
@@ -587,9 +588,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             //int monthCount = 0;
-            float minMonthlyAvgTemp = float.MaxValue;
+            //float minMonthlyAvgTemp = float.MaxValue;
 
-            float lastTempBelowSnow = new float();
+            //float lastTempBelowSnow = float.MaxValue;
             float lastFrostDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
             int daysOfWinter = 0;
 
@@ -666,8 +667,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     // Permafrost calculations - from "Soil thawing worksheet.xlsx"
                     // 
-                    if (Ecoregion.Variables.Tave < minMonthlyAvgTemp)
-                        minMonthlyAvgTemp = Ecoregion.Variables.Tave;
+                    //if (Ecoregion.Variables.Tave < minMonthlyAvgTemp)
+                    //    minMonthlyAvgTemp = Ecoregion.Variables.Tave;
                     float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
                     float waterContent = hydrology.Water / Ecoregion.RootingDepth;  //m3/m3
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
@@ -683,7 +684,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
                     float freezeDepth = maxDepth;
                     float testDepth = 0;
-                    if (m == 0 && PlugIn.ModelCore.CurrentTime == 0)
+                    if (lastTempBelowSnow == float.MaxValue)
                     {
                         int mCount = Math.Min(12, data.Count());
                         float tSum = 0;
@@ -1895,7 +1896,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // with cold temp killing cohorts - now moved to within CalculatePhotosynthesis function
-        private void RemoveMarkedCohorts(float minMonthlyAvgTemp, float winterSTD)
+        /*private void RemoveMarkedCohorts(float minMonthlyAvgTemp, float winterSTD)
         {
 
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
@@ -1925,7 +1926,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
 
-        }
+        }*/
 
         public void RemoveCohort(Cohort cohort, ExtensionType disturbanceType)
         {
