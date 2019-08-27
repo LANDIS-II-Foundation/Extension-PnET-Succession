@@ -33,6 +33,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
+        
 
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
@@ -54,7 +55,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string FracFolShape = "FracFolShape";
         public const string MaxFracFol = "MaxFracFol";
         public const string O3Coeff = "O3GrowthSens";
-     
+        public const string LeafOnMinT = "LeafOnMinT"; // Optional
+
         public static void AssureIsName(string name)
         {
             if (IsName(name) == false)

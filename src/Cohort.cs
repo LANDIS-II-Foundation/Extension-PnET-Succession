@@ -520,7 +520,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             else
             {
                 // When LeafOn becomes false for the first time in a year
-                if (ecoregion.Variables.Tday <= this.SpeciesPNET.PsnTMin)
+                if (ecoregion.Variables.Tmin <= this.SpeciesPNET.LeafOnMinT)
                 {
                     if (leaf_on == true)
                     {

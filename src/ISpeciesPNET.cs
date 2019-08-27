@@ -134,5 +134,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         float O3GrowthSens { get; }
         // Cold tolerance
         float ColdTol { get; }
+
+        // Mininum Temp for leaf-on (optional)
+        // If not provided LeafOnMinT = PsnTMin
+        float LeafOnMinT { get; }
     }
 }
