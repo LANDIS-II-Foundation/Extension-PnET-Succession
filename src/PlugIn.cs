@@ -53,6 +53,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
+        public static int CohortBinSize;
 
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -277,7 +278,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         public override void Initialize()
         {
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
-
             Cohort.DeathEvent += DeathEvent;
 
             Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
@@ -287,8 +287,28 @@ namespace Landis.Extension.Succession.BiomassPnET
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
+            Parameter<string> CohortBinSizeParm = null;
+            if (TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
+            {
+                if (Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
+                {
+                    if(CohortBinSize < Timestep)
+                    {
+                        throw new System.Exception("CohortBinSize cannot be smaller than Timestep.");
+                    }
+                    else
+                        PlugIn.ModelCore.UI.WriteLine("Succession timestep = " + Timestep + "; CohortBinSize = " + CohortBinSize + ".");
+                }
+                else
+                {
+                    throw new System.Exception("CohortBinSize is not an integer value.");
+                }
+            }
+            else
+                CohortBinSize = Timestep;
 
-            FTimeStep = 1.0F / Timestep;
+        
+                FTimeStep = 1.0F / Timestep;
 
             //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
 
@@ -450,8 +470,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public override void InitializeSites(string initialCommunitiesText, string initialCommunitiesMap, ICore modelCore)
         {
+
             ModelCore.UI.WriteLine("   Loading initial communities from file \"{0}\" ...", initialCommunitiesText);
-            Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
+            Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(CohortBinSize, ModelCore.Species);
+
+            //Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
             Landis.Library.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, parser);
 
             ModelCore.UI.WriteLine("   Reading initial communities map \"{0}\" ...", initialCommunitiesMap);

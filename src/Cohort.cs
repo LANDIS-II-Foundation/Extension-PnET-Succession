@@ -344,7 +344,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
         {
             this.species =  species;
-            age = 0;
+            age = 1;
             coldKill = int.MaxValue;
            
             this.nsc = (ushort)species.InitialNSC;
@@ -520,6 +520,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     biomassmax = Math.Max(biomassmax, biomass);
                     nsc -= Allocation;
 
+                }
+                // In the last month
+                if (ecoregion.Variables.Month == (int)Constants.Months.December)
+                {
                     age++;
                 }
 
@@ -536,7 +540,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             else
             {
                 // When LeafOn becomes false for the first time in a year
-                if (ecoregion.Variables.Tmin < this.SpeciesPNET.PsnTMin)
+                if (ecoregion.Variables.Tmin <= this.SpeciesPNET.LeafOnMinT)
                 {
                     if (leaf_on == true)
                     {
