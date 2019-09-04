@@ -5,7 +5,7 @@
     <AssemblyName>Landis.Extension.Succession.BiomassPnET-v3</AssemblyName>
     <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v3</AssemblyTitle>
     <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
-    <AssemblyVersion>3.3</AssemblyVersion>
+    <AssemblyVersion>3.3.4</AssemblyVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession</RepositoryUrl>

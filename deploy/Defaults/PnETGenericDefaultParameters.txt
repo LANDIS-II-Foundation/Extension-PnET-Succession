@@ -24,8 +24,8 @@ H1				0.0	<< species specific waterlogging threshold. pressure head below which 
 H2				0	<< species specific waterlogging stress threshold. pressure head below which Psn begins to slow because of waterlogging
 H3				100 	<< species specific water stress threshold (m of pressure head); pressure head above which Psn begins to slow because of water stress. 0.0- < Wiltg point (higher values=more drought tolerant)
 H4				150	<< species specific wilting point (m of pressure head); pressure head above which Psn stops because of water stress. (higher values=more drought tolerant)
-EstMoist			2.5
-EstRad				2.5
+EstMoist			1.0
+EstRad				1.0
 PressureHeadCalculationMethod	SaxtonAndRawls
 LeakageFrac			1
 PrecIntConst			0.1
@@ -48,3 +48,4 @@ Permafrost			false
 LeakageFrostDepth		0.0
 RunOffFrac			1.0
 LeafOnMinT			-9999	>> Optional parameter, set to PsnMinT if not provided
+MaxPest			1.0

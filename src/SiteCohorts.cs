@@ -540,7 +540,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
-                annualEstab[spc] = 0;
+                annualEstab[spc] = 1;
                 annualFwater[spc] = 0;
                 annualFrad[spc] = 0;
                 monthlyCount[spc] = 0;
@@ -907,7 +907,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         if (monthlyEstab.ContainsKey(spc))
                         {
-                            annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
+                            //annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
+                            // Calculate the cumulative probability that no months had successful establishment (later transformed)
+                            annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
                             annualFwater[spc] = annualFwater[spc] + establishmentProbability.Get_FWater(spc);
                             annualFrad[spc] = annualFrad[spc] + establishmentProbability.Get_FRad(spc);
 
@@ -939,12 +941,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                     //bool count0 = true;
                     if (monthlyCount[spc] > 0)
                     {
-                    annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
+                        //annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
+                        // Transform cumulative probability of no successful establishments to probability of at least one successful establishment
+                        annualEstab[spc] = 1 - annualEstab[spc] ;
                         annualFwater[spc] = annualFwater[spc] / monthlyCount[spc];
                         annualFrad[spc] = annualFrad[spc] / monthlyCount[spc];
                         //count0 = false;
                     }
-                    float pest = annualEstab[spc];
+                    // Modify Pest by maximum value
+                    float pest = annualEstab[spc] * spc.MaxPest;
                     if (!spc.PreventEstablishment)
                     {
 

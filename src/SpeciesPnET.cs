@@ -60,6 +60,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _towood;
         private float _estrad;
         private float _estmoist;
+        private float _maxPest;
         private float _follignin;
         private bool _preventestablishment;
         private float _psntopt;
@@ -124,6 +125,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> towood;
         private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
         private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxPest;
         private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
         private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
@@ -180,6 +182,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             towood = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("towood")); ;
             estrad = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estrad")); ;
             estmoist = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estmoist"));
+            maxPest = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxPest"));
             follignin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("follignin"));
             preventestablishment = ((Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)PlugIn.GetParameter("preventestablishment"));
             psntopt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntopt"));
@@ -247,6 +250,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float towood,
             float estrad,
             float estmoist,
+            float maxPest,
             float follignin,
             bool preventestablishment,
             float psntopt,
@@ -305,6 +309,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._towood = towood;
             this._estrad = estrad;
             this._estmoist = estmoist;
+            this._maxPest = maxPest;
             this._follignin = follignin;
             this._preventestablishment = preventestablishment;
             this._psntopt = psntopt;
@@ -365,6 +370,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _towood = towood[species];
             _estrad = estrad[species];
             _estmoist = estmoist[species];
+            _maxPest = maxPest[species];
             _follignin = follignin[species];
             _preventestablishment = preventestablishment[species];
             _psntopt = psntopt[species];
@@ -535,6 +541,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get 
             { 
                 return _estmoist; 
+            }
+        }
+        public float MaxPest
+        {
+            get
+            {
+                return _maxPest;
             }
         }
         public float TOwood
