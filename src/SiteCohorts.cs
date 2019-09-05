@@ -546,7 +546,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 annualEstab[spc] = new List<float>();
                 cumulativeEstab[spc] = 1;
                 annualFwater[spc] = new List<float>();
+                cumulativeFwater[spc] = 0;
                 annualFrad[spc] = new List<float>();
+                cumulativeFrad[spc] = 0;
                 monthlyCount[spc] = 0;
                 coldKillMonth[spc] = int.MaxValue;
             }
@@ -974,9 +976,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         }
 
                         //Reset annual lists for next year
-                        annualEstab.Clear();
-                        annualFwater.Clear();
-                        annualFrad.Clear();                        
+                        annualEstab[spc].Clear();
+                        annualFwater[spc].Clear();
+                        annualFrad[spc].Clear();                        
                     }
                 }
             }
@@ -995,7 +997,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                         cumulativeFrad[spc] = cumulativeFrad[spc] / monthlyCount[spc];
 
                         // Modify Pest by maximum value
-                        pest = cumulativeEstab[spc] * spc.MaxPest;
+                        //pest = cumulativeEstab[spc] * spc.MaxPest;
+
+                        // Calculate Pest from average Fwater, Frad and modified by MaxPest
+                        pest = cumulativeFwater[spc] * cumulativeFrad[spc] * spc.MaxPest;
                     }
                     
                     if (!spc.PreventEstablishment)
