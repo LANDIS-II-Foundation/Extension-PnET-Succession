@@ -531,18 +531,22 @@ namespace Landis.Extension.Succession.BiomassPnET
             grosspsn = new float[13];
             maintresp = new float[13];
 
-            Dictionary<ISpeciesPNET, float> annualEstab = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, float> annualFwater = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, float> annualFrad = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, List<float>> annualEstab = new Dictionary<ISpeciesPNET, List<float>>();
+            Dictionary<ISpeciesPNET, float> cumulativeEstab = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, List<float>> annualFwater = new Dictionary<ISpeciesPNET, List<float>>();
+            Dictionary<ISpeciesPNET, float> cumulativeFwater = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, List<float>> annualFrad = new Dictionary<ISpeciesPNET, List<float>>();
+            Dictionary<ISpeciesPNET, float> cumulativeFrad = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, float> monthlyEstab = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, int> monthlyCount = new Dictionary<ISpeciesPNET, int>();
             Dictionary<ISpeciesPNET, int> coldKillMonth = new Dictionary<ISpeciesPNET, int>(); // month in which cold kills each species
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
-                annualEstab[spc] = 1;
-                annualFwater[spc] = 0;
-                annualFrad[spc] = 0;
+                annualEstab[spc] = new List<float>();
+                cumulativeEstab[spc] = 1;
+                annualFwater[spc] = new List<float>();
+                annualFrad[spc] = new List<float>();
                 monthlyCount[spc] = 0;
                 coldKillMonth[spc] = int.MaxValue;
             }
@@ -909,11 +913,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                         {
                             //annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
                             // Calculate the cumulative probability that no months had successful establishment (later transformed)
-                            annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
-                            annualFwater[spc] = annualFwater[spc] + establishmentProbability.Get_FWater(spc);
-                            annualFrad[spc] = annualFrad[spc] + establishmentProbability.Get_FRad(spc);
+                            //annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
 
-                            monthlyCount[spc] = monthlyCount[spc] + 1;
+                            // Store monthly values for later filtering
+                            annualEstab[spc].Add(monthlyEstab[spc]);
+                            annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
+                            annualFrad[spc].Add(establishmentProbability.Get_FRad(spc));                            
                         }
                     }
 
@@ -931,6 +936,48 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     // Calculate AdjFolFrac
                     AllCohorts.ForEach(x => x.CalcAdjFracFol());
+
+                    // Filter monthly pest values
+                    // This assumes up to 3 months of growing season are relevant for establishment
+                    // When > 3 months of growing season, exlcude 1st month, assuming trees focus on foliage growth in first month
+                    // When > 4 months, ignore the 4th month and beyond as not primarily relevant for establishment
+                    // When < 3 months, include all months
+                    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                    {
+                        if (annualEstab[spc].Count > 3)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) * (1 - annualEstab[spc][3]);
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][1] + annualFwater[spc][2] + annualFwater[spc][3];
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][1] + annualFrad[spc][2] + annualFrad[spc][3];
+                            monthlyCount[spc] = monthlyCount[spc] + 3;
+                        }
+                        else if(annualEstab[spc].Count > 2)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) ;
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] + annualFwater[spc][2];
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] + annualFrad[spc][2];
+                            monthlyCount[spc] = monthlyCount[spc] + 3;
+                        }
+                        else if(annualEstab[spc].Count > 1)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]);
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] ;
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] ;
+                            monthlyCount[spc] = monthlyCount[spc] + 2;
+                        }
+                        else if(annualEstab[spc].Count == 1)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]);
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0];
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0];
+                            monthlyCount[spc] = monthlyCount[spc] + 1;
+                        }
+
+                        //Reset annual lists for next year
+                        annualEstab.Clear();
+                        annualFwater.Clear();
+                        annualFrad.Clear();                        
+                    }
                 }
             }
             if (PlugIn.ModelCore.CurrentTime > 0)
@@ -938,18 +985,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
                     bool estab = false;
-                    //bool count0 = true;
+                    float pest = 0;
                     if (monthlyCount[spc] > 0)
                     {
                         //annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
                         // Transform cumulative probability of no successful establishments to probability of at least one successful establishment
-                        annualEstab[spc] = 1 - annualEstab[spc] ;
-                        annualFwater[spc] = annualFwater[spc] / monthlyCount[spc];
-                        annualFrad[spc] = annualFrad[spc] / monthlyCount[spc];
-                        //count0 = false;
+                        cumulativeEstab[spc] = 1 - cumulativeEstab[spc] ;
+                        cumulativeFwater[spc] = cumulativeFwater[spc] / monthlyCount[spc];
+                        cumulativeFrad[spc] = cumulativeFrad[spc] / monthlyCount[spc];
+
+                        // Modify Pest by maximum value
+                        pest = cumulativeEstab[spc] * spc.MaxPest;
                     }
-                    // Modify Pest by maximum value
-                    float pest = annualEstab[spc] * spc.MaxPest;
+                    
                     if (!spc.PreventEstablishment)
                     {
 
@@ -960,7 +1008,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         }
                     }
-                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, annualFwater[spc],annualFrad[spc], estab, monthlyCount[spc]);
+                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, cumulativeFwater[spc], cumulativeFrad[spc], estab, monthlyCount[spc]);
 
                 }
             }
