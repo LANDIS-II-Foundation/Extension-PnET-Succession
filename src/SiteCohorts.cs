@@ -63,6 +63,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static bool permafrost;
         Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
         private static float maxHalfSat;
+        private static float minHalfSat;
 
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
@@ -235,10 +236,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             else
                 CohortBinSize = Timestep;
             maxHalfSat = 0;
+            minHalfSat = float.MaxValue;
             foreach(ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
                 if (spc.HalfSat > maxHalfSat)
                     maxHalfSat = spc.HalfSat;
+                if (spc.HalfSat < minHalfSat)
+                    minHalfSat = spc.HalfSat;
             }
         }
 
@@ -914,7 +918,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, maxHalfSat);
+                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat);
 
                     foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                     {
