@@ -129,7 +129,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
                     float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
                     float frad = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat),2) * (1/(Math.Pow(spc.EstRad,2))))));
-                    float frad_adj_int = (adjHalfSat - minHalfSat) / halfSatRange;
+                    float frad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
                     float frad_slope = (frad_adj_int * 2) - 1;
                     float adjFrad = 1 - frad_adj_int + frad * frad_slope;
 
@@ -139,7 +139,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float fwater = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/(Math.Pow(spc.EstMoist,2))))));
 
                     //float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater * spc.MaxPest), Timestep);
-                    float pest = adjFrad * fwater;
+                    float pest = (float) Math.Min(1.0,adjFrad * fwater);
                     estabDict[spc] = pest;
                     _pest[spc] = pest;
                     _fwater[spc] = fwater;
