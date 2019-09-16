@@ -484,7 +484,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         nsc = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                     }
-                    else if(PlugIn.ModelCore.CurrentTime > 0 && this.TotalBiomass < 1.0)  //Check if biomass < 1.0 -> cohort dies
+                    else if(PlugIn.ModelCore.CurrentTime > 0 && this.TotalBiomass < species.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
                     {
                         nsc = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                     }

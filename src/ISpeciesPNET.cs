@@ -141,5 +141,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Mininum Temp for leaf-on (optional)
         // If not provided LeafOnMinT = PsnTMin
         float LeafOnMinT { get; }
+
+        // Initial Biomass
+        float InitBiomass { get; }
+
     }
 }
