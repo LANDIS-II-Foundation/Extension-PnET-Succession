@@ -30,6 +30,10 @@
     <!--<OutputPath>bin\Debug\</OutputPath>-->
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\deploy\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="lib\**" />
     <EmbeddedResource Remove="lib\**" />
