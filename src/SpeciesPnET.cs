@@ -77,7 +77,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _bfolresp;
         private string _ozoneSens;
         private float _coldTol;
-        private float _initBiomass;
+        private int _initBiomass;
         private string name;
         private int index;
         
@@ -345,13 +345,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._maxFracFol = maxFracFol;
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
-            this._initBiomass = (float)(1.0 / dnsc * initialnsc);
+            //  initBiomass = initBiomass - Senescence
+            this._initBiomass = (int)((uint)(1F / dnsc * (ushort)initialnsc) - ((uint)(fracbelowg * (uint)(1F / dnsc * (ushort)initialnsc))*toroot) - ((uint)((1 - fracbelowg) * (uint)(1F / dnsc * (ushort)initialnsc)) * towood));
+            //senescence = ((Root * species.TOroot) + Wood * species.TOwood);
         }
        
         SpeciesPnET(ISpecies species)
         {
             //_wuecnst = wuecnst[species];
-            _initBiomass = (float)(1.0 / dnsc[species] * initialnsc[species]);
+            _initBiomass = (int)((uint)(1F / dnsc[species] * (ushort)initialnsc[species]) - ((uint)(fracbelowg[species] * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * towood[species]));
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _kwdlit = kwdlit[species];
@@ -681,7 +683,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _dnsc;
             }
         }
-        public float InitBiomass
+        public int InitBiomass
         {
             get
             {

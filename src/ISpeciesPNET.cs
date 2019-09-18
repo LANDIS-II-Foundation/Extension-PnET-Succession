@@ -143,7 +143,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float LeafOnMinT { get; }
 
         // Initial Biomass
-        float InitBiomass { get; }
+        int InitBiomass { get; }
 
     }
 }
