@@ -495,20 +495,25 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Woody decomposition: do once per year to reduce unnescessary computation time so with the last subcanopy layer 
             if (index == PlugIn.IMAX - 1)
             {
-                // In the first month
-                if (ecoregion.Variables.Month == (int)Constants.Months.January)
+
+                // In the last month
+                if (ecoregion.Variables.Month == (int)Constants.Months.December)
                 {
-                   
                     //Check if nscfrac is below threshold to determine if cohort is alive
                     if (!this.IsAlive)
                     {
                         nsc = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                     }
-                    else if(PlugIn.ModelCore.CurrentTime > 0 && this.TotalBiomass < 1.0)  //Check if biomass < 1.0 -> cohort dies
+                    else if (PlugIn.ModelCore.CurrentTime > 0 && this.TotalBiomass < 1.0)  //Check if biomass < 1.0 -> cohort dies
                     {
                         nsc = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
+                        leaf_on = false;
+                        nsc = 0.0F;
+                        float foliageSenescence = FoliageSenescence();
+                        addlitter(foliageSenescence, SpeciesPNET);
+                        lastFoliageSenescence = foliageSenescence;
                     }
-                   
+
                     float woodSenescence = Senescence();
                     addwoodydebris(woodSenescence, species.KWdLit);
                     lastWoodySenescence = woodSenescence;
@@ -519,11 +524,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     biomass += Allocation;
                     biomassmax = Math.Max(biomassmax, biomass);
                     nsc -= Allocation;
-
-                }
-                // In the last month
-                if (ecoregion.Variables.Month == (int)Constants.Months.December)
-                {
                     age++;
                 }
 
