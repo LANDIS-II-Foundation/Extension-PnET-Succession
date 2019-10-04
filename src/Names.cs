@@ -22,18 +22,21 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string IMAX = "IMAX";
         public const string InitialCommunities = "InitialCommunities";
         public const string InitialCommunitiesMap = "InitialCommunitiesMap";
+        public const string LitterMap = "LitterMap";
+        public const string WoodyDebrisMap = "WoodyDebrisMap";
         public const string ClimateConfigFile = "ClimateConfigFile";
         public const string MapCoordinates = "MapCoordinates";
         public const string PNEToutputSiteCoordinates = "PNEToutputSiteCoordinates";
         public const string PNEToutputSiteLocation = "PNEToutputSiteLocation";
         public const string PressureHeadCalculationMethod = "PressureHeadCalculationMethod";
         public const string Wythers = "Wythers";
-
         public const string DTemp = "DTemp";
-        public const string CO2AMaxBEff = "CO2AMaxBEff";
-       
+        public const string CO2AMaxBEff = "CO2AMaxBEff";       
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
+        public const string CohortBinSize = "CohortBinSize";
+        
+
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
         public const string RunoffFrac = "RunoffFrac";
@@ -54,7 +57,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string FracFolShape = "FracFolShape";
         public const string MaxFracFol = "MaxFracFol";
         public const string O3Coeff = "O3GrowthSens";
-     
+        public const string LeafOnMinT = "LeafOnMinT"; // Optional
+
         public static void AssureIsName(string name)
         {
             if (IsName(name) == false)

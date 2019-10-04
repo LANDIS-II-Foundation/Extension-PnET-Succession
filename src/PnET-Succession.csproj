@@ -5,7 +5,7 @@
     <AssemblyName>Landis.Extension.Succession.BiomassPnET-v3</AssemblyName>
     <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v3</AssemblyTitle>
     <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
-    <AssemblyVersion>3.3</AssemblyVersion>
+    <AssemblyVersion>3.4</AssemblyVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession</RepositoryUrl>
@@ -16,18 +16,22 @@
     <Authors>Brian Miranda, Eric Gustafson, Arjan de Bruijn</Authors>
     <Product>Landis.Extension.Succession.BiomassPnET</Product>
     <Copyright>Landis-II-Foundation</Copyright>
-    <Version>3.3.2</Version>
+    <Version>3.4</Version>
     <PackageTags>LANDIS-II;Landis;Extension;Succession;PnET</PackageTags>
     <Description></Description>
     <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
-    <FileVersion>3.3.2</FileVersion>
+    <FileVersion>3.4</FileVersion>
     <Company>USDA Forest Service</Company>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <!--<OutputPath>C:\BRM\LANDIS_II\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>-->
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>C:\BRM\LANDIS_II\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>
+    <!--<OutputPath>bin\Debug\</OutputPath>-->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\deploy\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,10 +51,13 @@
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.BiomassCohorts-v3.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Climate-v4">
-      <HintPath>..\..\Library-Climate\src\bin\Debug\Landis.Library.Climate-v4.dll</HintPath>
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Climate-v4.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Library.InitialCommunity-vBiomassCohorts">
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.InitialCommunity-vBiomassCohorts.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Metadata-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Metadata-v2.dll</HintPath>
@@ -58,17 +65,8 @@
     <Reference Include="Landis.Library.Parameters-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Parameters-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession-v6">
-      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Succession-v6.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.SpatialModeling">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.SpatialModeling.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.Utilities">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Landis.Utilities.dll</HintPath>
-    </Reference>
-    <Reference Include="Troschuetz.Random">
-      <HintPath>..\..\..\..\..\Program Files\LANDIS-II-v7\v7\Troschuetz.Random.dll</HintPath>
+    <Reference Include="Landis.Library.Succession-v8">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Succession-v8.dll</HintPath>
     </Reference>
   </ItemGroup>
   
@@ -78,7 +76,6 @@
   
   <ItemGroup>
     <PackageReference Include="Landis.Core" Version="2.0.0" />
-    <PackageReference Include="Landis.SpatialModeling" Version="2.0.0" />
   </ItemGroup>
 
 </Project>
