@@ -22,6 +22,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string IMAX = "IMAX";
         public const string InitialCommunities = "InitialCommunities";
         public const string InitialCommunitiesMap = "InitialCommunitiesMap";
+        public const string LitterMap = "LitterMap";
+        public const string WoodyDebrisMap = "WoodyDebrisMap";
         public const string ClimateConfigFile = "ClimateConfigFile";
         public const string MapCoordinates = "MapCoordinates";
         public const string PNEToutputSiteCoordinates = "PNEToutputSiteCoordinates";

@@ -1,13 +1,13 @@
 // uses dominance to allocate psn and subtract transpiration from soil water, average cohort vars over layer
 
-using Landis.SpatialModeling;
 using Landis.Core;
+using Landis.SpatialModeling;
 using Landis.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Landis.Extension.Succession.BiomassPnET 
+namespace Landis.Extension.Succession.BiomassPnET
 {
     public class Cohort : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.BiomassCohorts.ICohort 
     {
@@ -20,7 +20,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public delegate void AddWoodyDebris(float Litter, float KWdLit);
         public delegate void AddLitter(float AddLitter, ISpeciesPNET Species);
 
-        private bool leaf_on = true;
+        private bool leaf_on = false;
 
         public static IEcoregionPnET ecoregion;
         public static ActiveSite site;
@@ -79,10 +79,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Actual pressurehead used to calculate FWater
         public float[] PressHead = null;
-
-        // O3Effect by sublayer
-        //public float[] O3Effect = null;
-
+        
         // Reduction factor for ozone 
         public float[] FOzone = null;
 
@@ -115,7 +112,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             FWater = new float[PlugIn.IMAX];
             Water = new float[PlugIn.IMAX];
             PressHead = new float[PlugIn.IMAX];
-            //O3Effect = new float[PlugIn.IMAX];
             FOzone = new float[PlugIn.IMAX];
             MaintenanceRespiration = new float[PlugIn.IMAX];
             Interception = new float[PlugIn.IMAX];
@@ -177,12 +173,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             CiModifier = null;
             DelAmax = null;
         }
-        //public void NullO3SubLayers()
-        //{
-        //    // Reset values for subcanopy layers
-        //    O3Effect = null;
-        //}
-      
+
+        // Age (years)
         public ushort Age
         {
             get
@@ -261,7 +253,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return coldKill;
             }
         }
-        // Get totals for the
+        // Get totals for combined cohorts
         public void Accumulate(Cohort c)
         {
             biomass += c.biomass;
@@ -371,6 +363,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             lastSeasonFRad = new List<float>();
             firstYear = true;
         }
+
         public Cohort(Cohort cohort)
         {
             this.species = cohort.species;
@@ -381,6 +374,33 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.fol = cohort.fol;
             this.lastSeasonFRad = cohort.lastSeasonFRad;
         }
+
+        public Cohort(ISpeciesPNET species, ushort age, int woodBiomass, string SiteName, ushort firstYear)
+        {
+            InitializeSubLayers();
+            this.species = species;
+            this.age = age;
+            //incoming biomass is aboveground wood, calculate total biomass
+            int biomass = (int) (woodBiomass / (1 - species.FracBelowG));
+            this.biomass = biomass;
+            this.nsc = this.species.DNSC * this.FActiveBiom * this.biomass;
+            this.biomassmax = biomass;
+            this.lastSeasonFRad = new List<float>();
+            this.adjFracFol = species.FracFol;
+            this.coldKill = int.MaxValue;
+
+            if (this.leaf_on)
+            {
+                this.fol = (adjFracFol * FActiveBiom * biomass);
+                LAI[index] = CalculateLAI(this.species, this.fol, index);
+            }
+
+            if (SiteName != null)
+            {
+                InitializeOutput(SiteName, firstYear);
+            }
+        }
+
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {
@@ -475,10 +495,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Woody decomposition: do once per year to reduce unnescessary computation time so with the last subcanopy layer 
             if (index == PlugIn.IMAX - 1)
             {
-                // In the first month
-                if (ecoregion.Variables.Month == (int)Constants.Months.January)
+
+                // In the last month
+                if (ecoregion.Variables.Month == (int)Constants.Months.December)
                 {
-                   
                     //Check if nscfrac is below threshold to determine if cohort is alive
                     if (!this.IsAlive)
                     {
@@ -493,7 +513,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         addlitter(foliageSenescence, SpeciesPNET);
                         lastFoliageSenescence = foliageSenescence;
                     }
-                   
+
                     float woodSenescence = Senescence();
                     addwoodydebris(woodSenescence, species.KWdLit);
                     lastWoodySenescence = woodSenescence;
@@ -504,11 +524,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     biomass += Allocation;
                     biomassmax = Math.Max(biomassmax, biomass);
                     nsc -= Allocation;
-
-                }
-                // In the last month
-                if (ecoregion.Variables.Month == (int)Constants.Months.December)
-                {
                     age++;
                 }
 
@@ -890,6 +905,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + "_" + YearOfBirth + ".csv", OutputHeader);
        
         }
+
+        public void InitializeOutput(string SiteName)
+        {
+            cohortoutput = new LocalOutput(SiteName, "Cohort_" + Species.Name + ".csv", OutputHeader);
+
+        }
+
         public float SumLAI
         {
             get {

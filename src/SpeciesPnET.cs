@@ -190,6 +190,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             q10 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("q10"));
             psntmin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmin"));
             psntmax = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntmax"));
+            if (psntmax[this] == -9999F)
+                psntmax[this] = psntopt[this] + (psntopt[this] - psntmin[this]);
             dvpd1 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd1"));
             dvpd2 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("dvpd2"));
             foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
@@ -350,7 +352,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //senescence = ((Root * species.TOroot) + Wood * species.TOwood);
         }
        
-        SpeciesPnET(ISpecies species)
+        private SpeciesPnET(ISpecies species)
         {
             //_wuecnst = wuecnst[species];
             _initBiomass = (int)((uint)(1F / dnsc[species] * (ushort)initialnsc[species]) - ((uint)(fracbelowg[species] * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * towood[species]));
