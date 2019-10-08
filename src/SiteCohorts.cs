@@ -601,10 +601,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 lastOzoneEffect[i] = 0;
             }
 
-            //int monthCount = 0;
-            //float minMonthlyAvgTemp = float.MaxValue;
 
-            //float lastTempBelowSnow = float.MaxValue;
             float lastFrostDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
             int daysOfWinter = 0;
 
@@ -633,7 +630,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
             }
-
+            //Clear pressurehead site values
+            sumPressureHead = 0;
+            countPressureHead = 0;
             for (int m = 0; m < data.Count(); m++ )
             {
                 Ecoregion.Variables = data[m];
@@ -652,7 +651,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 leakageFrac = Ecoregion.LeakageFrac;
                 float thawedDepth = 0;
 
-                //bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
                 {
                     // snow calculations - from "Soil thawing worksheet with snow.xlsx"
@@ -843,8 +841,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.RunOff = 0;
                 Hydrology.Leakage = 0;
                 Hydrology.Evaporation = 0;
-                sumPressureHead = 0;
-                countPressureHead = 0;
+                
                 
 
                 float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert AOT40 units to ppm h
@@ -992,7 +989,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     // Calculate AdjFolFrac
                     AllCohorts.ForEach(x => x.CalcAdjFracFol());
                 }
-            }
+            } //for (int m = 0; m < data.Count(); m++ )
             if (PlugIn.ModelCore.CurrentTime > 0)
             {
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
