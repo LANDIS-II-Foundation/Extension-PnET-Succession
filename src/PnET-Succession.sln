@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "output-biomass-pnet", "..\.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "initial-community", "..\..\brmiranda\Library-Initial-Community\initial-community.csproj", "{7621DFA3-86B6-4E6E-9174-C2AE0F38DD79}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "biomass-cohort", "..\..\Library-Biomass-Cohort\src\biomass-cohort.csproj", "{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,14 @@ Global
 		{7621DFA3-86B6-4E6E-9174-C2AE0F38DD79}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7621DFA3-86B6-4E6E-9174-C2AE0F38DD79}.Release|x64.ActiveCfg = Release|Any CPU
 		{7621DFA3-86B6-4E6E-9174-C2AE0F38DD79}.Release|x64.Build.0 = Release|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Debug|x64.Build.0 = Debug|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Release|x64.ActiveCfg = Release|Any CPU
+		{4AE68A0D-4D90-429A-9AE9-C890B3E7F0F3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
