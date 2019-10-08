@@ -35,6 +35,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float nsc;
         private ushort age;
         private float defolProp; //BRM
+        private float expectedDefol; //MGM set at first defoliation to prevent multiple defoliations annually
+        private float expectedAlloc; //MGM set at first allocation to prevent multiple reflushes
         private float lastWoodySenescence; // last recorded woody senescence
         private float lastFoliageSenescence; // last recorded foliage senescence
         private float lastFRad;  //last month's average FRad
@@ -197,6 +199,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 return fol;
             }
+            private set
+            {
+                fol = value;
+        }
         }
         // Aboveground Biomass (g/m2)
         public int Biomass
@@ -341,7 +347,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Constructor
-        public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName)
+        public Cohort(ISpeciesPNET species, ushort year_of_birth, string SiteName) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
             this.species =  species;
             age = 1;
@@ -363,8 +369,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             lastSeasonFRad = new List<float>();
             firstYear = true;
         }
-
-        public Cohort(Cohort cohort)
+        public Cohort(Cohort cohort) // : base(cohort.species, new Landis.Library.BiomassCohorts.CohortData(cohort.age, cohort.Biomass))
         {
             this.species = cohort.species;
             this.age = cohort.age;
@@ -414,7 +419,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
         {
             int abovegroundBiomass = (int)((1 - species.FracBelowG) * biomass) + (int)fol;
-            defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
+            //defolProp = (float)Landis.Library.Biomass.CohortDefoliation.Compute(site, species, abovegroundBiomass, SiteAboveGroundBiomass);
+            defolProp = (float)Landis.Library.BiomassCohorts.CohortDefoliation.Compute(this, site, SiteAboveGroundBiomass);
         }
 
         // Photosynthesis by canopy layer
@@ -525,6 +531,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     biomassmax = Math.Max(biomassmax, biomass);
                     nsc -= Allocation;
                     age++;
+
+                    expectedDefol = 0;
+                    expectedAlloc = 0;
                 }
 
             }
@@ -556,6 +565,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     leaf_on = true;
                 }
             }
+            /****************************** MGM's restructuring 10/25/2018 ***************************************/
             if (leaf_on)
             {
                 // Foliage linearly increases with active biomass
@@ -564,7 +574,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     adjFracFol = species.FracFol;
                 float IdealFol = (adjFracFol * FActiveBiom * biomass); // Using adjusted FracFol
 
-                // If the tree should have more filiage than it currently has
+                if (ecoregion.Variables.Month < (int)Constants.Months.June) //Growing season before defoliation outbreaks
+                {
                 if (IdealFol > fol)
                 {
                     // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
@@ -578,23 +589,67 @@ namespace Landis.Extension.Succession.BiomassPnET
                     nsc -= Folalloc;
                 }
             }
+                else if (ecoregion.Variables.Month == (int)Constants.Months.June) //Apply defoliation only in June
+            {
+                    if (fol > expectedDefol) // defoliation - expected defoliation prevents multiple rounds of defoliation within a cohort (which shares canopy variables, like foliage)
+                {
+                        ReduceFoliage(defolProp);
+                }
+                    expectedDefol = fol;
+            }
+                else if (ecoregion.Variables.Month > (int)Constants.Months.June) //During and after defoliation events
+                {
+                    if (defolProp > 0)
+                    {
+                        if (defolProp > 0.60 && species.TOfol == 1)  // Refoliation at >60% reduction in foliage for deciduous trees - MGM
+                        {
+                            // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
+                            // carbon fraction of biomass to convert C to DW
+                            float Folalloc = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * ((0.70f * IdealFol) - fol)));  // 70% refoliation
+                            if (Folalloc > expectedAlloc)
+                            {
+                                expectedAlloc = Folalloc;
+                            }
+                            else
+                            {
+                                Folalloc = 0;
+                            }
+
+                            fol += Folalloc / species.CFracBiomass;// gDW
+
+                            // Subtract from NSC
+                            float Folalloc2 = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * (0.95f * IdealFol - fol)));  // cost of refol is the cost of getting to IdealFol
+                            nsc -= Folalloc2; // resource intensive to reflush in middle of growing season
+
+                        }
+                        else //No attempted refoliation but carbon loss after defoliation
+                        {
+                            // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
+                            // carbon fraction of biomass to convert C to DW
+                            float Folalloc = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
+
+                            // Subtract from NSC do not add Fol
+                            nsc -= Folalloc;
+                        }
+                    }
+                    else if (IdealFol > fol)    //Non-defoliated trees refoliate 'normally'
+                    {
+                        // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
+                        // carbon fraction of biomass to convert C to DW
+                        float Folalloc = Math.Max(0, Math.Min(nsc, species.CFracBiomass * (IdealFol - fol))); // gC/mo
+
+                        // Add foliage allocation to foliage
+                        fol += Folalloc / species.CFracBiomass;// gDW
+
+                        // Subtract from NSC
+                        nsc -= Folalloc;
+                    }
+                }
+            }
+            /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^ MGM's restructuring 10/25/2018 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             LAI[index] = CalculateLAI(species, fol, index);
-            
-            //  Apply defoliation in month of june
-            if ((PlugIn.ModelCore.CurrentTime > 0) && (ecoregion.Variables.Month == (int)Constants.Months.June))
-            {
-                if (DefolProp > 0)
-                {
-                    //Adjust defol prop for foliage longevity - defol only affects current foliage
-                    float adjDefol = DefolProp * species.TOfol;
-                    ReduceFoliage(adjDefol);
-                    // Update LAI after defoliation
-                    //LAI[index] = (1 / (float)PlugIn.IMAX) * fol / (species.SLWmax - species.SLWDel * index * (1 / (float)PlugIn.IMAX) * fol);
-                    LAI[index] = CalculateLAI(species, fol, index);
-                }
-            
-            }
 
             // Adjust HalfSat for CO2 effect
             float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
