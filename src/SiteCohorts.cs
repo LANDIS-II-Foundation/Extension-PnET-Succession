@@ -697,7 +697,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     //if (Ecoregion.Variables.Tave < minMonthlyAvgTemp)
                     //    minMonthlyAvgTemp = Ecoregion.Variables.Tave;
                     float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
-                    float waterContent = hydrology.Water / Ecoregion.RootingDepth;  //m3/m3
+                    float waterContent = (float) Math.Min(1.0,hydrology.Water / Ecoregion.RootingDepth);  //m3/m3
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
                     float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
                     float Fs = PressureHeadSaxton_Rawls.GetFs(Ecoregion.SoilType);
@@ -747,7 +747,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         while (testDepth <= (maxDepth/1000.0))
                         {
                             float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
-                            float zTemp = depthTempDict[testDepth] + (tempBelowSnow - depthTempDict[testDepth]) * DRz;
+                            float modDRz = DRz * (0.4383F * DRz + 0.4275F);  // Calibrated adjustment factor - soil thawing DRz calibration.xlsx
+                            float zTemp = depthTempDict[testDepth] + (tempBelowSnow - depthTempDict[testDepth]) * modDRz;
                             depthTempDict[testDepth] = zTemp;
                             if ((zTemp <= 0) && (testDepth < freezeDepth))
                                 freezeDepth = testDepth;
