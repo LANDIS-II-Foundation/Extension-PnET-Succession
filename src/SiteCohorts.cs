@@ -238,6 +238,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
+            float sumPressureHead = 0;
+            int countPressureHead = 0;
 
             establishmentProbability.ResetPerTimeStep();
             Cohort.SetSiteAccessFunctions(this);
@@ -280,14 +282,42 @@ namespace Landis.Extension.Succession.BiomassPnET
             Dictionary<ISpeciesPNET, float> annualEstab = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, float> monthlyEstab = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, int> monthlyCount = new Dictionary<ISpeciesPNET, int>();
+            //Dictionary<ISpeciesPNET, int> coldKillMonth = new Dictionary<ISpeciesPNET, int>(); // month in which cold kills each species
+
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
                 annualEstab[spc] = 0;
                 monthlyCount[spc] = 0;
+                //coldKillMonth[spc] = int.MaxValue;
             }
-
-
-            int monthCount = 0;
+            if (PlugIn.ModelCore.CurrentTime > 0) // cold can only kill after spinup
+            {
+                // Loop through months & species to determine if cold temp would kill any species
+                float extremeMinTemp = float.MaxValue;
+                int extremeMonth = 0;
+                for (int m = 0; m < data.Count(); m++)
+                {
+                    float minTemp = data[m].Tave - (float)(3.0 * 6.67);  // hardwired for this version
+                    if (minTemp < extremeMinTemp)
+                    {
+                        extremeMinTemp = minTemp;
+                        extremeMonth = m;
+                    }
+                }
+                PlugIn.ExtremeMinTemp[Site] = extremeMinTemp;
+                //foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                //{
+                //    // Check if low temp kills species
+                //    if (extremeMinTemp < spc.ColdTol)
+                //    {
+                //        coldKillMonth[spc] = extremeMonth;
+                //    }
+                //
+                //}
+            }
+            //Clear pressurehead site values
+            sumPressureHead = 0;
+            countPressureHead = 0;
             for (int m = 0; m < data.Count(); m++ )
             {
                 this.Ecoregion.Variables = data[m];
@@ -343,6 +373,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.RunOff = 0;
                 Hydrology.Leakage = 0;
                 Hydrology.Evaporation = 0;
+               
 
                 float subCanopyPrecip = 0;
                 int subCanopyIndex = 0;
@@ -430,7 +461,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     AllCohorts.ForEach(a => a.UpdateCohortData(data[m]));
                 }
-
+                if (data[m].Tave > 0)
+                {
+                    sumPressureHead += hydrology.GetPressureHead(Ecoregion);
+                    countPressureHead += 1;
+                }
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
                     monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology);
@@ -482,6 +517,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 AllCohorts.ForEach(cohort => { cohort.WriteCohortData(); });
             }
+            float avgPH = sumPressureHead / countPressureHead;
+            PlugIn.PressureHead[Site] = avgPH;
 
             RemoveMarkedCohorts();
 

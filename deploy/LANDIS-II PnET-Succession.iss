@@ -10,20 +10,21 @@
 LicenseFile={#LandisSDK}\licenses\LANDIS-II_Binary_license.rtf
 
 [Files]
-Source: {#LandisExtDir}\{#ExtensionAssembly}.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.AgeOnlyCohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.BiomassCohorts-v2.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Landis.Library.Parameters-v1.dll; DestDir: {app}\bin\extensions; Flags: replacesameversion
+Source: ..\src\bin\Debug\{#ExtensionAssembly}.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
+Source: ..\src\bin\Debug\Landis.Library.AgeOnlyCohorts.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
+Source: ..\src\bin\Debug\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
+Source: ..\src\bin\Debug\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
+Source: ..\src\bin\Debug\Landis.Library.BiomassCohorts-v2.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
+Source: ..\src\bin\Debug\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
+Source: ..\src\bin\Debug\Landis.Library.Parameters-v1.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
 
-Source: ..\..\Support-Library-Dlls\Defaults\PnETGenericDefaultParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Defaults\VanGenuchtenParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
-Source: ..\..\Support-Library-Dlls\Defaults\SaxtonAndRawlsParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: replacesameversion
+Source: ..\..\Support-Library-Dlls\Defaults\PnETGenericDefaultParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: ignoreversion
+Source: ..\..\Support-Library-Dlls\Defaults\VanGenuchtenParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: ignoreversion
+Source: ..\..\Support-Library-Dlls\Defaults\SaxtonAndRawlsParameters.txt; DestDir: {app}\bin\extensions\Defaults; Flags: ignoreversion
 
-#define UserGuideSrc "LANDIS-II " + ExtensionName + " vX.Y User Guide.pdf"
-#define UserGuide    StringChange(UserGuideSrc, "X.Y", MajorMinor)
+;#define UserGuideSrc "LANDIS-II " + ExtensionName + " vX.Y User Guide.pdf"
+;#define UserGuide    StringChange(UserGuideSrc, "X.Y", MajorMinor)
+#define UserGuide  "LANDIS-II " + ExtensionName + " v2.1 User Guide.pdf"
 Source: docs\{#UserGuide}; DestDir: {app}\docs; DestName: {#UserGuide}
 
 Source: examples\*; DestDir: {app}\examples\{#ExtensionName}\{#MajorMinor}; Flags: recursesubdirs

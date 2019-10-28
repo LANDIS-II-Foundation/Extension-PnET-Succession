@@ -21,6 +21,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public static float Latitude;// Now an ecoregion parameter
         public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
+        public static ISiteVar<float> PressureHead;
+        public static ISiteVar<float> ExtremeMinTemp;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
@@ -260,6 +262,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            PressureHead = ModelCore.Landscape.NewSiteVar<float>();
+            ExtremeMinTemp = ModelCore.Landscape.NewSiteVar<float>();
             Edu.Wisc.Forest.Flel.Util.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
@@ -322,28 +326,37 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
             
             ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
-              
-            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
-            {
-                AgeCohortSiteVar[site] = sitecohorts[site];
-            }
-
-            ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
-
             ISiteVar<ISiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<ISiteCohorts>();
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                PnETCohorts[site] = sitecohorts[site];
+                AgeCohortSiteVar[site] = sitecohorts[site];
+                IEcoregionPnET ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+                IHydrology hydrology = new Hydrology((ushort)ecoregion.FieldCap);
+                PressureHead[site] = hydrology.GetPressureHead(ecoregion);
+                DateTime date = StartDate.AddYears(-(sitecohorts[site].AgeMax));
+                List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(ecoregion, date, StartDate);
+                //ExtremeMinTemp[site] = (float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyMinTemp);
+                float extremeMinTemp = float.MaxValue;
+                for (int m = 0; m < climate_vars.Count(); m++)
+                {
+                    float minTemp = climate_vars[m].Tave - (float)(3.0 * 6.67);  // hardwired STD for this version
+                    if (minTemp < extremeMinTemp)
+                    {
+                        extremeMinTemp = minTemp;
+                    }
+                }
+                ExtremeMinTemp[site] = extremeMinTemp;
             }
 
+            ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
             ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
-            
-            
-             
+            ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
+            ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
+
         }
-  
-         
+
+
         public void AddNewCohort(ISpecies species, ActiveSite site)
         {
             ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
