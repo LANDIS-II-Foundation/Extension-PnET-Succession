@@ -670,9 +670,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                     float bulkIntercept = 165.0f; //kg/m3
                     float bulkSlope = 1.3f; //kg/m3
-                    float Pwater = 1000.0f;
-                    float lambAir = 0.023f;
-                    float lambIce = 2.29f;
+                    float Pwater = 1000.0f;  // Density of water (kg/m3)
+                    float lambAir = 0.023f; // W/m K (CLM5 documentation, Table 2.7)
+                    float lambIce = 2.29f; // W/m K (CLM5 documentation, Table 2.7)
                     float omega = (float)(2*Math.PI/12.0);
 
                     float Psno_kg_m3 = bulkIntercept + (bulkSlope * daysOfWinter); //kg/m3
