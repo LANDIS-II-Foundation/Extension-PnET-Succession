@@ -14,7 +14,7 @@ Source: ..\src\bin\Debug\{#ExtensionAssembly}.dll; DestDir: {app}\bin\extensions
 Source: ..\src\bin\Debug\Landis.Library.AgeOnlyCohorts.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
 Source: ..\src\bin\Debug\Landis.Library.Cohorts.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
 Source: ..\src\bin\Debug\Landis.Library.Biomass-v1.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
-Source: ..\src\bin\Debug\Landis.Library.BiomassCohorts-v2.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
+Source: ..\src\bin\Debug\Landis.Library.BiomassCohorts.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
 Source: ..\src\bin\Debug\Landis.Library.Succession.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
 Source: ..\src\bin\Debug\Landis.Library.Parameters-v1.dll; DestDir: {app}\bin\extensions; Flags: ignoreversion
 
