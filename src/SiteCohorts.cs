@@ -277,6 +277,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
                 PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(this.Ecoregion);
                 this.canopylaimax = initialSites[key].CanopyLAImax;
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -306,6 +307,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(Ecoregion);
 
                 if (SiteOutputName != null)
                 {
@@ -447,6 +449,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
+            float sumPressureHead = 0;
+            int countPressureHead = 0;
 
             establishmentProbability.ResetPerTimeStep();
             Cohort.SetSiteAccessFunctions(this);
@@ -614,30 +618,38 @@ namespace Landis.Extension.Succession.BiomassPnET
                 lastOzoneEffect[i] = 0;
             }
 
-            //int monthCount = 0;
-            //float minMonthlyAvgTemp = float.MaxValue;
 
-            //float lastTempBelowSnow = float.MaxValue;
             float lastFrostDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
             int daysOfWinter = 0;
 
             if (PlugIn.ModelCore.CurrentTime > 0) // cold can only kill after spinup
             {
                 // Loop through months & species to determine if cold temp would kill any species
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                float extremeMinTemp = float.MaxValue;
+                int extremeMonth = 0;
+                for (int m = 0; m < data.Count(); m++)
                 {
-                    for (int m = 0; m < data.Count(); m++)
+                    float minTemp = data[m].Tave - (float)(3.0 * Ecoregion.WinterSTD);
+                    if(minTemp < extremeMinTemp)
                     {
-                        // Check if low temp kills species
-                        if ((data[m].Tave - (3.0 * Ecoregion.WinterSTD)) < spc.ColdTol)
-                        {
-                            coldKillMonth[spc] = m;
-                            break;
-                        }
+                        extremeMinTemp = minTemp;
+                        extremeMonth = m;
                     }
                 }
-            }
+                PlugIn.ExtremeMinTemp[Site] = extremeMinTemp;
+                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                {
+                    // Check if low temp kills species
+                    if (extremeMinTemp < spc.ColdTol)
+                    {
+                        coldKillMonth[spc] = extremeMonth;
+                    }
 
+                }
+            }
+            //Clear pressurehead site values
+            sumPressureHead = 0;
+            countPressureHead = 0;
             for (int m = 0; m < data.Count(); m++ )
             {
                 Ecoregion.Variables = data[m];
@@ -656,7 +668,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 leakageFrac = Ecoregion.LeakageFrac;
                 float thawedDepth = 0;
 
-                //bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
                 {
                     // snow calculations - from "Soil thawing worksheet with snow.xlsx"
@@ -857,8 +868,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.RunOff = 0;
                 Hydrology.Leakage = 0;
                 Hydrology.Evaporation = 0;
-
-
+                
+                
 
                 float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert AOT40 units to ppm h
                 float lastO3 = 0;
@@ -983,7 +994,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     AllCohorts.ForEach(a => a.UpdateCohortData(data[m]));
                 }
-
+                if (data[m].Tave > 0)
+                {
+                    sumPressureHead += hydrology.GetPressureHead(Ecoregion);
+                    countPressureHead += 1;
+                }
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
                     monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat);
@@ -1060,7 +1075,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         annualFrad[spc].Clear();                        
                     }
                 }
-            }
+            } //for (int m = 0; m < data.Count(); m++ )
             if (PlugIn.ModelCore.CurrentTime > 0)
             {
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
@@ -1103,7 +1118,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 AllCohorts.ForEach(cohort => { cohort.WriteCohortData(); });
             }
-
+            float avgPH = sumPressureHead / countPressureHead;
+            PlugIn.PressureHead[Site] = avgPH;
+            
             RemoveMarkedCohorts();
 
             //HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//Moved within m loop to trigger once per year
