@@ -909,15 +909,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
 
-                CanopyLAI = 0; // Reset to 0
                 AllCohorts.ForEach(x =>
                     {
-                        folresp[Ecoregion.Variables.Month - 1] += x.FolResp.Sum();
-                        netpsn[Ecoregion.Variables.Month - 1] += x.NetPsn.Sum();
-                        grosspsn[Ecoregion.Variables.Month - 1] += x.GrossPsn.Sum() * PlugIn.FTimeStep;
-                        maintresp[Ecoregion.Variables.Month - 1] += x.MaintenanceRespiration.Sum() * PlugIn.FTimeStep;
-                        CanopyLAI += x.LAI.Sum();
-                        transpiration += x.Transpiration.Sum();
+                        folresp[Ecoregion.Variables.Month - 1] = x.FolResp.Sum();
+                        netpsn[Ecoregion.Variables.Month - 1] = x.NetPsn.Sum();
+                        grosspsn[Ecoregion.Variables.Month - 1] = x.GrossPsn.Sum();
+                        maintresp[Ecoregion.Variables.Month - 1] = x.MaintenanceRespiration.Sum();
+                        CanopyLAI = x.LAI.Sum();
+                        transpiration = x.Transpiration.Sum();
                     }
                 );
 
