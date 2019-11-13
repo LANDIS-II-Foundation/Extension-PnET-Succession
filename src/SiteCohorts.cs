@@ -26,7 +26,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float runoffFrac;
 
         private float[] netpsn = null;
-        private int netpsnsum;
+        private float netpsnsum;
         private float[] grosspsn = null;
         private float[] folresp = null;
         
@@ -186,6 +186,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return transpiration;
             }
         }
+        //---------------------------------------------------------------------
         public float SubcanopyPAR
         {
             get
@@ -193,6 +194,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return subcanopypar;
             }
         }
+        //---------------------------------------------------------------------
         public IEstablishmentProbability EstablishmentProbability 
         {
             get
@@ -200,7 +202,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return establishmentProbability;
             }
         }
-
+        //---------------------------------------------------------------------
         public float SubCanopyParMAX
         {
             get
@@ -208,12 +210,33 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return subcanopyparmax;
             }
         }
-
+        //---------------------------------------------------------------------
         public ushort WaterMax
         {
             get
             {
                 return watermax;
+            }
+        }
+        //---------------------------------------------------------------------
+        public float[] NetPsn
+        {
+            get
+            {
+                if (netpsn == null)
+                {
+                    float[] netpsn_array = new float[12];
+                    for (int i = 0; i < netpsn_array.Length; i++)
+                    {
+                        netpsn_array[i] = 0;
+                    }
+                    return netpsn_array;
+                }
+                else
+                {
+                    //return netpsn.Select(psn => (int)psn).ToArray();
+                    return netpsn.ToArray();
+                }
             }
         }
 
@@ -273,8 +296,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                     foreach (Cohort cohort in initialSites[key].cohorts[spc])
                     {
                         AddNewCohort(new Cohort(cohort));
-                    }
+                    }          
                 }
+                this.netpsn = initialSites[key].NetPsn;
+                this.folresp = initialSites[key].FolResp;
+                this.grosspsn = initialSites[key].GrossPsn;
+                this.maintresp = initialSites[key].MaintResp;
+                this.CanopyLAI = initialSites[key].CanopyLAI;
+                this.transpiration = initialSites[key].Transpiration;
 
                 // Calculate AdjFolFrac
                 AllCohorts.ForEach(x => x.CalcAdjFracFol());
@@ -628,6 +657,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 subcanopypar = Ecoregion.Variables.PAR0;                
                 interception = 0;
 
+                // Reset monthly variables that get reported as single year snapshots
+                if (Ecoregion.Variables.Month == 1)
+                {
+                    folresp = new float[13];
+                    netpsn = new float[13];
+                    grosspsn = new float[13];
+                    maintresp = new float[13];
+                }
+
                 float ozoneD40 = 0;
                 if (m > 0)
                     ozoneD40 = Math.Max(0, Ecoregion.Variables.O3 - data[m - 1].O3);
@@ -909,17 +947,18 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 }
 
+                float LAISum = 0;
                 AllCohorts.ForEach(x =>
                     {
-                        folresp[Ecoregion.Variables.Month - 1] = x.FolResp.Sum();
-                        netpsn[Ecoregion.Variables.Month - 1] = x.NetPsn.Sum();
-                        grosspsn[Ecoregion.Variables.Month - 1] = x.GrossPsn.Sum();
-                        maintresp[Ecoregion.Variables.Month - 1] = x.MaintenanceRespiration.Sum();
-                        CanopyLAI = x.LAI.Sum();
-                        transpiration = x.Transpiration.Sum();
+                        folresp[Ecoregion.Variables.Month - 1] += x.FolResp.Sum();
+                        netpsn[Ecoregion.Variables.Month - 1] += (int)x.NetPsn.Sum();
+                        grosspsn[Ecoregion.Variables.Month - 1] += x.GrossPsn.Sum();
+                        maintresp[Ecoregion.Variables.Month - 1] += x.MaintenanceRespiration.Sum();
+                        LAISum += x.LAI.Sum();
+                        transpiration += x.Transpiration.Sum();
                     }
                 );
-
+                CanopyLAI = LAISum;
                 // Surface PAR is effectively 0 when snowpack is present
                 if (snowPack > 0)
                     subcanopypar = 0;
@@ -1255,13 +1294,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         
-        public int[] MaintResp
+        public float[] MaintResp
         {
             get
             {
                 if (maintresp == null)
                 {
-                    int[] maintresp_array = new int[12];
+                    float[] maintresp_array = new float[12];
                     for (int i = 0; i < maintresp_array.Length; i++)
                     {
                         maintresp_array[i] = 0;
@@ -1270,18 +1309,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else
                 {
-                    return maintresp.Select(r => (int)r).ToArray();
+                    return maintresp.ToArray();
                 }
             }
         }
 
-        public int[] FolResp
+        public float[] FolResp
         {
             get
             {
                 if (folresp == null)
                 {
-                    int[] folresp_array = new int[12];
+                    float[] folresp_array = new float[12];
                     for (int i = 0; i < folresp_array.Length; i++)
                     {
                         folresp_array[i] = 0;
@@ -1290,17 +1329,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else
                 {
-                    return folresp.Select(psn => (int)psn).ToArray();
+                    return folresp.ToArray();
                 }
             }
         }
-        public int[] GrossPsn
+        public float[] GrossPsn
         {
             get
             {
                 if (grosspsn == null)
                 {
-                    int[] grosspsn_array = new int[12];
+                    float[] grosspsn_array = new float[12];
                     for (int i = 0; i < grosspsn_array.Length; i++)
                     {
                         grosspsn_array[i] = 0;
@@ -1309,38 +1348,19 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else
                 {
-                    return grosspsn.Select(psn => (int)psn).ToArray();
+                    return grosspsn.ToArray();
                 }
             }
         }
 
-        public int[] NetPsn
+
+        public float NetPsnSum
         {
             get
             {
                 if (netpsn == null)
                 {
-                    int[] netpsn_array = new int[12];
-                    for (int i = 0; i < netpsn_array.Length; i++)
-                    {
-                        netpsn_array[i] = 0;
-                    }
-                    return netpsn_array;
-                }
-                else
-                {
-                    return netpsn.Select(psn => (int)psn).ToArray();
-                }
-            }
-        }
-
-        public int NetPsnSum
-        {
-            get
-            {
-                if (netpsn == null)
-                {
-                    int[] netpsn_array = new int[12];
+                    float[] netpsn_array = new float[12];
                     for (int i = 0; i < netpsn_array.Length; i++)
                     {
                         netpsn_array[i] = 0;
@@ -1349,7 +1369,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else
                 {
-                    return netpsn.Select(psn => (int)psn).ToArray().Sum();
+                    return netpsn.ToArray().Sum();
                 }
             }
         }
