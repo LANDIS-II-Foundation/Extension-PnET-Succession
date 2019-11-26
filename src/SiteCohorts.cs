@@ -951,7 +951,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AllCohorts.ForEach(x =>
                     {
                         folresp[Ecoregion.Variables.Month - 1] += x.FolResp.Sum();
-                        netpsn[Ecoregion.Variables.Month - 1] += (int)x.NetPsn.Sum();
+                        netpsn[Ecoregion.Variables.Month - 1] += x.NetPsn.Sum();
                         grosspsn[Ecoregion.Variables.Month - 1] += x.GrossPsn.Sum();
                         maintresp[Ecoregion.Variables.Month - 1] += x.MaintenanceRespiration.Sum();
                         LAISum += x.LAI.Sum();

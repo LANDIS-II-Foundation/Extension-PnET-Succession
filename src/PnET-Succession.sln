@@ -16,6 +16,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "climate-generator", "..\..\Library-Climate\src\climate-generator.csproj", "{030CBF3B-0716-461B-B3F3-B47EB407DF39}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "output-biomass-pnet", "..\..\Extension-Output-Biomass-PnET\src\output-biomass-pnet.csproj", "{D1E44F6E-5A2D-4A50-A289-60EB8B3AFEC4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0} = {17896667-BAB5-4F18-9DDF-8761E06C55E0}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "initial-community", "..\..\brmiranda\Library-Initial-Community\initial-community.csproj", "{7621DFA3-86B6-4E6E-9174-C2AE0F38DD79}"
 EndProject
