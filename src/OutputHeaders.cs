@@ -70,5 +70,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string CiModifier = "CiModifier(-)";
         public const string SubCanopyPAR = "SubCanopyPAR";
         public const string LimitingFactor = "Limiting Factor";
+        public const string SoilDiffusivity = "SoilDiffusivity(m2_day)";
     }
 }

@@ -22,6 +22,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float subcanopypar;
         private float subcanopyparmax;
         private float frostFreeSoilDepth;
+        private float soilDiffusivity;
         private float leakageFrac;
         private float runoffFrac;
 
@@ -675,8 +676,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         daysOfWinter += (int)Ecoregion.Variables.DaySpan;
                     }
-                    else
+                    else if (snowPack > 0)
                     {
+                        daysOfWinter += (int)Ecoregion.Variables.DaySpan;
+                    }
+                    else
+                    { 
                         daysOfWinter = 0;
                     }
                     float bulkIntercept = 165.0f; //kg/m3
@@ -684,31 +689,33 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float Pwater = 1000.0f;  // Density of water (kg/m3)
                     float lambAir = 0.023f; // W/m K (CLM5 documentation, Table 2.7)
                     float lambIce = 2.29f; // W/m K (CLM5 documentation, Table 2.7)
-                    float omega = (float)(2*Math.PI/12.0);
+                    float snowHeatCapacity = 2090f; // J/kg K (https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
 
                     float Psno_kg_m3 = bulkIntercept + (bulkSlope * daysOfWinter); //kg/m3
                     float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
 
-                    float sno_dep = Pwater * snowPack / Psno_kg_m3 / 1000; //m
-                    if (Ecoregion.Variables.Tave >= 0)
-                    {
-                        float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
-                        sno_dep = sno_dep * fracAbove0;
-                    }
+                    float sno_dep = Pwater * (snowPack / 1000) / Psno_kg_m3 ; //m
+                    //if (Ecoregion.Variables.Tave >= 0)  -- snowmelt has already been accounted for
+                    //{
+                    //    float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
+                    //    sno_dep = sno_dep * fracAbove0;
+                    //}
                     // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
                     // Eq. 85 - Jordan (1991)
                     float lambda_Snow = (float) (lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(lambIce-lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float damping = (float) Math.Sqrt(omega/(2.0F*lambda_Snow));
-                    float DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
-
+                    float vol_heat_capacity_snow = snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
+                    float Ks_snow = Ecoregion.Variables.DaySpan * lambda_Snow / vol_heat_capacity_snow; //thermal diffusivity (m2/month)
+                    float damping = (float) Math.Sqrt((2.0F* Ks_snow)/ Constants.omega);
+                    float DRz_snow = 1F;
+                    if(sno_dep > 0)
+                        DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
                     
-
                     // Permafrost calculations - from "Soil thawing worksheet.xlsx"
                     // 
                     //if (Ecoregion.Variables.Tave < minMonthlyAvgTemp)
                     //    minMonthlyAvgTemp = Ecoregion.Variables.Tave;
-                    float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
-                    float waterContent = (float) Math.Min(1.0,hydrology.Water / Ecoregion.RootingDepth);  //m3/m3
+                    /* //Calculations of diffusivity from soil properties - currently not in use
+                    float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3                    
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
                     float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
                     float Fs = PressureHeadSaxton_Rawls.GetFs(Ecoregion.SoilType);
@@ -718,19 +725,63 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float Dmonth = D * Ecoregion.Variables.DaySpan; // m2/month
                     float ks = Dmonth * 1000000F / (Ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24)); // mm2/s
                     float d = (float)Math.Pow((Constants.omega / (2.0F * Dmonth)), (0.5));
+                    */
 
+                    float waterContent = (float)Math.Min(1.0, hydrology.Water / Ecoregion.RootingDepth);  //m3/m3
                     float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
-                    float freezeDepth = maxDepth;
+                    float freezeDepth = maxDepth/1000;
                     float testDepth = 0;
-                    if (lastTempBelowSnow == float.MaxValue)
+
+                    float tSum = 0;
+                    float pSum = 0;
+                    float tMax = float.MinValue;
+                    float tMin = float.MaxValue;
+                    int maxMonth = 0;
+                    int mCount = 0;
+                    if (m < 12)
                     {
-                        int mCount = Math.Min(12, data.Count());
-                        float tSum = 0;
+                        mCount = Math.Min(12, data.Count());
                         foreach (int z in Enumerable.Range(0, mCount))
                         {
                             tSum += data[z].Tave;
+                            pSum += data[z].Prec;
+                            if (data[z].Tave > tMax)
+                            {
+                                tMax = data[z].Tave;
+                                maxMonth = data[z].Month;
+                            }
+                            if (data[z].Tave < tMin)
+                                tMin = data[z].Tave;
                         }
-                        float annualTavg = tSum / mCount;
+                    }
+                    else
+                    {
+                        mCount = 12;
+                        foreach (int z in Enumerable.Range(m-11, 12))
+                        {
+                            tSum += data[z].Tave;
+                            pSum += data[z].Prec;
+                            if (data[z].Tave > tMax)
+                            {
+                                tMax = data[z].Tave;
+                                maxMonth = data[z].Month;
+                            }
+                            if (data[z].Tave < tMin)
+                                tMin = data[z].Tave;
+                        }
+                    }
+                    float annualTavg = tSum / mCount;
+                    float annualPcpAvg = pSum / mCount;
+                    float tAmplitude = (tMax - tMin) / 2;
+
+                    // Calculation of diffusivity from climate data (Soil thawing_Campbell_121719.xlsx, Fit_Diffusivity_Climate.R)
+                    soilDiffusivity = (float)Math.Max(0.0001,(0.04798 - 0.006764 * annualTavg - 0.0005266 * annualTavg * annualTavg - 0.0009944 * annualPcpAvg)); // Diffusivity (m2/day)
+                    float Dmonth = soilDiffusivity * Ecoregion.Variables.DaySpan; // m2/month
+                    float d = (float)Math.Pow(((2.0F * Dmonth) / Constants.omega), (0.5));  // Damping coefficient
+
+                    //if (lastTempBelowSnow == float.MaxValue)
+                    //{-90
+                        
                         float tempBelowSnow = Ecoregion.Variables.Tave;
                         if(sno_dep > 0)
                         {
@@ -740,14 +791,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                         while (testDepth <= (maxDepth/1000.0))
                         {
                             float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
-                            float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                            //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+
+                            float zTemp = (float) (annualTavg + tAmplitude * DRz_snow * Math.Exp(-1 * testDepth / d) * Math.Sin(Constants.omega * (Ecoregion.Variables.Month + (maxMonth+1)) - testDepth / d));
+
                             depthTempDict[testDepth] = zTemp;
                             if ((zTemp <= 0) && (testDepth < freezeDepth))
                                 freezeDepth = testDepth;
                             testDepth += 0.25F;
                         }
-                    }
-                    else
+                    //}
+                    /*else
                     {
                         float tempBelowSnow = Ecoregion.Variables.Tave;
                         if (sno_dep > 0)
@@ -765,7 +819,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 freezeDepth = testDepth;
                             testDepth += 0.25F;
                         }
-                    }
+                    }*/                    
+
                     frostFreeSoilDepth = Math.Min(freezeDepth*1000.0F, frostFreeSoilDepth);
                     thawedDepth = Math.Max(0,Math.Min(Ecoregion.RootingDepth,frostFreeSoilDepth) - lastFrostDepth);
                     float newFrozenSoil = 0;
@@ -2204,6 +2259,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         OutputHeaders.WoodySenescence + "," + 
                         OutputHeaders.FoliageSenescence + ","+
                         OutputHeaders.SubCanopyPAR+","+
+                        OutputHeaders.SoilDiffusivity+","+
                         OutputHeaders.FrostDepth+","+
                         OutputHeaders.LeakageFrac;
 
@@ -2255,6 +2311,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence))+ "," +
                         subcanopypar +","+
+                        soilDiffusivity + ","+
                         frostFreeSoilDepth+","+
                         leakageFrac;
            
