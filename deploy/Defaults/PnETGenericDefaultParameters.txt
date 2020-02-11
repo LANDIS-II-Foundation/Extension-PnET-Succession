@@ -1,0 +1,51 @@
+LandisData	PnETGenericDefaultParameters
+PnETGenericDefaultParameters		Value
+>>----------------------------------------
+MaxCanopyLayers			3
+MaxDevLyrAv			10000
+IMAX				5
+PsnAgeRed			5.0
+DVPD1				0.05
+DVPD2				2
+BFolResp			0.1
+TOroot				0.02
+TOwood				0.01
+Q10				2
+FolLignin			0.2
+KWdLit				0.1
+InitialNSC 			7
+DNSC				0.05 	<<target NSCfraction
+MaintResp			0.002
+CFracBiomass			0.45 	<< C content of biomass
+PreventEstablishment		false
+FrActWd				0.00004	<< lower value results in a higher fraction of active wood
+FracFol				0.033	<< fraction of wood biomass representing max foliage that can be allocated
+H1				0.0	<< species specific waterlogging threshold. pressure head below which Psn stops because of waterlogging.  Ommitted from model now
+H2				0	<< species specific waterlogging stress threshold. pressure head below which Psn begins to slow because of waterlogging
+H3				100 	<< species specific water stress threshold (m of pressure head); pressure head above which Psn begins to slow because of water stress. 0.0- < Wiltg point (higher values=more drought tolerant)
+H4				150	<< species specific wilting point (m of pressure head); pressure head above which Psn stops because of water stress. (higher values=more drought tolerant)
+EstMoist			2.5
+EstRad				2.5
+PressureHeadCalculationMethod	SaxtonAndRawls
+LeakageFrac			1
+PrecIntConst			0.1
+SLWDel				0
+Wythers				true
+PrecipEvents			11
+DTemp				true
+CO2AMaxBEff			1.0
+O3GrowthSens			0.0
+O3StomataSens			NA
+CO2HalfSatEff			0.0
+MaxFolN				-9999	>> Optional parameter, set to FolN if not provided
+FolNShape			0.0
+SnowSublimFrac			0.15
+MaxFracFol			-9999	>> Optional parameter, set to FracFol if not provided
+FracFolShape			0.0
+ColdTol				-9999	>> Optional parameter
+WinterSTD			0.0
+Permafrost			false
+LeakageFrostDepth		0.0
+RunOffFrac			1.0
+LeafOnMinT			-9999	>> Optional parameter, set to PsnMinT if not provided
+PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)

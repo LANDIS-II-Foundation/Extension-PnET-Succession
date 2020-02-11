@@ -21,7 +21,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Fraction active biomass to total biomass 
         float FrActWd { get; }
 
-        // Water stress parameter for excess water
+        // Water stress parameter for excess water: pressurehead below which growth halts
+        float H1 { get; }
+
+        // Water stress parameter for excess water: pressurehead below which growth declines
         float H2 { get; }
 
         // Water stress parameter for water shortage: pressurehead above which growth declines
@@ -81,8 +84,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Base foliar respiration (g respired / g photosynthesis)
         float BFolResp { get; }
 
-        //Minimum temperatyre for photosynthesis
+        //Minimum temperature for photosynthesis
         float PsnTMin { get; }
+
+        //Maximum temperature for photosynthesis
+        float PsnTMax { get; }
 
         // Foliar nitrogen (gN/gC)
         float FolN { get; }
@@ -93,8 +99,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Vapor pressure deficit response parameter 
         float DVPD2 { get; }
 
-        // Water use efficiency constant
-        float WUEcnst { get; }
 
         // Reference photosynthesis (g)
         float AmaxA { get; }
@@ -104,6 +108,35 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         // Referece maintenance respiration 
         float MaintResp { get; }
-         
+
+        // Effect of CO2 on AMaxB (change in AMaxB with increase of 200 ppm CO2)
+        float CO2AMaxBEff { get; }
+
+        // Effect of CO2 on HalfSat (change in HalfSat with increase of 1 ppm CO2 [slope])
+        float CO2HalfSatEff { get; }
+
+        // Ozone stomatal sensitivity class (Sensitive, Intermediate, Tolerant)
+        string O3StomataSens { get; }
+
+        // Slope for linear FolN relationship
+        float FolNShape { get; }
+
+        //Intercept for linear FolN relationship
+        float MaxFolN { get; }
+
+        // Slope for linear FracFol relationship
+        float FracFolShape { get; }
+
+        //Intercept for linear FracFol relationship
+        float MaxFracFol { get; }
+        
+        // Slope coefficient for O3Effect
+        float O3GrowthSens { get; }
+        // Cold tolerance
+        float ColdTol { get; }
+
+        // Mininum Temp for leaf-on (optional)
+        // If not provided LeafOnMinT = PsnTMin
+        float LeafOnMinT { get; }
     }
 }

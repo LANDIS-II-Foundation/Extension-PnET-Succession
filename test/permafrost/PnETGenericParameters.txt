@@ -1,0 +1,13 @@
+LandisData PnETGenericParameters
+
+
+PnETGenericParameters Value
+DTemp			true
+Wythers			true
+PrecipEvents		11
+ClimateFileName		Climate.txt
+Latitude		42
+Permafrost		true
+LeakageFrostDepth  3000
+
+

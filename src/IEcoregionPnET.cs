@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Landis.Core;
+﻿using Landis.Core;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
     public interface IEcoregionPnET : IEcoregion
     {
-        float LeakageFrac
-        {
-            get;
-          
-        }
+        float LeakageFrac{ get;}
+        float RunoffFrac { get; }
         float PrecLossFrac { get; }
-        string SoilType { get; }
-        
+        string SoilType { get; }        
         float PrecIntConst { get;  }
         float RootingDepth { get;   }
         float FieldCap { get; set; }
         float WiltPnt { get; set; }
         float Porosity { get; set; }
         float SnowSublimFrac { get; }
+        float LeakageFrostDepth { get; }
         int PrecipEvents { get; }
         float Latitude { get; } 
+        float WinterSTD { get; }
         
        
         IEcoregionPnETVariables Variables { get; set; }

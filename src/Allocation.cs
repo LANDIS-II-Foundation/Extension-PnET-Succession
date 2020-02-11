@@ -1,12 +1,6 @@
 ﻿using Landis.Core;
-using Landis.SpatialModeling;
-using Landis.Library.Succession;
-using Landis.Library.InitialCommunities;
 using System.Collections.Generic;
-using Edu.Wisc.Forest.Flel.Util;
-using System;
 using System.Linq;
-using Landis.Library.Parameters.Species;
 
 
 namespace Landis.Extension.Succession.BiomassPnET
@@ -18,14 +12,14 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class Allocation
     {
         // These labels are used as input parameters in the input txt file
-        private  static readonly List<string> Disturbances = new List<string>() { "disturbance:fire", "disturbance:wind", "disturbance:bda", "disturbance:harvest" };
+        private  static readonly List<string> Disturbances = new List<string>() { "fire", "wind", "bda", "harvest" };
 
-        private static readonly List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction" };
+        private static readonly List<string> Reductions = new List<string>() { "WoodReduction", "FolReduction", "RootReduction", "DeadWoodReduction", "LitterReduction" };
 
         public static void Initialize(string fn,   SortedDictionary<string, Parameter<string>> parameters)
         {
-            Dictionary<string, Parameter<string>> AgeOnlyDisturbancesParameters = PlugIn.LoadTable(Names.AgeOnlyDisturbances, Reductions, Disturbances);
-            foreach (KeyValuePair<string, Parameter<string>> parameter in AgeOnlyDisturbancesParameters)
+            Dictionary<string, Parameter<string>> DisturbanceReductionParameters = PlugIn.LoadTable(Names.DisturbanceReductions, Reductions, Disturbances);
+            foreach (KeyValuePair<string, Parameter<string>> parameter in DisturbanceReductionParameters)
             {
                 if (parameters.ContainsKey(parameter.Key)) throw new System.Exception("Parameter " + parameter.Key + " was provided twice");
 
@@ -37,17 +31,50 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (v > 1 || v < 0) throw new System.Exception("Expecting value for " + parameter.Key + " between 0.0 and 1.0. Found " + v);
                 }
             }
-            AgeOnlyDisturbancesParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
+            DisturbanceReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
        
         }
 
+        public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
+        {
 
-        public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType)
+
+            if (sitecohorts == null)
+            {
+                throw new System.Exception("sitecohorts should not be null");
+            }
+            float pdeadwoodlost = 0;
+            float plitterlost = 0;
+            Parameter<string> parameter;
+
+            if (disturbanceType != null && PlugIn.TryGetParameter(disturbanceType.Name, out parameter))
+            {
+                // If parameters are available, then set the loss fractions here.
+                if (parameter.ContainsKey("DeadWoodReduction"))
+                {
+                    pdeadwoodlost = float.Parse(parameter["DeadWoodReduction"]);
+                }
+                if (parameter.ContainsKey("LitterReduction"))
+                {
+                    plitterlost = float.Parse(parameter["LitterReduction"]);
+                }
+
+            }
+
+            ((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
+            ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
+
+
+        }
+        public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double fraction)
         {
             if (sitecohorts == null)
             {
                 throw new System.Exception("sitecohorts should not be null");
             }
+
+            ReduceDeadPools(sitecohorts, disturbanceType);
+
             // By default, all material is allocated to the woody debris or the litter pool
             float pwoodlost = 0;
             float prootlost = 0;
@@ -71,17 +98,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                     pfollost = float.Parse(parameter["FolReduction"]);
                 }
 
+
             }
-            float woodLost = (float)((1 - pwoodlost) * cohort.Wood);
-            float rootLost = (float)((1 - prootlost) * cohort.Root);
-            float folLost = (float)((1 - pfollost) * cohort.Fol);
+            
+            // Add new dead wood and litter
+            float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * fraction);
+            float rootAdded = (float)((1 - prootlost) * cohort.Root * fraction);
+            float folAdded = (float)((1 - pfollost) * cohort.Fol * fraction);
 
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodLost, cohort.SpeciesPNET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootLost, cohort.SpeciesPNET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddLitter(folLost, cohort.SpeciesPNET);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded, cohort.SpeciesPNET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded, cohort.SpeciesPNET.KWdLit);
+            ((SiteCohorts)sitecohorts).AddLitter(folAdded, cohort.SpeciesPNET);
 
-            cohort.AccumulateWoodySenescence((int)(woodLost + rootLost));
-            cohort.AccumulateFoliageSenescence((int)(folLost));
+            cohort.AccumulateWoodySenescence((int)(woodAdded + rootAdded));
+            cohort.AccumulateFoliageSenescence((int)(folAdded));
 
 
         }

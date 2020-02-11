@@ -1,0 +1,16 @@
+LandisData   SaxtonAndRawlsParameters					
+SaxtonAndRawlsParameters	Sand	clay	pctOM	densFactor	gravel
+>>---------------------------------------					
+SAND	0.85	0.04	2.08	1	0
+LOSA	0.8	0.05	2.33	1	0
+SALO	0.63	0.1	2.52	1	0
+LOAM	0.41	0.19	3.06	1	0
+SILO	0.15	0.18	3.05	1	0
+SILT	0.05	0.1	1.89	1	0
+SNCL	0.53	0.26	2.29	1	0
+CLLO	0.29	0.32	3.51	1	0
+SLCL	0.09	0.32	4.06	1	0
+SACL	0.5	0.4	2.5	1	0
+SICL	0.08	0.47	3.59	1	0
+CLAY	0.13	0.55	2.88	1	0
+BEDR	0.1	0.1	1.0	1	1.0	

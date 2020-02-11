@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Landis.Extension.Succession.BiomassPnET
 {
     // Mimicks the functionality of .Net 4 Tuple. 
