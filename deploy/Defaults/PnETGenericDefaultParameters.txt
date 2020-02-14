@@ -46,7 +46,7 @@ ColdTol				-9999	>> Optional parameter
 WinterSTD			0.0
 Permafrost			false
 LeakageFrostDepth		0.0
-RunOffFrac			1.0
+RunOffCapture			0.0
 LeafOnMinT			-9999	>> Optional parameter, set to PsnMinT if not provided
-PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)LeafOnMinT			-9999	>> Optional parameter, set to PsnMinT if not provided
-MaxPest				1.0
+PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)
+>>MaxPest				1.0

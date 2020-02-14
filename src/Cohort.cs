@@ -435,11 +435,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (MeltInByCanopyLayer > 0)
             {
                 // Add thawed soil water to soil moisture
-                // Instantaneous runoff (excess of porosity)
-                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - (ecoregion.Porosity * frostFreeProp), 0));
-                Hydrology.RunOff += meltrunoff*ecoregion.RunoffFrac;
+                // Instantaneous runoff (excess of porosity + RunoffCapture)
+                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - ((ecoregion.Porosity * frostFreeProp) + ecoregion.RunoffCapture), 0));
+                //if ((hydrology.Water + meltrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
+                //    meltrunoff = (hydrology.Water + meltrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
+                Hydrology.RunOff += meltrunoff;
 
-                success = hydrology.AddWater(MeltInByCanopyLayer - (meltrunoff * ecoregion.RunoffFrac));
+                success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
             float precipIn = 0;
@@ -451,10 +453,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 precipIn = PrecInByCanopyLayer; //mm 
 
                 // Instantaneous runoff (excess of porosity)
-                float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - (ecoregion.Porosity * frostFreeProp), 0));
-                Hydrology.RunOff += rainrunoff*ecoregion.RunoffFrac;
+                float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - ((ecoregion.Porosity * frostFreeProp) + ecoregion.RunoffCapture), 0));
+                //if ((hydrology.Water + rainrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
+                //    rainrunoff = (hydrology.Water + rainrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
+                Hydrology.RunOff += rainrunoff;
 
-                float waterIn = precipIn - (rainrunoff * ecoregion.RunoffFrac);
+                float waterIn = precipIn - (rainrunoff);
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(waterIn);
