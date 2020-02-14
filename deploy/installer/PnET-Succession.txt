@@ -1,9 +1,9 @@
 LandisData   Extension
 
 Name         "PnET-Succession"
-Version      "3.5 (beta release 7)"
+Version      "4.0.1 (beta release 1)"
 Type         succession
 Assembly     Landis.Extension.Succession.BiomassPnET-v3
 Class        Landis.Extension.Succession.BiomassPnET.PlugIn
-Description  "PnET Succession with climate library and demographic seeding"
+Description  "PnET Succession with EstMod and demographic seeding"
 CoreVersion  7.0

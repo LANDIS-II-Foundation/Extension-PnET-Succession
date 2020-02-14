@@ -49,4 +49,5 @@ LeakageFrostDepth		0.0
 RunOffCapture			0.0
 LeafOnMinT			-9999	>> Optional parameter, set to PsnMinT if not provided
 PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)
->>MaxPest				1.0
+MaxPest				1.0
+PermafrostMinVegBiomass		0

@@ -1536,25 +1536,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
         }
-        public int NetPsnSum
-        {
-            get
-            {
-                if (netpsn == null)
-                {
-                    int[] netpsn_array = new int[12];
-                    for (int i = 0; i < netpsn_array.Length; i++)
-                    {
-                        netpsn_array[i] = 0;
-                    }
-                    return netpsn_array.Sum();
-                }
-                else
-                {
-                    return netpsn.Select(psn => (int)psn).ToArray().Sum();
-                }
-            }
-        }
         public byte CanopyLAImax
         {
             get
