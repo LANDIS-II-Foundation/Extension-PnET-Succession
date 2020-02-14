@@ -139,6 +139,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     double lambda = (Math.Log(moist33_comp) - Math.Log(predMoist1500adj)) / (Math.Log(1500) - Math.Log(33));
                     double gravel_red_sat_cond = (1.0 - gravel) / (1.0 - gravel * (1.0 - 1.5 * (density_comp / 2.65)));
                     double satcond_mmhr = 1930 * Math.Pow((porosity_moist33_comp), (3.0 - lambda)) * gravel_red_sat_cond;
+                    double gravels_vol = ((density_comp / 2.65) * gravel) / (1 - gravel * (1 - density_comp / 2.65));
+                    double bulk_density = gravels_vol * 2.65 + (1 - gravels_vol) * density_comp; // g/cm3                      
 
                     tensionB.Add(SoilType[ecoregion], (float)((Math.Log(1500) - Math.Log(33.0)) / (Math.Log(moist33_comp) - Math.Log(predMoist1500adj))));
                     tensionA.Add(SoilType[ecoregion], (float)Math.Exp(Math.Log(33.0) + (tensionB[SoilType[ecoregion]] * Math.Log(moist33_comp))));

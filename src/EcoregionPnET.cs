@@ -19,7 +19,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _rootingdepth;
         private string _soiltype;
         private float _leakagefrac;
-        private float _runofffrac;
+        private float _runoffcapture;
         private float _fieldcap;
         private float _wiltpnt;
         private float _porosity;
@@ -42,7 +42,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> runofffrac;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> runoffcapture;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> latitude;
@@ -121,11 +121,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _leakagefrac;
             }
         }
-        public float RunoffFrac
+        public float RunoffCapture
         {
             get
             {
-                return _runofffrac;
+                return _runoffcapture;
             }
         }
         public float PrecIntConst
@@ -334,7 +334,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
             
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
-            runofffrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RunoffFrac", 0, 1);
+            runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter(Names.RunoffCapture, 0, 999999);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
             {
@@ -356,7 +356,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._precintconst = precintconst[ecoregion];
             this._preclossfrac = preclossfrac[ecoregion];
             this._leakagefrac = leakagefrac[ecoregion];
-            this._runofffrac = runofffrac[ecoregion];
+            this._runoffcapture = runoffcapture[ecoregion];
             this._snowsublimfrac = snowsublimfrac[ecoregion];
             this._latitude = latitude[ecoregion];
             this._precipEvents = precipEvents[ecoregion];

@@ -63,11 +63,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Wood turnover (g/g/y)
         float TOwood { get; }
 
-        // Establishemnt reduction factor as it depends on suboptimal radiation
+        // Establishment factor related to light - fRad value that equates to optimal light for establishment
         float EstRad { get; }
 
-        // Establishemnt reduction factor as it depends on sub- or supraoptimal moisture
+        // Establishment factor related to moisture - fWater value that equates to optimal water for establishment
         float EstMoist { get; }
+
+        // Mamximum total probability of establishment under optimal conditions
+        float MaxPest { get; }
 
         // Lignin concentration in foliage
         float FolLignin { get; }
@@ -134,5 +137,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         float O3GrowthSens { get; }
         // Cold tolerance
         float ColdTol { get; }
+
+        // Mininum Temp for leaf-on (optional)
+        // If not provided LeafOnMinT = PsnTMin
+        float LeafOnMinT { get; }
+
+        // Initial Biomass
+        int InitBiomass { get; }
+
     }
 }

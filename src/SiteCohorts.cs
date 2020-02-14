@@ -22,8 +22,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float subcanopypar;
         private float subcanopyparmax;
         private float frostFreeSoilDepth;
+        private float soilDiffusivity;
         private float leakageFrac;
-        private float runoffFrac;
+        private float runoffCapture;
 
         private float[] netpsn = null;
         private int netpsnsum;
@@ -58,9 +59,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static float interception;
         private static float precLoss;
         private static byte Timestep;
+        private static int CohortBinSize;
         private static int nlayers;
         private static bool permafrost;
+        private static float permafrostMinVegBiomass;
         Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
+        float lastTempBelowSnow = float.MaxValue;
+        private static float maxHalfSat;
+        private static float minHalfSat;
 
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
@@ -221,16 +227,33 @@ namespace Landis.Extension.Succession.BiomassPnET
             Timestep = ((Parameter<byte>)PlugIn.GetParameter(Names.Timestep)).Value;
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
-            permafrost = ((Parameter<bool>)PlugIn.GetParameter("Permafrost")).Value;
-
+            permafrost = ((Parameter<bool>)PlugIn.GetParameter(Names.Permafrost)).Value;
+            permafrostMinVegBiomass = ((Parameter<float>)PlugIn.GetParameter(Names.PermafrostMinVegBiomass)).Value;
+            Parameter<string> CohortBinSizeParm = null;
+            if (PlugIn.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
+            {
+                if (!Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
+                {             
+                    throw new System.Exception("CohortBinSize is not an integer value.");
+        }
+            }
+            else
+                CohortBinSize = Timestep;
+            maxHalfSat = 0;
+            minHalfSat = float.MaxValue;
+            foreach(ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+            {
+                if (spc.HalfSat > maxHalfSat)
+                    maxHalfSat = spc.HalfSat;
+                if (spc.HalfSat < minHalfSat)
+                    minHalfSat = spc.HalfSat;
+            }
         }
 
-        // Create SiteCohorts in SpinUp
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
         {
             Cohort.SetSiteAccessFunctions(this);
-
-            this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);//new EcoregionPnET();
+            this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
             SpeciesEstablishedByPlant = new List<ISpecies>();
@@ -258,6 +281,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
                 PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(this.Ecoregion);
                 this.canopylaimax = initialSites[key].CanopyLAImax;
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -267,21 +291,27 @@ namespace Landis.Extension.Succession.BiomassPnET
                         AddNewCohort(new Cohort(cohort));
                     }
                 }
+
                 // Calculate AdjFolFrac
                 AllCohorts.ForEach(x => x.CalcAdjFracFol());
+
             }
             else
             {
-                 
                 if (initialSites.ContainsKey(key) == false)
                 {
                     initialSites.Add(key, this);
                 }
+                List<IEcoregionPnETVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
                 hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
-                
+                watermax = (ushort)hydrology.Water;
+                subcanopypar = ecoregionInitializer[0].PAR0;
+                subcanopyparmax = subcanopypar;
+
                 PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
                 PlugIn.Litter[Site] = new Library.Biomass.Pool();
                 PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                //PlugIn.PressureHead[Site] = hydrology.GetPressureHead(Ecoregion);
 
                 if (SiteOutputName != null)
                 {
@@ -294,6 +324,48 @@ namespace Landis.Extension.Succession.BiomassPnET
                     establishmentProbability = new EstablishmentProbability(null, null);
                 }
 
+                bool biomassProvided = false;
+                foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                {
+                    foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
+                    {
+                        if (cohort.Biomass > 0)  // 0 biomass indicates biomass value was not read in
+                        {
+                            biomassProvided = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (biomassProvided)
+                {
+                    foreach (Landis.Library.BiomassCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                    {
+                        foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
+                        {
+                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                        }
+                    }
+
+                    AllCohorts.ForEach(x =>
+                    {
+                        CanopyLAI += x.LAI.Sum();
+                    }
+                    );
+                    this.canopylaimax = (byte)CanopyLAI;
+
+                    //CalculateInitialWater(StartDate);
+                }
+                else
+                {
+                    SpinUp(StartDate, site, initialCommunity, usingClimateLibrary, SiteOutputName);
+                }
+            }
+        }
+
+        // Spins up sites if no biomass is provided
+        private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
+        {
                 List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
                 foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                 {
@@ -305,8 +377,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
 
                 if (sortedAgeCohorts.Count == 0) return;
-                
+
                 DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age));
+
+            Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
 
                 while (date.CompareTo(StartDate) < 0)
                 {
@@ -320,7 +394,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
                     }
-                    
+
                     // Simulation time runs untill the next cohort is added
                     DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
 
@@ -333,9 +407,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
             }
-        }
-        
-        
 
         List<List<int>> GetRandomRange(List<List<int>> bins)
         {
@@ -379,9 +450,12 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
+
         public bool Grow(List<IEcoregionPnETVariables> data)
         {
             bool success = true;
+            float sumPressureHead = 0;
+            int countPressureHead = 0;
 
             establishmentProbability.ResetPerTimeStep();
             Cohort.SetSiteAccessFunctions(this);
@@ -445,7 +519,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
                             sumBio.Add(i, sumLayerBio);
-                        }
+                        }                      
 
                         int layerMaxBio = sumBio.LastOrDefault(x => x.Value == sumBio.Values.Max()).Key;
 
@@ -521,18 +595,24 @@ namespace Landis.Extension.Succession.BiomassPnET
             grosspsn = new float[13];
             maintresp = new float[13];
 
-            Dictionary<ISpeciesPNET, float> annualEstab = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, float> annualFwater = new Dictionary<ISpeciesPNET, float>();
-            Dictionary<ISpeciesPNET, float> annualFrad = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, List<float>> annualEstab = new Dictionary<ISpeciesPNET, List<float>>();
+            Dictionary<ISpeciesPNET, float> cumulativeEstab = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, List<float>> annualFwater = new Dictionary<ISpeciesPNET, List<float>>();
+            Dictionary<ISpeciesPNET, float> cumulativeFwater = new Dictionary<ISpeciesPNET, float>();
+            Dictionary<ISpeciesPNET, List<float>> annualFrad = new Dictionary<ISpeciesPNET, List<float>>();
+            Dictionary<ISpeciesPNET, float> cumulativeFrad = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, float> monthlyEstab = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, int> monthlyCount = new Dictionary<ISpeciesPNET, int>();
             Dictionary<ISpeciesPNET, int> coldKillMonth = new Dictionary<ISpeciesPNET, int>(); // month in which cold kills each species
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
-                annualEstab[spc] = 0;
-                annualFwater[spc] = 0;
-                annualFrad[spc] = 0;
+                annualEstab[spc] = new List<float>();
+                cumulativeEstab[spc] = 1;
+                annualFwater[spc] = new List<float>();
+                cumulativeFwater[spc] = 0;
+                annualFrad[spc] = new List<float>();
+                cumulativeFrad[spc] = 0;
                 monthlyCount[spc] = 0;
                 coldKillMonth[spc] = int.MaxValue;
             }
@@ -543,30 +623,38 @@ namespace Landis.Extension.Succession.BiomassPnET
                 lastOzoneEffect[i] = 0;
             }
 
-            //int monthCount = 0;
-            float minMonthlyAvgTemp = float.MaxValue;
 
-            float lastTempBelowSnow = new float();
             float lastFrostDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
             int daysOfWinter = 0;
 
             if (PlugIn.ModelCore.CurrentTime > 0) // cold can only kill after spinup
             {
                 // Loop through months & species to determine if cold temp would kill any species
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                float extremeMinTemp = float.MaxValue;
+                int extremeMonth = 0;
+                for (int m = 0; m < data.Count(); m++)
                 {
-                    for (int m = 0; m < data.Count(); m++)
+                    float minTemp = data[m].Tave - (float)(3.0 * Ecoregion.WinterSTD);
+                    if(minTemp < extremeMinTemp)
                     {
-                        // Check if low temp kills species
-                        if ((data[m].Tave - (3.0 * Ecoregion.WinterSTD)) < spc.ColdTol)
-                        {
-                            coldKillMonth[spc] = m;
-                            break;
-                        }
+                        extremeMinTemp = minTemp;
+                        extremeMonth = m;
                     }
                 }
-            }
+                PlugIn.ExtremeMinTemp[Site] = extremeMinTemp;
+                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                {
+                        // Check if low temp kills species
+                    if (extremeMinTemp < spc.ColdTol)
+                        {
+                        coldKillMonth[spc] = extremeMonth;
+                        }
 
+                    }
+                }
+            //Clear pressurehead site values
+            sumPressureHead = 0;
+            countPressureHead = 0;
             for (int m = 0; m < data.Count(); m++ )
             {
                 Ecoregion.Variables = data[m];
@@ -585,7 +673,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 leakageFrac = Ecoregion.LeakageFrac;
                 float thawedDepth = 0;
 
-                //bool permafrost = true; // Needs to link to input parameter
                 if (permafrost)
                 {
                     // snow calculations - from "Soil thawing worksheet with snow.xlsx"
@@ -593,40 +680,46 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         daysOfWinter += (int)Ecoregion.Variables.DaySpan;
                     }
-                    else
+                    else if (snowPack > 0)
                     {
+                        daysOfWinter += (int)Ecoregion.Variables.DaySpan;
+                    }
+                    else
+                    { 
                         daysOfWinter = 0;
                     }
                     float bulkIntercept = 165.0f; //kg/m3
                     float bulkSlope = 1.3f; //kg/m3
-                    float Pwater = 1000.0f;
-                    float lambAir = 0.023f;
-                    float lambIce = 2.29f;
-                    float omega = (float)(2*Math.PI/12.0);
+                    float Pwater = 1000.0f;  // Density of water (kg/m3)
+                    float lambAir = 0.023f; // W/m K (CLM5 documentation, Table 2.7)
+                    float lambIce = 2.29f; // W/m K (CLM5 documentation, Table 2.7)
+                    float snowHeatCapacity = 2090f; // J/kg K (https://www.engineeringtoolbox.com/specific-heat-capacity-d_391.html)
 
                     float Psno_kg_m3 = bulkIntercept + (bulkSlope * daysOfWinter); //kg/m3
                     float Psno_g_cm3 = Psno_kg_m3 / 1000; //g/cm3
 
-                    float sno_dep = Pwater * snowPack / Psno_kg_m3 / 1000; //m
-                    if (Ecoregion.Variables.Tave >= 0)
-                    {
-                        float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
-                        sno_dep = sno_dep * fracAbove0;
-                    }
+                    float sno_dep = Pwater * (snowPack / 1000) / Psno_kg_m3 ; //m
+                    //if (Ecoregion.Variables.Tave >= 0)  -- snowmelt has already been accounted for
+                    //{
+                    //    float fracAbove0 = Ecoregion.Variables.Tmax / (Ecoregion.Variables.Tmax - Ecoregion.Variables.Tmin);
+                    //    sno_dep = sno_dep * fracAbove0;
+                    //}
                     // from CLM model - https://escomp.github.io/ctsm-docs/doc/build/html/tech_note/Soil_Snow_Temperatures/CLM50_Tech_Note_Soil_Snow_Temperatures.html#soil-and-snow-thermal-properties
                     // Eq. 85 - Jordan (1991)
                     float lambda_Snow = (float) (lambAir+((0.0000775*Psno_kg_m3)+(0.000001105*Math.Pow(Psno_kg_m3,2)))*(lambIce-lambAir))*3.6F*24F; //(kJ/m/d/K) includes unit conversion from W to kJ
-                    float damping = (float) Math.Sqrt(omega/(2.0F*lambda_Snow));
-                    float DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
-
+                    float vol_heat_capacity_snow = snowHeatCapacity * Psno_kg_m3 / 1000f; // kJ/m3/K
+                    float Ks_snow = Ecoregion.Variables.DaySpan * lambda_Snow / vol_heat_capacity_snow; //thermal diffusivity (m2/month)
+                    float damping = (float) Math.Sqrt((2.0F* Ks_snow)/ Constants.omega);
+                    float DRz_snow = 1F;
+                    if(sno_dep > 0)
+                        DRz_snow = (float)Math.Exp(-1.0F * sno_dep * damping); // Damping ratio for snow - adapted from Kang et al. (2000) and Liang et al. (2014)
                     
-
                     // Permafrost calculations - from "Soil thawing worksheet.xlsx"
                     // 
-                    if (Ecoregion.Variables.Tave < minMonthlyAvgTemp)
-                        minMonthlyAvgTemp = Ecoregion.Variables.Tave;
-                    float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3
-                    float waterContent = hydrology.Water / Ecoregion.RootingDepth;  //m3/m3
+                    //if (Ecoregion.Variables.Tave < minMonthlyAvgTemp)
+                    //    minMonthlyAvgTemp = Ecoregion.Variables.Tave;
+                    /* //Calculations of diffusivity from soil properties - currently not in use
+                    float porosity = Ecoregion.Porosity / Ecoregion.RootingDepth;  //m3/m3                    
                     float ga = 0.035F + 0.298F * (waterContent / porosity);
                     float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
                     float Fs = PressureHeadSaxton_Rawls.GetFs(Ecoregion.SoilType);
@@ -636,19 +729,66 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float Dmonth = D * Ecoregion.Variables.DaySpan; // m2/month
                     float ks = Dmonth * 1000000F / (Ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24)); // mm2/s
                     float d = (float)Math.Pow((Constants.omega / (2.0F * Dmonth)), (0.5));
+                    */
 
+                    float waterContent = (float)Math.Min(1.0, hydrology.Water / Ecoregion.RootingDepth);  //m3/m3
                     float maxDepth = Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth;
-                    float freezeDepth = maxDepth;
+                    float freezeDepth = maxDepth/1000;
                     float testDepth = 0;
-                    if (m == 0 && PlugIn.ModelCore.CurrentTime == 0)
+
+                    float tSum = 0;
+                    float pSum = 0;
+                    float tMax = float.MinValue;
+                    float tMin = float.MaxValue;
+                    int maxMonth = 0;
+                    int mCount = 0;
+                    if (m < 12)
                     {
-                        int mCount = Math.Min(12, data.Count());
-                        float tSum = 0;
+                        mCount = Math.Min(12, data.Count());
                         foreach (int z in Enumerable.Range(0, mCount))
                         {
                             tSum += data[z].Tave;
+                            pSum += data[z].Prec;
+                            if (data[z].Tave > tMax)
+                            {
+                                tMax = data[z].Tave;
+                                maxMonth = data[z].Month;
                         }
+                            if (data[z].Tave < tMin)
+                                tMin = data[z].Tave;
+                        }
+                    }
+                    else
+                    {
+                        mCount = 12;
+                        foreach (int z in Enumerable.Range(m-11, 12))
+                        {
+                            tSum += data[z].Tave;
+                            pSum += data[z].Prec;
+                            if (data[z].Tave > tMax)
+                            {
+                                tMax = data[z].Tave;
+                                maxMonth = data[z].Month;
+                            }
+                            if (data[z].Tave < tMin)
+                                tMin = data[z].Tave;
+                        }
+                    }
                         float annualTavg = tSum / mCount;
+                    float annualPcpAvg = pSum / mCount;
+                    float tAmplitude = (tMax - tMin) / 2;
+
+                    // Calculation of diffusivity from climate data (Soil thawing_Campbell_121719.xlsx, Fit_Diffusivity_Climate.R)
+                    if(this.AbovegroundBiomassSum >= permafrostMinVegBiomass) // Vegetated
+                        soilDiffusivity = (float)Math.Max(0.006, (-0.09674 - 0.005967 * annualTavg + 0.00001552 * annualTavg * annualTavg + 0.002395 * annualPcpAvg)); // Diffusivity (m2/day)
+                    else // Bare
+                        soilDiffusivity = (float)Math.Max(0.006,(-0.050839 - 0.0055182 * annualTavg - 0.0002212 * annualTavg * annualTavg + 0.0011535 * annualPcpAvg)); // Diffusivity (m2/day)
+                    float Dmonth = soilDiffusivity * Ecoregion.Variables.DaySpan; // m2/month
+                    float d = (float)Math.Pow(((2.0F * Dmonth) / Constants.omega), (0.5));  // Damping coefficient
+
+                    //if (lastTempBelowSnow == float.MaxValue)
+                    //{-90
+                        
                         float tempBelowSnow = Ecoregion.Variables.Tave;
                         if(sno_dep > 0)
                         {
@@ -658,14 +798,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                         while (testDepth <= (maxDepth/1000.0))
                         {
                             float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
-                            float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                            //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+
+                            float zTemp = (float) (annualTavg + tAmplitude * DRz_snow * Math.Exp(-1 * testDepth / d) * Math.Sin(Constants.omega * (Ecoregion.Variables.Month + (maxMonth+1)) - testDepth / d));
+
                             depthTempDict[testDepth] = zTemp;
                             if ((zTemp <= 0) && (testDepth < freezeDepth))
                                 freezeDepth = testDepth;
                             testDepth += 0.25F;
                         }
-                    }
-                    else
+                    //}
+                    /*else
                     {
                         float tempBelowSnow = Ecoregion.Variables.Tave;
                         if (sno_dep > 0)
@@ -676,13 +819,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                         while (testDepth <= (maxDepth/1000.0))
                         {
                             float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
-                            float zTemp = depthTempDict[testDepth] + (tempBelowSnow - depthTempDict[testDepth]) * DRz;
+                            float modDRz = DRz * (0.4383F * DRz + 0.4275F);  // Calibrated adjustment factor - soil thawing DRz calibration.xlsx
+                            float zTemp = depthTempDict[testDepth] + (tempBelowSnow - depthTempDict[testDepth]) * modDRz;
                             depthTempDict[testDepth] = zTemp;
                             if ((zTemp <= 0) && (testDepth < freezeDepth))
                                 freezeDepth = testDepth;
                             testDepth += 0.25F;
                         }
-                    }
+                    }*/                    
+
                     frostFreeSoilDepth = Math.Min(freezeDepth*1000.0F, frostFreeSoilDepth);
                     thawedDepth = Math.Max(0,Math.Min(Ecoregion.RootingDepth,frostFreeSoilDepth) - lastFrostDepth);
                     float newFrozenSoil = 0;
@@ -691,9 +836,23 @@ namespace Landis.Extension.Succession.BiomassPnET
                         if (lastFrostDepth > 0)
                         {
                             newFrozenSoil = Math.Min(Ecoregion.RootingDepth, lastFrostDepth) - frostFreeSoilDepth;
+                            if (newFrozenSoil > 0)  // freezing;
+                            {
                             Hydrology.FrozenWaterPct = ((Hydrology.FrozenDepth * Hydrology.FrozenWaterPct) + (newFrozenSoil * waterContent)) / (Hydrology.FrozenDepth + newFrozenSoil);
                             Hydrology.FrozenDepth += newFrozenSoil;
+                                //Remove frozen water from hydrology.Water
+                                // water in frozen soil is not accessible - treat it as if it leaked out
+                                float frozenWater = hydrology.Water * (newFrozenSoil / Ecoregion.RootingDepth);
+                                // Remove frozen water
+                                success = hydrology.AddWater(-1 * frozenWater);
+                                if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
                         }
+                    }
+                    }
+                    if (thawedDepth > 0)
+                    {
+                        Hydrology.FrozenDepth -= thawedDepth;
+                        // thawing water handled below
                     }
                     float leakageFrostReduction = 1.0F;
                     if (frostFreeSoilDepth < (Ecoregion.RootingDepth + Ecoregion.LeakageFrostDepth))
@@ -708,9 +867,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                         }
                     }
                     leakageFrac = Ecoregion.LeakageFrac * leakageFrostReduction;
-                   
                     lastFrostDepth = frostFreeSoilDepth;
+                   
                 }
+                // permafrost
+                float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / Ecoregion.RootingDepth);
 
                 AllCohorts.ForEach(x => x.InitializeSubLayers());
 
@@ -776,8 +937,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Hydrology.RunOff = 0;
                 Hydrology.Leakage = 0;
                 Hydrology.Evaporation = 0;
-
-
+                
+                
 
                 float O3_ppmh = Ecoregion.Variables.O3 / 1000; // convert AOT40 units to ppm h
                 float lastO3 = 0;
@@ -804,11 +965,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                             subCanopyIndex++;
                             int precipCount = 0;
                             subCanopyPrecip = 0;
-                            subCanopyMelt = MeltInWater/ SubCanopyCohorts.Count();
+                            subCanopyMelt = MeltInWater / SubCanopyCohorts.Count();
                             bool coldKillBoolean = false;
                             foreach (var g in groupList)
                             {
-                                if(g.Key == subCanopyIndex)
+                                if (g.Key == subCanopyIndex)
                                 {
                                     precipCount = g.Count();
                                     subCanopyPrecip = PrecInByEvent;
@@ -820,7 +981,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 coldKillBoolean = true;
                             float O3Effect = lastOzoneEffect[subCanopyIndex - 1];
 
-                            success = c.CalculatePhotosynthesis(subCanopyPrecip,precipCount, leakageFrac, hydrology, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, frostFreeSoilDepth, subCanopyMelt, coldKillBoolean);
+                            success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, hydrology, ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), ref O3Effect, frostFreeProp, subCanopyMelt, coldKillBoolean);
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
 
                             if (success == false)
@@ -836,21 +997,39 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 else // When no cohorts are present
                 {
-                    // Add incoming precipitation to soil moisture
-                    success = hydrology.AddWater(precin);
-                    if (success == false) throw new System.Exception("Error adding water, waterIn = " + precin + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    if (MeltInWater > 0)
+                    {
+                        // Add thawed soil water to soil moisture
+                        // Instantaneous runoff (excess of porosity)
+                        float meltrunoff = Math.Min(MeltInWater, Math.Max(hydrology.Water + MeltInWater - ((Ecoregion.Porosity * frostFreeProp) + Ecoregion.RunoffCapture), 0));
+                        //if ((hydrology.Water + meltrunoff) > (Ecoregion.Porosity + Ecoregion.RunoffCapture))
+                        //    meltrunoff = (hydrology.Water + meltrunoff) - (Ecoregion.Porosity + Ecoregion.RunoffCapture);
+                        Hydrology.RunOff += meltrunoff;
 
+                        success = hydrology.AddWater(MeltInWater - (meltrunoff));
+                        if (success == false) throw new System.Exception("Error adding water, MeltInWaterr = " + MeltInWater + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    }
+                    if (precin > 0)
+                    {
                     // Instantaneous runoff (excess of porosity)
-                    float tempRunoff = Math.Max(hydrology.Water - Ecoregion.Porosity, 0);
-                    Hydrology.RunOff = tempRunoff * Ecoregion.RunoffFrac;
-                    success = hydrology.AddWater(-1 * Hydrology.RunOff);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.RunOff = " + Hydrology.RunOff + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                        float rainrunoff = Math.Min(precin, Math.Max(hydrology.Water + precin - ((Ecoregion.Porosity * frostFreeProp) + Ecoregion.RunoffCapture), 0));
+                        //if ((hydrology.Water + rainrunoff) > (Ecoregion.Porosity + Ecoregion.RunoffCapture))
+                        //    rainrunoff = (hydrology.Water + rainrunoff) - (Ecoregion.Porosity + Ecoregion.RunoffCapture);
+                        Hydrology.RunOff += rainrunoff;
+
+                        float waterIn = precin - (rainrunoff);
+
+                        // Add incoming precipitation to soil moisture
+                        success = hydrology.AddWater(waterIn);
+                        if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
+                    }
 
                     // Fast Leakage 
-                    Hydrology.Leakage = Math.Max(leakageFrac * (hydrology.Water - Ecoregion.FieldCap), 0);
+                    float leakage = Math.Max((float)leakageFrac * (hydrology.Water - (Ecoregion.FieldCap * frostFreeProp)), 0);
+                    Hydrology.Leakage += leakage;
 
                     // Remove fast leakage
-                    success = hydrology.AddWater(-1 * Hydrology.Leakage);
+                    success = hydrology.AddWater(-1 * leakage);
                     if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
 
                 }
@@ -888,20 +1067,27 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     AllCohorts.ForEach(a => a.UpdateCohortData(data[m]));
                 }
-
+                if (data[m].Tave > 0)
+                {
+                    sumPressureHead += hydrology.GetPressureHead(Ecoregion);
+                    countPressureHead += 1;
+                }
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology);
+                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat);
 
                     foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                     {
                         if (monthlyEstab.ContainsKey(spc))
                         {
-                            annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
-                            annualFwater[spc] = annualFwater[spc] + establishmentProbability.Get_FWater(spc);
-                            annualFrad[spc] = annualFrad[spc] + establishmentProbability.Get_FRad(spc);
+                            //annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
+                            // Calculate the cumulative probability that no months had successful establishment (later transformed)
+                            //annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
 
-                            monthlyCount[spc] = monthlyCount[spc] + 1;
+                            // Store monthly values for later filtering
+                            annualEstab[spc].Add(monthlyEstab[spc]);
+                            annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
+                            annualFrad[spc].Add(establishmentProbability.Get_FRad(spc));                            
                         }
                     }
 
@@ -919,22 +1105,71 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     // Calculate AdjFolFrac
                     AllCohorts.ForEach(x => x.CalcAdjFracFol());
+
+                    // Filter monthly pest values
+                    // This assumes up to 3 months of growing season are relevant for establishment
+                    // When > 3 months of growing season, exlcude 1st month, assuming trees focus on foliage growth in first month
+                    // When > 4 months, ignore the 4th month and beyond as not primarily relevant for establishment
+                    // When < 3 months, include all months
+                    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                    {
+                        if (annualEstab[spc].Count > 3)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) * (1 - annualEstab[spc][3]);
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][1] + annualFwater[spc][2] + annualFwater[spc][3];
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][1] + annualFrad[spc][2] + annualFrad[spc][3];
+                            monthlyCount[spc] = monthlyCount[spc] + 3;
                 }
+                        else if(annualEstab[spc].Count > 2)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) ;
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] + annualFwater[spc][2];
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] + annualFrad[spc][2];
+                            monthlyCount[spc] = monthlyCount[spc] + 3;
             }
+                        else if(annualEstab[spc].Count > 1)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]);
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] ;
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] ;
+                            monthlyCount[spc] = monthlyCount[spc] + 2;
+                        }
+                        else if(annualEstab[spc].Count == 1)
+                        {
+                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]);
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0];
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0];
+                            monthlyCount[spc] = monthlyCount[spc] + 1;
+                        }
+
+                        //Reset annual lists for next year
+                        annualEstab[spc].Clear();
+                        annualFwater[spc].Clear();
+                        annualFrad[spc].Clear();                        
+                    }
+                }
+            } //for (int m = 0; m < data.Count(); m++ )
             if (PlugIn.ModelCore.CurrentTime > 0)
             {
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                 {
                     bool estab = false;
-                    //bool count0 = true;
+                    float pest = 0;
                     if (monthlyCount[spc] > 0)
                     {
-                    annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
-                        annualFwater[spc] = annualFwater[spc] / monthlyCount[spc];
-                        annualFrad[spc] = annualFrad[spc] / monthlyCount[spc];
-                        //count0 = false;
+                        //annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
+                        // Transform cumulative probability of no successful establishments to probability of at least one successful establishment
+                        cumulativeEstab[spc] = 1 - cumulativeEstab[spc] ;
+                        cumulativeFwater[spc] = cumulativeFwater[spc] / monthlyCount[spc];
+                        cumulativeFrad[spc] = cumulativeFrad[spc] / monthlyCount[spc];
+
+                        // Modify Pest by maximum value
+                        //pest = cumulativeEstab[spc] * spc.MaxPest;
+
+                        // Calculate Pest from average Fwater, Frad and modified by MaxPest
+                        pest = cumulativeFwater[spc] * cumulativeFrad[spc] * spc.MaxPest;
                     }
-                    float pest = annualEstab[spc];
+                    
                     if (!spc.PreventEstablishment)
                     {
 
@@ -945,7 +1180,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                         }
                     }
-                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, annualFwater[spc],annualFrad[spc], estab, monthlyCount[spc]);
+                    EstablishmentProbability.RecordPest(PlugIn.ModelCore.CurrentTime, spc, pest, cumulativeFwater[spc], cumulativeFrad[spc], estab, monthlyCount[spc]);
 
                 }
             }
@@ -956,12 +1191,251 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 AllCohorts.ForEach(cohort => { cohort.WriteCohortData(); });
             }
-
+            float avgPH = sumPressureHead / countPressureHead;
+            PlugIn.PressureHead[Site] = avgPH;
+            
             RemoveMarkedCohorts();
 
             //HeterotrophicRespiration = (ushort)(PlugIn.Litter[Site].Decompose() + PlugIn.WoodyDebris[Site].Decompose());//Moved within m loop to trigger once per year
 
             return success;
+        }
+
+        private void CalculateInitialWater(DateTime StartDate)
+        {
+            canopylaimax = byte.MinValue;
+
+            SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
+
+            List<int> cohortAges = new List<int>();
+
+            for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
+            {
+                for (int i = 1; i <= PlugIn.IMAX; i++)
+                {
+                    double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
+                    while (SubCanopyCohorts.ContainsKey(CumCohortBiomass))
+                    {
+                        // Add a negligable value [-1e-10; + 1e-10] to CumCohortBiomass in order to prevent duplicate keys
+                        double k = 1e-10 * 2.0 * (PlugIn.ContinuousUniformRandom() - 0.5);
+                        CumCohortBiomass += k;
+                    }
+                    SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);
+                }
+                if (!cohortAges.Contains(AllCohorts[cohort].Age))
+                {
+                    cohortAges.Add(AllCohorts[cohort].Age);
+                }
+            }
+
+
+            List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+
+            // Sort through bins to put cohort sublayers in the same bin based on majority
+            List<List<int>> bins = new List<List<int>>();
+            if ((rawBins != null) && (rawBins.Count > 1))
+            {
+                Dictionary<string, Dictionary<int, int>> speciesLayerIndex = new Dictionary<string, Dictionary<int, int>>();
+                List<int> addedValues = new List<int>();
+                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                {
+                    foreach (int thisAge in cohortAges)
+                    {
+                        Dictionary<int, double> sumBio = new Dictionary<int, double>();
+                        for (int i = 0; i < rawBins.Count(); i++)
+                        {
+                            double sumLayerBio = 0;
+                            List<int> binLayers = rawBins[i];
+                            for (int b = 0; b < binLayers.Count(); b++)
+                            {
+                                int layerKey = binLayers[b];
+                                Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
+                                if ((layerCohort.SpeciesPNET.Name == spc.Name) && (layerCohort.Age == thisAge))
+                                {
+                                    sumLayerBio += ((double)layerCohort.TotalBiomass) / ((double)PlugIn.IMAX);
+                                }
+                            }
+                            sumBio.Add(i, sumLayerBio);
+                        }
+
+                        int layerMaxBio = sumBio.LastOrDefault(x => x.Value == sumBio.Values.Max()).Key;
+
+                        if (sumBio.Values.Max() > 0)
+                        {
+                            if (speciesLayerIndex.Keys.Contains(spc.Name))
+                            {
+                                Dictionary<int, int> ageIndex = speciesLayerIndex[spc.Name];
+                                ageIndex.Add(thisAge, layerMaxBio);
+                                speciesLayerIndex[spc.Name] = ageIndex;
+                            }
+                            else
+                            {
+                                Dictionary<int, int> ageIndex = new Dictionary<int, int>();
+                                ageIndex.Add(thisAge, layerMaxBio);
+                                speciesLayerIndex.Add(spc.Name, ageIndex);
+                            }
+                            addedValues.Add(layerMaxBio);
+                        }
+                    }
+                }
+                //step through subcanopycohorts
+                int subLayerKey = 0;
+
+                // There shouldn't be more layers than cohorts
+                int numberOfLayers = Math.Min(addedValues.Max() + 1, (int)((float)SubCanopyCohorts.Count() / (float)PlugIn.IMAX));
+
+                // Final layer indices should not skip any layers
+                List<int> distinctValues = addedValues.Distinct().ToList();
+                distinctValues.Sort();
+                Dictionary<int, int> indexLookup = new Dictionary<int, int>();
+                for (int j = 0; j < distinctValues.Count(); j++)
+                {
+                    indexLookup.Add(distinctValues[j], j);
+                }
+
+                for (int i = 0; i < numberOfLayers; i++)
+                {
+                    bins.Add(new List<int>());
+                }
+                foreach (KeyValuePair<double, Cohort> entry in SubCanopyCohorts)
+                {
+                    ISpecies spc = entry.Value.SpeciesPNET;
+                    int thisAge = entry.Value.Age;
+                    int tempIndex = indexLookup[speciesLayerIndex[spc.Name][thisAge]];
+                    int layerIndex = Math.Max(tempIndex, entry.Value.Layer);  //Once a cohort reaches a canopy layer it cannot be dropped below that position
+                    if (layerIndex > MaxCanopyLayers - 1)
+                    {
+                        throw new System.Exception("layerIndex  " + layerIndex + " is greater than MaxCanopyLayers - 1: " + (MaxCanopyLayers - 1));
+                    }
+                    if (bins.ElementAtOrDefault(layerIndex) == null)
+                    {
+                        while (bins.ElementAtOrDefault(layerIndex) == null)
+                        {
+                            bins.Add(new List<int>());
+                        }
+                    }
+                    bins[layerIndex].Add(subLayerKey);
+
+                    subLayerKey += 1;
+                }
+
+            }
+            else
+            {
+                bins = rawBins;
+            }
+
+            List<List<int>> random_range = GetRandomRange(bins);
+
+            List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+
+            if (climate_vars != null && climate_vars.Count > 0)
+            {
+                this.Ecoregion.Variables = climate_vars.First();
+            }
+            else
+            {
+                return;
+            }
+            transpiration = 0;
+            subcanopypar = this.Ecoregion.Variables.PAR0;
+            interception = 0;
+
+            AllCohorts.ForEach(x => x.InitializeSubLayers());
+
+            if (this.Ecoregion.Variables.Prec < 0) throw new System.Exception("Error, this.Ecoregion.Variables.Prec = " + this.Ecoregion.Variables.Prec);
+
+            float snowmelt = Math.Min(snowPack, ComputeMaxSnowMelt(this.Ecoregion.Variables.Tave, this.Ecoregion.Variables.DaySpan)); // mm
+            if (snowmelt < 0) throw new System.Exception("Error, snowmelt = " + snowmelt);
+
+            float newsnow = CumputeSnowFraction(this.Ecoregion.Variables.Tave) * this.Ecoregion.Variables.Prec;
+            float newsnowpack = newsnow * (1 - this.Ecoregion.SnowSublimFrac); // (mm) Account for sublimation here
+            if (newsnowpack < 0 || newsnowpack > this.Ecoregion.Variables.Prec)
+            {
+                throw new System.Exception("Error, newsnowpack = " + newsnowpack + " availablePrecipitation = " + this.Ecoregion.Variables.Prec);
+            }
+
+            snowPack += newsnowpack - snowmelt;
+            if (snowPack < 0) throw new System.Exception("Error, snowPack = " + snowPack);
+
+            float newrain = this.Ecoregion.Variables.Prec - newsnow;
+
+            // Reduced by interception
+            interception = newrain * (float)(1 - Math.Exp(-1 * this.Ecoregion.PrecIntConst * CanopyLAI));
+            float surfaceRain = newrain - interception;
+
+            // Reduced by PrecLossFrac
+            precLoss = surfaceRain * this.Ecoregion.PrecLossFrac;
+            float availableRain = surfaceRain - precLoss;
+
+            float precin = availableRain + snowmelt;
+            if (precin < 0) throw new System.Exception("Error, precin = " + precin + " newsnow = " + newsnow + " snowmelt = " + snowmelt);
+
+            int numEvents = this.Ecoregion.PrecipEvents;  // maximum number of precipitation events per month
+            float PrecInByEvent = precin / numEvents;  // Divide precip into discreet events within the month
+            if (PrecInByEvent < 0) throw new System.Exception("Error, PrecInByEvent = " + PrecInByEvent);
+
+            // Randomly choose which layers will receive the precip events
+            // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
+            List<int> randomNumbers = new List<int>();
+            while (randomNumbers.Count < numEvents)
+            {
+                int rand = PlugIn.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
+                randomNumbers.Add(rand);
+            }
+            var groupList = randomNumbers.GroupBy(i => i);
+
+            // Reset Hydrology values
+            Hydrology.RunOff = 0;
+            Hydrology.Leakage = 0;
+            Hydrology.Evaporation = 0;
+
+            float subCanopyPrecip = 0;
+            int subCanopyIndex = 0;
+            if (bins != null)
+            {
+                for (int b = bins.Count() - 1; b >= 0; b--)
+                {
+                    foreach (int r in random_range[b])
+                    {
+                        subCanopyIndex++;
+                        int precipCount = 0;
+                        subCanopyPrecip = 0;
+                        foreach (var g in groupList)
+                        {
+                            if (g.Key == subCanopyIndex)
+                            {
+                                precipCount = g.Count();
+                                subCanopyPrecip = PrecInByEvent;
+                            }
+                        }
+                        Cohort c = SubCanopyCohorts.Values.ToArray()[r];
+                        ISpeciesPNET spc = c.SpeciesPNET;
+
+        
+
+                        // A cohort cannot be reduced to a lower layer once it reaches a higher layer
+                        //if (c.Layer > bins.Count())
+                        //    c.Layer = (byte)bins.Count();
+                        c.Layer = (byte)Math.Max(b, c.Layer);
+                    }
+                }
+            }
+            else // When no cohorts are present
+            {
+                return;
+            }
+
+            // Surface PAR is effectively 0 when snowpack is present
+            if (snowPack > 0)
+                subcanopypar = 0;
+
+            canopylaimax = (byte)Math.Max(canopylaimax, CanopyLAI);
+            watermax = (ushort)Math.Max(hydrology.Water, watermax);
+            subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
+
+            Hydrology.Evaporation = hydrology.CalculateEvaporation(this);
+            hydrology.AddWater(-1 * Hydrology.Evaporation);
         }
 
         
@@ -1040,6 +1514,25 @@ namespace Landis.Extension.Succession.BiomassPnET
                 else
                 {
                     return netpsn.Select(psn => (int)psn).ToArray();
+                }
+            }
+        }
+        public int NetPsnSum
+        {
+            get
+            {
+                if (netpsn == null)
+                {
+                    int[] netpsn_array = new int[12];
+                    for (int i = 0; i < netpsn_array.Length; i++)
+                    {
+                        netpsn_array[i] = 0;
+                    }
+                    return netpsn_array.Sum();
+                }
+                else
+                {
+                    return netpsn.Select(psn => (int)psn).ToArray().Sum();
                 }
             }
         }
@@ -1489,13 +1982,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             return Bins;
         }
-         
+
         public static uint ComputeKey(uint a, ushort b)
         {
             uint value = (uint)((a << 16) | b);
             return value;
         }
-        
+
         public List<Cohort> AllCohorts
         {
             get
@@ -1658,7 +2151,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // with cold temp killing cohorts - now moved to within CalculatePhotosynthesis function
-        private void RemoveMarkedCohorts(float minMonthlyAvgTemp, float winterSTD)
+        /*private void RemoveMarkedCohorts(float minMonthlyAvgTemp, float winterSTD)
         {
 
             for (int c = cohorts.Values.Count - 1; c >= 0; c--)
@@ -1688,7 +2181,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
 
-        }
+        }*/
 
         public void RemoveCohort(Cohort cohort, ExtensionType disturbanceType)
         {
@@ -1741,29 +2234,35 @@ namespace Landis.Extension.Succession.BiomassPnET
             return IsMaturePresent;
         }
 
-        public void AddNewCohort(Cohort cohort)
+        public void AddNewCohort(Cohort newCohort)
         {
-
-            if (cohorts.ContainsKey(cohort.Species))
+            if (cohorts.ContainsKey(newCohort.Species))
             {
                 // This should deliver only one KeyValuePair
-                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == cohort.Species))[0];
+                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(cohorts.Where(o => o.Key == newCohort.Species))[0];
 
-                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < Timestep));
+                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
+                //List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < Timestep));
 
-                Cohorts.ForEach(a => cohort.Accumulate(a)); ;
+                if(Cohorts.Count > 1)
+                {
+                    foreach(Cohort Cohort in Cohorts.Skip(1))
+                    {
+                        newCohort.Accumulate(Cohort);
+                    }
+                }                
 
                 if (Cohorts.Count() > 0)
                 {
-                    Cohorts[0].Accumulate(cohort);
+                    Cohorts[0].Accumulate(newCohort);
                     return;
                 }
 
-                cohorts[cohort.Species].Add(cohort);
+                cohorts[newCohort.Species].Add(newCohort);
 
                 return;
             }
-            cohorts.Add(cohort.Species, new List<Cohort>(new Cohort[] { cohort }));
+            cohorts.Add(newCohort.Species, new List<Cohort>(new Cohort[] { newCohort }));
         }
 
         Landis.Library.BiomassCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)
@@ -1840,6 +2339,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         OutputHeaders.WoodySenescence + "," + 
                         OutputHeaders.FoliageSenescence + ","+
                         OutputHeaders.SubCanopyPAR+","+
+                        OutputHeaders.SoilDiffusivity+","+
                         OutputHeaders.FrostDepth+","+
                         OutputHeaders.LeakageFrac;
 
@@ -1891,6 +2391,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
                         cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence))+ "," +
                         subcanopypar +","+
+                        soilDiffusivity + ","+
                         frostFreeSoilDepth+","+
                         leakageFrac;
            
