@@ -94,6 +94,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _fracFolShape;
         private float _maxFracFol;
         private float _o3Coeff;
+        private float _leafOnMinT;
         # endregion
 
 
@@ -149,8 +150,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
         private static Landis.Library.Parameters.Species.AuxParm<float> fracFolShape;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFracFol;
-
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
+        private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
         #endregion
 
         public SpeciesPnET()
@@ -202,9 +203,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFracFol"));
             if (maxFracFol[this] == -9999F)
                 maxFracFol = fracfol;
-            o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));
-            
+            o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));            
             coldTol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("ColdTol"));
+            leafOnMinT = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeafOnMinT")); //Optional
+            // If LeafOnMinT is not provided, then set to PsnMinT
+            if (leafOnMinT[this] == -9999F)
+                leafOnMinT = psntmin;
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -274,7 +278,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             float maxFolN,
             float fracFolShape,
             float maxFracFol,
-            float o3Coeff
+            float o3Coeff,
+            float leafOnMinT
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -333,10 +338,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._fracFolShape = fracFolShape;
             this._maxFracFol = maxFracFol;
             this._o3Coeff = o3Coeff;
-        
+            this._leafOnMinT = leafOnMinT;
         }
        
-        SpeciesPnET(ISpecies species)
+        private SpeciesPnET(ISpecies species)
         {
             //_wuecnst = wuecnst[species];
             _dnsc = dnsc[species];
@@ -396,6 +401,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _fracFolShape = fracFolShape[species];
             _maxFracFol = maxFracFol[species];
             _o3Coeff = o3Coeff[species];
+            _leafOnMinT = leafOnMinT[species];
           
         }
         
@@ -464,7 +470,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return _psntmax;
+                if (_psntmax == -9999F)
+                    return _psntopt + (_psntopt - _psntmin);
+                else 
+                    return _psntmax;
             }
         }
         public float DVPD1
@@ -800,8 +809,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _o3Coeff;
             }
         }
-        # endregion
-        
+        public float LeafOnMinT
+        {
+            get
+            {
+                return _leafOnMinT;
+            }
+        }
+        #endregion
+
         public static List<string> ParameterNames
         {
             get
