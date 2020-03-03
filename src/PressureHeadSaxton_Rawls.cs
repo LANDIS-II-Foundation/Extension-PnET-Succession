@@ -33,11 +33,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         Landis.Library.Parameters.Ecoregions.AuxParm<ushort[]> table = new Library.Parameters.Ecoregions.AuxParm<ushort[]>(PlugIn.ModelCore.Ecoregions);
 
-        public float Porosity(float RootingDepth, string SoilType)
+        // mm/m of active soil
+        public float Porosity(string SoilType)
         {
-            return RootingDepth * porosity_OM_comp[SoilType];
+            return porosity_OM_comp[SoilType];
         }
-
+        //public float Porosity(float RootingDepth, string SoilType)
+        //{
+        //    return RootingDepth * porosity_OM_comp[SoilType];
+       // }
 
         public ushort this[IEcoregion ecoregion, int water]
         {
@@ -66,7 +70,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             
             double tension = 0.0;
-
            
             //double bubblingPress = -21.674 * sand - 27.932 * clay - 81.975 * porosity_moist33_comp + 71.121 * sand * porosity_moist33_comp + 8.294 * clay * porosity_moist33_comp + 14.05 * sand * clay + 27.161;
             //double bubblingPressAdj = bubblingPress + (0.02 * Math.Pow(bubblingPress, 2) - 0.113 * bubblingPress - 0.7);
@@ -82,8 +85,12 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             return (ushort)pressureHead;
         }
+
+        // takes PH (mH2O) 
+        // Calculates volumetric water content (m3H2O/m3 SOIL)
         public float CalculateWaterContent(ushort WaterPressure /* meter pressure head*/, string soiltype)
         {
+            // mH2O value =  kPa value x 0.101972
             float tension = (float) (WaterPressure / 0.1019977334);
 
             float watercontent = (float) Math.Pow(tension / tensionA[soiltype], 1.0/-tensionB[soiltype]);

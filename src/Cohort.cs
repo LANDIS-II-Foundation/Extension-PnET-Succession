@@ -434,14 +434,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             if (MeltInByCanopyLayer > 0)
             {
-                // Add thawed soil water to soil moisture
+                // Add melted snow water to soil moisture
                 // Instantaneous runoff (excess of porosity + RunoffCapture)
-                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - ((ecoregion.Porosity * frostFreeProp) + ecoregion.RunoffCapture), 0));
+                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp + ecoregion.RunoffCapture; //mm
+                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + MeltInByCanopyLayer - waterCapacity, 0));
                 //if ((hydrology.Water + meltrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
                 //    meltrunoff = (hydrology.Water + meltrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
                 Hydrology.RunOff += meltrunoff;
 
-                success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
+                success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff, ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
             float precipIn = 0;
@@ -449,30 +450,28 @@ namespace Landis.Extension.Succession.BiomassPnET
             for (int p = 1; p <= precipCount; p++)
             {
                 // Incoming precipitation
-                //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
-                precipIn = PrecInByCanopyLayer; //mm 
-
                 // Instantaneous runoff (excess of porosity)
-                float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - ((ecoregion.Porosity * frostFreeProp) + ecoregion.RunoffCapture), 0));
+                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp + ecoregion.RunoffCapture; //mm
+                float rainrunoff = Math.Min(PrecInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + PrecInByCanopyLayer - waterCapacity, 0));
                 //if ((hydrology.Water + rainrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
                 //    rainrunoff = (hydrology.Water + rainrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
                 Hydrology.RunOff += rainrunoff;
 
-                float waterIn = precipIn - (rainrunoff);
+                precipIn = PrecInByCanopyLayer - (rainrunoff); //mm
 
                 // Add incoming precipitation to soil moisture
-                success = hydrology.AddWater(waterIn);
-                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                success = hydrology.AddWater(precipIn, ecoregion.RootingDepth * frostFreeProp);
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + precipIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
 
             // Leakage only occurs following precipitation events or incoming melt water
             if (precipIn > 0 || MeltInByCanopyLayer > 0)
             {
-                float leakage = Math.Max((float)leakageFrac * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
+                float leakage = Math.Max((float)leakageFrac * (hydrology.Water - ecoregion.FieldCap), 0) * ecoregion.RootingDepth * frostFreeProp; //mm
                 Hydrology.Leakage += leakage;
 
                 // Remove fast leakage
-                success = hydrology.AddWater(-1 * leakage);
+                success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }               
             
@@ -802,19 +801,19 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
-                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O)));
+                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))); //mm
  
                 // It is possible for transpiration to calculate to exceed available water
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
-                if(Transpiration[index] > hydrology.Water)
+                if(Transpiration[index] > (hydrology.Water * ecoregion.RootingDepth * frostFreeProp))
                 {
-                    Transpiration[index] = hydrology.Water;
+                    Transpiration[index] = hydrology.Water * ecoregion.RootingDepth * frostFreeProp; //mm
                     GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
                     NetPsn[index] = GrossPsn[index] - FolResp[index];
                 }
 
                 // Subtract transpiration from hydrology
-                success = hydrology.AddWater(-1 * Transpiration[index]);
+                success = hydrology.AddWater(-1 * Transpiration[index], ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
 
                 // Add net psn to non soluble carbons
