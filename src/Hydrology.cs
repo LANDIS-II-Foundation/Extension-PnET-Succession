@@ -6,6 +6,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         private float water;
 
+        // volumetric water (mm/m)
         public float Water
         {
             get
@@ -30,6 +31,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float FrozenDepth;
         public static float FrozenWaterPct;
         
+        // Add mm water 
         public bool AddWater(float addwater)
         {
             water += addwater;
@@ -37,9 +39,20 @@ namespace Landis.Extension.Succession.BiomassPnET
             if(water>= 0)return true;
             else return false;
         }
+        // Add mm water to vlumetric water content (mm/m)
+        public bool AddWater(float addwater, float activeSoilDepth)
+        {
+            float adjWater = 0;
+            if(activeSoilDepth > 0)
+                adjWater = addwater / activeSoilDepth;
+            water += adjWater;
 
-       
-        public Hydrology(ushort water)
+            if (water >= 0) return true;
+            else return false;
+        }
+
+        // mm of water per m of active soil
+        public Hydrology(float water)
         {
             this.water = water;
         
@@ -63,17 +76,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             PlugIn.ModelCore.UI.WriteLine("Eco\tSoilt\tWiltPnt\tFieldCap(mm)\tFC-WP\tPorosity");
             foreach (IEcoregionPnET eco in EcoregionPnET.Ecoregions) if (eco.Active)
             {
-                // takes PH (MPa) 
-                // Calculates water content (m3H2O/m3 SOIL)
 
-                // Water content at field capacity (calculated as an output variable)
-                //  −33 kPa (or −0.33 bar)  
-                // mH2O value =  kPa value x 0.101972
-                eco.FieldCap = (float)pressureheadtable.CalculateWaterContent((ushort)3.37, eco.SoilType) * eco.RootingDepth;
+                    // Volumetric water content (mm/m) at field capacity
+                    //  −33 kPa (or −0.33 bar)        
+                    // Convert kPA to mH2o (/9.804139432) = 3.37
+                    eco.FieldCap = (float)pressureheadtable.CalculateWaterContent((ushort)3.37, eco.SoilType);
 
-                eco.WiltPnt = (float)pressureheadtable.CalculateWaterContent((ushort)153, eco.SoilType) * eco.RootingDepth;
+                    // Volumetric water content (mm/m) at wilting point
+                    //  −1500 kPa (or −15 bar)  
+                    // Convert kPA to mH2o (/9.804139432) = 153.00
+                    eco.WiltPnt = (float)pressureheadtable.CalculateWaterContent((ushort)153, eco.SoilType);
 
-                eco.Porosity = (float)pressureheadtable.Porosity(eco.RootingDepth, eco.SoilType);
+                    // Volumetric water content (mm/m) at porosity
+                    eco.Porosity = (float)pressureheadtable.Porosity(eco.SoilType);
 
                 float f = eco.FieldCap - eco.WiltPnt;
                 PlugIn.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity );
@@ -121,12 +136,16 @@ namespace Landis.Extension.Succession.BiomassPnET
 	        if (RadnMJM2 > 0)PET = (alphaPT/Lv) * delta/(delta+gamE) * RadnMJM2 * JoulesPerMJ;
 	        else PET= 0.0;
 
-            return PET * days_per_month;
+            return PET * days_per_month;  //mm/month
         }
       
         public float CalculateEvaporation(SiteCohorts sitecohorts )
         {
-            // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
+
+            // permafrost
+            float frostFreeProp = Math.Min(1.0F, FrozenDepth / sitecohorts.Ecoregion.RootingDepth);
+
+            // mm/month
             PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, sitecohorts.Ecoregion.Variables.Tday);
 
             float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Water];
@@ -137,16 +156,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             DeliveryPotential = Cohort.ComputeFWater(0,0, evapCritWater, 153, pressurehead);
 
-            // Per month
-            sitecohorts.SetAet(DeliveryPotential * PET, sitecohorts.Ecoregion.Variables.Month);
-
-            float wiltPoint = sitecohorts.Ecoregion.WiltPnt;
+            // mm/month
+            float AET = Math.Min(DeliveryPotential * PET, Water * sitecohorts.Ecoregion.RootingDepth * frostFreeProp);
+            sitecohorts.SetAet(AET, sitecohorts.Ecoregion.Variables.Month);
 
             // Evaporation cannot remove water below wilting point, evaporation cannot be negative
             // Transpiration is assumed to replace evaporation
-            Evaporation = (float)Math.Max(0,Math.Min(Water - wiltPoint, Math.Max(0, DeliveryPotential * PET - (double)sitecohorts.Transpiration)));
+            Evaporation = (float)Math.Max(0,Math.Min((Water - sitecohorts.Ecoregion.WiltPnt) *sitecohorts.Ecoregion.RootingDepth * frostFreeProp, Math.Max(0, AET - (double)sitecohorts.Transpiration)));
 
-            return Evaporation;
+            return Evaporation; //mm/month
         }
    
          
