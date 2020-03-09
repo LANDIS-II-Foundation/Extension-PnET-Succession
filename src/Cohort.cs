@@ -436,11 +436,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 // Add melted snow water to soil moisture
                 // Instantaneous runoff (excess of porosity + RunoffCapture)
-                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp + ecoregion.RunoffCapture; //mm
+                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp; //mm
                 float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + MeltInByCanopyLayer - waterCapacity, 0));
                 //if ((hydrology.Water + meltrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
                 //    meltrunoff = (hydrology.Water + meltrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
-                Hydrology.RunOff += meltrunoff;
+                float capturedRunoff = 0;
+                if ((ecoregion.RunoffCapture > 0) & (meltrunoff >0))
+                {
+                    capturedRunoff = Math.Max(0, Math.Min(meltrunoff, (ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
+                    Hydrology.SurfaceWater += capturedRunoff;
+                }
+                Hydrology.RunOff += (meltrunoff - capturedRunoff);
 
                 success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff, ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
@@ -451,13 +457,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 // Incoming precipitation
                 // Instantaneous runoff (excess of porosity)
-                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp + ecoregion.RunoffCapture; //mm
+                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp; //mm
                 float rainrunoff = Math.Min(PrecInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + PrecInByCanopyLayer - waterCapacity, 0));
                 //if ((hydrology.Water + rainrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
                 //    rainrunoff = (hydrology.Water + rainrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
-                Hydrology.RunOff += rainrunoff;
-
-                precipIn = PrecInByCanopyLayer - (rainrunoff); //mm
+                float capturedRunoff = 0;
+                if ((ecoregion.RunoffCapture > 0) & (rainrunoff > 0))
+                {
+                    capturedRunoff = Math.Max(0,Math.Min(rainrunoff,(ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
+                    Hydrology.SurfaceWater += capturedRunoff;
+                }
+                Hydrology.RunOff += (rainrunoff - capturedRunoff);
+                
+                precipIn = PrecInByCanopyLayer - rainrunoff; //mm
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(precipIn, ecoregion.RootingDepth * frostFreeProp);
@@ -473,6 +485,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Remove fast leakage
                 success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (Hydrology.SurfaceWater > 0)
+                {
+                    float surfaceInput = Math.Min(Hydrology.SurfaceWater,(ecoregion.Porosity - hydrology.Water));
+                    Hydrology.SurfaceWater -= surfaceInput;
+                    success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                }
             }               
             
             //// Adjust soil water for freezing - Now done when calculating frozen depth
@@ -815,7 +834,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index], ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
-
+                if (Hydrology.SurfaceWater > 0)
+                {
+                    float surfaceInput = Math.Min(Hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.Water));
+                    Hydrology.SurfaceWater -= surfaceInput;
+                    success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                }
                 // Add net psn to non soluble carbons
                 nsc += NetPsn[index];
              

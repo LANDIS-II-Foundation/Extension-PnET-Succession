@@ -43,14 +43,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         //    return RootingDepth * porosity_OM_comp[SoilType];
        // }
 
-        public ushort this[IEcoregion ecoregion, int water]
+        public float this[IEcoregion ecoregion, float water]
         {
             get
             {
                 try
                 {
-                    if (water >= table[ecoregion].Length) return 0;
-                    return table[ecoregion][water];
+                    ushort water_mm = (ushort) Math.Round(water *1000.0);
+                    if (water_mm >= table[ecoregion].Length) return 0;
+                    return table[ecoregion][water_mm];
                 }
                 catch (System.Exception e)
                 {

@@ -19,7 +19,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public float GetPressureHead(IEcoregionPnET ecoregion)
         {
-            return pressureheadtable[ecoregion, (int)water];
+            return pressureheadtable[ecoregion, water];
 
         }
         
@@ -28,8 +28,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float Evaporation;
         public static float Leakage;
         public static float RunOff;
-        public static float FrozenDepth;
+        public static float FrozenDepth; // Volume of rooting zone soil that is frozen
         public static float FrozenWaterPct;
+        public static float SurfaceWater = 0; // Volume of water captured above saturatino on the surface
         
         // Add mm water 
         public bool AddWater(float addwater)

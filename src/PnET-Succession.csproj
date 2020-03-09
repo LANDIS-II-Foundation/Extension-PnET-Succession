@@ -26,8 +26,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\BRM\LANDIS_II\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>
-    <!--<OutputPath>bin\Debug\</OutputPath>-->
+    <!--<OutputPath>C:\BRM\LANDIS\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>-->
+    <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -57,8 +57,8 @@
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.InitialCommunity-vInputBiomass">
-      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.InitialCommunity-vInputBiomass.dll</HintPath>
+    <Reference Include="Landis.Library.InitialCommunity-vBiomassCohorts">
+      <HintPath>..\..\brmiranda\Support-Library-Dlls-v7\Landis.Library.InitialCommunity-vBiomassCohorts.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Metadata-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Metadata-v2.dll</HintPath>
