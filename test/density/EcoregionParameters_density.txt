@@ -1,0 +1,5 @@
+LandisData  EcoregionParameters
+
+EcoregionParameters	 ClimateFileName Latitude
+
+eco0	climate.txt		45

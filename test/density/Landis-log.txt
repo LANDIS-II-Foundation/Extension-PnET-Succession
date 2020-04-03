@@ -1,0 +1,33 @@
+2020-04-03 16:31:44,816 - LANDIS-II 7.0 (7)
+2020-04-03 16:31:44,838 - 
+2020-04-03 16:31:45,219 - Loading scenario from file "scenario.txt" ...
+2020-04-03 16:31:45,317 - Initialized random number generator with seed = 383,777,157
+2020-04-03 16:31:45,318 - Loading species data from file "species.txt" ...
+2020-04-03 16:31:45,343 - Loading ecoregions from file "ecoregion.txt" ...
+2020-04-03 16:31:45,362 - Initializing landscape from ecoregions map "ecoregion.img" ...
+2020-04-03 16:31:45,407 - Cell length = 30 m, cell area = 0.09 ha
+2020-04-03 16:31:45,410 - Map dimensions: 17 rows by 17 columns = 289 cells
+2020-04-03 16:31:45,422 - Sites: 1 active (0.3%), 288 inactive (99.7%)
+2020-04-03 16:31:45,447 - Loading PnET-Succession extension ...
+2020-04-03 16:31:45,737 - Initializing PnET-Succession version 3.4.0.0
+2020-04-03 16:31:45,791 - Using climate files in ecoregion parameters: EcoregionParameters_density.txt.
+2020-04-03 16:31:45,795 -    Registering Data:  TimeOfLastSuccession.
+2020-04-03 16:31:45,795 -    Registering Data:  Shade.
+2020-04-03 16:31:45,796 -    Creating Dispersal Neighborhood List.
+2020-04-03 16:31:45,796 -    Dispersal:  NeighborRadius=3015, CellLength=30, numCellRadius=100
+2020-04-03 16:31:45,807 - Spinning up biomass or reading from maps...
+2020-04-03 16:31:47,691 -    Loading initial communities from file "initial-communities.txt" ...
+2020-04-03 16:31:47,714 -    Reading initial communities map "initial-communities.img" ...
+2020-04-03 16:32:02,890 -    Registering Data:  Succession.BiomassCohorts.
+2020-04-03 16:32:03,138 -    Registering Data:  Succession.WoodyDebris.
+2020-04-03 16:32:03,425 -    Registering Data:  Succession.Litter.
+2020-04-03 16:32:09,359 -    Registering Data:  Succession.AgeCohorts.
+2020-04-03 16:32:10,055 -    Registering Data:  Succession.CohortsDensity.
+2020-04-03 16:32:10,653 -    Registering Data:  Succession.FineFuels.
+2020-04-03 16:32:19,953 - Using the following extensions ...
+   Extension Name            Extension Filename       
+   --------------            ------------------       
+   PnET-Succession           densitysuccession.txt    
+
+2020-04-03 16:32:25,268 - Current time: 10
+2020-04-03 16:32:28,699 - Running PnET-Succession ...

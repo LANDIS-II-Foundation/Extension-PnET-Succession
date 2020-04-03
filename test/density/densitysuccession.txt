@@ -1,0 +1,19 @@
+LandisData  "PnET-Succession"											
+	
+PnET-Succession		Value
+<<-----------------------------
+										
+Timestep  10	
+StartYear	2000															
+SeedingAlgorithm	WardSeedDispersal						
+								
+InitialCommunities      initial-communities.txt											
+InitialCommunitiesMap   initial-communities.img	
+
+DensitySpeciesParameters	density_speciesparameters.txt		
+											
+EcoregionParameters	EcoregionParameters_density.txt	
+   								
+DisturbanceReductions	disturbance_reductions.txt
+ 											
+ 										

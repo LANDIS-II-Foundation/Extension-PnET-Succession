@@ -7,16 +7,16 @@ namespace Landis.Extension.Succession.BiomassPnET
     public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts
     {
 
-        float[] NetPsn { get; }
+        //float[] NetPsn { get; }
 
-        float[] MaintResp{ get; }
+        //float[] MaintResp{ get; }
         
-        float[] GrossPsn{ get; }
+        //float[] GrossPsn{ get; }
 
-        float[] FolResp { get; }
+        //float[] FolResp { get; }
         
         
-        byte CanopyLAImax{get;}
+        //byte CanopyLAImax{get;}
 
         int AverageAge { get; }
 
@@ -26,27 +26,27 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         IEstablishmentProbability EstablishmentProbability { get; }
         
-        Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
+        //Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
 
-        Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
+        //Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
 
-        Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies { get; }
+        //Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies { get; }
 
         Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges { get; }
 
-        float BiomassSum { get; }
+        //float BiomassSum { get; }
 
         float AbovegroundBiomassSum { get; }
 
-        float WoodySenescenceSum { get; }
+        //float WoodySenescenceSum { get; }
 
-        float FoliageSenescenceSum { get; }
+        //float FoliageSenescenceSum { get; }
 
         int CohortCount { get; }
 
-        float SubCanopyParMAX { get; }
+        //float SubCanopyParMAX { get; }
 
         double Litter{ get; }
 
@@ -54,17 +54,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         int AgeMax { get; }
 
-        ushort WaterMax { get; }
+        //ushort WaterMax { get; }
 
-        uint BelowGroundBiomass { get; }
+        //uint BelowGroundBiomass { get; }
 
-        float FoliageSum { get; }
+        //float FoliageSum { get; }
 
-        float NSCSum { get; }
+        //float NSCSum { get; }
 
-        float AETSum { get; } //mm
+        //float AETSum { get; } //mm
 
-        float NetPsnSum { get; }
+        //float NetPsnSum { get; }
 
         List<ISpecies> SpeciesByPlant { get; set; }
         List<ISpecies> SpeciesBySerotiny { get; set; }

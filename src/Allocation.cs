@@ -102,16 +102,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             
             // Add new dead wood and litter
-            float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * fraction);
-            float rootAdded = (float)((1 - prootlost) * cohort.Root * fraction);
-            float folAdded = (float)((1 - pfollost) * cohort.Fol * fraction);
+            //float woodAdded = (float)((1 - pwoodlost) * cohort.Wood * fraction);
+            //float rootAdded = (float)((1 - prootlost) * cohort.Root * fraction);
+            //float folAdded = (float)((1 - pfollost) * cohort.Fol * fraction);
 
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded, cohort.SpeciesPNET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded, cohort.SpeciesPNET.KWdLit);
-            ((SiteCohorts)sitecohorts).AddLitter(folAdded, cohort.SpeciesPNET);
+            //((SiteCohorts)sitecohorts).AddWoodyDebris(woodAdded, cohort.SpeciesDensity.KWdLit);
+            //((SiteCohorts)sitecohorts).AddWoodyDebris(rootAdded, cohort.SpeciesDensity.KWdLit);
+            //((SiteCohorts)sitecohorts).AddLitter(folAdded, cohort.SpeciesDensity);
 
-            cohort.AccumulateWoodySenescence((int)(woodAdded + rootAdded));
-            cohort.AccumulateFoliageSenescence((int)(folAdded));
+            //cohort.AccumulateWoodySenescence((int)(woodAdded + rootAdded));
+            //cohort.AccumulateFoliageSenescence((int)(folAdded));
 
 
         }

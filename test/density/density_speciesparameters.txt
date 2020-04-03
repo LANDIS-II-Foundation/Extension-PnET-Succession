@@ -1,0 +1,5 @@
+LandisData	DensitySpeciesParameters																
+																	
+DensitySpeciesParameters	FolLignin
+querrubr		0.2
+pinubank		0.2

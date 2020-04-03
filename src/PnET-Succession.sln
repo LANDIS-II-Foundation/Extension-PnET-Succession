@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PnET-Succession", "PnET-Succession.csproj", "{17896667-BAB5-4F18-9DDF-8761E06C55E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PnET-Succession-Density", "PnET-Succession-Density.csproj", "{17896667-BAB5-4F18-9DDF-8761E06C55E0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "library-succession", "..\..\Library-Succession\src\library-succession.csproj", "{C891A0CA-A437-49B6-9F01-E653A7ABA98C}"
 EndProject

@@ -8,17 +8,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         //void Calculate_Establishment(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
 
-        Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
+        //Dictionary<ISpeciesDensity, float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology);
 
-        void ResetPerTimeStep();
+        //void ResetPerTimeStep();
          
-        bool HasEstablished(ISpeciesPNET species);
+        bool HasEstablished(ISpeciesDensity species);
 
-        void EstablishmentTrue(ISpeciesPNET spc);
+        void EstablishmentTrue(ISpeciesDensity spc);
 
-        void RecordPest(int year, ISpeciesPNET spc, float pest,float fwater,float frad, bool estab, int monthCount);
+        //void RecordPest(int year, ISpeciesDensity spc, float pest,float fwater,float frad, bool estab, int monthCount);
 
-        float Get_FWater(ISpeciesPNET species);
-        float Get_FRad(ISpeciesPNET species);
+        //float Get_FWater(ISpeciesDensity species);
+        //float Get_FRad(ISpeciesDensity species);
     }
 }
