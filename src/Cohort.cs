@@ -875,7 +875,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (H2 <= H1)
                 minThreshold = H2;
             // Compute water stress
-            if (pressurehead <= minThreshold || pressurehead >= H4) return 0;
+            if (pressurehead <= H1) return 0;
+            else if (pressurehead < minThreshold || pressurehead >= H4) return 0;
             else if (pressurehead > H3) return 1 - ((pressurehead - H3) / (H4 - H3));
             else if (pressurehead < H2) return (1.0F/(H2-H1))*pressurehead - (H1/(H2-H1));
             else return 1;

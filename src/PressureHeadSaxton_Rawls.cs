@@ -31,7 +31,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         static Dictionary<string, float> lambda_s = new Dictionary<string, float>();
         static Dictionary<string, float> Fs = new Dictionary<string, float>();
 
-        Landis.Library.Parameters.Ecoregions.AuxParm<ushort[]> table = new Library.Parameters.Ecoregions.AuxParm<ushort[]>(PlugIn.ModelCore.Ecoregions);
+        Landis.Library.Parameters.Ecoregions.AuxParm<float[]> table = new Library.Parameters.Ecoregions.AuxParm<float[]>(PlugIn.ModelCore.Ecoregions);
 
         // mm/m of active soil
         public float Porosity(string SoilType)
@@ -43,15 +43,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         //    return RootingDepth * porosity_OM_comp[SoilType];
        // }
 
-        public float this[IEcoregion ecoregion, float water]
+        public float this[IEcoregion ecoregion, int water]
         {
             get
             {
                 try
                 {
-                    ushort water_mm = (ushort) Math.Round(water *1000.0);
-                    if (water_mm >= table[ecoregion].Length) return 0;
-                    return table[ecoregion][water_mm];
+                    //ushort water_mm = (ushort) Math.Round(water *1000.0);
+                    if (water >= table[ecoregion].Length) return 0;
+                    return table[ecoregion][water];
                 }
                 catch (System.Exception e)
                 {
@@ -67,7 +67,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// <param name="watercontent": fraction  ></param>
         /// <param name="soiltype"></param>
         /// <returns></returns>
-        ushort CalculateWaterPressure(double watercontent, string soiltype)
+        float CalculateWaterPressure(double watercontent, string soiltype)
         {
             
             double tension = 0.0;
@@ -80,19 +80,26 @@ namespace Landis.Extension.Succession.BiomassPnET
                 tension = tensionA[soiltype] * Math.Pow((watercontent), (-tensionB[soiltype]));
             }
 
-            int pressureHead;
-            if (double.IsInfinity(tension) || tension > int.MaxValue) pressureHead = int.MaxValue;
-            else pressureHead = (int)(tension * 0.1019977334);
-
-            return (ushort)pressureHead;
+            float pressureHead;
+            if (double.IsInfinity(tension))
+                pressureHead = float.MaxValue;
+            else
+            {
+                pressureHead = (float)(tension * 0.1019977334);
+                if (pressureHead > float.MaxValue)
+                    pressureHead = float.MaxValue;
+                else
+                    pressureHead = (float)Math.Round(pressureHead,2);
+            }
+            return pressureHead;
         }
 
         // takes PH (mH2O) 
         // Calculates volumetric water content (m3H2O/m3 SOIL)
-        public float CalculateWaterContent(ushort WaterPressure /* meter pressure head*/, string soiltype)
+        public float CalculateWaterContent(float tension /* kPA*/, string soiltype)
         {
             // mH2O value =  kPa value x 0.101972
-            float tension = (float) (WaterPressure / 0.1019977334);
+            //float tension = (float) (WaterPressure / 0.1019977334);
 
             float watercontent = (float) Math.Pow(tension / tensionA[soiltype], 1.0/-tensionB[soiltype]);
 
@@ -105,7 +112,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Landis.Library.Parameters.Ecoregions.AuxParm<float> RootingDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter(Names.RootingDepth, 0, float.MaxValue);
 
 
-            table = new Library.Parameters.Ecoregions.AuxParm<ushort[]>(PlugIn.ModelCore.Ecoregions);
+            table = new Library.Parameters.Ecoregions.AuxParm<float[]>(PlugIn.ModelCore.Ecoregions);
              
             Sand = PlugIn.GetParameter("sand");
             Clay = PlugIn.GetParameter("clay");
@@ -115,7 +122,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions) if (ecoregion.Active)
             {
-                List<ushort> PressureHead = new List<ushort>();
+                List<float> PressureHead = new List<float>();
 
                 if (tensionB.ContainsKey(SoilType[ecoregion]) == false)
                 {
@@ -164,14 +171,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 double watercontent = 0.0;
 
-                ushort pressureHead = ushort.MaxValue;
-                while (pressureHead > 0)
+                float pressureHead = float.MaxValue;
+                while (pressureHead > 0.01)
                 {
 
-                    pressureHead = CalculateWaterPressure(watercontent / RootingDepth[ecoregion], SoilType[ecoregion]); 
+                    pressureHead = CalculateWaterPressure(watercontent, SoilType[ecoregion]); 
                    
                     PressureHead.Add(pressureHead);
-                    watercontent +=1.0;
+                    watercontent +=0.01;
                 }
                 table[ecoregion] = PressureHead.ToArray();
             }

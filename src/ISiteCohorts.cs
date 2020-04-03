@@ -7,13 +7,13 @@ namespace Landis.Extension.Succession.BiomassPnET
     public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts
     {
 
-        int[] NetPsn { get; }
+        float[] NetPsn { get; }
 
-        int[] MaintResp{ get; }
-        
-        int[] GrossPsn{ get; }
+        float[] MaintResp{ get; }
 
-        int[] FolResp { get; }
+        float[] GrossPsn{ get; }
+
+        float[] FolResp { get; }
         
         
         byte CanopyLAImax{get;}
@@ -64,7 +64,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         float AETSum { get; } //mm
 
-        int NetPsnSum { get; }
+        float NetPsnSum { get; }
 
         List<ISpecies> SpeciesByPlant { get; set; }
         List<ISpecies> SpeciesBySerotiny { get; set; }
