@@ -261,7 +261,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
         {
-            Cohort.SetSiteAccessFunctions(this);
+            //Cohort.SetSiteAccessFunctions(this);
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
             this.Site = site;
             cohorts = new Dictionary<ISpecies, List<Cohort>>();
@@ -2061,6 +2061,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return spc;
         }
         
+        /*
         public void AddWoodyDebris(float Litter, float KWdLit)
         {
             PlugIn.WoodyDebris[Site].AddMass(Litter, KWdLit);
@@ -2080,6 +2081,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             PlugIn.Litter[Site].ReduceMass(percentReduction);
         }
+        */
         /*string Header(Landis.SpatialModeling.ActiveSite site)
         {
             

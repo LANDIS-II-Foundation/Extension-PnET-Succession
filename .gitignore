@@ -208,3 +208,5 @@ FakesAssemblies/
 # LANDIS-II
 /src/lib/*.dll
 /src/.vs
+/deploy/examples/biomass-Pnet-succession-example
+/src/PnET-Succession-Density.csproj

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PnET-Succession": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\jacobfraser\\source\\repos\\Extension-PnET-Succession\\deploy\\examples\\biomass-Pnet-succession-example"
+    }
+  }
+}

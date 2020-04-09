@@ -440,6 +440,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }*/
         }
 
+        /*
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {
@@ -448,7 +449,7 @@ namespace Landis.Extension.Succession.BiomassPnET
              Cohort.ecoregion = sitecohorts.Ecoregion;
              Cohort.site = sitecohorts.Site;
         }
-        
+        */
 
         /*public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
         {

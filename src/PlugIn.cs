@@ -50,6 +50,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public static ushort IMAX;
         //public static float FTimeStep;
 
+        public static biomassUtil biomass_util = new biomassUtil();
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
         //public static int CohortBinSize;
@@ -221,7 +222,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Cohort.AgeOnlyDeathEvent += DisturbanceReductions.Events.CohortDied;
             }
 
-             
+
+            //----------------Read biomass estimation parameters
+            
+            string BiomassVariableFile = GetParameter(Names.BiomassVariables).Value;
+            if (System.IO.File.Exists(BiomassVariableFile) == false) throw new System.Exception("File not found " + BiomassVariableFile);
+
+            BiomassParamParser bioparser = new BiomassParamParser();
+            Landis.Data.Load<BiomassParam>(BiomassVariableFile, bioparser);
+
             /*//---------------SaxtonAndRawlsParameterFile
             if (parameters.ContainsKey(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters) == false)
             {

@@ -61,8 +61,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             }
 
-            ((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
-            ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
+            //((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
+            //((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
 
 
         }

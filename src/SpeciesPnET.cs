@@ -34,10 +34,18 @@ namespace Landis.Extension.Succession.BiomassPnET
              { 
                  return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1; 
              } 
-         } 
+         }
 
 
         #region private variables
+        // Density succession species parameters
+        private int _sptype;
+        private int _biomassclass;
+        private float _maxdia;
+        private int _maxsdi;
+        private int _totalseed;
+        private float _carboncoef;
+
         private float _co2HalfSatEff;
         private float _cfracbiomass;
         private float _kwdlit;
@@ -99,6 +107,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         #region private static species variables
+
+        // Density succession species parameters
+        private static Landis.Library.Parameters.Species.AuxParm<int> sptype;
+        private static Landis.Library.Parameters.Species.AuxParm<int> biomassclass;
+        private static Landis.Library.Parameters.Species.AuxParm<float> maxdia;
+        private static Landis.Library.Parameters.Species.AuxParm<int> maxsdi;
+        private static Landis.Library.Parameters.Species.AuxParm<int> totalseed;
+        private static Landis.Library.Parameters.Species.AuxParm<float> carboncoef;
+
         private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
         //private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
@@ -157,6 +174,14 @@ namespace Landis.Extension.Succession.BiomassPnET
         public SpeciesDensity()
         {
             #region initialization of private static species variables
+            // Density succession species paramters
+            sptype = ((Landis.Library.Parameters.Species.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("sptype"));
+            biomassclass = ((Landis.Library.Parameters.Species.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("biomassclass"));
+            maxdia = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maxdia"));
+            maxsdi = ((Landis.Library.Parameters.Species.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("maxsdi"));
+            totalseed = ((Landis.Library.Parameters.Species.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("totalseed"));
+            carboncoef = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("carboncoef"));
+
             //co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2HalfSatEff"));
             //wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             //dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
@@ -180,7 +205,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //towood = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("towood")); ;
             //estrad = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estrad")); ;
             //estmoist = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("estmoist"));
-            follignin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("follignin"));
+            //follignin = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("follignin"));
             //preventestablishment = ((Landis.Library.Parameters.Species.AuxParm<bool>)(Parameter<bool>)PlugIn.GetParameter("preventestablishment"));
             //psntopt = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("psntopt"));
             //q10 = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("q10"));
@@ -247,7 +272,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //float towood,
             //float estrad,
             //float estmoist,
-            float follignin,
+            //float follignin,
             //bool preventestablishment,
             //float psntopt,
             //float q10,
@@ -305,7 +330,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //this._towood = towood;
             //this._estrad = estrad;
             //this._estmoist = estmoist;
-            this._follignin = follignin;
+            //this._follignin = follignin;
             //this._preventestablishment = preventestablishment;
             //this._psntopt = psntopt;
             //this._q10 = q10;
@@ -343,6 +368,15 @@ namespace Landis.Extension.Succession.BiomassPnET
        
         private SpeciesDensity(ISpecies species)
         {
+            // Density succession species parameters
+            _sptype = sptype[species];
+            _biomassclass = biomassclass[species];
+            _maxdia = maxdia[species];
+            _maxsdi = maxsdi[species];
+            _totalseed = totalseed[species];
+            _carboncoef = carboncoef[species];
+
+
             //_wuecnst = wuecnst[species];
             //_dnsc = dnsc[species];
             //_cfracbiomass = cfracbiomass[species];
@@ -365,7 +399,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //_towood = towood[species];
             //_estrad = estrad[species];
             //_estmoist = estmoist[species];
-            _follignin = follignin[species];
+            //_follignin = follignin[species];
             //_preventestablishment = preventestablishment[species];
             //_psntopt = psntopt[species];
             //_q10 = q10[species]; 
@@ -406,6 +440,55 @@ namespace Landis.Extension.Succession.BiomassPnET
         
 
         #region Accessors
+
+        // Density succession species paramters
+        public int SpType
+        {
+            get
+            {
+                return _sptype;
+            }
+        }
+
+        public int BiomassClass
+        {
+            get
+            {
+                return _biomassclass;
+            }
+        }
+
+        public float MaxDia
+        {
+            get
+            {
+                return _maxdia;
+            }
+        }
+
+        public int MaxSDI
+        {
+            get
+            {
+                return _maxsdi;
+            }
+        }
+
+        public int TotalSeed
+        {
+            get
+            {
+                return _totalseed;
+            }
+        }
+
+        public float CarbonCoef
+        {
+            get
+            {
+                return _carboncoef;
+            }
+        }
 
         public int Index
         {
@@ -525,13 +608,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _preventestablishment; 
             }
         }*/
-        public float FolLignin
+        /*public float FolLignin
         {
             get 
             { 
                 return _follignin; 
             }
-        }
+        }*/
         /*public float EstMoist
         {
             get 

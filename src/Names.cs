@@ -35,7 +35,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
-        
+        public const string BiomassVariables = "BiomassVariableFile";
 
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";

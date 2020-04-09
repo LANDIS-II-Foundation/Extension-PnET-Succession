@@ -16,4 +16,4 @@ EcoregionParameters	EcoregionParameters_density.txt
    								
 DisturbanceReductions	disturbance_reductions.txt
  											
- 										
+BiomassVariableFile			BioMassCoef.txt

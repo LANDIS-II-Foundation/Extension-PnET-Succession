@@ -7,10 +7,28 @@ namespace Landis.Extension.Succession.BiomassPnET
     public interface ISpeciesDensity : Landis.Core.ISpecies
     {
 
-        //FIXME - Add any species parameters not defined in the standard species.txt input file
+        /*
+        //FIXME(JSF) - Add any species parameters not defined in the standard species.txt input file
 
+        // Species class for default diameter growth models
+        int SpType { get; }
 
+        // Species class for aboveground biomass estimation coefficients
+        int BiomassCoef { get; }
 
+        // Maximum species diameter (cm). Only used if default diameter growth models are used.
+        float MaxDia { get; }
+
+        // Maximum stand density index (SDI) for species
+        int MaxSDI { get; }
+
+        // Total seeds produced by a individual tree
+        int TotalSeed { get; }
+
+        // Coefficient used to estimate carbon content within biomass
+        float CarbonCoef { get; }
+        */
+        
         // Carbon fraction in biomass 
         //float CFracBiomass { get; }
 
@@ -75,7 +93,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //float EstMoist { get; }
 
         // Lignin concentration in foliage
-        float FolLignin { get; }
+        //float FolLignin { get; }
 
         // Prevent establishment 
         //bool PreventEstablishment { get; }
