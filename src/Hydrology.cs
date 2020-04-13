@@ -1,10 +1,12 @@
 ﻿using System;
 
 namespace Landis.Extension.Succession.BiomassPnET
-{  
+{
     public class Hydrology : IHydrology
     {
         private float water;
+        private float frozenWaterPct;
+        private float frozenDepth;
 
         // volumetric water (mm/m)
         public float Water
@@ -14,36 +16,50 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return water;
             }
         }
-         
+        // volumetric water with the frozen root zone
+        public float FrozenWaterPct
+        {
+            get
+            {
+                return frozenWaterPct;
+            }
+        }
+        public float FrozenDepth
+        {
+            get
+            {
+                return frozenDepth;
+            }
+        }
+
         private static PressureHeadSaxton_Rawls pressureheadtable;
 
         public float GetPressureHead(IEcoregionPnET ecoregion)
         {
             return pressureheadtable[ecoregion, (int)Math.Round(water * 100.0)];
         }
-        
+
         public static float PET;
         public static float DeliveryPotential;
         public static float Evaporation;
         public static float Leakage;
         public static float RunOff;
-        public static float FrozenDepth; // Volume of rooting zone soil that is frozen
-        public static float FrozenWaterPct;
+
         public static float SurfaceWater = 0; // Volume of water captured above saturatino on the surface
-        
+
         // Add mm water 
         public bool AddWater(float addwater)
         {
             water += addwater;
 
-            if(water>= 0)return true;
+            if (water >= 0) return true;
             else return false;
         }
         // Add mm water to vlumetric water content (mm/m)
         public bool AddWater(float addwater, float activeSoilDepth)
         {
             float adjWater = 0;
-            if(activeSoilDepth > 0)
+            if (activeSoilDepth > 0)
                 adjWater = addwater / activeSoilDepth;
             water += adjWater;
 
@@ -55,7 +71,20 @@ namespace Landis.Extension.Succession.BiomassPnET
         public Hydrology(float water)
         {
             this.water = water;
-        
+
+        }
+
+        public bool SetFrozenWaterPct (float water)
+        {
+            this.frozenWaterPct = water;
+            if (water >= 0) return true;
+            else return false;
+        }
+        public bool SetFrozenDepth(float depth)
+        {
+            this.frozenDepth = depth;
+            if (depth >= 0) return true;
+            else return false;
         }
         public static void Initialize()
         {
