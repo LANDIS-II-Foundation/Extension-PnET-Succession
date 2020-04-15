@@ -48,9 +48,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         //float SubCanopyParMAX { get; }
 
-        double Litter{ get; }
+        //double Litter{ get; }
 
-        double WoodyDebris { get; }
+        //double WoodyDebris { get; }
 
         int AgeMax { get; }
 

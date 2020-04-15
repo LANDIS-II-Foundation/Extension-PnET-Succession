@@ -39,9 +39,9 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
         public static SpeciesDensity SpeciesDensity;
-        public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
-        public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
-        public static ISiteVar<Double> FineFuels;
+        //public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
+        //public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
+        //public static ISiteVar<Double> FineFuels;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
@@ -288,10 +288,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
             Cohort.DeathEvent += DeathEvent;
 
-            Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
-            WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
+            //Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
+            //WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
-            FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
+            //FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
@@ -323,6 +323,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             SpeciesDensity = new SpeciesDensity();
 
             EcoregionPnET.Initialize();
+
+            string DynamicInputFile = ((Parameter<string>)GetParameter(Names.DynamicInputFile)).Value;
+            DynamicInputs.Initialize(DynamicInputFile, false);
+            SpeciesDensity.ChangeDynamicParameters(0);  // Year 0
             //Hydrology.Initialize();
 
             // This creates the cohorts - FIXME
@@ -357,16 +361,16 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             string InitialCommunitiesTXTFile = GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = GetParameter(Names.InitialCommunitiesMap).Value;
-            Parameter<string> LitterMapFile;
-            bool litterMapFile = TryGetParameter(Names.LitterMap, out LitterMapFile);
-            Parameter<string> WoodyDebrisMapFile;
-            bool woodyDebrisMapFile = TryGetParameter(Names.WoodyDebrisMap, out WoodyDebrisMapFile);
+            //Parameter<string> LitterMapFile;
+            //bool litterMapFile = TryGetParameter(Names.LitterMap, out LitterMapFile);
+            //Parameter<string> WoodyDebrisMapFile;
+            //bool woodyDebrisMapFile = TryGetParameter(Names.WoodyDebrisMap, out WoodyDebrisMapFile);
             //Console.ReadLine();
             InitializeSites(InitialCommunitiesTXTFile, InitialCommunitiesMapFile, ModelCore);
-            if (litterMapFile)
-                MapReader.ReadLitterFromMap(LitterMapFile.Value);
-            if (woodyDebrisMapFile)
-                MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
+            //if (litterMapFile)
+            //    MapReader.ReadLitterFromMap(LitterMapFile.Value);
+            //if (woodyDebrisMapFile)
+            //    MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
 
             // Convert Density cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
@@ -382,8 +386,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
             ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
-            ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
-            ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
+            //ModelCore.RegisterSiteVar(WoodyDebris, "Succession.WoodyDebris");
+            //ModelCore.RegisterSiteVar(Litter, "Succession.Litter");
 
             ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
             // FIXME
@@ -394,12 +398,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 AgeCohortSiteVar[site] = sitecohorts[site];
                 DensityCohorts[site] = sitecohorts[site];
-                FineFuels[site] = Litter[site].Mass;
+                //FineFuels[site] = Litter[site].Mass;
             }
 
             ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
             ModelCore.RegisterSiteVar(DensityCohorts, "Succession.CohortsDensity");
-            ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
+           // ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
         }
 
         /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>
@@ -570,9 +574,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public bool Establish(ISpecies species, ActiveSite site)
         {
             ISpeciesDensity spc = PlugIn.SpeciesDensity[species];
-
-            bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished(spc);
-            return Establish;
+            double establishProbability = SpeciesDensity.EstablishProbability[species, PlugIn.ModelCore.Ecoregion[site]];
+            //bool Establish = sitecohorts[site].EstablishmentProbability.HasEstablished(spc);
+            return ModelCore.GenerateUniform() < establishProbability;
         }
 
         

@@ -286,9 +286,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 //hydrology = new Hydrology((ushort)initialSites[key].hydrology.Water);
 
-                PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
-                PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
-                PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                //PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
+                //PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
+                //PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
                 //this.canopylaimax = initialSites[key].CanopyLAImax;
 
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
@@ -321,9 +321,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //subcanopypar = ecoregionInitializer[0].PAR0;
                 //subcanopyparmax = subcanopypar;
 
-                PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
-                PlugIn.Litter[Site] = new Library.Biomass.Pool();
-                PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
+                //PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
+                //PlugIn.Litter[Site] = new Library.Biomass.Pool();
+                //PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
 
                 /*if (SiteOutputName != null)
                 {
@@ -468,7 +468,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public bool Grow(List<IEcoregionClimateVariables> data)
         {
 
-            //FIXME - grow and age the cohorts, maybe calculate establishment?
+            //FIXME - grow and age the cohorts
 
             bool success = true;
 
@@ -1387,21 +1387,21 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         */
-        public double WoodyDebris 
+        /*public double WoodyDebris 
         {
             get
             {
                 return PlugIn.WoodyDebris[Site].Mass;
             }
-        }
+        }*/
 
-        public double Litter 
+        /*public double Litter 
         {
             get
             {
                 return PlugIn.Litter[Site].Mass;
             }
-        }
+        }*/
        
         public  Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent
         {

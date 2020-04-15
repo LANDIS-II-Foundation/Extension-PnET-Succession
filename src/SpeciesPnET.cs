@@ -38,6 +38,21 @@ namespace Landis.Extension.Succession.BiomassPnET
 
 
         #region private variables
+
+        // standard LANDIS-II species parameters
+        private string name;
+        private int index;
+        private int maxSproutAge;
+        private int minSproutAge;
+        private Landis.Core.PostFireRegeneration postfireregeneration;
+        private int maxSeedDist;
+        private int effectiveSeedDist;
+        private float vegReprodProb;
+        private byte fireTolerance;
+        private byte shadeTolerance;
+        int maturity;
+        int longevity;
+
         // Density succession species parameters
         private int _sptype;
         private int _biomassclass;
@@ -46,63 +61,51 @@ namespace Landis.Extension.Succession.BiomassPnET
         private int _totalseed;
         private float _carboncoef;
 
-        private float _co2HalfSatEff;
-        private float _cfracbiomass;
-        private float _kwdlit;
-        private float _dnsc;
-        private float _fracbelowg;
-        private float _fracfol;
-        private float _fractWd;
-        private float _psnagered;
-        private float _h1;
-        private float _h2;
-        private float _h3;
-        private float _h4;
-        private float _slwdel;
-        private float _slwmax;
-        private float _tofol;
-        private float _toroot;
-        private float _halfsat;
-        private float _initialnsc;
-        private float _k;
-        private float _towood;
-        private float _estrad;
-        private float _estmoist;
-        private float _follignin;
-        private bool _preventestablishment;
-        private float _psntopt;
-        private float _q10;
-        private float _psntmin;
-        private float _psntmax;
-        private float _dvpd1;
-        private float _foln;
-        private float _dvpd2;
-        private float _amaxa;
-        private float _amaxb;
-        private float _co2AMaxBEff;
-        private float _maintresp;
-        private float _bfolresp;
-        private string _ozoneSens;
-        private float _coldTol;
-        private string name;
-        private int index;
-        
-        private int  maxSproutAge;
-        private int minSproutAge;
-        private Landis.Core.PostFireRegeneration postfireregeneration;
-        private int maxSeedDist;
-        private int effectiveSeedDist;
-        private float  vegReprodProb;
-        private byte fireTolerance;
-        private byte shadeTolerance;
-        int maturity;
-        int longevity;
-        private float _folNShape;
-        private float _maxFolN;
-        private float _fracFolShape;
-        private float _maxFracFol;
-        private float _o3Coeff;
-        private float _leafOnMinT;
+        //private float _co2HalfSatEff;
+        //private float _cfracbiomass;
+        //private float _kwdlit;
+        //private float _dnsc;
+        //private float _fracbelowg;
+        //private float _fracfol;
+        //private float _fractWd;
+        //private float _psnagered;
+        //private float _h1;
+        //private float _h2;
+        //private float _h3;
+        //private float _h4;
+        //private float _slwdel;
+        //private float _slwmax;
+        //private float _tofol;
+        //private float _toroot;
+        //private float _halfsat;
+        //private float _initialnsc;
+        //private float _k;
+        //private float _towood;
+        //private float _estrad;
+        //private float _estmoist;
+        //private float _follignin;
+        //private bool _preventestablishment;
+        //private float _psntopt;
+        //private float _q10;
+        //private float _psntmin;
+        //private float _psntmax;
+        //private float _dvpd1;
+        //private float _foln;
+        //private float _dvpd2;
+        //private float _amaxa;
+        //private float _amaxb;
+        //private float _co2AMaxBEff;
+        //private float _maintresp;
+        //private float _bfolresp;
+        //private string _ozoneSens;
+        //private float _coldTol;
+        //private float _folNShape;
+        //private float _maxFolN;
+        //private float _fracFolShape;
+        //private float _maxFracFol;
+        //private float _o3Coeff;
+        //private float _leafOnMinT;
+
         # endregion
 
 
@@ -116,59 +119,53 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<int> totalseed;
         private static Landis.Library.Parameters.Species.AuxParm<float> carboncoef;
 
-        private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
+        public static Landis.Library.Parameters.SpeciesEcoregionAuxParm<double> EstablishProbability;
+
+        //private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
         //private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
-        private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
-        private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracbelowg;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h1;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h3;
-        private static Landis.Library.Parameters.Species.AuxParm<float> h4;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
-        private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
-  
-        private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
-        private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
-        private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
-        private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
-        private static Landis.Library.Parameters.Species.AuxParm<float> k;
-        
-        private static Landis.Library.Parameters.Species.AuxParm<float> towood;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
-        private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
-        private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
-        private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
-
-
-        private static Landis.Library.Parameters.Species.AuxParm<float> q10;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
-        private static Landis.Library.Parameters.Species.AuxParm<float> psntmax;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
-        private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
-        private static Landis.Library.Parameters.Species.AuxParm<float> foln;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
-        private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
-        private static Landis.Library.Parameters.Species.AuxParm<float> co2AMaxBEff;
-        
-        private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
-        private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
-        private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
-
-
-        private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
-
-        private static Landis.Library.Parameters.Species.AuxParm<float> folNShape;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
-        private static Landis.Library.Parameters.Species.AuxParm<float> fracFolShape;
-        private static Landis.Library.Parameters.Species.AuxParm<float> maxFracFol;
-        private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
-        private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> fracbelowg;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> fracfol;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> fractWd;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> psnagered;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> h1;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> h2;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> h3;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> h4;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
+        //private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> k;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> towood;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
+        //private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> q10;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> psntmax;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> dvpd1;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> dvpd2;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> foln;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> co2AMaxBEff;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
+        //private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> folNShape;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> fracFolShape;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> maxFracFol;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
         #endregion
 
         public SpeciesDensity()
@@ -910,6 +907,33 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return names;
             }
         }
-       
+
+        public static void ChangeDynamicParameters(int year)
+        {
+
+            if (DynamicInputs.AllData.ContainsKey(year))
+            {
+                EstablishProbability = new Landis.Library.Parameters.SpeciesEcoregionAuxParm<double>(PlugIn.ModelCore.Species, PlugIn.ModelCore.Ecoregions);
+
+                DynamicInputs.TimestepData = DynamicInputs.AllData[year];
+
+                foreach (ISpecies species in PlugIn.ModelCore.Species)
+                {
+                    foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+                    {
+                        if (!ecoregion.Active)
+                            continue;
+
+                        if (DynamicInputs.TimestepData[species.Index, ecoregion.Index] == null)
+                            continue;
+
+                        EstablishProbability[species, ecoregion] = DynamicInputs.TimestepData[species.Index, ecoregion.Index].ProbEst;
+                    }
+                }
+            }
+
+        }
+
+
     }
 }

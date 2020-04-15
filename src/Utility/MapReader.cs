@@ -18,7 +18,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         static private double minLitter = 0;
         static private double minWoodyDebris = 0;
 
-        public static void ReadWoodyDebrisFromMap(string path)
+        /*public static void ReadWoodyDebrisFromMap(string path)
         {
             IInputRaster<DoublePixel> map = MakeDoubleMap(path);
 
@@ -40,9 +40,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                 }
             }
-        }
+        }*/
 
-        public static void ReadLitterFromMap(string path)
+        /*public static void ReadLitterFromMap(string path)
         {
             IInputRaster<DoublePixel> map = MakeDoubleMap(path);
 
@@ -65,7 +65,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                 }
             }
-        }
+        }*/
 
         private static IInputRaster<DoublePixel> MakeDoubleMap(string path)
         {
