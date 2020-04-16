@@ -324,6 +324,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             EcoregionPnET.Initialize();
 
+            string DynamicEcoregionFile = ((Parameter<string>)GetParameter(Names.DynamicEcoregionFile)).Value;
+            DynamicEcoregions.Initialize(DynamicEcoregionFile, false);
+            EcoregionPnET.EcoregionDynamicChange(0);
+
             string DynamicInputFile = ((Parameter<string>)GetParameter(Names.DynamicInputFile)).Value;
             DynamicInputs.Initialize(DynamicInputFile, false);
             SpeciesDensity.ChangeDynamicParameters(0);  // Year 0
@@ -375,6 +379,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Convert Density cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
 
+            /* GSO test
+            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
+            {
+                IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+                double[] GSOset = { EcoregionPnET.GSO1[ecoregion_pnet], EcoregionPnET.GSO2[ecoregion_pnet], EcoregionPnET.GSO3[ecoregion_pnet], EcoregionPnET.GSO4[ecoregion_pnet] };
+            }
+            */
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {

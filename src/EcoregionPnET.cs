@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Landis.Library.Climate;
+using System.Net.NetworkInformation;
 
 namespace Landis.Extension.Succession.BiomassPnET 
 {
@@ -49,6 +50,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
+
+        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO1;
+        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO2;
+        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO3;
+        public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO4;
         #endregion
 
         #region accessors for private static variables
@@ -363,6 +369,35 @@ namespace Landis.Extension.Succession.BiomassPnET
             //this._leakageFrostDepth = leakageFrostDepth[ecoregion];
             //this._winterSTD = winterSTD[ecoregion];
           
+        }
+
+        public static void EcoregionDynamicChange(int year)
+        {
+
+            if (DynamicEcoregions.EcoRegData.ContainsKey(year))
+            {
+                GSO1 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(PlugIn.ModelCore.Ecoregions);
+                GSO2 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(PlugIn.ModelCore.Ecoregions);
+                GSO3 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(PlugIn.ModelCore.Ecoregions);
+                GSO4 = new Landis.Library.Parameters.Ecoregions.AuxParm<double>(PlugIn.ModelCore.Ecoregions);
+
+                DynamicEcoregions.TimestepData = DynamicEcoregions.EcoRegData[year];
+
+                foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+                {
+                    if (!ecoregion.Active)
+                        continue;
+
+                    if (DynamicEcoregions.TimestepData[ecoregion.Index] == null)
+                        continue;
+
+                    GSO1[ecoregion] = DynamicEcoregions.TimestepData[ecoregion.Index].GSO1;
+                    GSO2[ecoregion] = DynamicEcoregions.TimestepData[ecoregion.Index].GSO2;
+                    GSO3[ecoregion] = DynamicEcoregions.TimestepData[ecoregion.Index].GSO3;
+                    GSO4[ecoregion] = DynamicEcoregions.TimestepData[ecoregion.Index].GSO4;
+                }
+            }
+
         }
     }
 }

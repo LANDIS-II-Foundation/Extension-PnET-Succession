@@ -1,0 +1,6 @@
+LandisData  "Dynamic Ecoregion Input Data"
+
+>> Year Ecoregion   GSO1    GSO2    GSO3    GSO4
+>>  --- ---------   ----    ----    ----    ----
+	0	eco0		0.0		0.0		0.0		0.0			
+	0	eco1		0.35	0.55	0.65	0.8

@@ -12,7 +12,8 @@ InitialCommunitiesMap   initial-communities.img
 
 DensitySpeciesParameters	density_speciesparameters.txt		
 											
-EcoregionParameters	EcoregionParameters_density.txt	
+EcoregionParameters		EcoregionParameters_density.txt	
+DynamicEcoregionFile 	DynamicEcoregionInput.txt
 
 DynamicInputFile	establishment_probability.txt
    								

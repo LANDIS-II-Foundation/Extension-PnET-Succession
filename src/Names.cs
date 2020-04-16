@@ -37,6 +37,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public const string CohortBinSize = "CohortBinSize";
         public const string BiomassVariables = "BiomassVariableFile";
         public const string DynamicInputFile = "DynamicInputFile";
+        public const string DynamicEcoregionFile = "DynamicEcoregionFile";
 
         //Ecoregion parameters
         //public const string LeakageFrac = "LeakageFrac";
