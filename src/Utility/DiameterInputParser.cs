@@ -43,10 +43,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //---------------------------------------------------------------------
             //Read in establishment probability data:
-            InputVar<int>    age       = new InputVar<int>("Age to apply diameter");
             InputVar<string> ecoregionName = new InputVar<string>("Ecoregion Name");
             InputVar<string> speciesName = new InputVar<string>("Species Name");
-            InputVar<int> diameter = new InputVar<int>("Diameter");
+            InputVar<int> age = new InputVar<int>("Age to apply diameter");
+            InputVar<double> diameter = new InputVar<double>("Diameter");
             //InputVar<Dictionary<int,double>> diameterTable = new InputVar<Dictionary<int,double>>("Diameters by age");
 
 
@@ -70,12 +70,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                     speciesTable.Add(species.Name, diameterInputRecord);
                     allData.Add(ecoregion.Name, speciesTable);
                     PlugIn.ModelCore.UI.WriteLine("  Diameter Input Parser:  Add new ecoregion = {0}.", ecoregion.Name);
+                    PlugIn.ModelCore.UI.WriteLine("  Diameter Input Parser:  Add new species = {0}.", species.Name);
                 }
                 else
                 {
                     if(allData[ecoregion.Name].ContainsKey(species.Name))
                     {
                         // Add age & diameter to existing species table
+                       IDiameterInputRecord diameterInputRecord = allData[ecoregion.Name][species.Name];
+                       diameterInputRecord.Diameters.Add(age.Value, diameter.Value);
+                       allData[ecoregion.Name][species.Name] = diameterInputRecord;
                     }
                     else
                     {
@@ -83,13 +87,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Dictionary<string, IDiameterInputRecord> speciesTable = new Dictionary<string, IDiameterInputRecord>();
                         IDiameterInputRecord diameterInputRecord = new DiameterInputRecord();
                         diameterInputRecord.Diameters.Add(age.Value, diameter.Value);
-                        speciesTable.Add(species.Name, diameterInputRecord);
-                        //allData[ecoregion.Name].Values.A
+                        allData[ecoregion.Name].Add(species.Name, diameterInputRecord);
+                        PlugIn.ModelCore.UI.WriteLine("  Diameter Input Parser:  Add new species = {0}.", species.Name);
                     }
                 }
-
-
-
                 GetNextLine();
 
             }

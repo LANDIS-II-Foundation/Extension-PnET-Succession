@@ -25,9 +25,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static IEcoregionPnET ecoregion;
         public static ActiveSite site;
 
-        public static AddWoodyDebris addwoodydebris;
+        //public static AddWoodyDebris addwoodydebris;
         
-        public static AddLitter addlitter;
+        //public static AddLitter addlitter;
         
         //private float biomassmax;
         private float biomass; // root + wood
@@ -230,9 +230,24 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                //FIXME
-                // Provide the function for converting treenumber and age to diameter
-                return 1;
+                //FIXME - this seems to be working
+                float diameter = 0;
+                Dictionary<int,double> diameters = DiameterInputs.AllData[ecoregion.Name][species.Name].Diameters;
+                if(diameters.ContainsKey(age))
+                {
+                    diameter = (float)diameters[age];
+                }
+                else
+                {
+                    for (int i =age;i >0; i--)
+                    {
+                        if (diameters.ContainsKey(i))
+                        {
+                            diameter = (float)diameters[i];
+                        }
+                    }
+                }
+                return diameter;
             }
         }
 
@@ -440,16 +455,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             }*/
         }
 
-        /*
+        
         // Makes sure that litters are allocated to the appropriate site
         public static void SetSiteAccessFunctions(SiteCohorts sitecohorts)
         {
-             Cohort.addlitter = sitecohorts.AddLitter;
-             Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
+             //Cohort.addlitter = sitecohorts.AddLitter;
+             //Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
              Cohort.ecoregion = sitecohorts.Ecoregion;
              Cohort.site = sitecohorts.Site;
         }
-        */
+        
 
         /*public void CalculateDefoliation(ActiveSite site, int SiteAboveGroundBiomass)
         {

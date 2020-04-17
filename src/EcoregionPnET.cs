@@ -15,41 +15,41 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         #region private variables
         private Landis.Core.IEcoregion ecoregion;
-        private float _precintconst;
-        private float _preclossfrac;
-        private float _rootingdepth;
-        private string _soiltype;
-        private float _leakagefrac;
-        private float _runofffrac;
-        private float _fieldcap;
-        private float _wiltpnt;
-        private float _porosity;
-        private float _snowsublimfrac;
+        //private float _precintconst;
+        //private float _preclossfrac;
+        //private float _rootingdepth;
+        //private string _soiltype;
+        //private float _leakagefrac;
+        //private float _runofffrac;
+        //private float _fieldcap;
+        //private float _wiltpnt;
+        //private float _porosity;
+        //private float _snowsublimfrac;
         private float _latitude;
-        private int _precipEvents;
-        private float _leakageFrostDepth;
-        private float _winterSTD;
-        IEcoregionClimateVariables _variables;
+        //private int _precipEvents;
+        //private float _leakageFrostDepth;
+        //private float _winterSTD;
+        //IEcoregionClimateVariables _variables;
         #endregion
 
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
 
-        private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionClimateVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionClimateVariables>>();
+        //private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionClimateVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionClimateVariables>>();
         private static Dictionary<IEcoregion, IEcoregionPnET> AllEcoregions;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> runofffrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<string> soiltype;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> rootingdepth;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> precintconst;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> preclossfrac;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakagefrac;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> runofffrac;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> snowsublimfrac;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<string> climateFileName;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> latitude;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
-        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
+        //private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
 
         public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO1;
         public static Landis.Library.Parameters.Ecoregions.AuxParm<double> GSO2;
@@ -76,7 +76,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         #region accessors for private variables
 
-        public IEcoregionClimateVariables Variables
+        /*public IEcoregionClimateVariables Variables
         { 
             get
             {
@@ -87,9 +87,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 _variables = value;
             }
         
-        }
+        }*/
 
-        public float FieldCap
+        /*public float FieldCap
         {
             get
             {
@@ -98,8 +98,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             set {
                 _fieldcap = value;
             }
-        }
-        public float WiltPnt
+        }*/
+        /*public float WiltPnt
         {
             get
             {
@@ -108,8 +108,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             set {
                 _wiltpnt = value;
             }
-        }
-        public float Porosity
+        }*/
+        /*public float Porosity
         {
             get
             {
@@ -119,48 +119,48 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 _porosity = value;
             }
-        }
+        }*/
          
-        public float LeakageFrac
+        /*public float LeakageFrac
         {
             get {
                 return _leakagefrac;
             }
-        }
-        public float RunoffFrac
+        }*/
+        /*public float RunoffFrac
         {
             get
             {
                 return _runofffrac;
             }
-        }
-        public float PrecIntConst
+        }*/
+        /*public float PrecIntConst
         {
             get
             {
                 return _precintconst;
             }
-        }
-        public float RootingDepth {
+        }*/
+        /*public float RootingDepth {
             get {
                 return _rootingdepth;
             }
-        }
+        }*/
         
-        public string SoilType
+        /*public string SoilType
         {
             get
             {
                 return _soiltype;
             }
-        }
-        public float PrecLossFrac
+        }*/
+        /*public float PrecLossFrac
         {
             get
             {
                 return _preclossfrac;
             }
-        }
+        }*/
         
         public string Description
         {
@@ -197,13 +197,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Name;
             }
         }
-        public float SnowSublimFrac
+        /*public float SnowSublimFrac
         {
             get
             {
                 return _snowsublimfrac;
             }
-        }
+        }*/
         public float Latitude
         {
             get
@@ -211,27 +211,27 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _latitude;
             }
         }
-        public int PrecipEvents
+        /*public int PrecipEvents
         {
             get
             {
                 return _precipEvents;
             }
-        }
-        public float LeakageFrostDepth
+        }*/
+        /*public float LeakageFrostDepth
         {
             get
             {
                 return _leakageFrostDepth;
             }
-        }
-        public float WinterSTD
+        }*/
+        /*public float WinterSTD
         {
             get
             {
                 return _winterSTD;
             }
-        }
+        }*/
         #endregion
 
         public static List<string> ParameterNames
@@ -246,7 +246,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public static List<IEcoregionClimateVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end, Climate.Phase spinupOrfuture)
+        /*public static List<IEcoregionClimateVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end, Climate.Phase spinupOrfuture)
         {
             // Monthly simulation data untill but not including end
             List<IEcoregionClimateVariables> data = new List<IEcoregionClimateVariables>();
@@ -282,7 +282,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     List<ISpeciesDensity> species = PlugIn.SpeciesDensity.AllSpecies.ToList();
 
-                    IEcoregionClimateVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
+                    //IEcoregionClimateVariables ecoregion_variables = new ClimateRegionPnETVariables(monthlyData, date, wythers, dtemp, species, ecoregion.Latitude);
 
                     all_values[ecoregion].Add(date, ecoregion_variables);
 
@@ -292,9 +292,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 date = date.AddMonths(1);
             }
             return data;
-        }
+        }*/
 
-        public static List<IEcoregionClimateVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
+        /*public static List<IEcoregionClimateVariables> GetData(IEcoregionPnET ecoregion, DateTime start, DateTime end)
         {
             // Monthly simulation data untill but not including end
             List<IEcoregionClimateVariables> data = new List<IEcoregionClimateVariables>();
@@ -321,12 +321,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 date = date.AddMonths(1);
             }
             return data;
-        }
+        }*/
 
         public static void Initialize()
         {
             //soiltype = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("SoilType");
-            climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("ClimateFileName");
+            //climateFileName = (Landis.Library.Parameters.Ecoregions.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("ClimateFileName");
             //rootingdepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("RootingDepth", 0, 1000);
             //precintconst = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecIntConst", 0, 1);
             //preclossfrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("PrecLossFrac", 0, 1);
@@ -347,12 +347,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AllEcoregions.Add(ecoregion, new EcoregionPnET(ecoregion));
             }
 
-            all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionClimateVariables>>();
-            foreach (IEcoregionPnET ecoregion in EcoregionPnET.AllEcoregions.Values)
-            {
-                all_values[ecoregion] = new Dictionary<DateTime, IEcoregionClimateVariables>();
+            //all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionClimateVariables>>();
+            //foreach (IEcoregionPnET ecoregion in EcoregionPnET.AllEcoregions.Values)
+           // {
+            //    all_values[ecoregion] = new Dictionary<DateTime, IEcoregionClimateVariables>();
+            //}
             }
-        }
 
         public EcoregionPnET(Landis.Core.IEcoregion ecoregion)
         {

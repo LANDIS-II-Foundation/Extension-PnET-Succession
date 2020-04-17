@@ -20,7 +20,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //float WinterSTD { get; }
         
        
-        IEcoregionClimateVariables Variables { get; set; }
+        //IEcoregionClimateVariables Variables { get; set; }
         
     }
 }

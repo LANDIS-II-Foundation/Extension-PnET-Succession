@@ -9,29 +9,20 @@ namespace Landis.Extension.Succession.BiomassPnET
 
     public class DiameterInputs
     {
-        private static Dictionary<int, IDiameterInputRecord> allData;
+        private static Dictionary<string,Dictionary<string, IDiameterInputRecord>> allData;
         private static IDiameterInputRecord timestepData;
 
         public DiameterInputs()
         {
         }
 
-        public static Dictionary<int, IDiameterInputRecord> AllData
+        public static Dictionary<string,Dictionary<string, IDiameterInputRecord>> AllData
         {
             get {
                 return allData;
             }
         }
         //---------------------------------------------------------------------
-        public static IDiameterInputRecord TimestepData
-        {
-            get {
-                return timestepData;
-            }
-            set {
-                timestepData = value;
-            }
-        }
 
         public static void Write()
         {
@@ -42,8 +33,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (!ecoregion.Active)
                         continue;
 
-                    PlugIn.ModelCore.UI.WriteLine("Spp={0}, Eco={1}, Pest={2:0.0}.", species.Name, ecoregion.Name,
-                        timestepData.Diameters);
+                    PlugIn.ModelCore.UI.WriteLine("Spp={0}, Eco={1}, Diameters={2:0.0}.", species.Name, ecoregion.Name,
+                        allData[ecoregion.Name][species.Name].Diameters);
 
                 }
             }
@@ -56,7 +47,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             DiameterInputsParser parser = new DiameterInputsParser();
             try
             {
-                allData = Landis.Data.Load<Dictionary<int, IDiameterInputRecord>>(filename, parser);
+                allData = Landis.Data.Load<Dictionary<string,Dictionary<string, IDiameterInputRecord>>>(filename, parser);
             }
             catch (FileNotFoundException)
             {
@@ -64,7 +55,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.ApplicationException(mesg);
             }
 
-            timestepData = allData[0];
         }
     }
 

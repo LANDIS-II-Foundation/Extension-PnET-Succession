@@ -315,7 +315,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     initialSites.Add(key, this);
                 }
-                List<IEcoregionClimateVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
+                //List<IEcoregionClimateVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
                 //hydrology = new Hydrology((ushort)Ecoregion.FieldCap);
                 //watermax = (ushort)hydrology.Water;
                 //subcanopypar = ecoregionInitializer[0].PAR0;
@@ -395,7 +395,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age));
 
-            Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionClimateVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionClimateVariables>>(PlugIn.ModelCore.Ecoregions);
+                //Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionClimateVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionClimateVariables>>(PlugIn.ModelCore.Ecoregions);
 
                 while (date.CompareTo(StartDate) < 0)
                 {
@@ -412,9 +412,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     // Simulation time runs untill the next cohort is added
                     DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - sortedAgeCohorts[0].Age), 1, 15);
 
-                    var climate_vars = usingClimateLibrary ? EcoregionPnET.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Phase.SpinUp_Climate) : EcoregionPnET.GetData(Ecoregion, date, EndDate);
+                    //var climate_vars = usingClimateLibrary ? EcoregionPnET.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Phase.SpinUp_Climate) : EcoregionPnET.GetData(Ecoregion, date, EndDate);
 
-                    Grow(climate_vars);
+                    Grow();
 
                     date = EndDate;
 
@@ -465,15 +465,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             return (float)Math.Max(0.0, Math.Min(1.0, (Tave - 2) / -7));
         }
 
-        public bool Grow(List<IEcoregionClimateVariables> data)
+        public bool Grow()
         {
 
             //FIXME - grow and age the cohorts
 
+            // Testing access to cohort attributes
+            Cohort.SetSiteAccessFunctions(this);
+            for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
+            {
+                float checkDiameter = AllCohorts[cohort].Diameter;
+                float checkBiomass = AllCohorts[cohort].Biomass;
+                int checkAge = AllCohorts[cohort].Age;
+                float checkDensity = AllCohorts[cohort].TreeNumber;
+
+            }
+
             bool success = true;
 
             /*establishmentProbability.ResetPerTimeStep();
-            Cohort.SetSiteAccessFunctions(this);
+            
 
             canopylaimax = byte.MinValue;
 

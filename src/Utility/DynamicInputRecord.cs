@@ -19,8 +19,6 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
 
         private double probEst;
-        private int anpp_max_spp;
-        private int b_max_spp;
 
         public double ProbEst
         {

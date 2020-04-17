@@ -211,9 +211,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             ecoregionparameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
-
-
-
+                       
             //---------------DisturbanceReductionsParameterFile
             Parameter<string> DisturbanceReductionsParameterFile;
             if (TryGetParameter(Names.DisturbanceReductions, out DisturbanceReductionsParameterFile))
@@ -230,6 +228,16 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             BiomassParamParser bioparser = new BiomassParamParser();
             Landis.Data.Load<BiomassParam>(BiomassVariableFile, bioparser);
+
+            //----------------Read diameter growth tables
+
+            string DiameterFile = GetParameter(Names.DiameterInputFile).Value;
+            if (System.IO.File.Exists(DiameterFile) == false) throw new System.Exception("File not found " + DiameterFile);
+
+            //DiameterInputsParser diameterParser = new DiameterInputsParser();
+            //Landis.Data.Load<Dictionary<string, Dictionary<string, IDiameterInputRecord>>>(DiameterFile, diameterParser);
+
+
 
             /*//---------------SaxtonAndRawlsParameterFile
             if (parameters.ContainsKey(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters) == false)
@@ -330,6 +338,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             string DynamicInputFile = ((Parameter<string>)GetParameter(Names.DynamicInputFile)).Value;
             DynamicInputs.Initialize(DynamicInputFile, false);
+
+            string DiameterInputFile = ((Parameter<string>)GetParameter(Names.DiameterInputFile)).Value;
+            DiameterInputs.Initialize(DiameterInputFile, false);
+
             SpeciesDensity.ChangeDynamicParameters(0);  // Year 0
             //Hydrology.Initialize();
 
@@ -537,11 +549,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             DateTime EndDate = date.AddYears(years);
 
-            IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+            //IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
-            List<IEcoregionClimateVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
+            //List<IEcoregionClimateVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
 
-            sitecohorts[site].Grow(climate_vars);
+            sitecohorts[site].Grow();
 
             Date = EndDate;
              

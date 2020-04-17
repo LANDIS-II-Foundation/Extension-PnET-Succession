@@ -32,6 +32,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public DiameterInputRecord()
         {
+            this.Diameters = new Dictionary<int, double>();
         }
 
     }
