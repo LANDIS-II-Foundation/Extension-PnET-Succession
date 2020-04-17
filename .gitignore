@@ -210,3 +210,5 @@ FakesAssemblies/
 /src/.vs
 /deploy/examples/biomass-Pnet-succession-example
 /src/PnET-Succession-Density.csproj
+/src/PnET-Succession.sln
+/test/density/Landis-log.txt
