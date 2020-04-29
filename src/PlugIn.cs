@@ -8,6 +8,7 @@
 //       to InitialClimateLibrary() in Plugin.Initialize().
 //   (2) Modified EcoregionPnET to add GetClimateRegionData() which grabs climate data from ClimateRegionData.  This uses an intermediate
 //       MonthlyClimateRecord instance which is similar to ObservedClimate.
+//       MonthlyClimateRecord instance which is similar to ObservedClimate.
 //   (3) Added ClimateRegionPnETVariables class which is a copy of the EcoregionPnETVariables class which uses MonthlyClimateRecord rather than
 //       ObserverdClimate. I had hoped to use the same class, but the definition of IObservedClimate prevents MonthlyClimateRecord from implementing it.
 //       IMPORTANT NOTE: The climate library precipation is in cm/month, so that it is converted to mm/month in MonthlyClimateRecord.
@@ -32,6 +33,8 @@ using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Diagnostics;
 
 
 namespace Landis.Extension.Succession.BiomassPnET
@@ -171,6 +174,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             : base(Names.ExtensionName)
         {
             LocalOutput.PNEToutputsites = Names.PNEToutputsites;
+
+            // The number of thread workers to use in succession routines that have been optimized. Should
+            // more or less match the number of cores in the computer thats running LANDIS-II's processor
+            this.ThreadCount = 6;
         }
 
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
@@ -537,7 +544,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
 
             sitecohorts[site].Grow(climate_vars);
-
             Date = EndDate;
              
         }
