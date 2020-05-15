@@ -68,6 +68,10 @@
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>
     </Reference>
+    <Reference Include="Landis.Library.InitialCommunity-vBiomassCohorts">
+      <!--<HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.InitialCommunity-vBiomassCohorts.dll</HintPath>-->
+      <HintPath>..\..\brmiranda\Support-Library-Dlls-v7\Landis.Library.InitialCommunity-vBiomassCohorts.dll</HintPath>
+    </Reference>
     <Reference Include="Landis.Library.Metadata-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
