@@ -7,14 +7,14 @@ namespace Landis.Extension.Succession.BiomassPnET
     public interface ISpeciesDensity : Landis.Core.ISpecies
     {
 
-        /*
+        
         //FIXME(JSF) - Add any species parameters not defined in the standard species.txt input file
 
         // Species class for default diameter growth models
         int SpType { get; }
 
         // Species class for aboveground biomass estimation coefficients
-        int BiomassCoef { get; }
+        int BiomassClass { get; }
 
         // Maximum species diameter (cm). Only used if default diameter growth models are used.
         float MaxDia { get; }
@@ -27,7 +27,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Coefficient used to estimate carbon content within biomass
         float CarbonCoef { get; }
-        */
+        
         
         // Carbon fraction in biomass 
         //float CFracBiomass { get; }

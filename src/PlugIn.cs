@@ -32,13 +32,17 @@ using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Landis.Library.DensityCohorts;
+//using Landis.Library.AgeOnlyCohorts;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
+        //================================== Density variables ================================
+        //public static ISiteVar<float> SiteRD;
         public static SpeciesDensity SpeciesDensity;
+        //=====================================================================================
         //public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
         //public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
         //public static ISiteVar<Double> FineFuels;
@@ -142,7 +146,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return value;
         }
 
-        public void DeathEvent(object sender, Landis.Library.BiomassCohorts.DeathEventArgs eventArgs)
+        public void DeathEvent(object sender, Landis.Library.DensityCohorts.DeathEventArgs eventArgs)
         {
             ExtensionType disturbanceType = eventArgs.DisturbanceType;
             if (disturbanceType != null)
@@ -299,6 +303,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             //Litter = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             //WoodyDebris = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.Biomass.Pool>();
             sitecohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            //SiteRD = ModelCore.Landscape.NewSiteVar<float>();
+            //SiteVars.Initialize();
             //FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
             Landis.Utilities.Directory.EnsureExists("output");
 
@@ -331,7 +337,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             SpeciesDensity = new SpeciesDensity();
 
             EcoregionPnET.Initialize();
-
+            SiteVars.Initialize();
             string DynamicEcoregionFile = ((Parameter<string>)GetParameter(Names.DynamicEcoregionFile)).Value;
             DynamicEcoregions.Initialize(DynamicEcoregionFile, false);
             EcoregionPnET.EcoregionDynamicChange(0);
@@ -389,20 +395,22 @@ namespace Landis.Extension.Succession.BiomassPnET
             //    MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
 
             // Convert Density cohorts to biomasscohorts
-            ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
+            ISiteVar<Landis.Library.DensityCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.DensityCohorts.ISiteCohorts>();
 
-            /* GSO test
+            //GSO test
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
-                double[] GSOset = { EcoregionPnET.GSO1[ecoregion_pnet], EcoregionPnET.GSO2[ecoregion_pnet], EcoregionPnET.GSO3[ecoregion_pnet], EcoregionPnET.GSO4[ecoregion_pnet] };
+                
+                
+                //IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
+                //double[] GSOset = { EcoregionPnET.GSO1[ecoregion_pnet], EcoregionPnET.GSO2[ecoregion_pnet], EcoregionPnET.GSO3[ecoregion_pnet], EcoregionPnET.GSO4[ecoregion_pnet] };
             }
-            */
+            
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
                 biomassCohorts[site] = sitecohorts[site];
-
+                
                 if (sitecohorts[site] != null && biomassCohorts[site] == null)
                 {
                     throw new System.Exception("Cannot convert Density SiteCohorts to biomass site cohorts");
@@ -419,9 +427,15 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                AgeCohortSiteVar[site] = sitecohorts[site];
+                foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in sitecohorts[site])
+                {
+                    Cohort.SetSiteAccessFunctions(sitecohorts[site]);
+                    SiteVars.TotalSiteRD(speciesCohorts, site);
+                }
+                float tempRD = SiteVars.SiteRD[site];
                 DensityCohorts[site] = sitecohorts[site];
                 //FineFuels[site] = Litter[site].Mass;
+
             }
 
             ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
@@ -552,9 +566,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             //IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
             //List<IEcoregionClimateVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
-
+            
             sitecohorts[site].Grow();
-
+           
             Date = EndDate;
              
         }
@@ -615,6 +629,7 @@ namespace Landis.Extension.Succession.BiomassPnET
            
         }
         //---------------------------------------------------------------------
+
 
     }
 }

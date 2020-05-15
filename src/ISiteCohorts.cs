@@ -4,7 +4,7 @@ using Landis.Core;
 
 namespace Landis.Extension.Succession.BiomassPnET 
 {
-    public interface ISiteCohorts : Landis.Library.BiomassCohorts.ISiteCohorts
+    public interface ISiteCohorts : Landis.Library.DensityCohorts.ISiteCohorts
     {
 
         //float[] NetPsn { get; }
@@ -28,7 +28,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         
         //Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies { get; }
 
-        Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
+        //Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies { get; }
+
+        Landis.Library.Parameters.Species.AuxParm<int> SpeciesSeed { get; }
 
         //Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies { get; }
 
@@ -38,7 +40,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         //float BiomassSum { get; }
 
-        float AbovegroundBiomassSum { get; }
+        //float AbovegroundBiomassSum { get; }
 
         //float WoodySenescenceSum { get; }
 
@@ -53,6 +55,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         //double WoodyDebris { get; }
 
         int AgeMax { get; }
+
+        int ShadeMax { get; }
 
         //ushort WaterMax { get; }
 

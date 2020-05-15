@@ -1,7 +1,7 @@
 ﻿using Landis.Core;
 using System.Collections.Generic;
 using System.Linq;
-
+using Landis.Library.DensityCohorts;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
