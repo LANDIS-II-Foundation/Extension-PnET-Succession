@@ -60,19 +60,19 @@ namespace Landis.Library.DensityCohorts
         /// <summary>
         /// Computes the total biomass for all the cohorts at a site.
         /// </summary>
-        public static int ComputeBiomass(ISiteCohorts siteCohorts)
+        /*public static int ComputeBiomass(ISiteCohorts siteCohorts)
         {
             int youngBiomass;
             return ComputeBiomass(siteCohorts, out youngBiomass);
         }
-
+        */
         //---------------------------------------------------------------------
 
         /// <summary>
         /// Computes the total biomass for all the cohorts at a site, and the
         /// total biomass for all the young cohorts.
         /// </summary>
-        public static int ComputeBiomass(ISiteCohorts siteCohorts,
+        /*public static int ComputeBiomass(ISiteCohorts siteCohorts,
                                          out int      youngBiomass)
         {
             youngBiomass = 0;
@@ -85,14 +85,14 @@ namespace Landis.Library.DensityCohorts
                 }
             }
             return totalBiomass;
-        }
+        }*/
 
         //---------------------------------------------------------------------
 
         /// <summary>
         /// Computes the total biomass for all the cohorts, not including young cohorts.
         /// </summary>
-        public static int ComputeNonYoungBiomass(ISiteCohorts siteCohorts)
+        /*public static int ComputeNonYoungBiomass(ISiteCohorts siteCohorts)
         {
             if (siteCohorts == null)
                 return 0;
@@ -105,7 +105,7 @@ namespace Landis.Library.DensityCohorts
             }
             return totalBiomass;
         }
-
+        */
 
     }
 }

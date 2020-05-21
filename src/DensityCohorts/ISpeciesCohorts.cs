@@ -8,7 +8,7 @@ namespace Landis.Library.DensityCohorts
         /// The biomass cohorts for a particular species at a site.
         /// </summary>
         public interface ISpeciesCohorts
-             : Landis.Library.Cohorts.ISpeciesCohorts<Landis.Library.DensityCohorts.ICohort>
+             : Landis.Library.Cohorts.ISpeciesCohorts<Landis.Library.DensityCohorts.ICohort>, Landis.Library.Cohorts.ISpeciesCohorts<Landis.Library.BiomassCohorts.ICohort>
         {
         }
     

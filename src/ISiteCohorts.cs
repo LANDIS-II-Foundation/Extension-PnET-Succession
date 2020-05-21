@@ -4,7 +4,7 @@ using Landis.Core;
 
 namespace Landis.Extension.Succession.BiomassPnET 
 {
-    public interface ISiteCohorts : Landis.Library.DensityCohorts.ISiteCohorts
+    public interface ISiteCohorts //: Landis.Library.DensityCohorts.ISiteCohorts
     {
 
         //float[] NetPsn { get; }

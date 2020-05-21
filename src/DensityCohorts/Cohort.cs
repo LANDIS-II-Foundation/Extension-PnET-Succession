@@ -13,7 +13,7 @@ namespace Landis.Library.DensityCohorts
     /// A species cohort with density information.
     /// </summary>
     public class Cohort
-        : Landis.Library.AgeOnlyCohorts.ICohort, Landis.Library.DensityCohorts.ICohort
+        : Landis.Library.AgeOnlyCohorts.ICohort,Landis.Library.BiomassCohorts.ICohort, Landis.Library.DensityCohorts.ICohort
     {
 
         private ISpecies species;
@@ -46,12 +46,12 @@ namespace Landis.Library.DensityCohorts
 
         //---------------------------------------------------------------------
 
-        //public int Biomass
-        //{
-        //    get {
-        //        return data.Biomass;
-        //    }
-        //}
+        public int Biomass
+        {
+            get {
+                return 1000;
+            }
+        }
 
         //---------------------------------------------------------------------
 
@@ -258,11 +258,12 @@ namespace Landis.Library.DensityCohorts
 
         //---------------------------------------------------------------------
 
-        //public int ComputeNonWoodyBiomass(ActiveSite site)
-        //{
-        //    Percentage nonWoodyPercentage = Cohorts.BiomassCalculator.ComputeNonWoodyPercentage(this, site);
-        //    return (int) (data.Biomass * nonWoodyPercentage);
-        //}
+        public int ComputeNonWoodyBiomass(ActiveSite site)
+        {
+            //Percentage nonWoodyPercentage = Cohorts.BiomassCalculator.ComputeNonWoodyPercentage(this, site);
+            //return (int) (data.Biomass * nonWoodyPercentage);
+            return 0;
+        }
 
         //---------------------------------------------------------------------
 

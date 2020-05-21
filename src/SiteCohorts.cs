@@ -15,7 +15,8 @@ using Landis.Library.DensityCohorts;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
-    public class SiteCohorts : ISiteCohorts, Landis.Library.DensityCohorts.ISiteCohorts, Landis.Library.BiomassCohorts.ISiteCohorts, Landis.Library.AgeOnlyCohorts.ISiteCohorts
+    //public class SiteCohorts : ISiteCohorts, Landis.Library.DensityCohorts.ISiteCohorts, Landis.Library.BiomassCohorts.ISiteCohorts, Landis.Library.AgeOnlyCohorts.ISiteCohorts
+    public class SiteCohorts : ISiteCohorts, Landis.Library.BiomassCohorts.ISiteCohorts, Landis.Library.AgeOnlyCohorts.ISiteCohorts
     {
         //private byte canopylaimax;
         //private ushort watermax;
@@ -341,7 +342,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 bool densityProvided = false;
                 foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                 {
-                    foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
+                     foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
                     {
 
                         //FIXME
@@ -1212,7 +1213,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public int ReduceOrKillBiomassCohorts(Landis.Library.DensityCohorts.IDisturbance disturbance)
+        public int ReduceOrKillBiomassCohorts(Landis.Library.BiomassCohorts.IDisturbance disturbance)
         {
             List<int> reduction = new List<int>();
 
@@ -1224,7 +1225,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 for (int c =0;c< species_cohort.Count(); c++)
                 {
-                    Landis.Library.DensityCohorts.ICohort cohort = species_cohort[c];
+                    Landis.Library.BiomassCohorts.ICohort cohort = (Library.BiomassCohorts.ICohort) species_cohort[c];
 
                     // Disturbances return reduction in aboveground biomass
                     int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
@@ -1288,13 +1289,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public Landis.Library.DensityCohorts.ISpeciesCohorts this[ISpecies species]
+        public Landis.Library.BiomassCohorts.ISpeciesCohorts this[ISpecies species]
         {
             get
             {
                 if (cohorts.ContainsKey(species))
                 {
-                    return GetSpeciesCohort(cohorts[species]);
+                    return (Library.BiomassCohorts.ISpeciesCohorts)GetSpeciesCohort(cohorts[species]);
                 }
                 return null;
                 
@@ -1309,7 +1310,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 AgeOnlyDisturbanceEvent(this, new Landis.Library.BiomassCohorts.DisturbanceEventArgs(disturbance.CurrentSite, disturbance.Type));
             }
              */
-            ReduceOrKillBiomassCohorts(new Landis.Library.DensityCohorts.WrappedDisturbance(disturbance));
+            ReduceOrKillBiomassCohorts(new Landis.Library.BiomassCohorts.WrappedDisturbance(disturbance));
 
         }
 
@@ -1645,7 +1646,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             foreach (ISpecies species in cohorts.Keys)
             {
-                yield return this[species];
+                yield return (Library.DensityCohorts.ISpeciesCohorts) this[species];
             }
         }
        
@@ -1654,11 +1655,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             return GetEnumerator();
         }
 
-        IEnumerator<Landis.Library.DensityCohorts.ISpeciesCohorts> IEnumerable<Landis.Library.DensityCohorts.ISpeciesCohorts>.GetEnumerator()
+        IEnumerator<Landis.Library.BiomassCohorts.ISpeciesCohorts> IEnumerable<Landis.Library.BiomassCohorts.ISpeciesCohorts>.GetEnumerator()
         {
             foreach (ISpecies species in cohorts.Keys)
             {
-                Landis.Library.DensityCohorts.ISpeciesCohorts isp = this[species];
+                Landis.Library.BiomassCohorts.ISpeciesCohorts isp = (Library.BiomassCohorts.ISpeciesCohorts) this[species];
                 yield return isp;
             }
              

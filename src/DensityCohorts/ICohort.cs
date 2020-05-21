@@ -8,7 +8,7 @@ namespace Landis.Library.DensityCohorts
     /// A species cohort with number of tree information.
     /// </summary>
     public interface ICohort
-        : Landis.Library.AgeOnlyCohorts.ICohort
+        :Landis.Library.BiomassCohorts.ICohort, Landis.Library.AgeOnlyCohorts.ICohort
     {
         /// <summary>
         /// The number of individual trees in the cohort.

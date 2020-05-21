@@ -18,7 +18,7 @@ namespace Landis.Library.DensityCohorts
     /// </summary>
     public class SpeciesCohorts
         : DensityCohorts.ISpeciesCohorts,
-
+          
           AgeOnlyCohorts.ISpeciesCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -384,7 +384,7 @@ namespace Landis.Library.DensityCohorts
 
         //---------------------------------------------------------------------
 
-        IEnumerator<ICohort> IEnumerable<ICohort>.GetEnumerator()
+        IEnumerator<Landis.Library.DensityCohorts.ICohort> IEnumerable<Landis.Library.DensityCohorts.ICohort>.GetEnumerator()
         {
             //Console.Out.WriteLine("Itor 1");
             foreach (CohortData data in cohortData)
@@ -408,12 +408,13 @@ namespace Landis.Library.DensityCohorts
                 yield return new Landis.Library.AgeOnlyCohorts.Cohort(species, data.Age);
         }
 
-        //IEnumerator<Landis.Library.BiomassCohorts.ICohort> IEnumerable<Landis.Library.BiomassCohorts.ICohort>.GetEnumerator()
-        //{
-        //    //Console.Out.WriteLine("Itor 3");
-        //    foreach (CohortData data in cohortData)
-        //        biocohortData.Add(Landis.Library.BiomassCohorts.CohortData(data.Age, 0));
-        //        yield return new Landis.Library.BiomassCohorts.Cohort(species, data);
-        //}
+        IEnumerator<Landis.Library.BiomassCohorts.ICohort> IEnumerable<Landis.Library.BiomassCohorts.ICohort>.GetEnumerator()
+        {
+            //Console.Out.WriteLine("Itor 3");
+            foreach (CohortData data in cohortData)
+                //biocohortData.Add(Landis.Library.BiomassCohorts.CohortData(data.Age, 0));
+                // FIXME this is using treenumber instead of biomass
+                yield return new Landis.Library.BiomassCohorts.Cohort(species, data.Age, data.Treenumber);
+        }
     }
 }

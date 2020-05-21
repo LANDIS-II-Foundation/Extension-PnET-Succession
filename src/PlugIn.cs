@@ -395,7 +395,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //    MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
 
             // Convert Density cohorts to biomasscohorts
-            ISiteVar<Landis.Library.DensityCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.DensityCohorts.ISiteCohorts>();
+            ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
 
             //GSO test
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
