@@ -124,10 +124,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             return PET * days_per_month;
         }
       
-        public float CalculateEvaporation(SiteCohorts sitecohorts )
+        public float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables)
         {
             // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
-            PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, sitecohorts.Ecoregion.Variables.Tday);
+            PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, variables.Tday);
 
             float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Water];
 
@@ -138,7 +138,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             DeliveryPotential = Cohort.ComputeFWater(0,0, evapCritWater, 153, pressurehead);
 
             // Per month
-            sitecohorts.SetAet(DeliveryPotential * PET, sitecohorts.Ecoregion.Variables.Month);
+            sitecohorts.SetAet(DeliveryPotential * PET, variables.Month);
 
             float wiltPoint = sitecohorts.Ecoregion.WiltPnt;
 

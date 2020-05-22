@@ -53,6 +53,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static ISiteVar<SiteCohorts> sitecohorts;
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
+        private static readonly object threadLock = new object();
         public static ushort IMAX;
         public static float FTimeStep;
 
@@ -123,26 +124,34 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// <returns></returns>
         public static int DiscreteUniformRandom(int min, int max)
         {
-            ModelCore.ContinuousUniformDistribution.Alpha = min;
-            ModelCore.ContinuousUniformDistribution.Beta = max + 1;
-            ModelCore.ContinuousUniformDistribution.NextDouble();
+            int value;
+            lock (threadLock)
+            {
+                ModelCore.ContinuousUniformDistribution.Alpha = min;
+                ModelCore.ContinuousUniformDistribution.Beta = max + 1;
+                ModelCore.ContinuousUniformDistribution.NextDouble();
 
-            //double testMin = ModelCore.ContinuousUniformDistribution.Minimum;
-            //double testMax = ModelCore.ContinuousUniformDistribution.Maximum;
-            
-            double valueD = ModelCore.ContinuousUniformDistribution.NextDouble();
-            int value = Math.Min((int)valueD,max);
+                //double testMin = ModelCore.ContinuousUniformDistribution.Minimum;
+                //double testMax = ModelCore.ContinuousUniformDistribution.Maximum;
+
+                double valueD = ModelCore.ContinuousUniformDistribution.NextDouble();
+                value = Math.Min((int)valueD, max);
+            }
 
             return value;
         }
 
         public static double ContinuousUniformRandom(double min = 0, double max = 1)
         {
-            ModelCore.ContinuousUniformDistribution.Alpha = min;
-            ModelCore.ContinuousUniformDistribution.Beta = max;
-            ModelCore.ContinuousUniformDistribution.NextDouble();
+            double value;
+            lock (threadLock)
+            {
+                ModelCore.ContinuousUniformDistribution.Alpha = min;
+                ModelCore.ContinuousUniformDistribution.Beta = max;
+                ModelCore.ContinuousUniformDistribution.NextDouble();
 
-            double value = ModelCore.ContinuousUniformDistribution.NextDouble();
+                value = ModelCore.ContinuousUniformDistribution.NextDouble();
+            }
 
             return value;
         }

@@ -8,7 +8,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float Water { get; }
         float GetPressureHead(IEcoregionPnET ecoregion);
         bool AddWater(float water);
-        float CalculateEvaporation(SiteCohorts sitecohorts);
+        float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables);
       
     }
 }
