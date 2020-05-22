@@ -60,11 +60,20 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             float adjWater = 0;
             if (activeSoilDepth > 0)
+            {
                 adjWater = addwater / activeSoilDepth;
+                           }
             water += adjWater;
+            if (water < 0)
+                water = 0;
 
-            if (water >= 0) return true;
-            else return false;
+            if (water >= 0)
+                return true;
+            else
+            {
+                int q = 0;
+                return false;
+            }
         }
 
         // mm of water per m of active soil

@@ -5,7 +5,7 @@
     <AssemblyName>Landis.Extension.Succession.BiomassPnET-v3</AssemblyName>
     <AssemblyTitle>Landis.Extension.Succession.BiomassPnET-v3</AssemblyTitle>
     <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
-    <AssemblyVersion>3.5.0.12</AssemblyVersion>
+    <AssemblyVersion>3.5.0.13</AssemblyVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession</RepositoryUrl>
@@ -16,17 +16,17 @@
     <Authors>Brian Miranda, Eric Gustafson, Arjan de Bruijn</Authors>
     <Product>Landis.Extension.Succession.BiomassPnET</Product>
     <Copyright>Landis-II-Foundation</Copyright>
-    <Version>3.5.0.12</Version>
+    <Version>3.5.0.13</Version>
     <PackageTags>LANDIS-II;Landis;Extension;Succession;PnET</PackageTags>
     <Description></Description>
     <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
-    <FileVersion>3.5.0.12</FileVersion>
+    <FileVersion>3.5.0.13</FileVersion>
     <Company>USDA Forest Service</Company>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <!--<OutputPath>C:\BRM\LANDIS_II\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>-->
+    <!-- <OutputPath>C:\BRM\LANDIS_II\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>-->
     <!--<OutputPath>C:\BRM\LANDIS\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>-->
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
@@ -53,7 +53,7 @@
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.BiomassCohorts-v3.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Climate-v4">
-      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Climate-v4.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Climate-v4.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Cohorts-v2">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>
