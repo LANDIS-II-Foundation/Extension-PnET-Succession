@@ -1,10 +1,10 @@
 using Landis.Library.DensityCohorts;
 using System.Collections.Generic;
 
-namespace Landis.Library.InitialCommunities
+namespace Landis.Library.DensityCohorts.InitialCommunities
 {
     public class Community
-        : ICommunity
+        : Landis.Library.DensityCohorts.InitialCommunities.ICommunity
     {
         private uint mapCode;
         private List<ISpeciesCohorts> cohorts;

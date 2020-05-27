@@ -48,6 +48,7 @@
     <Compile Remove="Hydrology.cs" />
     <Compile Remove="IEcoregionClimateVariables.cs" />
     <Compile Remove="IHydrology.cs" />
+    <Compile Remove="InitialCommunity\Pixel.cs" />
     <Compile Remove="PressureHeadSaxton_Rawls.cs" />
     <Compile Remove="SpeciesPnETVariables.cs" />
     <Compile Remove="WaterStressTable.cs" />
@@ -61,7 +62,7 @@
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Biomass-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.BiomassCohorts-v3">
-      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.BiomassCohorts-v3.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.BiomassCohorts-v3.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Climate-v4">
       <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Climate-v4.dll</HintPath>

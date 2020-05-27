@@ -3,7 +3,7 @@
 
 using Landis.Utilities;
 using Landis.Core;
-using Landis.Library.InitialCommunities;
+using Landis.Library.DensityCohorts.InitialCommunities;
 using Landis.SpatialModeling;
 using System;
 using System.Collections;
@@ -261,7 +261,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 CohortBinSize = Timestep;*/
         }
 
-        public SiteCohorts(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
+        public SiteCohorts(DateTime StartDate, ActiveSite site, Landis.Library.DensityCohorts.InitialCommunities.ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
         {
             //Cohort.SetSiteAccessFunctions(this);
             this.Ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
@@ -340,11 +340,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }*/
 
                 bool densityProvided = false;
-                foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                 {
-                     foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
+                    for (int s = 0; s < speciesCohorts.Count; s++)
                     {
-
+                        //Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
+                        Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
                         //FIXME
                         if (cohort.Treenumber > 0)  // 0 Biomass indicates treenumber value was not read in
                         {
@@ -356,15 +357,17 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (densityProvided)
                 {
-                    foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                    foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
-                        foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
+                        //foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
+                        for (int s = 0; s < speciesCohorts.Count; s++)
                         {
+                            Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
                             // FIXME - feeds in age, treenumber, diameter - placeholder 1 for diameter
                             // The biomass value actually represents treenumber
                             AddNewCohort(new Cohort(PlugIn.SpeciesDensity[cohort.Species], cohort.Age, cohort.Treenumber, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
                             ISpeciesDensity speciespnet = PlugIn.SpeciesDensity[cohort.Species];
-                            
+
                         }
                     }
 
@@ -1281,21 +1284,36 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                if (cohorts.ContainsKey(species))
+                ISpeciesDensity speciespnet = PlugIn.SpeciesDensity.AllSpecies[species.Index];
+                if (cohorts.ContainsKey(speciespnet))
                 {
-                    return (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)GetSpeciesCohort(cohorts[species]);
+                    return (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)GetSpeciesCohort(cohorts[speciespnet]);
+                }
+                return null;
+            }
+        }
+        Landis.Library.BiomassCohorts.ISpeciesCohorts Landis.Library.Cohorts.ISiteCohorts<Landis.Library.BiomassCohorts.ISpeciesCohorts>.this[ISpecies species]
+        {
+            get
+            {
+                ISpeciesDensity speciespnet = PlugIn.SpeciesDensity.AllSpecies[species.Index];
+                if (cohorts.ContainsKey(speciespnet))
+                {
+                    return (Landis.Library.BiomassCohorts.ISpeciesCohorts)GetSpeciesCohort(cohorts[speciespnet]);
                 }
                 return null;
             }
         }
 
-        public Landis.Library.BiomassCohorts.ISpeciesCohorts this[ISpecies species]
+        public Landis.Library.DensityCohorts.ISpeciesCohorts this[ISpecies species]
         {
             get
             {
-                if (cohorts.ContainsKey(species))
+                ISpeciesDensity speciespnet = PlugIn.SpeciesDensity.AllSpecies[species.Index];
+                if (cohorts.ContainsKey(speciespnet))
                 {
-                    return (Library.BiomassCohorts.ISpeciesCohorts)GetSpeciesCohort(cohorts[species]);
+                    
+                    return GetSpeciesCohort(cohorts[speciespnet]);
                 }
                 return null;
                 
@@ -1659,7 +1677,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             foreach (ISpecies species in cohorts.Keys)
             {
-                Landis.Library.BiomassCohorts.ISpeciesCohorts isp = (Library.BiomassCohorts.ISpeciesCohorts) this[species];
+                Landis.Library.BiomassCohorts.ISpeciesCohorts isp = (Landis.Library.BiomassCohorts.ISpeciesCohorts) this[species];
                 yield return isp;
             }
              

@@ -25,7 +25,7 @@
 //   NOTE: This uses a version (v4?) of the climate library that exposes AnnualClimate_Monthly.MonthlyOzone[] and .MonthlyCO2[].
 
 using Landis.Core;
-using Landis.Library.InitialCommunities;
+using Landis.Library.DensityCohorts.InitialCommunities;
 using Landis.Library.Succession;
 using Landis.SpatialModeling;
 using Landis.Library.Climate;
@@ -427,7 +427,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in sitecohorts[site])
+                foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in sitecohorts[site])
                 {
                     Cohort.SetSiteAccessFunctions(sitecohorts[site]);
                     SiteVars.TotalSiteRD(speciesCohorts, site);
@@ -519,10 +519,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
 
             ModelCore.UI.WriteLine("   Loading initial communities from file \"{0}\" ...", initialCommunitiesText);
-            Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
+            Landis.Library.DensityCohorts.InitialCommunities.DatasetParser parser = new Landis.Library.DensityCohorts.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
 
             //Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
-            Landis.Library.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, parser);
+            Landis.Library.DensityCohorts.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.DensityCohorts.InitialCommunities.IDataset>(initialCommunitiesText, parser);
 
             ModelCore.UI.WriteLine("   Reading initial communities map \"{0}\" ...", initialCommunitiesMap);
             IInputRaster<uintPixel> map;

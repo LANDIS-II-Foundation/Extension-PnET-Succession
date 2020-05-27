@@ -7,7 +7,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Landis.Library.InitialCommunities
+namespace Landis.Library.DensityCohorts.InitialCommunities
 {
     /// <summary>
     /// A parser that reads a dataset of initial communities from text input.

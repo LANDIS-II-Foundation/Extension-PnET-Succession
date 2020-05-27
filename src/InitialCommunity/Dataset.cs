@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Landis.Library.InitialCommunities
+namespace Landis.Library.DensityCohorts.InitialCommunities
 {
     public class Dataset
         : IDataset

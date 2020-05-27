@@ -1,4 +1,4 @@
-namespace Landis.Library.InitialCommunities
+namespace Landis.Library.DensityCohorts.InitialCommunities
 {
     /// <summary>
     /// Collection of initial communities.

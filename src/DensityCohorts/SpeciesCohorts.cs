@@ -408,6 +408,8 @@ namespace Landis.Library.DensityCohorts
                 yield return new Landis.Library.AgeOnlyCohorts.Cohort(species, data.Age);
         }
 
+        //---------------------------------------------------------------------
+
         IEnumerator<Landis.Library.BiomassCohorts.ICohort> IEnumerable<Landis.Library.BiomassCohorts.ICohort>.GetEnumerator()
         {
             //Console.Out.WriteLine("Itor 3");

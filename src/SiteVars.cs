@@ -20,13 +20,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             PlugIn.ModelCore.RegisterSiteVar(siteRD, "Succession.SiteRd");
         }
 
-        public static void TotalSiteRD(Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts, ActiveSite site)
+        public static void TotalSiteRD(Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts, ActiveSite site)
         {
             float siteRD = 0;
 
             ISpeciesDensity speciespnet = PlugIn.SpeciesDensity.AllSpecies[speciesCohorts.Species.Index];
-            foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
+            //foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
+            for (int s = 0; s < speciesCohorts.Count; s++)
             {
+                Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
                 double tmp_term1 = Math.Pow((cohort.Diameter / 25.4), 1.605);
                 float tmp_term2 = 10000 / 1;
                 int tmp_term3 = cohort.Treenumber;

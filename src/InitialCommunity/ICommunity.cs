@@ -1,7 +1,7 @@
 using Landis.Library.DensityCohorts;
 using System.Collections.Generic;
 
-namespace Landis.Library.InitialCommunities
+namespace Landis.Library.DensityCohorts.InitialCommunities
 {
     /// <summary>
     /// An initial community.
