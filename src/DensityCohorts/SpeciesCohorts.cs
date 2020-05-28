@@ -18,7 +18,7 @@ namespace Landis.Library.DensityCohorts
     /// </summary>
     public class SpeciesCohorts
         : DensityCohorts.ISpeciesCohorts,
-          
+          BiomassCohorts.ISpeciesCohorts,
           AgeOnlyCohorts.ISpeciesCohorts
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

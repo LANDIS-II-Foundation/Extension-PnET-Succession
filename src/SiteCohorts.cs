@@ -8,9 +8,11 @@ using Landis.SpatialModeling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Landis.Library.Climate;
 using Landis.Library.DensityCohorts;
+using Landis.Library.Cohorts;
 //using Landis.Library.BiomassCohorts;
 
 namespace Landis.Extension.Succession.BiomassPnET
@@ -486,7 +488,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float checkDensity = AllCohorts[cohort].Treenumber;
                 ISpeciesDensity speciespnet = PlugIn.SpeciesDensity.AllSpecies[AllCohorts[cohort].Species.Index];
                 int SDI = speciespnet.MaxSDI;
+                int checkBiomass = AllCohorts[cohort].Biomass;
             }
+            foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in this)
+            {
+                SiteVars.TotalSiteRD(speciesCohorts, this.Site);
+            }
+
+            //SiteDynamics(this);
             int shadeMax = ShadeMax;
             double GSO1 = EcoregionPnET.GSO1[this.Ecoregion];
             bool success = true;

@@ -48,8 +48,11 @@ namespace Landis.Library.DensityCohorts
 
         public int Biomass
         {
-            get {
-                return 1000;
+            get
+            {
+                ISpeciesDensity speciesdensity = PlugIn.SpeciesDensity.AllSpecies[species.Index];
+                int biomass = System.Convert.ToInt32(Math.Exp(PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(Diameter)) * data.Treenumber / 1000.00);
+                return biomass;
             }
         }
 
