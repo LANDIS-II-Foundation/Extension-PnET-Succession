@@ -339,13 +339,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                     //establishmentProbability = new EstablishmentProbability(null, null);
                 }*/
 
+
+
                 bool densityProvided = false;
-                foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                 {
-                    for (int s = 0; s < speciesCohorts.Count; s++)
+                    foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
                     {
-                        //Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
-                        Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
                         //FIXME
                         if (cohort.Treenumber > 0)  // 0 Biomass indicates treenumber value was not read in
                         {
@@ -357,12 +357,11 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (densityProvided)
                 {
-                    foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+                    foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
                     {
                         //foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
-                        for (int s = 0; s < speciesCohorts.Count; s++)
+                        foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
                         {
-                            Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
                             // FIXME - feeds in age, treenumber, diameter - placeholder 1 for diameter
                             // The biomass value actually represents treenumber
                             AddNewCohort(new Cohort(PlugIn.SpeciesDensity[cohort.Species], cohort.Age, cohort.Treenumber, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
