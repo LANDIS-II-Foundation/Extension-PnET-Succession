@@ -69,6 +69,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _date;
             }
         }
+
+        // Number of days in the month
         public float DaySpan
         {
             get
@@ -96,6 +98,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return obs_clim.Tmin;
+            }
+        }
+        public float Tmax
+        {
+            get
+            {
+                return obs_clim.Tmax;
             }
         }
         public float Daylength
@@ -182,16 +191,28 @@ namespace Landis.Extension.Succession.BiomassPnET
             else return ((PsnTMax-tday)*(tday-PsnTMin))/(float)Math.Pow(((PsnTMax-PsnTMin)/2),2);
         }
 
-        public static float DTempResponse(float tday, float PsnTOpt, float PsnTMin)
+        public static float DTempResponse(float tday, float PsnTOpt, float PsnTMin, float PsnTMax)
         {
             // Copied from Psn_Resp_Calculations.xlsx[DTemp]
             //=MAX(0,(($Y$3-D2)*(D2-$Y$1))/((($Y$3-$Y$1)/2)^2))
             //=MAX(0,((PsnTMax-tday)*(tday-PsnTMin))/(((PsnTMax-PsnTMin)/2)^2))
-            float PsnTMax = PsnTOpt + (PsnTOpt - PsnTMin);
+
             if (tday < PsnTMin)
                 return 0;
-            else{
-                return ((PsnTMax-tday)*(tday-PsnTMin))/(float)Math.Pow(((PsnTMax-PsnTMin)/2),2);
+            else if (tday > PsnTMax)
+                return 0;
+            else
+            {
+                if (tday <= PsnTOpt)
+                {
+                    float PsnTMaxestimate = PsnTOpt + (PsnTOpt - PsnTMin);
+                    return (float)Math.Max(0.0, ((PsnTMaxestimate - tday) * (tday - PsnTMin)) / (float)Math.Pow(((PsnTMaxestimate - PsnTMin) / 2), 2));
+                }
+                else
+                {
+                    float PsnTMinestimate = PsnTOpt + (PsnTOpt - PsnTMax);
+                    return (float)Math.Max(0.0, ((PsnTMax - tday) * (tday - PsnTMinestimate)) / (float)Math.Pow(((PsnTMax - PsnTMinestimate) / 2), 2));
+                }
             }
 
         }
@@ -310,7 +331,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //-------------------FTempPSN (public for output file)
             if (DTemp)
             {
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); 
+                speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); 
             }
             else
             {

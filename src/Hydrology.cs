@@ -27,6 +27,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float Evaporation;
         public static float Leakage;
         public static float RunOff;
+        public static float FrozenDepth;
+        public static float FrozenWaterPct;
         
         public bool AddWater(float addwater)
         {
@@ -133,7 +135,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Robock, A., Vinnikov, K. Y., Schlosser, C. A., Speranskaya, N. A., & Xue, Y. (1995). Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
             float evapCritWater = sitecohorts.Ecoregion.FieldCap * 0.75f;
 
-            DeliveryPotential = Cohort.ComputeFWater(0, evapCritWater, 153, pressurehead);
+            DeliveryPotential = Cohort.ComputeFWater(0,0, evapCritWater, 153, pressurehead);
 
             // Per month
             sitecohorts.SetAet(DeliveryPotential * PET, sitecohorts.Ecoregion.Variables.Month);

@@ -1,0 +1,9 @@
+LandisData PnETGenericParameters
+
+
+
+PnETGenericParameters Value
+
+DTemp		true
+Wythers		true
+PrecipEvents	9
