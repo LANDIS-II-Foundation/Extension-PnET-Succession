@@ -51,8 +51,11 @@ namespace Landis.Library.DensityCohorts
             get
             {
                 ISpeciesDensity speciesdensity = PlugIn.SpeciesDensity.AllSpecies[species.Index];
-                int biomass = System.Convert.ToInt32(Math.Exp(PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(Diameter)) * data.Treenumber / 1000.00);
-                return biomass;
+                double biomass  = Math.Exp(PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(Diameter)) * data.Treenumber / 1000.00; // Mg/cell
+                int biomass_int = System.Convert.ToInt32(biomass);
+                double biomass_gm2 = biomass * 1000 * 1000 / (PlugIn.ModelCore.CellLength * PlugIn.ModelCore.CellLength);
+                int biomass_gm2_int = System.Convert.ToInt32(biomass_gm2);
+                return biomass_gm2_int;
             }
         }
 
@@ -133,7 +136,7 @@ namespace Landis.Library.DensityCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// The cohort's age and biomass data.
+        /// The cohort's age and density data.
         /// </summary>
         public CohortData Data
         {
@@ -182,11 +185,41 @@ namespace Landis.Library.DensityCohorts
 
         public Cohort(ISpecies species,
                       ushort   age,
-                      int   treenumber)
+                      int   treenumber,
+                      IEcoregionPnET ecoregion)
         {
             this.species = species;
             this.data.Age = age;
             this.data.Treenumber = treenumber;
+            this.data.Diameter = 0;
+            this.data.Biomass = 0;
+
+            if (ecoregion.Active)
+            {
+                float diameter = 0;
+                Dictionary<int, double> diameters = DiameterInputs.AllData[ecoregion.Name][species.Name].Diameters;
+                if (diameters.ContainsKey(Age))
+                {
+                    diameter = (float)diameters[Age];
+                }
+                else
+                {
+                    for (int i = Age; i > 0; i--)
+                    {
+                        if (diameters.ContainsKey(i))
+                        {
+                            diameter = (float)diameters[i];
+                        }
+                    }
+                }
+                this.data.Diameter = diameter;
+                ISpeciesDensity speciesdensity = PlugIn.SpeciesDensity.AllSpecies[species.Index];
+                double biomass = Math.Exp(PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(diameter)) * data.Treenumber / 1000.00; // Mg/cell
+                int biomass_int = System.Convert.ToInt32(biomass);
+                double biomass_gm2 = biomass * 1000 * 1000 / (PlugIn.ModelCore.CellLength * PlugIn.ModelCore.CellLength);
+                int biomass_gm2_int = System.Convert.ToInt32(biomass_gm2);
+                this.data.Biomass = biomass_gm2_int;
+            }
         }
 
         //---------------------------------------------------------------------
@@ -206,36 +239,20 @@ namespace Landis.Library.DensityCohorts
             this.data.Age = cohort.age;
             this.data.Treenumber = cohort.treenumber;
             this.diameter = cohort.diameter;
+            this.data.Biomass = cohort.Biomass;
         }
 
         //---------------------------------------------------------------------
 
-        public Cohort(ISpeciesDensity species, ushort age, int treenumber, string SiteName, ushort firstYear)
+        public Cohort(ISpeciesDensity species, ushort age, int treenumber, string SiteName, ushort firstYear, IEcoregionPnET siteEcoregion)
         {
             //InitializeSubLayers();
             this.species = species;
+            ecoregion = siteEcoregion;
             this.data.Age = age;
             this.data.Treenumber = treenumber;
-            //this.diameter = diameter;
-            //incoming biomass is aboveground wood, calculate total biomass
-            //int biomass = (int) (woodBiomass / (1 - species.FracBelowG));
-            //this.biomass = biomass;
-            //this.nsc = this.species.DNSC * this.FActiveBiom * this.biomass;
-            //this.biomassmax = biomass;
-            //this.lastSeasonFRad = new List<float>();
-            //this.adjFracFol = species.FracFol;
-            //this.coldKill = int.MaxValue;
-
-            /*if (this.leaf_on)
-            {
-                this.fol = (adjFracFol * FActiveBiom * biomass);
-                LAI[index] = CalculateLAI(this.species, this.fol, index);
-            }*/
-
-            /*if (SiteName != null)
-            {
-                InitializeOutput(SiteName, firstYear);
-            }*/
+            this.data.Biomass = this.Biomass;
+            this.data.Diameter = this.Diameter;
         }
 
         //---------------------------------------------------------------------
@@ -251,12 +268,13 @@ namespace Landis.Library.DensityCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Changes the cohort's biomass.
+        /// Changes the cohort's tree number.
         /// </summary>
         public void ChangeTreenumber(int delta)
         {
             int newTreenumber = data.Treenumber + delta;
             data.Treenumber = System.Math.Max(0, newTreenumber);
+            data.Biomass = this.Biomass;
         }
 
         //---------------------------------------------------------------------

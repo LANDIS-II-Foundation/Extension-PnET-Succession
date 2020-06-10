@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Reflection;
 using Landis.Library.BiomassCohorts;
 using log4net;
+using Landis.Extension.Succession.BiomassPnET;
+using System.Linq;
 
 namespace Landis.Library.DensityCohorts
 {
@@ -31,7 +33,7 @@ namespace Landis.Library.DensityCohorts
 
         //  Cohort data is in oldest to youngest order.
         private List<CohortData> cohortData;
-        private List<Landis.Library.BiomassCohorts.CohortData> biocohortData;
+        //private List<Landis.Library.BiomassCohorts.CohortData> biocohortData;
         //---------------------------------------------------------------------
 
         public int Count
@@ -87,14 +89,31 @@ namespace Landis.Library.DensityCohorts
         /// </summary>
         public SpeciesCohorts(ISpecies species,
                               ushort initialAge,
-                              int   initialTrees)
+                              int   initialTrees,
+                              IEcoregionPnET ecoregion)
         {
             this.species = species;
             this.cohortData = new List<CohortData>();
             this.isMaturePresent = false;
-            AddNewCohort(initialAge, initialTrees);
+            AddNewCohort(initialAge, initialTrees, ecoregion);
+            
         }
 
+        //---------------------------------------------------------------------
+        /// <summary>
+        /// Initializes a new instance with one young cohort (age = 1).
+        /// </summary>
+        public SpeciesCohorts(ISpecies species,
+                              ushort initialAge,
+                              int initialTrees)
+        {
+            this.species = species;
+            this.cohortData = new List<CohortData>();
+            this.isMaturePresent = false;
+            IEcoregionPnET ecoregion = EcoregionPnET.Ecoregions.SkipWhile(Eco => !Eco.Active).First();
+            AddNewCohort(initialAge, initialTrees, ecoregion);
+
+        }
         //---------------------------------------------------------------------
 
         /// <summary>
@@ -126,9 +145,11 @@ namespace Landis.Library.DensityCohorts
         /// <summary>
         /// Adds a new cohort.
         /// </summary>
-        public void AddNewCohort(ushort age, int initialTrees)
+        public void AddNewCohort(ushort age, int initialTrees, IEcoregionPnET ecoregion)
         {
-            this.cohortData.Add(new CohortData(age, initialTrees));
+            CohortData newCohortData = new CohortData(age, initialTrees);
+            Cohort cohort = new Cohort(species, age, initialTrees, ecoregion);           
+            this.cohortData.Add(newCohortData);
         }
 
         //---------------------------------------------------------------------
@@ -299,7 +320,44 @@ namespace Landis.Library.DensityCohorts
                 }
             }
         }
+        /// <summary>
+        /// Updates the Diameter and Biomass properties.
+        /// </summary>
+        /// <remarks>
+        /// Should be called after all the species' cohorts have grown.
+        /// </remarks>
+        public void UpdateDiameterAndBiomass(IEcoregionPnET ecoregion)
+        {
+            for (int i = 0; i < cohortData.Count; i++)
+            {
+                float diameter = 0;
+                Dictionary<int, double> diameters = DiameterInputs.AllData[ecoregion.Name][species.Name].Diameters;
+                if (diameters.ContainsKey(cohortData[i].Age))
+                {
+                    diameter = (float)diameters[cohortData[i].Age];
+                }
+                else
+                {
+                    for (int j = cohortData[i].Age; j > 0; j--)
+                    {
+                        if (diameters.ContainsKey(j))
+                        {
+                            diameter = (float)diameters[j];
+                        }
+                    }
+                }
 
+                ISpeciesDensity speciesdensity = PlugIn.SpeciesDensity.AllSpecies[species.Index];
+                double biomass_dbl = Math.Exp(PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(diameter)) * cohortData[i].Treenumber / 1000.00; // Mg/cell
+                int biomass_int = System.Convert.ToInt32(biomass_dbl);
+                double biomass_gm2 = biomass_dbl * 1000 * 1000 / (PlugIn.ModelCore.CellLength * PlugIn.ModelCore.CellLength);
+                int biomass_gm2_int = System.Convert.ToInt32(biomass_gm2);
+                CohortData newCohortData = new CohortData(cohortData[i].Age, cohortData[i].Treenumber);
+                newCohortData.Biomass = biomass_gm2_int;
+                newCohortData.Diameter = diameter;
+                cohortData[i] = newCohortData;
+            }
+        }
         //---------------------------------------------------------------------
 
         /// <summary>
@@ -412,11 +470,12 @@ namespace Landis.Library.DensityCohorts
 
         IEnumerator<Landis.Library.BiomassCohorts.ICohort> IEnumerable<Landis.Library.BiomassCohorts.ICohort>.GetEnumerator()
         {
-            //Console.Out.WriteLine("Itor 3");
+            //Console.Out.WriteLine("Itor 4");
             foreach (CohortData data in cohortData)
-                //biocohortData.Add(Landis.Library.BiomassCohorts.CohortData(data.Age, 0));
-                // FIXME this is using treenumber instead of biomass
-                yield return new Landis.Library.BiomassCohorts.Cohort(species, data.Age, data.Treenumber);
+            {
+               // FIXME this is using treenumber instead of biomass
+                yield return new Landis.Library.BiomassCohorts.Cohort(species, data.Age, data.Biomass);
+            }
         }
     }
 }

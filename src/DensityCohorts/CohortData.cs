@@ -13,12 +13,16 @@ namespace Landis.Library.DensityCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// The cohort's biomass (units?).
+        /// The cohort's biomass (g/m2).
         /// </summary>
-        //public int Biomass;
+        public int Biomass;
 
         //---------------------------------------------------------------------
-
+        /// <summary>
+        /// The cohort's diameter (cm).
+        /// </summary>
+        public float Diameter;
+        
         //---------------------------------------------------------------------
 
         /// <summary>
@@ -43,6 +47,8 @@ namespace Landis.Library.DensityCohorts
         {
             this.Age = age;
             this.Treenumber = treenumber;
+            this.Biomass = 0;
+            this.Diameter = 0;
         }
     }
 }
