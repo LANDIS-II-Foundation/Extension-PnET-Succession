@@ -12,6 +12,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     public static class SiteVars
     {
         private static ISiteVar<float> siteRD;
+        private static ISiteVar<SiteCohorts> sitecohorts;
 
         public static void Initialize()
         {
@@ -20,24 +21,53 @@ namespace Landis.Extension.Succession.BiomassPnET
             PlugIn.ModelCore.RegisterSiteVar(siteRD, "Succession.SiteRd");
         }
 
-        public static void TotalSiteRD(Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts, ActiveSite site)
+        public static void SpeciesSiteRD(Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts, ActiveSite site)
         {
             float siteRD = 0;
 
-            ISpeciesDensity speciespnet = PlugIn.SpeciesDensity.AllSpecies[speciesCohorts.Species.Index];
+            ISpeciesDensity speciesDensity = PlugIn.SpeciesDensity.AllSpecies[speciesCohorts.Species.Index];
             //foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
             for (int s = 0; s < speciesCohorts.Count; s++)
             {
                 Landis.Library.DensityCohorts.ICohort cohort = speciesCohorts[s];
                 double tmp_term1 = Math.Pow((cohort.Diameter / 25.4), 1.605);
-                float tmp_term2 = 10000 / 1;
+                float tmp_term2 = 10000 / speciesDensity.MaxSDI;
                 int tmp_term3 = cohort.Treenumber;
-                int SDI = speciespnet.MaxSDI;
-                double tmp = tmp_term1 * tmp_term2 * tmp_term3 / PlugIn.ModelCore.CellLength;
+                double tmp = tmp_term1 * tmp_term2 * tmp_term3 / Math.Pow(PlugIn.ModelCore.CellLength, 2);
                 siteRD += (float)tmp;
             }
 
             SiteVars.SiteRD[site] = siteRD;
+            //return siteRD;
+        }
+
+        public static void TotalSiteRD(Landis.Extension.Succession.BiomassPnET.SiteCohorts cohorts)
+        {
+
+            float siteRD = 0;
+            Landis.Library.DensityCohorts.Cohort.SetSiteAccessFunctions(cohorts);
+            if (cohorts == null)
+            {
+                SiteVars.SiteRD[cohorts.Site] = siteRD;
+            }
+            else
+            {
+                foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in cohorts)
+                {
+                    
+                    ISpeciesDensity speciesDensity = PlugIn.SpeciesDensity.AllSpecies[speciesCohorts.Species.Index];
+                    foreach (Landis.Library.DensityCohorts.ICohort cohort in (IEnumerable<Landis.Library.DensityCohorts.ICohort>)speciesCohorts)
+                    {
+                        double tmp_term1 = Math.Pow((cohort.Diameter / 25.4), 1.605);
+                        float tmp_term2 = 10000 / speciesDensity.MaxSDI;
+                        int tmp_term3 = cohort.Treenumber;
+                        double tmp = tmp_term1 * tmp_term2 * tmp_term3 / Math.Pow(PlugIn.ModelCore.CellLength, 2);
+                        siteRD += (float)tmp;
+                    }
+                }
+
+                SiteVars.SiteRD[cohorts.Site] = siteRD;
+            }
             //return siteRD;
         }
 
@@ -48,10 +78,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return siteRD;
             }
             
-            set
-            {
-                siteRD = value;
-            }
         }
 
 

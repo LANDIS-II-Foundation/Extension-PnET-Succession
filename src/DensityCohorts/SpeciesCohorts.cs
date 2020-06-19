@@ -251,26 +251,18 @@ namespace Landis.Library.DensityCohorts
 
             cohort.IncrementAge();
 
-            return index + 1;
-            //int biomassChange = (int)Cohorts.BiomassCalculator.ComputeChange(cohort, site); //, siteBiomass, prevYearSiteMortality);
+            //return index + 1;
 
-            //Debug.Assert(-(cohort.Biomass) <= biomassChange);  // Cohort can't loss more biomass than it has
-
-            //cohort.ChangeBiomass(biomassChange);
-
-            ////if (isDebugEnabled)
-            ////    log.DebugFormat("    biomass: change = {0}, cohort = {1}, site = {2}",
-            ////                    biomassChange, cohort.Biomass, siteBiomass);
-
-            ////cohortMortality = Cohorts.BiomassCalculator.MortalityWithoutLeafLitter;
-            //if (cohort.Biomass > 0) {
-            //    cohortData[index] = cohort.Data;
-            //    return index + 1;
-            //}
-            //else {
-            //    RemoveCohort(index, cohort, site, null);
-            //    return index;
-            //}
+            if (cohort.Treenumber > 0)
+            {
+                cohortData[index] = cohort.Data;
+                return index + 1;
+            }
+            else
+            {
+                RemoveCohort(index, cohort, site, null);
+                return index;
+            }
         }
 
         //---------------------------------------------------------------------
@@ -380,6 +372,7 @@ namespace Landis.Library.DensityCohorts
                 if (reduction > 0) {
                     totalReduction += reduction;
                     if (reduction < cohort.Treenumber) {
+                        
                         ReduceCohort(cohort, disturbance.CurrentSite, disturbance.Type, reduction);
                         cohort.ChangeTreenumber(-reduction);
                         cohortData[i] = cohort.Data;

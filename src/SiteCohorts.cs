@@ -203,10 +203,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             if (initialSites.ContainsKey(key) && SiteOutputName == null)
             {
-                //PlugIn.WoodyDebris[Site] = PlugIn.WoodyDebris[initialSites[key].Site].Clone();
-                //PlugIn.Litter[Site] = PlugIn.Litter[initialSites[key].Site].Clone();
-                //PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
-
                 foreach (ISpecies spc in initialSites[key].cohorts.Keys)
                 {
                     foreach (Cohort cohort in initialSites[key].cohorts[spc])
@@ -221,18 +217,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     initialSites.Add(key, this);
                 }
-                //List<IEcoregionClimateVariables> ecoregionInitializer = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
-
-                //PlugIn.WoodyDebris[Site] = new Library.Biomass.Pool();
-                //PlugIn.Litter[Site] = new Library.Biomass.Pool();
-                //PlugIn.FineFuels[Site] = PlugIn.Litter[Site].Mass;
-
-                /*if (SiteOutputName != null)
-                {
-                    this.siteoutput = new LocalOutput(SiteOutputName, "Site.csv", Header(site));
-                }
-               */
-
 
 
                 bool densityProvided = false;
@@ -317,7 +301,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     //var climate_vars = usingClimateLibrary ? EcoregionPnET.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Phase.SpinUp_Climate) : EcoregionPnET.GetData(Ecoregion, date, EndDate);
 
-                    Grow();
+                    Grow(site, true);
 
                     date = EndDate;
 
@@ -325,30 +309,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
             }
 
-       /* List<List<int>> GetRandomRange(List<List<int>> bins)
-        {
-            List<List<int>> random_range = new List<List<int>>();
-            if (bins != null) for (int b = 0; b < bins.Count(); b++)
-                {
-                    random_range.Add(new List<int>());
-
-                    List<int> copy_range = new List<int>(bins[b]);
-
-                    while (copy_range.Count() > 0)
-                    {
-                        int k = PlugIn.DiscreteUniformRandom(0, copy_range.Count()-1);
-                        random_range[b].Add(copy_range[k]);
-
-                        copy_range.RemoveAt(k);
-                    }
-                }
-            return random_range;
-        }*/
-
-        /*public void SetAet(float value, int Month)
-        {
-            AET[Month-1] = value;
-        }*/
 
         class DescendingComparer<T> : IComparer<T> where T : IComparable<T>
         {
@@ -358,52 +318,51 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public bool Grow()
+        public bool Grow(ActiveSite site, bool isSuccessionTimestep)
         {
-
-            //FIXME - grow and age the cohorts
-
-            // Testing access to cohort attributes
-            Cohort.SetSiteAccessFunctions(this);
-            for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
-            {
-                float checkDiameter = AllCohorts[cohort].Diameter;
-                int checkAge = AllCohorts[cohort].Age;
-                float checkDensity = AllCohorts[cohort].Treenumber;
-                ISpeciesDensity speciespnet = PlugIn.SpeciesDensity.AllSpecies[AllCohorts[cohort].Species.Index];
-                int SDI = speciespnet.MaxSDI;
-                int checkBiomass = AllCohorts[cohort].Biomass;
-            }
-            foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in this)
-            {
-                SiteVars.TotalSiteRD(speciesCohorts, this.Site);
-            }
-
-            //SiteDynamics(this);
-            int shadeMax = ShadeMax;
-            double GSO1 = EcoregionPnET.GSO1[this.Ecoregion];
-            bool success = true;
             
+            SiteVars.TotalSiteRD(this);
+            SiteDynamics.siteSuccession(this);
+
+            if (isSuccessionTimestep && Landis.Library.DensityCohorts.Cohorts.SuccessionTimeStep > 1)
+                foreach (SpeciesCohorts speciesCohorts in this)
+                    speciesCohorts.CombineYoungCohorts();
+
+            for (int i = 0; i < this.AllCohorts.Count; i++)
+            {
+                this.AllCohorts[i].IncrementAge();
+                if (this.AllCohorts[i].Age >= this.AllCohorts[i].Species.Longevity || this.AllCohorts[i].Treenumber == 0)
+                {
+                    RemoveCohort(this.AllCohorts[i], null);
+
+                }
+            }
+
+            //foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in this)
+            //{
+
+            //    ISpeciesDensity speciesDensity = PlugIn.SpeciesDensity.AllSpecies[speciesCohorts.Species.Index];
+            //    foreach (Landis.Library.DensityCohorts.Cohort cohort in (IEnumerable<Landis.Library.DensityCohorts.ICohort>)speciesCohorts)
+            //    {
+
+            //        //FIXME - Adding new cohort?
+            //        cohort.IncrementAge();
+
+            //        if (cohort.Age >= cohort.Species.Longevity || cohort.Treenumber == 0)
+            //        {
+            //            RemoveCohort(cohort, null);
+
+            //        }
+            //    }
+            //}
+
+            bool success = true;
+
             return success;
-        }      
+        }
 
-        /*public double WoodyDebris 
-        {
-            get
-            {
-                return PlugIn.WoodyDebris[Site].Mass;
-            }
-        }*/
-
-        /*public double Litter 
-        {
-            get
-            {
-                return PlugIn.Litter[Site].Mass;
-            }
-        }*/
-       
-        public  Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent
+        //---------------------------------------------------------------------
+        public Landis.Library.Parameters.Species.AuxParm<bool> SpeciesPresent
         {
             get
             {
@@ -416,59 +375,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return SpeciesPresent;
             }
         }
+        //---------------------------------------------------------------------
 
-        /*public Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies 
-        { 
-            get
-            {
-                Landis.Library.Parameters.Species.AuxParm<int> BiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
-
-                foreach (ISpecies spc in cohorts.Keys)
-                {
-                    BiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.TotalBiomass);
-                }
-                return BiomassPerSpecies;
-            }
-        }*/
-        //public Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies
-        //{
-        //    get
-        //    {
-        //        Landis.Library.Parameters.Species.AuxParm<int> AbovegroundBiomassPerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
-
-        //        foreach (ISpecies spc in cohorts.Keys)
-        //        {
-        //            AbovegroundBiomassPerSpecies[spc] = cohorts[spc].Sum(o => o.Biomass);
-        //        }
-        //        return AbovegroundBiomassPerSpecies;
-        //    }
-        //}
-        /*public Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies
-        {
-            get
-            {
-                Landis.Library.Parameters.Species.AuxParm<int> WoodySenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
-
-                foreach (ISpecies spc in cohorts.Keys)
-                {
-                    WoodySenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastWoodySenescence);
-                }
-                return WoodySenescencePerSpecies;
-            }
-        }*/
-        /*public Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies
-        {
-            get
-            {
-                Landis.Library.Parameters.Species.AuxParm<int> FoliageSenescencePerSpecies = new Library.Parameters.Species.AuxParm<int>(PlugIn.ModelCore.Species);
-
-                foreach (ISpecies spc in cohorts.Keys)
-                {
-                    FoliageSenescencePerSpecies[spc] = cohorts[spc].Sum(o => o.LastFoliageSenescence);
-                }
-                return FoliageSenescencePerSpecies;
-            }
-        }*/
         public Landis.Library.Parameters.Species.AuxParm<int> CohortCountPerSpecies 
         { 
             get
@@ -482,6 +390,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return CohortCountPerSpecies;
             }
         }
+        //---------------------------------------------------------------------
 
         public Landis.Library.Parameters.Species.AuxParm<List<ushort>> CohortAges 
         { 
@@ -497,64 +406,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        /*public float BiomassSum
-        {
-            get
-            {
-                return AllCohorts.Sum(o => o.TotalBiomass);
-            }
-
-        }*/
-
-        //public float AbovegroundBiomassSum
-        //{
-        //    get
-        //    {
-        //        return AllCohorts.Sum(o => o.Biomass);
-        //    }
-
-        //}
-        /*public float WoodySenescenceSum
-        {
-            get
-            {
-                return AllCohorts.Sum(o => o.LastWoodySenescence);
-            }
-
-        }*/
-       /* public float FoliageSenescenceSum
-        {
-            get
-            {
-                return AllCohorts.Sum(o => o.LastFoliageSenescence);
-            }
-
-        }*/
-        /*public uint BelowGroundBiomass 
-        {
-            get
-            {
-                return (uint)cohorts.Values.Sum(o => o.Sum(x => x.Root));
-            }
-        }*/
-
-        /*public float FoliageSum
-        {
-            get
-            {
-                return AllCohorts.Sum(o => o.Fol);
-            }
-
-        }*/
-
-        /*public float NSCSum
-        {
-            get
-            {
-                return AllCohorts.Sum(o => o.NSC);
-            }
-
-        }*/
         public int CohortCount
         {
             get
@@ -588,181 +439,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        /*private SortedDictionary<int[], Cohort> GetSubcanopyLayers()
+        public double siteQMD
         {
-            SortedDictionary<int[], Cohort> subcanopylayers = new SortedDictionary<int[], Cohort>(new SubCanopyComparer());
-
-            foreach (Cohort cohort in AllCohorts)
+            get
             {
-                for (int i = 0; i < PlugIn.IMAX; i++)
-                {
-                    int[] subcanopplayer = new int[] { (ushort)((i + 1) / (float)PlugIn.IMAX * cohort.BiomassMax) };
-                    subcanopylayers.Add(subcanopplayer, cohort);
-                }
+                double basal = cohorts.Values.Sum(o => o.Sum(x => x.Diameter * x.Diameter * 0.00007854 / Math.Pow(PlugIn.ModelCore.CellLength, 2) / 10000));
+                double tph = cohorts.Values.Sum(o => o.Sum(x => x.Treenumber / Math.Pow(PlugIn.ModelCore.CellLength, 2) / 10000));
+                return Math.Sqrt((basal / tph) / 0.00007854);
             }
-            return subcanopylayers;
-        }*/
+        }
 
-        /*private static int[] GetNextBinPositions(int[] index_in, int numcohorts)
-        {
-            
-            for (int index = index_in.Length - 1; index >= 0; index--)
-            {
-                int maxvalue = numcohorts - index_in.Length + index - 1;
-                if (index_in[index] < maxvalue)
-                {
-                    {
-                        index_in[index]++;
-
-                        for (int i = index+1; i < index_in.Length; i++)
-                        {
-                            index_in[i] = index_in[i - 1] + 1;
-                        }
-                        return index_in;
-                    }
-
-                }
-                /*
-                else 
-                {
-                    if (index == 0) return null;
-
-                    index_in[index - 1]++;
- 
-                    for (int i = index; i < index_in.Length; i++)
-                    {
-                        index_in[i] = index_in[index - 1] + i;
-                    }
-                     
-                }
-                 *//*
-            }
-            return null;
-        }*/
-      
-        /*private int[] GetFirstBinPositions(int nlayers, int ncohorts)
-        {
-            int[] Bin = new int[nlayers - 1];
-
-            for (int ly = 0; ly < Bin.Length; ly++)
-            {
-                Bin[ly] = ly+1;
-            }
-            return Bin;
-        }*/
-
-        /*public static List<T> Shuffle<T>(List<T> array)
-        {
-            int n = array.Count;
-            while (n > 1)
-            {
-                int k = PlugIn.DiscreteUniformRandom(0, n);
-                n--;
-
-                T temp = array[n];
-                array[n] = array[k];
-                array[k] = temp;
-            }
-            return array;
-        }*/
-
-        /*uint CalculateLayerstdev(List<double> f)
-        {
-            return (uint)Math.Max(Math.Abs(f.Max() - f.Average()), Math.Abs(f.Min() - f.Average()));
-
-        }*/
-
-        /*int[] MinMaxCohortNr(int[] Bin, int i, int Count)
-        {
-            int min = (i > 0) ? Bin[i - 1] : 0;
-            int max = (i < Bin.Count()) ? Bin[i] : Count - 1;
-
-            return new int[] { min, max };
-        }*/
-
-        //static List<uint> layerstdev = new List<uint>();
-
-        /*private List<List<int>> GetBins(List<double> CumCohortBiomass)
-        {
-            nlayers = 0;
-            layerstdev.Clear();
-            if (CumCohortBiomass.Count() == 0)
-            {                
-                return null;
-            }
-
-            // Bin and BestBin are lists of indexes that determine what cohort belongs to what canopy layer, 
-            // i.e. when Bin[1] contains 45 then SubCanopyCohorts[45] is in layer 1
-            int[] BestBin = null;
-            int[] Bin = null;
-                       
-
-            float LayerStDev = float.MaxValue;
-
-            //=====================OPTIMIZATION LOOP====================================
-            do
-            {
-                nlayers++;
-                
-
-                Bin = GetFirstBinPositions(nlayers, CumCohortBiomass.Count());
-
-                while (Bin != null)
-                {
-                    layerstdev.Clear();
-
-                    if (Bin.Count() == 0)
-                    {
-                        layerstdev.Add(CalculateLayerstdev(CumCohortBiomass));
-                    }
-                    else for (int i = 0; i <= Bin.Count(); i++)
-                    {
-                        int[] MinMax = MinMaxCohortNr(Bin, i, CumCohortBiomass.Count());
-
-                        // Get the within-layer variance in biomass
-                        layerstdev.Add(CalculateLayerstdev(CumCohortBiomass.GetRange(MinMax[0], MinMax[1] - MinMax[0])));
-                    }
-
-                    // Keep the optimal (min within-layer variance) layer setting
-                    if (layerstdev.Max() < LayerStDev)
-                    {
-                        BestBin = new List<int>(Bin).ToArray();
-                        LayerStDev = layerstdev.Max();
-                    }
-                    Bin = GetNextBinPositions(Bin, CumCohortBiomass.Count());
-
-                }
-            }
-            while (layerstdev.Max() >= MaxDevLyrAv && nlayers < MaxCanopyLayers && nlayers < (CumCohortBiomass.Count()/PlugIn.IMAX));
-            //=====================OPTIMIZATION LOOP====================================
-
-
-            // Actual layer configuration
-            List<List<int>> Bins = new List<List<int>>();
-            if (BestBin.Count() == 0)
-            {
-                // One canopy layer
-                Bins.Add(new List<int>());
-                for (int i = 0; i < CumCohortBiomass.Count(); i++)
-                {
-                    Bins[0].Add(i);
-                }
-            }
-            else for (int i = 0; i <= BestBin.Count(); i++)
-            {
-                // Multiple canopy layers
-                Bins.Add(new List<int>());
-
-                int[] minmax = MinMaxCohortNr(BestBin, i, CumCohortBiomass.Count());
-
-                // Add index numbers to the Bins array
-                for (int a = minmax[0]; a < ((i == BestBin.Count()) ? minmax[1]+1 : minmax[1]); a++)
-                {
-                    Bins[i].Add(a);
-                }
-            }
-            return Bins;
-        }*/
 
         public static uint ComputeKey(uint a, ushort b)
         {
@@ -791,25 +477,27 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             foreach (List<Cohort> species_cohort in cohorts.Values)
             {
-                Landis.Library.DensityCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
-                
-                for (int c =0;c< species_cohort.Count(); c++)
+                //Landis.Library.DensityCohorts.SpeciesCohorts species_cohorts = GetSpeciesCohort(cohorts[species_cohort[0].Species]);
+                foreach (Landis.Library.DensityCohorts.ICohort cohort in (IEnumerable<Landis.Library.DensityCohorts.ICohort>)species_cohort)
+                //for (int c =0;c< species_cohort.Count(); c++)
                 {
-                    Landis.Library.BiomassCohorts.ICohort cohort = (Library.BiomassCohorts.ICohort) species_cohort[c];
-
+                    Landis.Library.BiomassCohorts.ICohort biocohort = (Library.BiomassCohorts.ICohort) cohort;
+                    
                     // Disturbances return reduction in aboveground biomass
-                    int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
-
+                    int _reduction = disturbance.ReduceOrKillMarkedCohort(biocohort);
+                    double reductionProp = _reduction / cohort.Biomass;
+                    int treeRemoval = (int)Math.Round(cohort.Treenumber * reductionProp);
                     reduction.Add(_reduction);
-                    if (reduction[reduction.Count() - 1] >= species_cohort[c].Treenumber)  //Compare to aboveground biomass
+                    if (reduction[reduction.Count() - 1] >= cohort.Treenumber)  //Compare to aboveground biomass
                     {
-                        ToRemove.Add(species_cohort[c]);
+                        ToRemove.Add((Cohort) cohort);
                         // Edited by BRM - 090115
                     }
                     else
                     {
-                        double reductionProp = (double)reduction[reduction.Count() - 1] / (double)species_cohort[c].Treenumber;  //Proportion of aboveground biomass
-                        //species_cohort[c].ReduceBiomass(this, reductionProp, disturbance.Type);  // Reduction applies to all biomass
+                        //FIXME compute treenumber reduction from disturbance reduction
+                         //Proportion of aboveground biomass
+                        cohort.ChangeTreenumber(-treeRemoval);  // Reduction applies to all biomass
                     }
                     //
                 }
@@ -946,92 +634,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        // FIXME - I don't think we need this function
-        /*private void RemoveMarkedCohorts()
-        {
-            for (int c = cohorts.Values.Count - 1; c >= 0; c--)
-            {
-                List<Cohort> species_cohort = cohorts.Values.ElementAt(c);
-
-                for (int cc = species_cohort.Count - 1; cc >= 0; cc--)
-        {
-                    if (species_cohort[cc].IsAlive == false)
-                    {
-                        RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
-                    }
-                }
-            }
-        }*/
-
-        // with cold temp killing cohorts - now moved to within CalculatePhotosynthesis function
-        /*private void RemoveMarkedCohorts(float minMonthlyAvgTemp, float winterSTD)
-        {
-
-            for (int c = cohorts.Values.Count - 1; c >= 0; c--)
-            {
-                List<Cohort> species_cohort = cohorts.Values.ElementAt(c);
-
-                for (int cc = species_cohort.Count - 1; cc >= 0; cc--)
-                {
-                    if (species_cohort[cc].IsAlive == false)
-                    {
-                      
-                        RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
-
-                    }
-                    else
-                    {
-                        if(permafrost)
-                        {
-                            // Check if low temp kills cohorts
-                            if((minMonthlyAvgTemp - (3.0 * winterSTD)) < species_cohort[cc].SpeciesPNET.ColdTol)
-                            {
-                                RemoveCohort(species_cohort[cc], new ExtensionType(Names.ExtensionName));
-                            }
-                        }
-                    }
-                
-                }
-            }
-
-        }*/
 
         public void RemoveCohort(Cohort cohort, ExtensionType disturbanceType)
         {
-
-            if(disturbanceType.Name == Names.ExtensionName)
-            {
-                CohortsKilledBySuccession[cohort.Species.Index] += 1;
-            }
-            else if(disturbanceType.Name == "disturbance:harvest")
-            {
-                CohortsKilledByHarvest[cohort.Species.Index] += 1;
-            }
-            else if(disturbanceType.Name == "disturbance:fire")
-            {
-                CohortsKilledByFire[cohort.Species.Index] += 1;
-            }
-            else if (disturbanceType.Name == "disturbance:wind")
-            {
-                CohortsKilledByWind[cohort.Species.Index] += 1;
-            }
-            else
-            {
-                CohortsKilledByOther[cohort.Species.Index] += 1;
-            }
-
-            if (disturbanceType.Name != Names.ExtensionName)
-            {
-                Cohort.RaiseDeathEvent(this, cohort, Site, disturbanceType);
-            }
-
             cohorts[cohort.Species].Remove(cohort);
 
             if (cohorts[cohort.Species].Count == 0)
             {
                 cohorts.Remove(cohort.Species);
             }
-
+            Cohort.Died(this, cohort, Site, disturbanceType);
             Allocation.Allocate(this, cohort, disturbanceType, 1.0);  //Allocation fraction is 1.0 for complete removals
 
         }
@@ -1107,125 +719,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             return spc;
         }
         
-        /*
-        public void AddWoodyDebris(float Litter, float KWdLit)
-        {
-            PlugIn.WoodyDebris[Site].AddMass(Litter, KWdLit);
-        }
-        public void RemoveWoodyDebris(double percentReduction)
-        {
-            PlugIn.WoodyDebris[Site].ReduceMass(percentReduction);
-        }
-        public void AddLitter(float AddLitter, ISpeciesDensity spc)
-        {
-            
-            double KNwdLitter = Math.Max(0.3, (-0.5365 + (0.00241 * AET.Sum())) - (((-0.01586 + (0.000056 * AET.Sum())) * spc.FolLignin * 100)));
-
-            PlugIn.Litter[Site].AddMass(AddLitter, KNwdLitter);
-        }
-        public void RemoveLitter(double percentReduction)
-        {
-            PlugIn.Litter[Site].ReduceMass(percentReduction);
-        }
-        */
-        /*string Header(Landis.SpatialModeling.ActiveSite site)
-        {
-            
-            string s = OutputHeaders.Time +  "," +
-                       OutputHeaders.Ecoregion + "," + 
-                       OutputHeaders.SoilType +"," +
-                       OutputHeaders.NrOfCohorts + "," +
-                       OutputHeaders.MaxLayerStdev + "," +
-                       OutputHeaders.Layers + "," +
-                       OutputHeaders.PAR0 + "," +
-                       OutputHeaders.Tmin + "," +
-                       OutputHeaders.Tave + "," +
-                       OutputHeaders.Tday + "," +
-                       OutputHeaders.Tmax + "," +
-                       OutputHeaders.Precip + "," +
-                        OutputHeaders.CO2 + "," +
-                         OutputHeaders.O3 + "," +
-                       OutputHeaders.RunOff + "," + 
-                       OutputHeaders.Leakage + "," + 
-                       OutputHeaders.PET + "," +
-                       OutputHeaders.Evaporation + "," +
-                       OutputHeaders.Transpiration + "," + 
-                       OutputHeaders.Interception + "," +
-                       OutputHeaders.SurfaceRunOff + "," +
-                       OutputHeaders.water + "," +
-                       OutputHeaders.PressureHead + "," + 
-                       OutputHeaders.SnowPack + "," +
-                        OutputHeaders.LAI + "," + 
-                        OutputHeaders.VPD + "," + 
-                        OutputHeaders.GrossPsn + "," + 
-                        OutputHeaders.NetPsn + "," +
-                        OutputHeaders.MaintResp + "," +
-                        OutputHeaders.Wood + "," + 
-                        OutputHeaders.Root + "," + 
-                        OutputHeaders.Fol + "," + 
-                        OutputHeaders.NSC + "," + 
-                        OutputHeaders.HeteroResp + "," +
-                        OutputHeaders.Litter + "," + 
-                        OutputHeaders.CWD + "," +
-                        OutputHeaders.WoodySenescence + "," + 
-                        OutputHeaders.FoliageSenescence + ","+
-                        OutputHeaders.SubCanopyPAR+","+
-                        OutputHeaders.FrostDepth+","+
-                        OutputHeaders.LeakageFrac;
-
-            return s;
-        }*/
-
-        /*private void AddSiteOutput(IEcoregionPnETVariables monthdata)
-        {
-            uint maxLayerStdev = 0;
-            if (layerstdev.Count() > 0)
-                maxLayerStdev = layerstdev.Max();
-
-            string s = monthdata.Year + "," +
-                        Ecoregion.Name + "," +
-                        Ecoregion.SoilType + "," +
-                        cohorts.Values.Sum(o => o.Count) + "," +
-                        maxLayerStdev + "," +
-                        nlayers + "," +
-                        monthdata.PAR0 + "," + 
-                        monthdata.Tmin + "," +
-                        monthdata.Tave + "," +
-                        monthdata.Tday + "," +
-                        monthdata.Tmax + "," +
-                        monthdata.Prec + "," +
-                        monthdata.CO2 + "," +
-                         monthdata.O3 + "," +
-                        Hydrology.RunOff + "," +
-                        Hydrology.Leakage + "," +
-                        Hydrology.PET + "," +
-                        Hydrology.Evaporation + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Transpiration.Sum())) + "," +
-                        interception + "," +
-                        precLoss +"," +
-                        hydrology.Water + "," +
-                         hydrology.GetPressureHead(Ecoregion) + "," +
-                        snowPack + "," +
-                        this.CanopyLAI + "," +
-                        monthdata.VPD + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.GrossPsn.Sum())) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.NetPsn.Sum())) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.MaintenanceRespiration.Sum())) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Wood)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Root)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.Fol)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.NSC)) + "," +
-                        HeterotrophicRespiration + "," +
-                        PlugIn.Litter[Site].Mass + "," +
-                        PlugIn.WoodyDebris[Site].Mass + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.LastWoodySenescence)) + "," +
-                        cohorts.Values.Sum(o => o.Sum(x => x.LastFoliageSenescence))+ "," +
-                        subcanopypar +","+
-                        frostFreeSoilDepth+","+
-                        leakageFrac;
-           
-            this.siteoutput.Add(s);
-        }*/
  
         public IEnumerator<Landis.Library.DensityCohorts.ISpeciesCohorts> GetEnumerator()
         {

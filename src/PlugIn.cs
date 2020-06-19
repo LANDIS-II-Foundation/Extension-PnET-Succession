@@ -349,8 +349,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             DiameterInputs.Initialize(DiameterInputFile, false);
 
             SpeciesDensity.ChangeDynamicParameters(0);  // Year 0
-            //Hydrology.Initialize();
 
+            Landis.Library.DensityCohorts.Cohorts.Initialize(Timestep);
             // This creates the cohorts - FIXME
             SiteCohorts.Initialize();
 
@@ -427,11 +427,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in sitecohorts[site])
-                {
-                    Cohort.SetSiteAccessFunctions(sitecohorts[site]);
-                    SiteVars.TotalSiteRD(speciesCohorts, site);
-                }
+
+                Cohort.SetSiteAccessFunctions(sitecohorts[site]);
+                //SiteVars.TotalSiteRD(site);
+                
                 float tempRD = SiteVars.SiteRD[site];
                 DensityCohorts[site] = sitecohorts[site];
                 //FineFuels[site] = Litter[site].Mass;
@@ -567,7 +566,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             //List<IEcoregionClimateVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
             
-            sitecohorts[site].Grow();
+            sitecohorts[site].Grow(site, successionTimestep.HasValue);
            
             Date = EndDate;
              

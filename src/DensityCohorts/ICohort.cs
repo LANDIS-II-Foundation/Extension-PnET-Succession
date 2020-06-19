@@ -23,15 +23,22 @@ namespace Landis.Library.DensityCohorts
             get;
         }
 
+        ushort Age
+        {
+            get;
+        }
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Computes how much of the cohort's biomass is non-woody.
+        /// Computes the relative density of a cohort.
         /// </summary>
-        /// <param name="site">
+        /// <param name="cohort">
         /// The site where the cohort is located.
         /// </param>
-        //int ComputeNonWoodyBiomass(ActiveSite site);
-        
+        float ComputeCohortRD(Cohort cohort);
+
+        void ChangeTreenumber(int delta);
+
+        void IncrementAge();
     }
 }

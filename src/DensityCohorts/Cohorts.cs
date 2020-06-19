@@ -39,20 +39,16 @@ namespace Landis.Library.DensityCohorts
         //---------------------------------------------------------------------
 
         /// <summary>
-        /// Initializes the biomass-cohorts module.
+        /// Initializes the cohorts module.
         /// </summary>
         /// <param name="successionTimeStep">
         /// The time step for the succession extension.  Unit: years
         /// </param>
-        /// <param name="biomassCalculator">
-        /// The calculator for computing the change in a cohort's biomass due
-        /// to growth and mortality.
-        /// </param>
-        public static void Initialize(int         successionTimeStep,
-                                      ICalculator biomassCalculator)
+
+        public static void Initialize(int         successionTimeStep)
         {
             Cohorts.successionTimeStep = successionTimeStep;
-            Cohorts.biomassCalculator  = biomassCalculator;
+
         }
 
         //---------------------------------------------------------------------

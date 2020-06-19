@@ -81,5 +81,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         List<int> CohortsByWind { get; set; }
         List<int> CohortsByOther { get; set; }
 
+
     }
 }

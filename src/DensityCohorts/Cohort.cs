@@ -262,7 +262,8 @@ namespace Landis.Library.DensityCohorts
         /// </summary>
         public void IncrementAge()
         {
-            data.Age += 1;
+            ushort newAge = (ushort)(data.Age + +Landis.Library.DensityCohorts.Cohorts.SuccessionTimeStep);
+            data.Age = newAge;
         }
 
         //---------------------------------------------------------------------
@@ -284,6 +285,19 @@ namespace Landis.Library.DensityCohorts
             //Percentage nonWoodyPercentage = Cohorts.BiomassCalculator.ComputeNonWoodyPercentage(this, site);
             //return (int) (data.Biomass * nonWoodyPercentage);
             return 0;
+        }
+
+        //---------------------------------------------------------------------
+
+        public float ComputeCohortRD(Cohort cohort)
+        {
+            ISpeciesDensity speciesDensity = PlugIn.SpeciesDensity.AllSpecies[cohort.Species.Index];
+
+            float tmp_term1 = (float)Math.Pow((cohort.Diameter / 25.4), 1.605);
+            float tmp_term2 = 10000 / speciesDensity.MaxSDI;
+            int tmp_term3 = cohort.Treenumber;
+            float cohortRD = tmp_term1 * tmp_term2 * tmp_term3 / (float)Math.Pow(PlugIn.ModelCore.CellLength, 2);
+            return cohortRD;
         }
 
         //---------------------------------------------------------------------
