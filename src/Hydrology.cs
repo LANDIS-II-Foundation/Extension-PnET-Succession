@@ -13,7 +13,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return water;
             }
         }
-         
+
         private static PressureHeadSaxton_Rawls pressureheadtable;
 
         public float GetPressureHead(IEcoregionPnET ecoregion)
@@ -21,20 +21,21 @@ namespace Landis.Extension.Succession.BiomassPnET
             return pressureheadtable[ecoregion, (int)water];
 
         }
-        
+
+        public float Evaporation;
+        public float Leakage;
+        public float RunOff;
         public static float PET;
         public static float DeliveryPotential;
-        public static float Evaporation;
-        public static float Leakage;
-        public static float RunOff;
-        public static float FrozenDepth;
-        public static float FrozenWaterPct;
-        
+        public float FrozenDepth;
+        public float FrozenWaterPct;
+        public static readonly object threadLock = new object();
+
         public bool AddWater(float addwater)
         {
             water += addwater;
 
-            if(water>= 0)return true;
+            if (water >= 0) return true;
             else return false;
         }
 
@@ -82,34 +83,34 @@ namespace Landis.Extension.Succession.BiomassPnET
          
         static double Calculate_PotentialEvapotranspiration(double _Rads, double _Tair, double Altitude = 0)
         {
-        //================================================================================
-        //----  Computes the potential evapotranspiration as the value under minimum
-        //----  advection according to Priestley and Taylor (1972) as discussed in
-        //----  Brutsaert (1982, p. 217).
-        //
-        //----  Pierluigi Calanca, 23.06.2006 (PROGRASS)
-        //================================================================================
+            //================================================================================
+            //----  Computes the potential evapotranspiration as the value under minimum
+            //----  advection according to Priestley and Taylor (1972) as discussed in
+            //----  Brutsaert (1982, p. 217).
+            //
+            //----  Pierluigi Calanca, 23.06.2006 (PROGRASS)
+            //================================================================================
             //double _Rads                  // Solar Radiation (MJ/m2/day)
             //double _Tair                   // Air temperature (°C)     
-	
-	        //double press = 80.0;			 
-            double Lv = 2.5e6;				 // Specific heat of vaporisation (J/kg)
-	        double Cpd = 1004;				 // Joules/°C/kg (Specific heat at constant pressure)
-	        double eps = 0.622;				 // Mol Mass Water (18)/Mol mass air (28.9)
-	        double alphaPT = 1.35;			 // Priestley Taylor constant (parameter)
 
-            const int sec_per_day = 60*60*24;
+            //double press = 80.0;			 
+            double Lv = 2.5e6;               // Specific heat of vaporisation (J/kg)
+            double Cpd = 1004;               // Joules/°C/kg (Specific heat at constant pressure)
+            double eps = 0.622;              // Mol Mass Water (18)/Mol mass air (28.9)
+            double alphaPT = 1.35;           // Priestley Taylor constant (parameter)
+
+            const int sec_per_day = 60 * 60 * 24;
             const int JoulesPerMJ = 1000000;
             const int days_per_month = 30;
-                        
-	        // Atmospheric pressure (unit of vapour pressure kPa, depends on altitude)
-	        //http://www.fao.org/docrep/x0490e/x0490e07.htm#TopOfPage
-	        double press = 101.3 * Math.Pow(((293 -0.0065 * Altitude)/293),5.26);
-           
-	        // Psychrometric constant [kPa °C-1]
-            double gamE  = Cpd*press/(eps*Lv); 
 
-	        // Angle of the curve [-]
+            // Atmospheric pressure (unit of vapour pressure kPa, depends on altitude)
+            //http://www.fao.org/docrep/x0490e/x0490e07.htm#TopOfPage
+            double press = 101.3 * Math.Pow(((293 - 0.0065 * Altitude) / 293), 5.26);
+
+            // Psychrometric constant [kPa °C-1]
+            double gamE = Cpd * press / (eps * Lv);
+
+            // Angle of the curve [-]
             double delta = (6.112 * Math.Exp(17.67 * _Tair / (_Tair + 243.5))) * 17.67 * 243.5 / Math.Pow((_Tair + 243.5), 2);
 
             // RADs coming in as WAT(PAR)/m2/mo
@@ -118,38 +119,38 @@ namespace Landis.Extension.Succession.BiomassPnET
             double RadnMJM2 = Radn * sec_per_day / JoulesPerMJ;  // Radn should have unit MJ/m2
 
             double PET = 0;
-	        if (RadnMJM2 > 0)PET = (alphaPT/Lv) * delta/(delta+gamE) * RadnMJM2 * JoulesPerMJ;
-	        else PET= 0.0;
+            if (RadnMJM2 > 0) PET = (alphaPT / Lv) * delta / (delta + gamE) * RadnMJM2 * JoulesPerMJ;
+            else PET = 0.0;
 
             return PET * days_per_month;
         }
       
         public float CalculateEvaporation(SiteCohorts sitecohorts, IEcoregionPnETVariables variables)
         {
-            // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
-            PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, variables.Tday);
+            lock (threadLock)
+            {
+                // this.Ecoregion.Variables.Month, Ecoregion, this.subcanopypar, Transpiration, this.Ecoregion.Variables.Tday, ref water,this.SetAet
+                PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, variables.Tday);
 
-            float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Water];
+                float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Water];
 
-            // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
-            // Robock, A., Vinnikov, K. Y., Schlosser, C. A., Speranskaya, N. A., & Xue, Y. (1995). Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
-            float evapCritWater = sitecohorts.Ecoregion.FieldCap * 0.75f;
+                // Evaporation begins to decline at 75% of field capacity (Robock et al. 1995)
+                // Robock, A., Vinnikov, K. Y., Schlosser, C. A., Speranskaya, N. A., & Xue, Y. (1995). Use of midlatitude soil moisture and meteorological observations to validate soil moisture simulations with biosphere and bucket models. Journal of Climate, 8(1), 15-35.
+                float evapCritWater = sitecohorts.Ecoregion.FieldCap * 0.75f;
 
-            DeliveryPotential = Cohort.ComputeFWater(0,0, evapCritWater, 153, pressurehead);
+                DeliveryPotential = Cohort.ComputeFWater(0, 0, evapCritWater, 153, pressurehead);
 
-            // Per month
-            sitecohorts.SetAet(DeliveryPotential * PET, variables.Month);
+                // Per month
+                sitecohorts.SetAet(DeliveryPotential * PET, variables.Month);
 
-            float wiltPoint = sitecohorts.Ecoregion.WiltPnt;
+                float wiltPoint = sitecohorts.Ecoregion.WiltPnt;
 
-            // Evaporation cannot remove water below wilting point, evaporation cannot be negative
-            // Transpiration is assumed to replace evaporation
-            Evaporation = (float)Math.Max(0,Math.Min(Water - wiltPoint, Math.Max(0, DeliveryPotential * PET - (double)sitecohorts.Transpiration)));
+                // Evaporation cannot remove water below wilting point, evaporation cannot be negative
+                // Transpiration is assumed to replace evaporation
+                Evaporation = (float)Math.Max(0, Math.Min(Water - wiltPoint, Math.Max(0, DeliveryPotential * PET - (double)sitecohorts.Transpiration)));
 
-            return Evaporation;
+                return Evaporation;
+            }
         }
-   
-         
-
     }
  }

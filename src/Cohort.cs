@@ -418,7 +418,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Photosynthesis by canopy layer
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, ref Hydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables)
          {      
             bool success = true;
             float lastO3Effect = O3Effect;
@@ -439,7 +439,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - ((ecoregion.Porosity * frostFreeProp) + ecoregion.RunoffCapture), 0));
                 //if ((hydrology.Water + meltrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
                 //    meltrunoff = (hydrology.Water + meltrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
-                Hydrology.RunOff += meltrunoff;
+                hydrology.RunOff += meltrunoff;
 
                 success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
@@ -456,7 +456,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - ((ecoregion.Porosity * frostFreeProp) + ecoregion.RunoffCapture), 0));
                 //if ((hydrology.Water + rainrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
                 //    rainrunoff = (hydrology.Water + rainrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
-                Hydrology.RunOff += rainrunoff;
+                hydrology.RunOff += rainrunoff;
 
                 float waterIn = precipIn - (rainrunoff);
 
@@ -469,11 +469,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (precipIn > 0 || MeltInByCanopyLayer > 0)
             {
                 float leakage = Math.Max((float)leakageFrac * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
-                Hydrology.Leakage += leakage;
+                hydrology.Leakage += leakage;
 
                 // Remove fast leakage
                 success = hydrology.AddWater(-1 * leakage);
-                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }               
             
             //// Adjust soil water for freezing - Now done when calculating frozen depth

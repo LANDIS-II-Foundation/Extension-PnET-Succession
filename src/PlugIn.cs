@@ -53,7 +53,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static ISiteVar<SiteCohorts> sitecohorts;
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
-        private static readonly object threadLock = new object();
+        public static readonly object CWDThreadLock = new object();
+        public static readonly object litterThreadLock = new object();
+        private static readonly object distributionThreadLock = new object();
         public static ushort IMAX;
         public static float FTimeStep;
 
@@ -125,7 +127,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static int DiscreteUniformRandom(int min, int max)
         {
             int value;
-            lock (threadLock)
+            lock (distributionThreadLock)
             {
                 ModelCore.ContinuousUniformDistribution.Alpha = min;
                 ModelCore.ContinuousUniformDistribution.Beta = max + 1;
@@ -144,7 +146,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static double ContinuousUniformRandom(double min = 0, double max = 1)
         {
             double value;
-            lock (threadLock)
+            lock (distributionThreadLock)
             {
                 ModelCore.ContinuousUniformDistribution.Alpha = min;
                 ModelCore.ContinuousUniformDistribution.Beta = max;
