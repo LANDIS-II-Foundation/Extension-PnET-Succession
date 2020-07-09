@@ -1,0 +1,27 @@
+LandisData   "Land Use"  << this is 7.0
+
+Timestep    1
+
+InputMaps	landuse-{timestep}.img
+SiteLog		output/land-use/site-log.csv  <<optional:  default=don't generate log
+
+
+>>------------------------------->>------------------------------------
+
+>>------------------------------------
+LandUse          "Start"  
+>>------------------------------------
+ MapCode          1  <<time0==4
+ AllowHarvest?    yes
+ LandCoverChange  RemoveTrees
+		pinubank  50-300(30%)
+		querrubr 50-200 (40%)
+
+>>------------------------------------
+LandUse          "RemoveTreesOnly"  
+>>------------------------------------
+ MapCode          2  <<time0==4
+ AllowHarvest?    yes
+ LandCoverChange  RemoveTrees
+		pinubank  50-300(30%)
+		querrubr 50-200 (40%)

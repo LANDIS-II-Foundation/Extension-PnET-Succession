@@ -654,9 +654,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             int temp = pnetSpecies.MaxSDI;
 
-            bool speciesPresent = cohorts.ContainsKey(species);
+            bool speciesPresent = cohorts.ContainsKey(pnetSpecies);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[pnetSpecies].Max(o => o.Age) >= species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }

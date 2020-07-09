@@ -370,11 +370,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             Reproduction.AddNewCohort = AddNewCohort;
             Reproduction.MaturePresent = MaturePresent;
             Reproduction.PlantingEstablish = PlantingEstablish;
-
-
-            SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), parameters["SeedingAlgorithm"].Value);
-
-            base.Initialize(ModelCore, SeedAlgorithm);
+            Reproduction.DensitySeeds = DensitySeeds;
+            
 
 
             StartDate = new DateTime(((Parameter<int>)GetParameter(Names.StartYear)).Value, 1, 15);
@@ -393,6 +390,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             //    MapReader.ReadLitterFromMap(LitterMapFile.Value);
             //if (woodyDebrisMapFile)
             //    MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
+
+            SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), parameters["SeedingAlgorithm"].Value);
+
+            base.Initialize(ModelCore, SeedAlgorithm);
+
+
 
             // Convert Density cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
@@ -462,7 +465,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType)
+        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType, double propBiomass = 1.0)
         {
             ISpeciesDensity spc = PlugIn.SpeciesDensity[species];
             Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
@@ -628,7 +631,57 @@ namespace Landis.Extension.Succession.BiomassPnET
            
         }
         //---------------------------------------------------------------------
+        /// <summary>
+        /// Determines if a species can establish on a site.
+        /// This is a Delegate method to the succession library.
+        /// </summary>
+        public double DensitySeeds(ISpecies species, ActiveSite site)
+        {
+            double availableSeed = 0;
+            int totalseed_m_timestep = SpeciesDensity[species].TotalSeed * Timestep;
+            if (SpeciesDensity[species].SpType < 0)
+                availableSeed += (uint)totalseed_m_timestep; //site.cs Ln 1971
+            else
+            {
+                if (SpeciesDensity[species].MaxSeedDist < 0)
+                {
+                    SiteCohorts mySiteCohorts = sitecohorts[site];
+                    foreach (Cohort cohort in mySiteCohorts[species])
+                    {
+                        double loc_term = Math.Pow(cohort.Diameter / 25.4, 1.605);
+                        //wenjuan changed on mar 30 2011
+                        double double_val = loc_term * cohort.Treenumber * totalseed_m_timestep; //site.cs Ln 1991
+                        availableSeed += double_val;
+                    }
+                }
+                else
+                {
+                    SiteCohorts mySiteCohorts = sitecohorts[site];
+                    double matureTrees = 0;
+                    if (mySiteCohorts[species] != null)
+                    {
+                        foreach (Cohort cohort in mySiteCohorts[species])
+                        {
+                            if (cohort.Age > SpeciesDensity[species].Maturity)
+                            {
+                                matureTrees += cohort.Treenumber;
+                            }
+                        }
+                    }
 
+                    int local_tseed = SpeciesDensity[species].TotalSeed;
+
+                    double double_val = matureTrees * totalseed_m_timestep;  //modified from site.cs Ln 2024
+                    availableSeed += double_val;
+                }
+            }
+            float float_rand = (float)ModelCore.ContinuousUniformDistribution.NextDouble();
+            double double_value = availableSeed * (0.95 + float_rand * 0.1);  //from site.cs Ln 2045
+            availableSeed = (uint)double_value;
+
+            return availableSeed;
+        }
+        //---------------------------------------------------------------------
 
     }
 }

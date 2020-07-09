@@ -1,0 +1,179 @@
+LandisData   "Land Use"
+
+Timestep    1
+InputMaps	../inputFolders/SpatialData/highPopLChalf1/Landscape{timestep}.img  << DEFINE THE PROPER PATHWAY
+SiteLog		output/land-use/LULC-log.csv  <<optional:  default=don't generate log
+
+>> Source input files are from Harvard Forest Analysis of Dynamica  
+
+>>QUESTION - IS NONACTIVE BACKGROUND A REQUIRED INPUT?
+
+>>------------------------------->
+>>------------------------------------
+>LandUse          "Background"  
+>>------------------------------------
+>MapCode          0
+>AllowHarvest?    Yes  
+>LandCoverChange  NoChange
+>>RepeatHarvest?   Yes
+>>EnableEstablishment
+
+>>------------------------------------
+LandUse          "Water"  
+>>------------------------------------
+MapCode          0
+AllowHarvest?    No  
+PreventEstablishment
+LandCoverChange  RemoveTrees
+RepeatHarvest?   Yes
+
+BalsamFir	1-150  << no value in parentheses to remove 100% of the biomass
+BigTAspen	1-100
+BlackAsh	1-200
+BlackSpruce	1-250
+GreenAsh	1-175
+JackPine	1-150
+PaperBirch	1-140
+QuakAspen	1-200
+RedMaple	1-150
+RedPine		1-300
+SugarMaple	1-400
+Tamarack	1-180
+WhiteCedar	1-400
+WhitePine	1-450
+WhiteSpruce	1-350
+
+>>------------------------------------
+LandUse          "LowDensDevelop"
+>>------------------------------------
+MapCode          1
+AllowHarvest?    no   
+PreventEstablishment
+LandCoverChange  RemoveTrees
+RepeatHarvest?   Yes
+
+BalsamFir	1-150 (70%)   << You can remove less than 100% of the biomass
+BigTAspen	1-100 (70%)   << Draft estimate of low-density development is 70% removal of biomass/30% remains
+BlackAsh	1-200 (70%)
+BlackSpruce	1-250 (70%)
+GreenAsh	1-175 (70%)
+JackPine	1-150 (70%)
+PaperBirch	1-140 (70%)
+QuakAspen	1-200 (70%)
+RedMaple	1-150 (70%)
+RedPine		1-300 (70%)
+SugarMaple	1-400 (70%)
+Tamarack	1-180 (70%)
+WhiteCedar	1-400 (70%)
+WhitePine	1-450 (70%)
+WhiteSpruce	1-350 (70%)
+
+>>------------------------------------
+LandUse          "HighDensDevelop"
+>>------------------------------------
+MapCode          2
+AllowHarvest?    no   
+PreventEstablishment
+LandCoverChange  RemoveTrees
+RepeatHarvest?   Yes
+
+BalsamFir	1-150 << We assume high density development removes all trees
+BigTAspen	1-100
+BlackAsh	1-200
+BlackSpruce	1-250
+GreenAsh	1-175
+JackPine	1-150
+PaperBirch	1-140
+QuakAspen	1-200
+RedMaple	1-150
+RedPine		1-300
+SugarMaple	1-400
+Tamarack	1-180
+WhiteCedar	1-400
+WhitePine	1-450
+WhiteSpruce	1-350
+
+>>------------------------------------
+LandUse          "Mining"
+>>------------------------------------
+MapCode          3 << Assumes "Barren" = "Mining"
+AllowHarvest?    no   
+PreventEstablishment
+LandCoverChange  RemoveTrees
+RepeatHarvest?   Yes
+
+BalsamFir	1-150 << We assume Mining removes all trees
+BigTAspen	1-100
+BlackAsh	1-200
+BlackSpruce	1-250
+GreenAsh	1-175
+JackPine	1-150
+PaperBirch	1-140
+QuakAspen	1-200
+RedMaple	1-150
+RedPine		1-300
+SugarMaple	1-400
+Tamarack	1-180
+WhiteCedar	1-400
+WhitePine	1-450
+WhiteSpruce	1-350
+
+ 
+>>------------------------------------
+LandUse          "Forest"
+>>------------------------------------
+MapCode          4
+AllowHarvest?    Yes
+>>PreventEstablishment
+LandCoverChange  NoChange
+RepeatHarvest?   No
+
+>>------------------------------------
+LandUse          "Grassland"
+>>------------------------------------
+MapCode          5
+AllowHarvest?    Yes
+>>PreventEstablishment
+LandCoverChange  NoChange
+RepeatHarvest?   No
+
+>> FOR NOW ASSUME THE GRASSLAND TRANSITION REPRESENTS NONPERMANENT LC TRANSITIONS SUCH AS CLEARCUT HARVEST
+
+>>------------------------------------
+LandUse          "Ag&Pasture"
+>>------------------------------------
+MapCode          6
+AllowHarvest?    No  
+PreventEstablishment
+LandCoverChange  RemoveTrees
+RepeatHarvest?   Yes
+
+BalsamFir	1-150 << We assume this LC removes all trees
+BigTAspen	1-100
+BlackAsh	1-200
+BlackSpruce	1-250
+GreenAsh	1-175
+JackPine	1-150
+PaperBirch	1-140
+QuakAspen	1-200
+RedMaple	1-150
+RedPine		1-300
+SugarMaple	1-400
+Tamarack	1-180
+WhiteCedar	1-400
+WhitePine	1-450
+WhiteSpruce	1-350
+
+>>------------------------------------
+LandUse          "Wetland"
+>>------------------------------------
+MapCode          7
+AllowHarvest?    Yes
+>>PreventEstablishment
+LandCoverChange  NoChange
+RepeatHarvest?   No
+
+>> WE EXPLICITLY SIMULATE WETLAND FOREST SUCCESSION
+
+
+		 

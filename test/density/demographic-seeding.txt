@@ -1,0 +1,54 @@
+LandisData  "Demographic Seeding"
+
+Kernel    DoubleExponential  << DoubleExponential, 2Dt
+
+SeedProduction   Density << Fixed, Uniform, Biomass, Density
+
+MonteCarloDraws  500
+
+>>MaxLeafArea 	 0.1 << Optional: default = cell area
+
+SeedlingLeafArea  0.20  << Area (m2) that each seedling occupies (all species)
+
+MinCohortProp	0.005  << Minimum Proportion of max biomass that counts as a cohort
+
+DispersalProbabilitiesLog  "dispersal_prob_{species}.txt"
+
+SeedRainMaps           "demographic-seeding/seed-rain_{timestep}_{species}.img"
+SeedlingEmergenceMaps  "demographic-seeding/seedling-emergence_{timestep}_{species}.img"
+
+
+>> 	    Seeds Produced(seeds/m2)	 Dispersal Functions
+>> Name		Minimum  Maximum	Mean1  Mean2  Weight1
+>> ----		-------	 -------	-----  -----  -------
+ querrubr	0	 5		1.42    44.74   0.86
+ pinubank     0	 50		0.50   175.00   0.90
+
+
+EmergenceProbabilities
+>> Species   eco0	eco1 
+>> --------  ----	----
+   querrubr	0.0	1.0
+   pinubank     0.0	1.0
+>> If species not present, then all its probabilities are 0
+
+
+SurvivalProbabilities
+>> Species   eco0	eco1
+>> --------  ----	----
+   querrubr	0.0	1.0
+   pinubank     0.0	1.0
+>> If species not present, then all its probabilities are 0
+
+SeedMass
+>> Species   	SeedMass (g/seed)
+>> --------  	--------
+   querrubr	1.5
+   pinubank     0.0003
+>> If species not present, then all seed mass is 0
+
+PnETSpeciesParameters
+>> Species   	SLWMax	FracFol	FrActWd
+>> -------- 	------ 	-------	-------
+   querrubr	70	0.02	0.00004
+   pinubank     50	0.02	0.00004
