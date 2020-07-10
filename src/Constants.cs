@@ -38,7 +38,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static float tau = 12F;                  //length of temp record     months
     }
 
-    public class biomassUtil
+/*    public class biomassUtil
     {
         private float[] biomassData;
 
@@ -82,4 +82,4 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
     }
-}
+*/}

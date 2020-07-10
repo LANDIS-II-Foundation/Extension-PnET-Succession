@@ -3,6 +3,7 @@
 using Landis.Core;
 using Landis.Library.Climate;
 using System.Linq;
+using Landis.Library.DensityCohorts;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
@@ -21,7 +22,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (ecoregion.Active)
                 {
                     // Latitude is contained in the PnET Ecoregion
-                    Climate.GenerateEcoregionClimateData(ecoregion, 0, EcoregionPnET.GetPnETEcoregion(ecoregion).Latitude);
+                    Climate.GenerateEcoregionClimateData(ecoregion, 0, EcoregionData.GetPnETEcoregion(ecoregion).Latitude);
                     SetSingleAnnualClimate(ecoregion, 0, Climate.Phase.SpinUp_Climate);  // Some placeholder data to get things started.
                 }
             }

@@ -213,4 +213,5 @@ FakesAssemblies/
 /src/PnET-Succession.sln
 /test/density/Landis-log.txt
 /test/density/Metadata/Output Biomass
-/test/density/outputs
+/test/density/outputs/
+/test/density/demographic-seeding/

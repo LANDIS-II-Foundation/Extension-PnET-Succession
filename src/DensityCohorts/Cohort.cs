@@ -5,7 +5,7 @@ using Landis.SpatialModeling;
 using Landis.Utilities;
 using System;
 using System.Collections.Generic;
-using Landis.Extension.Succession.BiomassPnET;
+
 
 namespace Landis.Library.DensityCohorts
 {
@@ -22,10 +22,9 @@ namespace Landis.Library.DensityCohorts
         private int treenumber;
         private bool firstYear;
         private float diameter;
-
-        public static IEcoregionPnET ecoregion;
+        public static IEcoregion ecoregion;
         public static ActiveSite site;
-
+        
         //---------------------------------------------------------------------
 
         public ISpecies Species
@@ -50,10 +49,10 @@ namespace Landis.Library.DensityCohorts
         {
             get
             {
-                ISpeciesDensity speciesdensity = PlugIn.SpeciesDensity.AllSpecies[species.Index];
-                double biomass  = Math.Exp(PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(Diameter)) * data.Treenumber / 1000.00; // Mg/cell
+                ISpeciesDensity speciesdensity = SpeciesParameters.SpeciesDensity.AllSpecies[species.Index];
+                double biomass  = Math.Exp(SpeciesParameters.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + SpeciesParameters.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(Diameter)) * data.Treenumber / 1000.00; // Mg/cell
                 int biomass_int = System.Convert.ToInt32(biomass);
-                double biomass_gm2 = biomass * 1000 * 1000 / (PlugIn.ModelCore.CellLength * PlugIn.ModelCore.CellLength);
+                double biomass_gm2 = biomass * 1000 * 1000 / (EcoregionData.ModelCore.CellLength * EcoregionData.ModelCore.CellLength);
                 int biomass_gm2_int = System.Convert.ToInt32(biomass_gm2);
                 return biomass_gm2_int;
             }
@@ -186,7 +185,7 @@ namespace Landis.Library.DensityCohorts
         public Cohort(ISpecies species,
                       ushort   age,
                       int   treenumber,
-                      IEcoregionPnET ecoregion)
+                      IEcoregion ecoregion)
         {
             this.species = species;
             this.data.Age = age;
@@ -213,10 +212,11 @@ namespace Landis.Library.DensityCohorts
                     }
                 }
                 this.data.Diameter = diameter;
-                ISpeciesDensity speciesdensity = PlugIn.SpeciesDensity.AllSpecies[species.Index];
-                double biomass = Math.Exp(PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + PlugIn.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(diameter)) * data.Treenumber / 1000.00; // Mg/cell
+                //FIXME ---- JSF
+                ISpeciesDensity speciesdensity = SpeciesParameters.SpeciesDensity.AllSpecies[species.Index];
+                double biomass = Math.Exp(SpeciesParameters.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 1) + SpeciesParameters.biomass_util.GetBiomassData(speciesdensity.BiomassClass, 2) * Math.Log(diameter)) * data.Treenumber / 1000.00; // Mg/cell
                 int biomass_int = System.Convert.ToInt32(biomass);
-                double biomass_gm2 = biomass * 1000 * 1000 / (PlugIn.ModelCore.CellLength * PlugIn.ModelCore.CellLength);
+                double biomass_gm2 = biomass * 1000 * 1000 / (EcoregionData.ModelCore.CellLength * EcoregionData.ModelCore.CellLength);
                 int biomass_gm2_int = System.Convert.ToInt32(biomass_gm2);
                 this.data.Biomass = biomass_gm2_int;
             }
@@ -244,7 +244,7 @@ namespace Landis.Library.DensityCohorts
 
         //---------------------------------------------------------------------
 
-        public Cohort(ISpeciesDensity species, ushort age, int treenumber, string SiteName, ushort firstYear, IEcoregionPnET siteEcoregion)
+        public Cohort(ISpeciesDensity species, ushort age, int treenumber, string SiteName, ushort firstYear, IEcoregion siteEcoregion)
         {
             //InitializeSubLayers();
             this.species = species;
@@ -291,12 +291,12 @@ namespace Landis.Library.DensityCohorts
 
         public float ComputeCohortRD(Cohort cohort)
         {
-            ISpeciesDensity speciesDensity = PlugIn.SpeciesDensity.AllSpecies[cohort.Species.Index];
+            ISpeciesDensity speciesDensity = SpeciesParameters.SpeciesDensity.AllSpecies[cohort.Species.Index];
 
             float tmp_term1 = (float)Math.Pow((cohort.Diameter / 25.4), 1.605);
             float tmp_term2 = 10000 / speciesDensity.MaxSDI;
             int tmp_term3 = cohort.Treenumber;
-            float cohortRD = tmp_term1 * tmp_term2 * tmp_term3 / (float)Math.Pow(PlugIn.ModelCore.CellLength, 2);
+            float cohortRD = tmp_term1 * tmp_term2 * tmp_term3 / (float)Math.Pow(EcoregionData.ModelCore.CellLength, 2);
             return cohortRD;
         }
 

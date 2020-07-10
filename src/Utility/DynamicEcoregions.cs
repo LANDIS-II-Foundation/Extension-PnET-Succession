@@ -11,7 +11,9 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         private static Dictionary<int, IDynamicEcoregionRecord[]> ecoRegData;
         private static IDynamicEcoregionRecord[] timestepData;
+        public static ICore ModelCore;
 
+        public static Landis.Library.Parameters.SpeciesEcoregionAuxParm<double> EstablishProbability;
         public DynamicEcoregions()
         {
         }
@@ -65,6 +67,32 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             timestepData = ecoRegData[0];
+        }
+
+        public static void ChangeDynamicParameters(int year)
+        {
+
+            if (DynamicInputs.AllData.ContainsKey(year))
+            {
+                EstablishProbability = new Landis.Library.Parameters.SpeciesEcoregionAuxParm<double>(PlugIn.ModelCore.Species, PlugIn.ModelCore.Ecoregions);
+                
+                DynamicInputs.TimestepData = DynamicInputs.AllData[year];
+
+                foreach (ISpecies species in PlugIn.ModelCore.Species)
+                {
+                    foreach (IEcoregion ecoregion in PlugIn.ModelCore.Ecoregions)
+                    {
+                        if (!ecoregion.Active)
+                            continue;
+
+                        if (DynamicInputs.TimestepData[species.Index, ecoregion.Index] == null)
+                            continue;
+
+                        EstablishProbability[species, ecoregion] = DynamicInputs.TimestepData[species.Index, ecoregion.Index].ProbEst;
+                    }
+                }
+            }
+
         }
     }
 
