@@ -252,7 +252,7 @@ namespace Landis.Extension.Output.Density
             }
         }
         //---------------------------------------------------------------------
-        private static double ComputeSpeciesBasal(Landis.Library.DensityCohorts.ISpeciesCohorts cohorts)
+        private static double ComputeSpeciesBasal(Library.Cohorts.ISpeciesCohorts<Library.DensityCohorts.ICohort> cohorts)
         {
             double local_const = 3.1415926 / (4 * 10000.00);
             double total = 0;
@@ -263,7 +263,7 @@ namespace Landis.Extension.Output.Density
 
         //---------------------------------------------------------------------
 
-        private static int ComputeSpeciesTreeNumber(Landis.Library.DensityCohorts.ISpeciesCohorts cohorts)
+        private static int ComputeSpeciesTreeNumber(Library.Cohorts.ISpeciesCohorts<Library.DensityCohorts.ICohort> cohorts)
         {
             int total = 0;
             if (cohorts != null)
@@ -277,7 +277,7 @@ namespace Landis.Extension.Output.Density
         {
             int total = 0;
             if (cohorts != null)
-                foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in cohorts)
+                foreach (Library.Cohorts.ISpeciesCohorts<Library.DensityCohorts.ICohort> speciesCohorts in cohorts)
                 {
                     total += ComputeSpeciesTreeNumber(speciesCohorts);
                 }
@@ -290,7 +290,7 @@ namespace Landis.Extension.Output.Density
         {
             double total = 0;
             if (cohorts != null)
-                foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in cohorts)
+                foreach (Library.Cohorts.ISpeciesCohorts<Library.DensityCohorts.ICohort> speciesCohorts in cohorts)
                 {
                     total += ComputeSpeciesBasal(speciesCohorts);
                 }

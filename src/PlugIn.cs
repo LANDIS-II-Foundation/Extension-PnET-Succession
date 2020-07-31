@@ -311,35 +311,33 @@ namespace Landis.Extension.Succession.BiomassPnET
             base.Initialize(ModelCore, SeedAlgorithm);
 
 
-
+            ISiteVar<Landis.Library.DensityCohorts.ISiteCohorts> DensityCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.DensityCohorts.ISiteCohorts>();
             // Convert Density cohorts to biomasscohorts
             ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
-
-            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
-            {
-                biomassCohorts[site] = sitecohorts[site];
-                
-                if (sitecohorts[site] != null && biomassCohorts[site] == null)
-                {
-                    throw new System.Exception("Cannot convert Density SiteCohorts to biomass site cohorts");
-                }
-            }
-            ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
-
+            // Convert Density cohorts to agecohorts
             ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
-            // FIXME
-            ISiteVar<Landis.Library.DensityCohorts.ISiteCohorts> DensityCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.DensityCohorts.ISiteCohorts>();
-
-
+           
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
                 Cohort.SetSiteAccessFunctions(sitecohorts[site]);
                 float tempRD = SiteVars.SiteRD[site];
                 DensityCohorts[site] = sitecohorts[site];
-            }
 
-            ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
+                biomassCohorts[site] = sitecohorts[site];
+                if (sitecohorts[site] != null && biomassCohorts[site] == null)
+                {
+                    throw new System.Exception("Cannot convert Density SiteCohorts to biomass site cohorts");
+                }
+
+                AgeCohortSiteVar[site] = sitecohorts[site];
+                if (sitecohorts[site] != null && AgeCohortSiteVar[site] == null)
+                {
+                    throw new System.Exception("Cannot convert Density SiteCohorts to age-only site cohorts");
+                }
+            }
             ModelCore.RegisterSiteVar(DensityCohorts, "Succession.CohortsDensity");
+            ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
+            ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");          
         }
 
         /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>

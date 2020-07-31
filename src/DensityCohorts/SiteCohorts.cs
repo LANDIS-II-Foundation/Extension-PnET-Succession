@@ -238,8 +238,6 @@ namespace Landis.Library.DensityCohorts
                         int cohortIndex = 0;
                         foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
                         {
-                            // FIXME - feeds in age, treenumber, diameter - placeholder 1 for diameter
-                            // The biomass value actually represents treenumber
                             AddNewCohort(new Cohort(SpeciesParameters.SpeciesDensity[cohort.Species], cohort.Age, cohort.Treenumber, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), Ecoregion));
                             //ISpeciesDensity speciespnet = PlugIn.SpeciesDensity[cohort.Species];
 
@@ -679,9 +677,9 @@ namespace Landis.Library.DensityCohorts
 
             int temp = densitySpecies.MaxSDI;
 
-            bool speciesPresent = cohorts.ContainsKey(species);
+            bool speciesPresent = cohorts.ContainsKey(densitySpecies);
 
-            bool IsMaturePresent = (speciesPresent && (cohorts[species].Max(o => o.Age) >= species.Maturity)) ? true : false;
+            bool IsMaturePresent = (speciesPresent && (cohorts[densitySpecies].Max(o => o.Age) >= species.Maturity)) ? true : false;
 
             return IsMaturePresent;
         }

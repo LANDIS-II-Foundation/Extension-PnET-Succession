@@ -15,7 +15,7 @@ Prescription MaxAgeClearcut
     SiteSelection 	Complete
     CohortsRemoved 	ClearCut
 
-   Plant pinubank
+>>   Plant pinubank
 
 >>-----------------------------------------------------------------
 >> PRESCRIPTION IMPLEMENTATION 

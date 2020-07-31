@@ -149,7 +149,7 @@ namespace Landis.Library.DensityCohorts
 
         public Cohort(ISpeciesDensity species, ushort year_of_birth, string SiteName) // : base(species, 0, (int)(1F / species.DNSC * (ushort)species.InitialNSC))
         {
-            this.species = species;
+            this.species = (ISpecies) species;
             age = 1;
 
             //FIXME - initialize the number of trees in a new cohort
@@ -187,7 +187,7 @@ namespace Landis.Library.DensityCohorts
                       int   treenumber,
                       IEcoregion ecoregion)
         {
-            this.species = species;
+            this.species = (ISpecies) species;
             this.data.Age = age;
             this.data.Treenumber = treenumber;
             this.data.Diameter = 0;
@@ -227,7 +227,7 @@ namespace Landis.Library.DensityCohorts
         public Cohort(ISpecies   species,
                       CohortData cohortData)
         {
-            this.species = species;
+            this.species = (ISpecies) species;
             this.data = cohortData;
         }
 
@@ -235,7 +235,7 @@ namespace Landis.Library.DensityCohorts
 
         public Cohort(Cohort cohort) // : base(cohort.species, new Landis.Library.BiomassCohorts.CohortData(cohort.age, cohort.Biomass))
         {
-            this.species = cohort.species;
+            this.species = (ISpecies) cohort.species;
             this.data.Age = cohort.age;
             this.data.Treenumber = cohort.treenumber;
             this.diameter = cohort.diameter;
@@ -247,7 +247,7 @@ namespace Landis.Library.DensityCohorts
         public Cohort(ISpeciesDensity species, ushort age, int treenumber, string SiteName, ushort firstYear, IEcoregion siteEcoregion)
         {
             //InitializeSubLayers();
-            this.species = species;
+            this.species = (ISpecies) species;
             ecoregion = siteEcoregion;
             this.data.Age = age;
             this.data.Treenumber = treenumber;
