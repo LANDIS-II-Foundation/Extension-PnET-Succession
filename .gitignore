@@ -215,3 +215,4 @@ FakesAssemblies/
 /test/density/Metadata/Output Biomass
 /test/density/outputs/
 /test/density/demographic-seeding/
+/src/*.sln

@@ -238,7 +238,8 @@ namespace Landis.Library.DensityCohorts
                         int cohortIndex = 0;
                         foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
                         {
-                            AddNewCohort(new Cohort(SpeciesParameters.SpeciesDensity[cohort.Species], cohort.Age, cohort.Treenumber, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), Ecoregion));
+                            AddNewCohort(new Cohort(cohort.Species, cohort.Age, cohort.Treenumber, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), Ecoregion));
+                            //AddNewCohort(new Cohort(SpeciesParameters.SpeciesDensity[cohort.Species], cohort.Age, cohort.Treenumber, SiteOutputName, (ushort)(StartDate.Year - cohort.Age), Ecoregion));
                             //ISpeciesDensity speciespnet = PlugIn.SpeciesDensity[cohort.Species];
 
                             //SpeciesCohorts spCo = (SpeciesCohorts)speciesCohorts;
@@ -760,7 +761,8 @@ namespace Landis.Library.DensityCohorts
         {
             foreach (ISpecies species in cohorts.Keys)
             {
-                Landis.Library.BiomassCohorts.ISpeciesCohorts isp = (Landis.Library.BiomassCohorts.ISpeciesCohorts) this[species];
+                Landis.Library.DensityCohorts.SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[species]);
+                Landis.Library.BiomassCohorts.ISpeciesCohorts isp = (Landis.Library.BiomassCohorts.ISpeciesCohorts)speciescohort;
                 yield return isp;
             }
              
@@ -770,7 +772,9 @@ namespace Landis.Library.DensityCohorts
         {
             foreach (ISpecies species in cohorts.Keys)
             {
-                yield return (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)this[species];
+                Landis.Library.DensityCohorts.SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[species]);
+                Landis.Library.AgeOnlyCohorts.ISpeciesCohorts isp = (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts)speciescohort;
+                yield return isp;
             }
 
              
