@@ -196,7 +196,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Copied from Psn_Resp_Calculations.xlsx[DTemp]
             //=MAX(0,(($Y$3-D2)*(D2-$Y$1))/((($Y$3-$Y$1)/2)^2))
             //=MAX(0,((PsnTMax-tday)*(tday-PsnTMin))/(((PsnTMax-PsnTMin)/2)^2))
-            
+
             if (tday < PsnTMin)
                 return 0;
             else if (tday > PsnTMax)

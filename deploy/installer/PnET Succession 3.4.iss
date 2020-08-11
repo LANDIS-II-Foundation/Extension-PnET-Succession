@@ -7,6 +7,7 @@
 
 ; Build directory
 #define BuildDir ".."
+;#define BuildDir "..\..\src\bin\debug"
 
 ; LANDIS-II installation directories
 #define ExtDir "C:\Program Files\LANDIS-II-v7\extensions"
