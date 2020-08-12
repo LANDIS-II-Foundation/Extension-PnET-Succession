@@ -45,6 +45,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static ISiteVar<Double> FineFuels;
         public static ISiteVar<float> PressureHead;
         public static ISiteVar<float> ExtremeMinTemp;
+        public static ISiteVar<float[]> MonthlyPressureHead;
+        public static ISiteVar<SortedList<float, float>[]> MonthlySoilTemp;
+        public static ISiteVar<float> FieldCapacity;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
@@ -288,6 +291,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
             PressureHead = ModelCore.Landscape.NewSiteVar<float>();
             ExtremeMinTemp = ModelCore.Landscape.NewSiteVar<float>();
+            MonthlyPressureHead = ModelCore.Landscape.NewSiteVar<float[]>();
+            MonthlySoilTemp = ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
+            FieldCapacity = ModelCore.Landscape.NewSiteVar<float>();
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
@@ -393,10 +399,28 @@ namespace Landis.Extension.Succession.BiomassPnET
                 FineFuels[site] = Litter[site].Mass;
                 IEcoregionPnET ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
                 IHydrology hydrology = new Hydrology((ushort)ecoregion.FieldCap);
-                PressureHead[site] = hydrology.GetPressureHead(ecoregion);
+                float currentPressureHead = hydrology.GetPressureHead(ecoregion);
+                PressureHead[site] = currentPressureHead;
+                FieldCapacity[site] = ecoregion.FieldCap / 10.0F; // cm volume (accounts for rooting depth)
+
+
+
                 if (UsingClimateLibrary)
                 {
                     ExtremeMinTemp[site] = (float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyMinTemp);  
+                    foreach(var year in Climate.Spinup_MonthlyData.Keys)
+                    {
+                        
+                        double[] monthlyAirT = Climate.Spinup_MonthlyData[year][ecoregion.Index].MonthlyTemp;
+                        double annualAirTemp = Climate.Spinup_MonthlyData[year][ecoregion.Index].MeanAnnualTemperature;
+
+                        for (int m = 0; m< monthlyAirT.Count();m++)
+                        {
+                            //MonthlyPressureHead[site][m] = currentPressureHead;
+                            //MonthlySoilTemp[site][m] = Permafrost.CalculateMonthlySoilTemps(ecoregion, 0, 0, hydrology, (float)monthlyAirT[m]);
+                        }
+
+                    }
                 }
                 else
                 {
@@ -409,6 +433,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
             ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
             ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
+            ModelCore.RegisterSiteVar(MonthlyPressureHead, "Succession.MonthlyPressureHead");
+            ModelCore.RegisterSiteVar(MonthlySoilTemp, "Succession.MonthlySoilTemp");
+            ModelCore.RegisterSiteVar(FieldCapacity, "Succession.SoilFieldCapacity");
 
         }
 
