@@ -68,7 +68,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public readonly float AET;
         public readonly float LeakageFrac;
-        public readonly float RunoffFrac;
+        public readonly float RunoffCapture;
         public readonly float PrecLossFrac;
         public readonly float RootingDepth;
         public readonly string SoilType;
@@ -100,12 +100,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore = mCore;
         }
 
-        public PnETEcoregions(IEcoregion ecoregion, float AET, float LeakageFrac, float RunoffFrac, float PrecLossFrac, float RootingDepth, string SoilType, string ClimateFileName)
+        public PnETEcoregions(IEcoregion ecoregion, float AET, float LeakageFrac, float RunoffCapture, float PrecLossFrac, float RootingDepth, string SoilType, string ClimateFileName)
         {
             this.ecoregion = ecoregion;
             this.AET = AET;
             this.LeakageFrac = LeakageFrac;
-            this.RunoffFrac = RunoffFrac;
+            this.RunoffCapture = RunoffCapture;
             this.PrecLossFrac=PrecLossFrac;
             this.RootingDepth=RootingDepth;
             this.SoilType=SoilType;

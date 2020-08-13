@@ -5,7 +5,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     public interface IEcoregionPnET : IEcoregion
     {
         float LeakageFrac{ get;}
-        float RunoffFrac { get; }
+        float RunoffCapture { get; }
         float PrecLossFrac { get; }
         string SoilType { get; }        
         float PrecIntConst { get;  }
@@ -18,6 +18,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         int PrecipEvents { get; }
         float Latitude { get; } 
         float WinterSTD { get; }
+        float MossDepth { get; }
         
        
         IEcoregionPnETVariables Variables { get; set; }

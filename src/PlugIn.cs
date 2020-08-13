@@ -398,7 +398,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PnETCohorts[site] = sitecohorts[site];
                 FineFuels[site] = Litter[site].Mass;
                 IEcoregionPnET ecoregion = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
-                IHydrology hydrology = new Hydrology((ushort)ecoregion.FieldCap);
+                IHydrology hydrology = new Hydrology(ecoregion.FieldCap);
                 float currentPressureHead = hydrology.GetPressureHead(ecoregion);
                 PressureHead[site] = currentPressureHead;
                 FieldCapacity[site] = ecoregion.FieldCap / 10.0F; // cm volume (accounts for rooting depth)
@@ -407,7 +407,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (UsingClimateLibrary)
                 {
-                    ExtremeMinTemp[site] = (float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyMinTemp);  
+                    ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyTemp) - (float)(3.0 * ecoregion.WinterSTD));  
                     foreach(var year in Climate.Spinup_MonthlyData.Keys)
                     {
                         
