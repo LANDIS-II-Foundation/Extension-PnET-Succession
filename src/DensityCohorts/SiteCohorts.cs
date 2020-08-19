@@ -508,10 +508,10 @@ namespace Landis.Library.DensityCohorts
                     //int _reduction = disturbance.ReduceOrKillMarkedCohort(biocohort);
                     // Disturbances return reduction in aboveground biomass
                     int _reduction = disturbance.ReduceOrKillMarkedCohort(cohort);
-                    double reductionProp = _reduction / cohort.Biomass;
+                    double reductionProp = (double)_reduction / (double)cohort.Biomass;
                     int treeRemoval = (int)Math.Round(cohort.Treenumber * reductionProp);
-                    reduction.Add(_reduction);
-                    if (reduction[reduction.Count() - 1] >= cohort.Treenumber)  //Compare to aboveground biomass
+                    reduction.Add(treeRemoval);
+                    if (reduction[reduction.Count() - 1] >= cohort.Treenumber)  //Compare to existing number of trees
                     {
                         ToRemove.Add((Cohort)cohort);
                         // Edited by BRM - 090115
