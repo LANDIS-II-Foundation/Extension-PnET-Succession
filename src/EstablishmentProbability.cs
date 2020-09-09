@@ -103,9 +103,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
                     float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
                     float frad = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat),2) * (1/(Math.Pow(spc.EstRad,2))))));
-                    float frad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
-                    float frad_slope = (frad_adj_int * 2) - 1;
-                    float adjFrad = 1 - frad_adj_int + frad * frad_slope;
+                    float adjFrad = frad;
+                    if (!(halfSatRange == 0))
+                    {
+                        float frad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
+                        float frad_slope = (frad_adj_int * 2) - 1;
+                         adjFrad = 1 - frad_adj_int + frad * frad_slope;
+                    }
 
                     
                     float PressureHead = hydrology.GetPressureHead(ecoregion);

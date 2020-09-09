@@ -8,11 +8,13 @@ MonteCarloDraws  500
 
 >>MaxLeafArea 	 0.1 << Optional: default = cell area
 
-SeedlingLeafArea  0.1  << Area (m2) that each seedling occupies (all species)
+SeedlingLeafArea  0.20  << Area (m2) that each seedling occupies (all species)
 
-MinCohortProp	0.05  << Minimum Proportion of max biomass that counts as a cohort
+MinCohortProp	0.005  << Minimum Proportion of max biomass that counts as a cohort
 
-CohortThreshold  5
+CohortThreshold  100 << Minimum # of seedlings per acre to count as a new cohort
+
+DispersalProbabilitiesLog  "dispersal_prob_{species}.txt"
 
 SeedRainMaps           "demographic-seeding/seed-rain_{timestep}_{species}.img"
 SeedlingEmergenceMaps  "demographic-seeding/seedling-emergence_{timestep}_{species}.img"
@@ -21,7 +23,7 @@ SeedlingEmergenceMaps  "demographic-seeding/seedling-emergence_{timestep}_{speci
 >> 		 Seeds Produced		 Dispersal Functions
 >> Name		Minimum  Maximum	Mean1  Mean2  Weight1
 >> ----		-------	 -------	-----  -----  -------
- querrubr	0	 750		50.00   100.00   0.95
+ querrubr	0	 5		1.42    44.74   0.86
 
 
 EmergenceProbabilities
@@ -37,3 +39,14 @@ SurvivalProbabilities
 >> --------  ----	----
    querrubr  0.0	1.0
 >> If species not present, then all its probabilities are 0
+
+SeedMass
+>> Species   	SeedMass (g/seed)
+>> --------  	--------
+   querrubr  1.5
+>> If species not present, then all seed mass is 0
+
+PnETSpeciesParameters
+>> Species   	SLWMax	FracFol	FrActWd
+>> -------- 	------ 	-------	-------
+   querrubr  70	0.02	0.00004
