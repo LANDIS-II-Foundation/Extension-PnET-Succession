@@ -188,7 +188,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // The number of thread workers to use in succession routines that have been optimized. Should
             // more or less match the number of cores in the computer thats running LANDIS-II's processor
-            this.ThreadCount = 6;
+            this.ThreadCount = 3;
         }
 
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)

@@ -830,6 +830,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     frostFreeSoilDepth = Math.Min(freezeDepth*1000.0F, frostFreeSoilDepth);
                     thawedDepth = Math.Max(0,Math.Min(Ecoregion.RootingDepth,frostFreeSoilDepth) - lastFrostDepth);
                     float newFrozenSoil = 0;
+
                     if (frostFreeSoilDepth < Ecoregion.RootingDepth)
                     {
                         if (lastFrostDepth > 0)
@@ -869,6 +870,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     lastFrostDepth = frostFreeSoilDepth;
                     
                 }
+
                 // permafrost
                 float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / Ecoregion.RootingDepth);
 
@@ -982,7 +984,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                             success = c.CalculatePhotosynthesis(subCanopyPrecip, precipCount, leakageFrac, ref hydrology, 
                                 ref subcanopypar, O3_ppmh, O3_ppmh_month, subCanopyIndex, SubCanopyCohorts.Count(), 
-                                ref O3Effect, frostFreeProp, subCanopyMelt, coldKillBoolean, data[m]);
+                                ref O3Effect, frostFreeProp, subCanopyMelt, coldKillBoolean, data[m], this.Ecoregion, this.Site.Location);
 
                             lastOzoneEffect[subCanopyIndex - 1] = O3Effect;
 

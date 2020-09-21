@@ -22,9 +22,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private bool leaf_on = false;
 
-        public static IEcoregionPnET ecoregion;
-        public static ActiveSite site;
-
         public static AddWoodyDebris addwoodydebris;
         
         public static AddLitter addlitter;
@@ -406,8 +403,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
              Cohort.addlitter = sitecohorts.AddLitter;
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
-             Cohort.ecoregion = sitecohorts.Ecoregion;
-             Cohort.site = sitecohorts.Site;
         }
         
 
@@ -418,8 +413,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Photosynthesis by canopy layer
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, ref Hydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables)
-         {      
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, ref Hydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, IEcoregionPnET ecoregion, Location location)
+        {      
             bool success = true;
             float lastO3Effect = O3Effect;
             O3Effect = 0;
@@ -442,7 +437,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 hydrology.RunOff += meltrunoff;
 
                 success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff);
-                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
             }
             float precipIn = 0;
             // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
@@ -462,7 +457,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(waterIn);
-                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
             }
 
             // Leakage only occurs following precipitation events or incoming melt water
@@ -473,7 +468,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Remove fast leakage
                 success = hydrology.AddWater(-1 * leakage);
-                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + location);
             }               
             
             //// Adjust soil water for freezing - Now done when calculating frozen depth
@@ -815,7 +810,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index]);
-                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + location);
 
                 // Add net psn to non soluble carbons
                 nsc += NetPsn[index];
