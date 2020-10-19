@@ -12,7 +12,9 @@ SeedlingLeafArea  0.20  << Area (m2) that each seedling occupies (all species)
 
 MinCohortProp	0.005  << Minimum Proportion of max biomass that counts as a cohort
 
-CohortThreshold  100 << Minimum # of seedlings per acre to count as a new cohort
+CohortThreshold  0 << Minimum # of seedlings per acre to count as a new cohort
+
+SeedProportion  1.0 << Proportion of max seeds used in scaling individual seedling emergence probability
 
 DispersalProbabilitiesLog  "dispersal_prob_{species}.txt"
 

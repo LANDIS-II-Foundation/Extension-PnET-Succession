@@ -56,13 +56,13 @@ objective <- function(pars, ntree, nseed, pest, weights){
 # in plot, grey is the calculated P(establish a cohort) and
 # red is a 1:1 reference line.  Lower plot shows the individual
 # seedling establishment probability as a function of PnET's Pest.
-find_abc(nseed = 100, ntree = 5, wfun=wf1, 
+find_abc(nseed = 41970, ntree = 1, wfun=wf1, 
          v=10, z=0.5, plot = TRUE)
 
 # Make a lookup table
 lookup_at <- expand.grid(
-  nseed = 10^(-1:3),
-  ntree = 10^seq(-1, 2, len=3)
+  nseed = 10^seq(from=0, to=7,by=0.25),
+  ntree = 10^(0:4)
 )
 lookup_abc <- with(
   lookup_at,{
