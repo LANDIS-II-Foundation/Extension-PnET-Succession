@@ -2344,7 +2344,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         precLoss +"," +
                         hydrology.Water + "," +                         
                         hydrology.GetPressureHead(Ecoregion) + "," +
-                        (hydrology.Water * Ecoregion.RootingDepth * propRootAboveFrost) + "," +  // mm of avialable water
+                        (hydrology.Water * Ecoregion.RootingDepth * propRootAboveFrost + Hydrology.SurfaceWater) + "," +  // mm of avialable water
                         snowPack + "," +
                         this.CanopyLAI + "," +
                         monthdata.VPD + "," +
