@@ -113,12 +113,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         */
 
-        public Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology)
+        public Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat)
         {
             Dictionary<ISpeciesPNET, float> estabDict = new Dictionary<ISpeciesPNET, float>();
             _fwater = new Dictionary<ISpeciesPNET, float>();
             _pest = new Dictionary<ISpeciesPNET, float>();
             _frad = new Dictionary<ISpeciesPNET, float>();
+            float halfSatRange = maxHalfSat - minHalfSat;
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
@@ -127,19 +128,22 @@ namespace Landis.Extension.Succession.BiomassPnET
                     // Adjust HalfSat for CO2 effect
                     float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
                     float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
-                    float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat), spc.EstRad);
+                    float frad = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat),2) * (1/(Math.Pow(spc.EstRad,2))))));
+                    float frad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
+                    float frad_slope = (frad_adj_int * 2) - 1;
+                    float adjFrad = 1 - frad_adj_int + frad * frad_slope;
 
-                    //float frad = (float)Math.Pow(Cohort.ComputeFrad(PAR, spc.HalfSat), spc.EstRad);
-
+                    
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
 
-                    float fwater = (float)Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), spc.EstMoist);
+                    float fwater = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFWater(spc.H1,spc.H2, spc.H3, spc.H4, PressureHead), 2) * (1/(Math.Pow(spc.EstMoist,2))))));
 
-                    float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater), Timestep);
+                    //float pest = 1 - (float)Math.Pow(1.0 - (frad * fwater * spc.MaxPest), Timestep);
+                    float pest = (float) Math.Min(1.0,adjFrad * fwater);
                     estabDict[spc] = pest;
                     _pest[spc] = pest;
                     _fwater[spc] = fwater;
-                    _frad[spc] = frad;
+                    _frad[spc] = adjFrad;
                     /*if (fwater < _fwater[spc])
                     {
                         _fwater[spc] = fwater;

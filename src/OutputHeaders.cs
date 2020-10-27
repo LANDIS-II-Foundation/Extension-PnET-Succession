@@ -22,7 +22,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
         public const string FolResp = "FolResp(gC_m2_mo)";
-        public const string water = "water(mm)";
+        public const string water = "water(mm/m)";
+        public const string availableWater = "available water (mm)";
         public const string Leakage = "Leakage(mm)";
         public const string PressureHead = "PressureHead(mm)";
         public const string SnowPack = "SnowPack(mm)";
@@ -70,5 +71,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string CiModifier = "CiModifier(-)";
         public const string SubCanopyPAR = "SubCanopyPAR";
         public const string LimitingFactor = "Limiting Factor";
+        public const string SoilDiffusivity = "SoilDiffusivity(mm2_s)";
     }
 }

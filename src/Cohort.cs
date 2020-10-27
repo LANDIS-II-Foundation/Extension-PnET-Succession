@@ -424,8 +424,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Photosynthesis by canopy layer
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer, int precipCount, float leakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeSoilDepth, float MeltInByCanopyLayer, bool coldKillBoolean)
-        {
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean)
+         {      
             bool success = true;
             float lastO3Effect = O3Effect;
             O3Effect = 0;
@@ -443,12 +443,21 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             if (MeltInByCanopyLayer > 0)
             {
-                // Add thawed soil water to soil moisture
-                // Instantaneous runoff (excess of porosity)
-                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water + MeltInByCanopyLayer - (ecoregion.Porosity * frostFreeProp), 0));
-                Hydrology.RunOff += meltrunoff * ecoregion.RunoffFrac;
+                // Add melted snow water to soil moisture
+                // Instantaneous runoff (excess of porosity + RunoffCapture)
+                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp; //mm
+                float meltrunoff = Math.Min(MeltInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + MeltInByCanopyLayer - waterCapacity, 0));
+                //if ((hydrology.Water + meltrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
+                //    meltrunoff = (hydrology.Water + meltrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
+                float capturedRunoff = 0;
+                if ((ecoregion.RunoffCapture > 0) & (meltrunoff >0))
+                {
+                    capturedRunoff = Math.Max(0, Math.Min(meltrunoff, (ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
+                    Hydrology.SurfaceWater += capturedRunoff;
+                }
+                Hydrology.RunOff += (meltrunoff - capturedRunoff);
 
-                success = hydrology.AddWater(MeltInByCanopyLayer - (meltrunoff * ecoregion.RunoffFrac));
+                success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff, ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
             float precipIn = 0;
@@ -456,41 +465,54 @@ namespace Landis.Extension.Succession.BiomassPnET
             for (int p = 1; p <= precipCount; p++)
             {
                 // Incoming precipitation
-                //float waterIn = PrecInByCanopyLayer  - Interception[index]; //mm   
-                precipIn = PrecInByCanopyLayer; //mm 
-
                 // Instantaneous runoff (excess of porosity)
-                float rainrunoff = Math.Min(precipIn, Math.Max(hydrology.Water + precipIn - (ecoregion.Porosity * frostFreeProp), 0));
-                Hydrology.RunOff += rainrunoff * ecoregion.RunoffFrac;
-
-                float waterIn = precipIn - (rainrunoff * ecoregion.RunoffFrac);
+                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp; //mm
+                float rainrunoff = Math.Min(PrecInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + PrecInByCanopyLayer - waterCapacity, 0));
+                //if ((hydrology.Water + rainrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
+                //    rainrunoff = (hydrology.Water + rainrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
+                float capturedRunoff = 0;
+                if ((ecoregion.RunoffCapture > 0) & (rainrunoff > 0))
+                {
+                    capturedRunoff = Math.Max(0,Math.Min(rainrunoff,(ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
+                    Hydrology.SurfaceWater += capturedRunoff;
+                }
+                Hydrology.RunOff += (rainrunoff - capturedRunoff);
+                
+                precipIn = PrecInByCanopyLayer - rainrunoff; //mm
 
                 // Add incoming precipitation to soil moisture
-                success = hydrology.AddWater(waterIn);
-                if (success == false) throw new System.Exception("Error adding water, waterIn = " + waterIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                success = hydrology.AddWater(precipIn, ecoregion.RootingDepth * frostFreeProp);
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + precipIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
 
             // Leakage only occurs following precipitation events or incoming melt water
             if (precipIn > 0 || MeltInByCanopyLayer > 0)
             {
-                float leakage = Math.Max((float)leakageFrac * (hydrology.Water - (ecoregion.FieldCap * frostFreeProp)), 0);
+                float leakage = Math.Max((float)leakageFrac * (hydrology.Water - ecoregion.FieldCap), 0) * ecoregion.RootingDepth * frostFreeProp; //mm
                 Hydrology.Leakage += leakage;
 
                 // Remove fast leakage
-                success = hydrology.AddWater(-1 * leakage);
+                success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
-            }
-
-            // Adjust soil water for freezing
-            if (frostFreeProp < 1.0)
-            {
-                // water in frozen soil is not accessible - treat it as if it leaked out
-                float frozenLimit = ecoregion.FieldCap * frostFreeProp;
-                float frozenWater = hydrology.Water - frozenLimit;
-                // Remove frozen water
-                success = hydrology.AddWater(-1 * frozenWater);
-                if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
-            }
+                if (Hydrology.SurfaceWater > 0)
+                {
+                    float surfaceInput = Math.Min(Hydrology.SurfaceWater,(ecoregion.Porosity - hydrology.Water));
+                    Hydrology.SurfaceWater -= surfaceInput;
+                    success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                }
+            }               
+            
+            //// Adjust soil water for freezing - Now done when calculating frozen depth
+            //if (frostFreeProp < 1.0)
+            //{
+            //    // water in frozen soil is not accessible - treat it as if it leaked out
+            //    float frozenLimit = ecoregion.FieldCap * frostFreeProp;
+            //    float frozenWater = hydrology.Water - frozenLimit;
+            //    // Remove frozen water
+            //    success = hydrology.AddWater(-1 * frozenWater);
+            //    if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+            //}
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
             MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
 
@@ -510,7 +532,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         nsc = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                     }
-                    else if (PlugIn.ModelCore.CurrentTime > 0 && this.TotalBiomass < 1.0)  //Check if biomass < 1.0 -> cohort dies
+                    else if(PlugIn.ModelCore.CurrentTime > 0 && this.TotalBiomass < (uint)species.InitBiomass)  //Check if biomass < Initial Biomass -> cohort dies
                     {
                         nsc = 0.0F;  // if cohort is dead, nsc goes to zero and becomes functionally dead even though not removed until end of timestep
                         leaf_on = false;
@@ -851,21 +873,27 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
-                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O)));
+                Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))); //mm
 
                 // It is possible for transpiration to calculate to exceed available water
                 // In this case, we cap transpiration at available water, and back-calculate GrossPsn and NetPsn to downgrade those as well
-                if (Transpiration[index] > hydrology.Water)
+                if(Transpiration[index] > (hydrology.Water * ecoregion.RootingDepth * frostFreeProp))
                 {
-                    Transpiration[index] = hydrology.Water;
+                    Transpiration[index] = hydrology.Water * ecoregion.RootingDepth * frostFreeProp; //mm
                     GrossPsn[index] = (Transpiration[index] / 0.01227F) * (JCO2 / JH2O);
                     NetPsn[index] = GrossPsn[index] - FolResp[index];
                 }
 
                 // Subtract transpiration from hydrology
-                success = hydrology.AddWater(-1 * Transpiration[index]);
+                success = hydrology.AddWater(-1 * Transpiration[index], ecoregion.RootingDepth * frostFreeProp);
                 if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
-
+                if (Hydrology.SurfaceWater > 0)
+                {
+                    float surfaceInput = Math.Min(Hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.Water));
+                    Hydrology.SurfaceWater -= surfaceInput;
+                    success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                }
                 // Add net psn to non soluble carbons
                 nsc += NetPsn[index];
 
@@ -900,7 +928,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (H2 <= H1)
                 minThreshold = H2;
             // Compute water stress
-            if (pressurehead <= minThreshold || pressurehead >= H4) return 0;
+            if (pressurehead <= H1) return 0;
+            else if (pressurehead < minThreshold || pressurehead >= H4) return 0;
             else if (pressurehead > H3) return 1 - ((pressurehead - H3) / (H4 - H3));
             else if (pressurehead < H2) return (1.0F/(H2-H1))*pressurehead - (H1/(H2-H1));
             else return 1;
