@@ -748,10 +748,11 @@ namespace Landis.Library.DensityCohorts
         {
             foreach (ISpecies species in cohorts.Keys)
             {
-                yield return (Library.DensityCohorts.ISpeciesCohorts) this[species];
+                Landis.Library.DensityCohorts.SpeciesCohorts speciescohort = GetSpeciesCohort(cohorts[species]);
+                yield return (Library.DensityCohorts.ISpeciesCohorts) speciescohort;
             }
         }
-       
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

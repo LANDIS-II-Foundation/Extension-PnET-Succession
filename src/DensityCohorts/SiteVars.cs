@@ -54,18 +54,13 @@ namespace Landis.Library.DensityCohorts
             }
             else
             {
-                foreach (Landis.Library.DensityCohorts.SpeciesCohorts speciesCohorts in cohorts)
-                {
-                    
-                    ISpeciesDensity speciesDensity = SpeciesParameters.SpeciesDensity.AllSpecies[speciesCohorts.Species.Index];
-                    foreach (Landis.Library.DensityCohorts.ICohort cohort in (IEnumerable<Landis.Library.DensityCohorts.ICohort>)speciesCohorts)
-                    {
+                foreach(Landis.Library.DensityCohorts.ICohort cohort in cohorts.AllCohorts)
+                { 
                         double tmp_term1 = Math.Pow((cohort.Diameter / 25.4), 1.605);
-                        float tmp_term2 = 10000 / speciesDensity.MaxSDI;
+                        float tmp_term2 = 10000 / SpeciesParameters.SpeciesDensity.AllSpecies[cohort.Species.Index].MaxSDI;
                         int tmp_term3 = cohort.Treenumber;
                         double tmp = tmp_term1 * tmp_term2 * tmp_term3 / Math.Pow(EcoregionData.ModelCore.CellLength, 2);
                         siteRD += (float)tmp;
-                    }
                 }
 
                 SiteVars.SiteRD[cohorts.Site] = siteRD;

@@ -85,15 +85,11 @@ namespace Landis.Library.DensityCohorts
             {
                 double tmpDQ = 0;
 
-                foreach (Landis.Library.DensityCohorts.ISpeciesCohorts speciesCohorts in siteCohorts)
+                foreach (Landis.Library.DensityCohorts.ICohort cohort in siteCohorts.AllCohorts)
                 {
-                    ISpeciesDensity speciesDensity = SpeciesParameters.SpeciesDensity.AllSpecies[speciesCohorts.Species.Index];
-                    foreach (Landis.Library.DensityCohorts.ICohort cohort in speciesCohorts)
+                    if (SpeciesParameters.SpeciesDensity.AllSpecies[cohort.Species.Index].SpType >= 0)
                     {
-                        if (speciesDensity.SpType >= 0)
-                        {
-                            tmpDQ += Math.Pow(cohort.Diameter, 2) * DQ_const * cohort.Treenumber;
-                        }
+                        tmpDQ += Math.Pow(cohort.Diameter, 2) * DQ_const * cohort.Treenumber;
                     }
                 }
                 //====================================================================================================
