@@ -1566,25 +1566,25 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public float[] NetPsn
-        {
-            get
-            {
-                if (netpsn == null)
-                {
-                    float[] netpsn_array = new float[12];
-                    for (int i = 0; i < netpsn_array.Length; i++)
-                    {
-                        netpsn_array[i] = 0;
-                    }
-                    return netpsn_array;
-                }
-                else
-                {
-                    return netpsn.Select(psn => (float)psn).ToArray();
-                }
-            }
-        }
+        //public float[] NetPsn
+        //{
+        //    get
+        //    {
+        //        if (netpsn == null)
+        //        {
+        //            float[] netpsn_array = new float[12];
+        //            for (int i = 0; i < netpsn_array.Length; i++)
+        //            {
+        //                netpsn_array[i] = 0;
+        //            }
+        //            return netpsn_array;
+        //        }
+        //        else
+        //        {
+        //            return netpsn.Select(psn => (float)psn).ToArray();
+        //        }
+        //    }
+        //}
 
         public float NetPsnSum
         {

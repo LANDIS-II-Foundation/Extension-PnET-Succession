@@ -429,10 +429,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             bool success = true;
             float lastO3Effect = O3Effect;
             O3Effect = 0;
-
-            // permafrost
-            float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / ecoregion.RootingDepth);
-
+            
             // Leaf area index for the subcanopy layer by index. Function of specific leaf weight SLWMAX and the depth of the canopy
             // Depth of the canopy is expressed by the mass of foliage above this subcanopy layer (i.e. slwdel * index/imax *fol)
             LAI[index] = CalculateLAI(species, fol, index);
