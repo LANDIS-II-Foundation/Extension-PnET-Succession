@@ -209,7 +209,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return (int)((1 - species.FracBelowG) * biomass) + (int)fol;
+                return (int)Math.Round((1 - species.FracBelowG) * biomass) + (int)fol;
             }
         }
         // Total Biomass (root + wood) (g/m2)
@@ -217,7 +217,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return (int)biomass;
+                return (int)Math.Round(biomass);
             }
         }
         // Wood (g/m2)
@@ -225,7 +225,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return (uint)((1 - species.FracBelowG) * biomass);
+                return (uint)Math.Round((1 - species.FracBelowG) * biomass);
             }
         }
         // Root (g/m2)
@@ -233,7 +233,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return (uint)(species.FracBelowG * biomass);
+                return (uint)Math.Round(species.FracBelowG * biomass);
             }
         }
         

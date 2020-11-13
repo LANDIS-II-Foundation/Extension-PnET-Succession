@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PnET-Succession", "PnET-Suc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "initial-community", "..\..\Library-Initial-Community\initial-community.csproj", "{92371202-5621-473B-989C-42934B2D821F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "output-biomass-community", "..\..\Extension-Output-Biomass-Community\src\output-biomass-community.csproj", "{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,14 @@ Global
 		{92371202-5621-473B-989C-42934B2D821F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{92371202-5621-473B-989C-42934B2D821F}.Release|x64.ActiveCfg = Release|Any CPU
 		{92371202-5621-473B-989C-42934B2D821F}.Release|x64.Build.0 = Release|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Debug|x64.Build.0 = Debug|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Release|x64.ActiveCfg = Release|Any CPU
+		{E9F3C33B-6AE3-4AAB-AD1E-B61CCF6C955E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
