@@ -5,3 +5,4 @@ PnETGenericParameters Value
 DTemp				true
 Wythers			true
 PrecipEvents		11
+FracBelowG			0.33
