@@ -63,7 +63,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static int CohortBinSize;
         private static int nlayers;
         private static bool permafrost;
-        //private static float permafrostMinVegBiomass;
+        private static bool invertPest;
         Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
         //float lastTempBelowSnow = float.MaxValue;
         private static float maxHalfSat;
@@ -252,8 +252,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaxDevLyrAv = ((Parameter<ushort>)PlugIn.GetParameter(Names.MaxDevLyrAv, 0, ushort.MaxValue)).Value;
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
             permafrost = ((Parameter<bool>)PlugIn.GetParameter(Names.Permafrost)).Value;
-            //if(permafrost)
-            //    permafrostMinVegBiomass = ((Parameter<float>)PlugIn.GetParameter(Names.PermafrostMinVegBiomass)).Value;
+            invertPest = ((Parameter<bool>)PlugIn.GetParameter(Names.InvertPest)).Value;
             Parameter<string> CohortBinSizeParm = null;
             if (PlugIn.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
             {
@@ -1125,7 +1124,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat);
+                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest);
 
                     foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                     {

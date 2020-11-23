@@ -35,6 +35,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
+        public const string InvertPest = "InvertPest";
         //public const string PermafrostMinVegBiomass = "PermafrostMinVegBiomass";
         
 

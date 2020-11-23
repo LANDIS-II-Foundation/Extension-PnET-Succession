@@ -1,0 +1,24 @@
+LandisData  Scenario
+
+Duration  50
+
+Species   species.txt
+
+Ecoregions      ./ecoregions.txt
+EcoregionsMap   ./ecoregions.gis
+
+CellLength  100 << meters, 100 x 100 m = 1 ha
+
+
+>> Succession Extension     Initialization File
+>> --------------------     -------------------
+   "PnET-Succession"    pnet-succession.txt
+
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------   -------------------
+"Base Harvest"
+
+>> Other Extensions         Initialization File
+>> ----------------         -------------------
+

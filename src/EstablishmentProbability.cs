@@ -113,7 +113,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         */
 
-        public Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat)
+        public Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertPest)
         {
             Dictionary<ISpeciesPNET, float> estabDict = new Dictionary<ISpeciesPNET, float>();
             _fwater = new Dictionary<ISpeciesPNET, float>();
@@ -129,9 +129,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float halfSatIntercept = spc.HalfSat - 350 * spc.CO2HalfSatEff;
                     float adjHalfSat = spc.CO2HalfSatEff * pnetvars.CO2 + halfSatIntercept;
                     float frad = (float)(Math.Min(1.0,(Math.Pow(Cohort.ComputeFrad(PAR, adjHalfSat),2) * (1/(Math.Pow(spc.EstRad,2))))));
-                    float frad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
-                    float frad_slope = (frad_adj_int * 2) - 1;
-                    float adjFrad = 1 - frad_adj_int + frad * frad_slope;
+                    float adjFrad = frad;
+                    // Optional adjustment to invert Pest based on relative halfSat
+                    if (invertPest && halfSatRange > 0)
+                    {
+                        float frad_adj_int = (spc.HalfSat - minHalfSat) / halfSatRange;
+                        float frad_slope = (frad_adj_int * 2) - 1;
+                        adjFrad = 1 - frad_adj_int + frad * frad_slope;
+                    }
 
                     
                     float PressureHead = hydrology.GetPressureHead(ecoregion);
