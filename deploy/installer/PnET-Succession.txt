@@ -1,10 +1,10 @@
 LandisData   Extension
 
 Name         "PnET-Succession"
-Version      "3.4 (official release)"
+Version      "4.0 (Release Candidate 3)"
 Type         succession
-Assembly     Landis.Extension.Succession.BiomassPnET-v3
+Assembly     Landis.Extension.Succession.BiomassPnET-v4
 
 Class        Landis.Extension.Succession.BiomassPnET.PlugIn
-Description  "PnET Succession with climate library"
+Description  "PnET Succession with permafrost and waterlogging"
 CoreVersion  7.0

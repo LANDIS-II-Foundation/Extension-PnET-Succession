@@ -26,6 +26,7 @@ CellLength  30 << meters, so cell area = 900 m2
 >>  "Output Biomass Reclass"	BiomReclass.txt
   "Output-PnET"		biomass.output.txt
 >>  "Output Cohort Statistics"    cohort-stats.output.txt
+  "Output Biomass Community"	output_Biomass_Community.txt
 
 
  

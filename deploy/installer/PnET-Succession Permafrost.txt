@@ -1,0 +1,17 @@
+LandisData   Extension
+
+Name         "PnET-Succession"
+
+Version      "3.2 (alpha release 8)"
+
+Type         succession
+
+Assembly     Landis.Extension.Succession.BiomassPnET
+
+Class        Landis.Extension.Succession.BiomassPnET.PlugIn
+
+Description  "Version of PnET succession with Permafrost functions"
+
+UserGuide    "LANDIS-II PnET-Succession v3.1 User Guide.pdf"
+
+CoreVersion  6.2
