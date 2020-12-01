@@ -35,7 +35,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Permafrost = "Permafrost";
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
-        public const string PermafrostMinVegBiomass = "PermafrostMinVegBiomass";
+        public const string InvertPest = "InvertPest";
+        //public const string PermafrostMinVegBiomass = "PermafrostMinVegBiomass";
         
 
         //Ecoregion parameters
@@ -50,7 +51,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Latitude = "Latitude";
         public const string climateFileName = "climateFileName";
         public const string WinterSTD = "WinterSTD";
-        
+        public const string MossDepth = "MossDepth";
+
 
         //Species parameters
         public const string FolNShape = "FolNShape";

@@ -28,6 +28,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private int _precipEvents;
         private float _leakageFrostDepth;
         private float _winterSTD;
+        private float _mossDepth;
         IEcoregionPnETVariables _variables;
         #endregion
 
@@ -50,6 +51,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<int> precipEvents;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
+        private static Landis.Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
         #endregion
 
         #region accessors for private static variables
@@ -227,6 +229,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _winterSTD;
             }
         }
+        public float MossDepth
+        {
+            get
+            {
+                return _mossDepth;
+            }
+        }
         #endregion
 
         public static List<string> ParameterNames
@@ -339,6 +348,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             leakageFrostDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrostDepth", 0, 999999);
             precipEvents = (Landis.Library.Parameters.Ecoregions.AuxParm<int>)(Parameter<int>)PlugIn.GetParameter("PrecipEvents", 1, 100);
             winterSTD = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WinterSTD", 0, 100);
+            mossDepth = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MossDepth", 0, 1000);
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
@@ -372,6 +382,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._precipEvents = precipEvents[ecoregion];
             this._leakageFrostDepth = leakageFrostDepth[ecoregion];
             this._winterSTD = winterSTD[ecoregion];
+            this._mossDepth = mossDepth[ecoregion];
           
         }
     }
