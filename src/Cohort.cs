@@ -613,7 +613,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
-                            float Folalloc = Math.Max(0.0f, Math.Min(nsc, species.CFracBiomass * ((0.55f * IdealFol) - fol)));  // 65% refoliation
+                            float Folalloc = Math.Max(0.0f, Math.Min(nsc, species.CFracBiomass * ((0.65f * IdealFol) - fol)));  // 65% refoliation
  
                             float Folalloc2 = Math.Max(0.0f, Math.Min(nsc, species.CFracBiomass * (IdealFol - fol)));  // cost of refol is the 10x cost of getting to IdealFol
 
@@ -627,7 +627,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
-                            float Folalloc = Math.Max(0.0f, Math.Min(nsc, species.CFracBiomass * (IdealFol - fol))); // gC/mo 3x IdealFol to take out NSC 
+                            float Folalloc = Math.Max(0.0f, Math.Min(nsc, species.CFracBiomass * (IdealFol - fol))); // gC/mo 10x IdealFol to take out NSC 
 
                             // Subtract from NSC do not add Fol
                             nsc -= 10.0f * Folalloc;
