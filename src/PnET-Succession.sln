@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extension_Admin", "..\..\brmiranda\Core-Model-v7\Tool-Extension-Admin\src\Extension_Admin.csproj", "{03181433-7266-4F5A-BF44-42DA7CAD036B}"
 EndProject
@@ -31,6 +31,22 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Debug|x64.Build.0 = Debug|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|x64.ActiveCfg = Release|Any CPU
+		{17896667-BAB5-4F18-9DDF-8761E06C55E0}.Release|x64.Build.0 = Release|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Debug|x64.Build.0 = Debug|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Release|x64.ActiveCfg = Release|Any CPU
+		{C891A0CA-A437-49B6-9F01-E653A7ABA98C}.Release|x64.Build.0 = Release|Any CPU
 		{03181433-7266-4F5A-BF44-42DA7CAD036B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{03181433-7266-4F5A-BF44-42DA7CAD036B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03181433-7266-4F5A-BF44-42DA7CAD036B}.Debug|x64.ActiveCfg = Debug|x64
