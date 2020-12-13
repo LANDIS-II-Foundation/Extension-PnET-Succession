@@ -36,7 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float transpiration;
         private double HeterotrophicRespiration;
         public ActiveSite Site;
-        private Dictionary<ISpecies, List<Cohort>> cohorts = null;
+        public Dictionary<ISpecies, List<Cohort>> cohorts = null;
         IEstablishmentProbability establishmentProbability = null;
         private IHydrology hydrology = null;
         public List<ISpecies> SpeciesEstablishedByPlant = null;
@@ -311,7 +311,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     foreach (Cohort cohort in initialSites[key].cohorts[spc])
                     {
-                        AddNewCohort(new Cohort(cohort));
+                        bool addCohort = AddNewCohort(new Cohort(cohort));
                     }          
                 }
                 this.netpsn = initialSites[key].NetPsn;
@@ -372,7 +372,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         foreach (Landis.Library.BiomassCohorts.ICohort cohort in speciesCohorts)
                         {
-                            AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
+                            bool addCohort = AddNewCohort(new Cohort(PlugIn.SpeciesPnET[cohort.Species], cohort.Age, cohort.Biomass, SiteOutputName, (ushort)(StartDate.Year - cohort.Age)));
                         }
                     }
 
@@ -418,7 +418,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
 
-                        AddNewCohort(cohort);
+                        bool addCohort = AddNewCohort(cohort);
 
                         sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
                     }
@@ -2239,8 +2239,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             return IsMaturePresent;
         }
 
-        public void AddNewCohort(Cohort newCohort)
+        public bool AddNewCohort(Cohort newCohort)
         {
+            bool addCohort = false;
             if (cohorts.ContainsKey(newCohort.Species))
             {
                 // This should deliver only one KeyValuePair
@@ -2260,14 +2261,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (Cohorts.Count() > 0)
                 {
                     Cohorts[0].Accumulate(newCohort);
-                    return;
+                    return addCohort;
+                }
+                else
+                {
+
+                    cohorts[newCohort.Species].Add(newCohort);
+                    addCohort = true;
+                    return addCohort;
                 }
 
-                cohorts[newCohort.Species].Add(newCohort);
-
-                return;
             }
             cohorts.Add(newCohort.Species, new List<Cohort>(new Cohort[] { newCohort }));
+            addCohort = true;
+            return addCohort;
         }
 
         Landis.Library.BiomassCohorts.SpeciesCohorts GetSpeciesCohort(List<Cohort> cohorts)

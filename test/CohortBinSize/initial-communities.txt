@@ -1,0 +1,10 @@
+LandisData   "Initial Communities"
+
+>> All empty
+MapCode  0
+MapCode  1
+MapCode 2
+MapCode 3
+MapCode 4
+MapCode 5
+MapCode 6

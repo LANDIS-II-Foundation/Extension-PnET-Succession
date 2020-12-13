@@ -435,32 +435,46 @@ namespace Landis.Extension.Succession.BiomassPnET
         public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType)
         {
             ISpeciesPNET spc = PlugIn.SpeciesPnET[species];
-            Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
+            bool addCohort = true;
+            if (sitecohorts[site].cohorts.ContainsKey(species))
+            {
+                // This should deliver only one KeyValuePair
+                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(sitecohorts[site].cohorts.Where(o => o.Key == species))[0];
+                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
+                if (Cohorts.Count() > 0)
+                {
+                    addCohort = false;
+                }
+            }
+            bool addSiteOutput = false;
+            addSiteOutput = (SiteOutputNames.ContainsKey(site) && addCohort);
+            Cohort cohort = new Cohort(spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null);
             
-            sitecohorts[site].AddNewCohort(cohort);
+            addCohort = sitecohorts[site].AddNewCohort(cohort);
 
-            if (reproductionType == "plant")
+            if (addCohort)
             {
-                if (!sitecohorts[site].SpeciesEstablishedByPlant.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedByPlant.Add(species);
+                if (reproductionType == "plant")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedByPlant.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedByPlant.Add(species);
+                }
+                else if (reproductionType == "serotiny")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedBySerotiny.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedBySerotiny.Add(species);
+                }
+                else if (reproductionType == "resprout")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedByResprout.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedByResprout.Add(species);
+                }
+                else if (reproductionType == "seed")
+                {
+                    if (!sitecohorts[site].SpeciesEstablishedBySeed.Contains(species))
+                        sitecohorts[site].SpeciesEstablishedBySeed.Add(species);
+                }
             }
-            else if(reproductionType == "serotiny")
-            {
-                if (!sitecohorts[site].SpeciesEstablishedBySerotiny.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedBySerotiny.Add(species);
-            }
-            else if(reproductionType == "resprout")
-            {
-                if (!sitecohorts[site].SpeciesEstablishedByResprout.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedByResprout.Add(species);
-            }
-            else if(reproductionType == "seed")
-            {
-                if (!sitecohorts[site].SpeciesEstablishedBySeed.Contains(species))
-                    sitecohorts[site].SpeciesEstablishedBySeed.Add(species);
-            }
-
-
         }
         public bool MaturePresent(ISpecies species, ActiveSite site)
         {
