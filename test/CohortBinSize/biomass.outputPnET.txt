@@ -1,0 +1,14 @@
+LandisData  "Output-PnET"
+
+Timestep  1
+
+Species ALL
+
+CohortsPerSpecies	output/CohortsPerspecies/{species}/cohorts-{timestep}.img
+Establishment output/Establishments/{species}/Est-{species}-{timestep}.img
+CohortBalance	"output/TotalCohorts.txt"
+EstablishmentTable "output/EstablishmentTable.txt"
+
+     
+                
+                    

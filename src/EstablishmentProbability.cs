@@ -116,9 +116,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         public Dictionary<ISpeciesPNET,float> Calculate_Establishment_Month(IEcoregionPnETVariables pnetvars, IEcoregionPnET ecoregion, float PAR, IHydrology hydrology,float minHalfSat, float maxHalfSat, bool invertPest)
         {
             Dictionary<ISpeciesPNET, float> estabDict = new Dictionary<ISpeciesPNET, float>();
-            _fwater = new Dictionary<ISpeciesPNET, float>();
-            _pest = new Dictionary<ISpeciesPNET, float>();
-            _frad = new Dictionary<ISpeciesPNET, float>();
+            //_fwater = new Dictionary<ISpeciesPNET, float>();
+            //_pest = new Dictionary<ISpeciesPNET, float>();
+            //_frad = new Dictionary<ISpeciesPNET, float>();
             float halfSatRange = maxHalfSat - minHalfSat;
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
@@ -182,9 +182,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
-                _pest.Add(spc, 1);
-                _fwater.Add(spc, 1);
-                _frad.Add(spc, 1);
+                _pest.Add(spc, 0);
+                _fwater.Add(spc, 0);
+                _frad.Add(spc, 0);
             }
         }
         public EstablishmentProbability(string SiteOutputName, string FileName)
