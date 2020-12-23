@@ -62,6 +62,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
         public static int CohortBinSize;
+        public static int ParallelThreads;
 
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -188,7 +189,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // The number of thread workers to use in succession routines that have been optimized. Should
             // more or less match the number of cores in the computer thats running LANDIS-II's processor
-            this.ThreadCount = 3;
+            //this.ThreadCount = 3;
+            //this.ThreadCount = 1;
+
         }
 
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
@@ -328,9 +331,39 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             else
                 CohortBinSize = Timestep;
+            string Parallel = ((Parameter<string>)GetParameter(Names.Parallel)).Value;
+            if (Parallel == "false")
+            {
+                ParallelThreads = 1;
+                PlugIn.ModelCore.UI.WriteLine("  MaxParallelThreads = " + ParallelThreads.ToString() + ".");
+            }
+            else if (Parallel == "true")
+            {
+                ParallelThreads = -1;
+                PlugIn.ModelCore.UI.WriteLine("  MaxParallelThreads determined by system.");
+            }
+            else
+            {
+                if (Int32.TryParse(Parallel, out ParallelThreads))
+                {
+                    if (ParallelThreads < 1)
+                    {
+                        throw new System.Exception("Parallel cannot be < 1.");
+                    }
+                    else
+                    {
+                        PlugIn.ModelCore.UI.WriteLine("  MaxParallelThreads = " + ParallelThreads.ToString() + ".");
+                    }
+                }else
+                {
+                    throw new System.Exception("Parallel must be 'true', 'false' or an integer >= 1.");
+                }
+            }
+            this.ThreadCount = ParallelThreads;
 
-        
-                FTimeStep = 1.0F / Timestep;
+
+
+            FTimeStep = 1.0F / Timestep;
 
             //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
 

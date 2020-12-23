@@ -1,13 +1,13 @@
 ; LANDIS-II Extension infomation
 #define CoreRelease "LANDIS-II-V7"
 #define ExtensionName "PnET-Succession"
-#define AppVersion "4.0"
+#define AppVersion "4.1"
 #define AppPublisher "LANDIS-II Foundation"
 #define AppURL "http://www.landis-ii.org/"
 
 ; Build directory
-;#define BuildDir "..\..\src\bin\Debug"
-#define BuildDir ".."
+#define BuildDir "..\..\src\bin\Debug"
+;#define BuildDir ".."
 
 ; LANDIS-II installation directories
 #define ExtDir "C:\Program Files\LANDIS-II-v7\extensions"

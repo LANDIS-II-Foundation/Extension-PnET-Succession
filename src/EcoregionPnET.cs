@@ -35,6 +35,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         #region private static variables
         private static bool wythers;
         private static bool dtemp;
+        private static string parallel;
         private static readonly object threadLock = new object();
 
         private static Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>> all_values = new Dictionary<IEcoregionPnET, Dictionary<DateTime, IEcoregionPnETVariables>>();
@@ -352,7 +353,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             wythers = ((Parameter<bool>)PlugIn.GetParameter("Wythers")).Value;
             dtemp = ((Parameter<bool>)PlugIn.GetParameter("DTemp")).Value;
-            
+
             leakagefrac = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("LeakageFrac", 0, 1);
             runoffcapture = (Landis.Library.Parameters.Ecoregions.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter(Names.RunoffCapture, 0, 999999);
             AllEcoregions = new Dictionary<IEcoregion, IEcoregionPnET>();
