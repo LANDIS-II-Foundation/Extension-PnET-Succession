@@ -1,0 +1,60 @@
+LandisData  "Dynamic Ungulate Browse"
+
+Timestep 1
+
+<< Species Inputs >>
+SpeciesTable
+>>				--GrowthReduction--	----Mortality-----
+>> Name		Preference	Threshold	Max	Threshold	Max
+>> --------	----------	---------	---	---------	---
+   abiebals     0.0		0.5		0.4	0.5		0.1
+   acerrubr     0.3		0.5		0.4	0.5		0.1
+   acersacc     0.5		0.5		0.4	0.5		0.1
+   betualle     0.3		0.5		0.4	0.5		0.1
+   betupapy     0.6		0.5		0.4	0.5		0.1
+   fraxamer     0.6		0.5		0.4	0.5		0.1
+   piceglau     0.0		0.5		0.4	0.5		0.1
+   pinubank     0.0		0.5		0.4	0.5		0.1
+   pinuresi     0.0		0.5		0.4	0.5		0.1
+   pinustro     0.0		0.5		0.4	0.5		0.1
+   poputrem     0.4		0.5		0.4	0.5		0.1
+   querelli     0.0		0.5		0.4	0.5		0.1
+   querrubr     0.0		0.5		0.4	0.5		0.1
+   thujocci     0.5		0.5		0.4	0.5		0.1
+   tiliamer     0.4		0.5		0.4	0.5		0.1
+   tsugcana     0.5		0.5		0.4	0.5		0.1
+
+<< Browser population Inputs >>
+ZoneMap  ecoregions.gis
+PopulationFile	DefinedUngulatePopulation.txt  << User-defined population
+DynamicPopulationFile  DynamicUngulatePopulation.txt  << Dynamic population - Optional
+ConsumptionRate  2738  << kg/yr/individual
+
+<< Forage Inputs >>
+ANPPForageProp		0.66	<<Prop of ANPP that counts as forage
+MinBrowsePropinReach	0.50	<<Min prop of browse within reach for a cohort to be browsed
+BrowseBiomassThreshold	0.05	<<Proportion of ecoregion max biomass when cohort begins to escape browse
+EscapeBrowsePropLong	0.57	<<Prop of longevity when browse is escaped
+
+<< Options >>
+<<GrowthReduction	OFF  << Default is ON
+<<Mortality	OFF  << Default is ON
+<<CountNonForageinSitePref	TRUE	<< Default is FALSE
+<<UseInitBiomassAsForage		TRUE	<< Default is FALSE
+
+<< HSI Inputs >>
+<< Component		Neighborhood >>
+<< ---------		------------
+<<ForageQuantity		0		<< ForageQuantity and/or SitePreference
+SitePreference		500
+
+
+<< Output Maps >>
+SitePrefMapNames  		browse/SitePref_{timestep}.gis
+SiteForageMapNames  		browse/SiteForage_{timestep}.gis
+SiteHSIMapNames			browse/HSI_{timestep}.gis
+SitePopulationMapNames		browse/Pop_{timestep}.gis
+BiomassRemovedMapNames  	browse/BioRemoved_{timestep}.gis
+
+<< Output Logs >>
+LogFile  browse/browse_log.csv

@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Landis.Library.Climate;
+using Landis.SpatialModeling;
+using Landis.Library.InitialCommunities;
+using Landis.Library.BiomassCohorts;
 
 namespace Landis.Extension.Succession.BiomassPnET 
 {
@@ -51,6 +54,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> leakageFrostDepth;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> winterSTD;
         private static Landis.Library.Parameters.Ecoregions.AuxParm<float> mossDepth;
+        public static Dictionary<IEcoregion, int> EcoMaxBiomass;
         #endregion
 
         #region accessors for private static variables
@@ -374,6 +378,36 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._winterSTD = winterSTD[ecoregion];
             this._mossDepth = mossDepth[ecoregion];
           
+        }
+
+        // This function calculates maximum biomass for single cohorts on each ecoregion
+        public static void CalculateMaxBiomass()
+        {
+
+            foreach (IEcoregionPnET ecoregion in EcoregionPnET.AllEcoregions.Values)
+            {
+                int ecoMaxBio = 0;
+                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                {
+                    ActiveSite tempSite = new ActiveSite();
+                    ISiteVar<SiteCohorts> tempSiteCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+                    List<ISpeciesCohorts> tempSpeciesCohorts = new List<ISpeciesCohorts>();
+                    int initBiom = (int)(1F / spc.DNSC * (ushort)spc.InitialNSC);
+                    int lifespan = spc.Longevity;
+                    ISpeciesCohorts tempCohort = new SpeciesCohorts(spc, (ushort)spc.Longevity, 0);
+                    tempSpeciesCohorts.Add(tempCohort);
+                    ICommunity tempInitialCommunity = new Community(0, tempSpeciesCohorts);                    
+                    DateTime EndDate = PlugIn.StartDate.AddYears(-1 * lifespan);
+                    tempSiteCohorts[tempSite] = new SiteCohorts(PlugIn.StartDate, tempSite, tempInitialCommunity,ecoregion, PlugIn.UsingClimateLibrary, null, true);               
+                    //List<IEcoregionPnETVariables> climate_vars = PlugIn.UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion, EndDate, PlugIn.StartDate, Climate.Phase.SpinUp_Climate) : EcoregionPnET.GetData(ecoregion, EndDate, PlugIn.StartDate);
+                    int sppMaxBio = tempSiteCohorts[tempSite].MaxBiomass;
+                    if (sppMaxBio > ecoMaxBio)
+                    {
+                        ecoMaxBio = sppMaxBio;
+                    }
+                }
+                EcoMaxBiomass.Add(ecoregion, ecoMaxBio);
+            }
         }
     }
 }

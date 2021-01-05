@@ -45,10 +45,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static ISiteVar<Double> FineFuels;
         public static ISiteVar<float> PressureHead;
         public static ISiteVar<float> ExtremeMinTemp;
+        public static ISiteVar<int> EcoMaxBiomass;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
-        private static DateTime StartDate;
+        public static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static ushort IMAX;
         public static float FTimeStep;
@@ -288,6 +289,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             FineFuels = ModelCore.Landscape.NewSiteVar<Double>();
             PressureHead = ModelCore.Landscape.NewSiteVar<float>();
             ExtremeMinTemp = ModelCore.Landscape.NewSiteVar<float>();
+            EcoMaxBiomass = ModelCore.Landscape.NewSiteVar<int>();
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)GetParameter(Names.Timestep)).Value;
@@ -327,6 +329,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             // John McNabb: initialize climate library after EcoregionPnET has been initialized
             InitializeClimateLibrary();
 
+          
+
             EstablishmentProbability.Initialize(Timestep);
             
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
@@ -348,6 +352,9 @@ namespace Landis.Extension.Succession.BiomassPnET
              
              
             StartDate = new DateTime(((Parameter<int>)GetParameter(Names.StartYear)).Value, 1, 15);
+
+            //Calculating ecoregion maxbiomass
+            EcoregionPnET.CalculateMaxBiomass();
 
             PlugIn.ModelCore.UI.WriteLine("Spinning up biomass or reading from maps...");
 
@@ -402,6 +409,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     ExtremeMinTemp[site] = 999;
                 }
+                EcoMaxBiomass[site] = EcoregionPnET.EcoMaxBiomass[ecoregion];
             }
 
             ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
@@ -409,6 +417,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             ModelCore.RegisterSiteVar(FineFuels, "Succession.FineFuels");
             ModelCore.RegisterSiteVar(PressureHead, "Succession.PressureHead");
             ModelCore.RegisterSiteVar(ExtremeMinTemp, "Succession.ExtremeMinTemp");
+            ModelCore.RegisterSiteVar(EcoMaxBiomass, "Succession.EcoregionMaxBiomass");
 
         }
 
@@ -492,7 +501,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             m.WriteUpdate();
 
              // Create new sitecohorts
-            sitecohorts[site] = new SiteCohorts(StartDate,site,initialCommunity, UsingClimateLibrary, SiteOutputNames.ContainsKey(site)? SiteOutputNames[site] :null);
+            sitecohorts[site] = new SiteCohorts(StartDate,site,initialCommunity, EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]), UsingClimateLibrary, SiteOutputNames.ContainsKey(site)? SiteOutputNames[site] :null);
 
            
            
