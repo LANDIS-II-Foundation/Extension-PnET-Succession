@@ -1,7 +1,8 @@
-﻿
+﻿using Landis.Library.PnETCohorts;
+
 namespace Landis.Extension.Succession.BiomassPnET
 {
-    public interface IEcoregionPnETVariables
+    public interface IEcoregionClimateVariables
     {
 
         float PAR0 { get; }

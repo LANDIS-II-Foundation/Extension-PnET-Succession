@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Landis.Library.PnETCohorts;
+using System;
 using System.Collections.Generic;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
-    public class EcoregionPnETVariables : IEcoregionPnETVariables
+    public class EcoregionClimateVariables : IEcoregionClimateVariables
     {
          
         private DateTime _date;
@@ -277,7 +278,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
 
-        public EcoregionPnETVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPNET> Species, float Latitude)
+        public EcoregionClimateVariables(IObservedClimate climate_dataset, DateTime Date, bool Wythers, bool DTemp, List<ISpeciesPnET> Species, float Latitude)
         {
             
             this._date = Date;
@@ -288,26 +289,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             _tave = (float)0.5 * (climate_dataset.Tmin + climate_dataset.Tmax);
 
-            _dayspan = EcoregionPnETVariables.Calculate_DaySpan(Date.Month);
+            _dayspan = EcoregionClimateVariables.Calculate_DaySpan(Date.Month);
 
             float hr = Calculate_hr(Date.DayOfYear, Latitude);
             _daylength = Calculate_DayLength(hr);
             float nightlength = Calculate_NightLength(hr);
 
             _tday = (float)0.5 * (climate_dataset.Tmax + _tave);
-            _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
+            _vpd = EcoregionClimateVariables.Calculate_VPD(Tday, climate_dataset.Tmin);
 
 
-            foreach (ISpeciesPNET spc in Species )
+            /*foreach (ISpeciesDensity spc in Species )
             {
                 SpeciesPnETVariables speciespnetvars = GetSpeciesVariables(ref climate_dataset, Wythers, DTemp, Daylength, nightlength, spc);
 
                 speciesVariables.Add(spc.Name, speciespnetvars);
-            }
+            }*/
 
         }
         
-        private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float daylength, float nightlength, ISpeciesPNET spc)
+        /*private SpeciesPnETVariables GetSpeciesVariables(ref IObservedClimate climate_dataset, bool Wythers, bool DTemp, float daylength, float nightlength, ISpeciesDensity spc)
         {
             // Class that contains species specific PnET variables for a certain month
             SpeciesPnETVariables speciespnetvars = new SpeciesPnETVariables();
@@ -389,14 +390,14 @@ namespace Landis.Extension.Succession.BiomassPnET
              
           
             return speciespnetvars;
-        }
+        }*/
 
-        private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
+        /*private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
         {
             // Generic computation for a Q10 reduction factor used for respiration calculations
             float q10Fact = ((float)Math.Pow(Q10, (Tday - PsnTOpt) / 10));
             return q10Fact;
-        }
+        }*/
 
          
         

@@ -2,6 +2,7 @@
 //  Author: Austen Ruzicka (and Robert Scheller)
 
 using Landis.Core;
+using Landis.Library.PnETCohorts;
 using Landis.SpatialModeling;
 using Landis.Utilities;
 using System.IO;
@@ -35,8 +36,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                             throw new InputValueException(mapValue.ToString(),
                                                           "Down dead value {0} is not between {1:0.0} and {2:0.0}. Site_Row={3:0}, Site_Column={4:0}",
                                                           mapValue, minWoodyDebris, maxWoodyDebris, site.Location.Row, site.Location.Column);
-                        PlugIn.WoodyDebris[site].InitialMass = mapValue;
-                        PlugIn.WoodyDebris[site].Mass = mapValue;
+                        SiteVars.WoodyDebris[site].InitialMass = mapValue;
+                        SiteVars.WoodyDebris[site].Mass = mapValue;
                     }
                 }
             }
@@ -60,8 +61,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                                                           "Litter value {0} is not between {1:0.0} and {2:0.0}. Site_Row={3:0}, Site_Column={4:0}",
                                                           mapValue, minLitter, maxLitter, site.Location.Row, site.Location.Column);
 
-                        PlugIn.Litter[site].InitialMass = mapValue;
-                        PlugIn.Litter[site].Mass = mapValue;
+                        SiteVars.Litter[site].InitialMass = mapValue;
+                        SiteVars.Litter[site].Mass = mapValue;
                     }
                 }
             }

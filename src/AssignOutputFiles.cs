@@ -1,4 +1,5 @@
 ﻿using Landis.SpatialModeling;
+using Landis.Library.PnETCohorts;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -40,7 +41,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
         }
-        
+
         public static Location GetLandisLocation(float MapCoordinatesX, float MapCoordinatesY, float MapCoordinatesMaxX, float MapCoordinatesMaxY)
         {
             int ColumnCount = PlugIn.ModelCore.Landscape.Columns;
@@ -127,7 +128,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     OutputSiteNames.Add(outputSites.First(), site.Key);
                 }
-                 
+
             }
 
         }
