@@ -810,14 +810,25 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float Amax = (float)(delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * adjFolN));
 
                 //Reference net Psn (lab conditions) in gC/g Fol/month
-                float RefNetPsn = ecoregion.Variables.DaySpan * (Amax * ecoregion.Variables[species.Name].DVPD * ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;
+                float RefGrossPsn = ecoregion.Variables.DaySpan * (Amax * ecoregion.Variables[species.Name].DVPD * ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;
 
                 // PSN (gC/g Fol/month) reference net psn in a given temperature
-                float FTempPSNRefNetPsn = ecoregion.Variables[species.Name].FTempPSN * RefNetPsn;
+                float FTempPSNRefGrossPsn = ecoregion.Variables[species.Name].FTempPSN * RefGrossPsn;
 
                 // Compute net psn from stress factors and reference net psn (gC/g Fol/month)
-                // FTempPSNRefNetPsn units are gC/g Fol/mo
-                float nonOzoneNetPsn = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefNetPsn * fol;  // gC/m2 ground/mo
+                // FTempPSNRefGrossPsn units are gC/g Fol/mo
+                GrossPsn[index] = (1 / (float)PlugIn.IMAX) * FWater[index] * FRad[index] * Fage * FTempPSNRefGrossPsn * fol;  // gC/m2 ground/mo
+
+                // Net foliage respiration depends on reference psn (AMAX)
+                //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
+                //Subistitute 24 hours in place of DayLength because foliar respiration does occur at night.  FTempRespDay uses Tave temps reflecting both day and night temperatures.
+                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * Amax;
+
+                // Actal foliage respiration (growth respiration) 
+                FolResp[index] = FWater[index] * FTempRespDayRefResp * fol / (float)PlugIn.IMAX;
+
+                // NetPsn psn depends on gross psn and foliage respiration
+               float nonOzoneNetPsn = GrossPsn[index] - FolResp[index];
 
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 // netPsn_ground = LayerNestPsn*1000000umol*(1mol/12gC) * (1/(60s*60min*14hr*30day))
@@ -852,22 +863,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 else
                 { O3Effect = 0; }
                 FOzone[index] = 1 - O3Effect;
-
-
+                
                 //Apply reduction factor for Ozone
                 NetPsn[index] = nonOzoneNetPsn * FOzone[index];
-
-                // Net foliage respiration depends on reference psn (AMAX)
-                //float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * ecoregion.Variables.Daylength * Constants.MC / Constants.billion * ecoregion.Variables[species.Name].Amax;
-                //Subistitute 24 hours in place of DayLength because foliar respiration does occur at night.  FTempRespDay uses Tave temps reflecting both day and night temperatures.
-                float FTempRespDayRefResp = ecoregion.Variables[species.Name].FTempRespDay * ecoregion.Variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * Amax;
-
-                // Actal foliage respiration (growth respiration) 
-                FolResp[index] = FWater[index] * FTempRespDayRefResp * fol / (float)PlugIn.IMAX;
-
-                // Gross psn depends on net psn and foliage respiration
-                GrossPsn[index] = NetPsn[index] + FolResp[index];
-
+                               
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))); //mm
