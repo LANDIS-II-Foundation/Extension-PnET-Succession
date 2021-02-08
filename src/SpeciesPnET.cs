@@ -346,14 +346,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
             //  initBiomass = initBiomass - Senescence
-            this._initBiomass = (int)((uint)(1F / dnsc * (ushort)initialnsc) - ((uint)(fracbelowg * (uint)(1F / dnsc * (ushort)initialnsc))*toroot) - ((uint)((1 - fracbelowg) * (uint)(1F / dnsc * (ushort)initialnsc)) * towood));
+            uint initBiomass = (uint)(initialnsc/(dnsc * cfracbiomass));
+            this._initBiomass = (int)((initBiomass - ((uint)(fracbelowg * initBiomass))*toroot) - ((uint)((1 - fracbelowg) * initBiomass) * towood));
             //senescence = ((Root * species.TOroot) + Wood * species.TOwood);
         }
        
         private SpeciesPnET(ISpecies species)
         {
             //_wuecnst = wuecnst[species];
-            _initBiomass = (int)((uint)(1F / dnsc[species] * (ushort)initialnsc[species]) - ((uint)(fracbelowg[species] * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * towood[species]));
+            uint initBiomass = (uint)(cfracbiomass[species]/(dnsc[species] * initialnsc[species]));
+            _initBiomass = (int)((initBiomass - ((uint)(fracbelowg[species] * initBiomass)) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * initBiomass) * towood[species]));
+            //_initBiomass = (int)((uint)(1F / dnsc[species] * (ushort)initialnsc[species]) - ((uint)(fracbelowg[species] * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * towood[species]));
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _kwdlit = kwdlit[species];

@@ -292,7 +292,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return nsc / (FActiveBiom * (biomass + fol));
+                return nsc / ((FActiveBiom * (biomass + fol))*species.CFracBiomass);
             }
         }
         // Species with PnET parameter additions
@@ -355,8 +355,8 @@ namespace Landis.Extension.Succession.BiomassPnET
            
             this.nsc = (ushort)species.InitialNSC;
            
-            // Initialize biomass assuming fixed concentration of NSC
-            this.biomass = (uint)(1F / species.DNSC * (ushort)species.InitialNSC);
+            // Initialize biomass assuming fixed concentration of NSC, convert gC to gDW
+            this.biomass = (uint)(this.nsc/(species.DNSC * species.CFracBiomass));
             
             biomassmax = biomass;
 
@@ -388,7 +388,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //incoming biomass is aboveground wood, calculate total biomass
             int biomass = (int) (woodBiomass / (1 - species.FracBelowG));
             this.biomass = biomass;
-            this.nsc = this.species.DNSC * this.FActiveBiom * this.biomass;
+            this.nsc = this.species.DNSC * this.FActiveBiom * this.biomass * species.CFracBiomass;
             this.biomassmax = biomass;
             this.lastSeasonFRad = new List<float>();
             this.adjFracFol = species.FracFol;
@@ -511,7 +511,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //    if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             //}
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
-            MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
+            MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * (biomass * species.CFracBiomass));//gC //IMAXinverse
 
             // Subtract mainenance respiration (gC/mo)
             nsc -= MaintenanceRespiration[index];
@@ -545,8 +545,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                     // Release of nsc, will be added to biomass components next year
                     // Assumed that NSC will have a minimum concentration, excess is allocated to biomass
-                    float Allocation = Math.Max(nsc - (species.DNSC * FActiveBiom * biomass), 0);
-                    biomass += Allocation;
+                    float Allocation = Math.Max(nsc - (species.DNSC * FActiveBiom * biomass *species.CFracBiomass), 0); //gC
+                    biomass += Allocation / species.CFracBiomass;  // convert gC to gDW
                     biomassmax = Math.Max(biomassmax, biomass);
                     nsc -= Allocation;
                     age++;
@@ -891,7 +891,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
                 }
                 // Add net psn to non soluble carbons
-                nsc += NetPsn[index];
+                nsc += NetPsn[index]; //gC
 
             }
             else
