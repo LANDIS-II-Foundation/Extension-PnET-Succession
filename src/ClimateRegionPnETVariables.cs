@@ -34,14 +34,14 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             _tave = (float)(0.5 * (monthlyClimateRecord.Tmin + monthlyClimateRecord.Tmax));
 
-            _dayspan = Calculate_DaySpan(date.Month);
+            _dayspan = EcoregionPnETVariables.Calculate_DaySpan(date.Month);
 
-            float hr = Calculate_hr(date.DayOfYear, latitude);
-            _daylength = Calculate_DayLength(hr);
-            float nightlength = Calculate_NightLength(hr);
+            float hr = EcoregionPnETVariables.Calculate_hr(date.DayOfYear, latitude);
+            _daylength = EcoregionPnETVariables.Calculate_DayLength(hr);
+            float nightlength = EcoregionPnETVariables.Calculate_NightLength(hr);
 
             _tday = (float)(0.5 * (monthlyClimateRecord.Tmax + _tave));
-            _vpd = Calculate_VPD(Tday, (float)monthlyClimateRecord.Tmin);
+            _vpd = EcoregionPnETVariables.Calculate_VPD(Tday, (float)monthlyClimateRecord.Tmin);
 
 
             foreach (ISpeciesPNET spc in Species)
@@ -75,153 +75,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         #endregion
 
-        #region static computation functions
-
-        private static int Calculate_DaySpan(int Month)
-        {
-            if (Month == 1) return 31;
-            else if (Month == 2) return 28;
-            else if (Month == 3) return 31;
-            else if (Month == 4) return 30;
-            else if (Month == 5) return 31;
-            else if (Month == 6) return 30;
-            else if (Month == 7) return 31;
-            else if (Month == 8) return 31;
-            else if (Month == 9) return 30;
-            else if (Month == 10) return 31;
-            else if (Month == 11) return 30;
-            else if (Month == 12) return 31;
-            else throw new System.Exception("Cannot calculate DaySpan, month = " + Month);
-        }
-
-        private static float Calculate_VP(float a, float b, float c, float T)
-        {
-            return a * (float)Math.Exp(b * T / (T + c));
-        }
-
-        public static float Calculate_VPD(float Tday, float TMin)
-        {
-
-            float emean;
-            //float delta;
-
-            //saturated vapor pressure
-            float es = Calculate_VP(0.61078f, 17.26939f, 237.3f, Tday);
-            // 0.61078f * (float)Math.Exp(17.26939f * Tday / (Tday + 237.3f));
-
-            //delta = 4098.0f * es / ((Tday + 237.3f) * (Tday + 237.3f));
-            if (Tday < 0)
-            {
-                es = Calculate_VP(0.61078f, 21.87456f, 265.5f, Tday);
-                //0.61078f * (float)Math.Exp(21.87456f * Tday / (Tday + 265.5f));
-                //delta = 5808.0f * es / ((Tday + 265.5f) * (Tday + 265.5f));
-            }
-
-            emean = Calculate_VP(0.61078f, 17.26939f, 237.3f, TMin);
-            //0.61078f * (float)Math.Exp(17.26939f * TMin / (TMin + 237.3f));
-            if (TMin < 0) emean = Calculate_VP(0.61078f, 21.87456f, 265.5f, TMin);
-            //0.61078f * (float)Math.Exp(21.87456f * TMin / (TMin + 265.5f));
-
-            return es - emean;
-        }
-
-        public static float LinearPsnTempResponse(float tday, float PsnTOpt, float PsnTMin)
-        {
-            if (tday < PsnTMin) return 0;
-            else if (tday > PsnTOpt) return 1;
-
-            else return (tday - PsnTMin) / (PsnTOpt - PsnTMin);
-        }
-
-        public static float CurvelinearPsnTempResponse(float tday, float PsnTOpt, float PsnTMin)
-        {
-            // Copied from Psn_Resp_Calculations.xlsx[FTempPsn_Mod]
-            //=IF(D2>AA$2,1,MAX(0,(($AA$3-D2)*(D2-$AA$1))/((($AA$3-$AA$1)/2)^2)))
-            //=IF(tday>PsnTOpt,1,MAX(0,((PsnTMax-tday)*(tday-PsnTMin))/(((PsnTMax-PsnTMin)/2)^2)))
-            float PsnTMax = PsnTOpt + (PsnTOpt - PsnTMin);
-            if (tday < PsnTMin) return 0;
-            else if (tday > PsnTOpt) return 1;
-
-            else return ((PsnTMax - tday) * (tday - PsnTMin)) / (float)Math.Pow(((PsnTMax - PsnTMin) / 2), 2);
-        }
-
-        public static float DTempResponse(float tday, float PsnTOpt, float PsnTMin, float PsnTMax)
-        {
-            // Copied from Psn_Resp_Calculations.xlsx[DTemp]
-            //=MAX(0,(($Y$3-D2)*(D2-$Y$1))/((($Y$3-$Y$1)/2)^2))
-            //=MAX(0,((PsnTMax-tday)*(tday-PsnTMin))/(((PsnTMax-PsnTMin)/2)^2))
-
-            if (tday < PsnTMin)
-                return 0;
-            else if (tday > PsnTMax)
-                return 0;
-            else
-            {
-                if (tday <= PsnTOpt)
-                {
-                    float PsnTMaxestimate = PsnTOpt + (PsnTOpt - PsnTMin);
-                    return (float)Math.Max(0.0, ((PsnTMaxestimate - tday) * (tday - PsnTMin)) / (float)Math.Pow(((PsnTMaxestimate - PsnTMin) / 2), 2));
-                }
-                else
-                {
-                    float PsnTMinestimate = PsnTOpt + (PsnTOpt - PsnTMax);
-                    return (float)Math.Max(0.0, ((PsnTMax - tday) * (tday - PsnTMinestimate)) / (float)Math.Pow(((PsnTMax - PsnTMinestimate) / 2), 2));
-                }
-            }
-
-        
-    }
-
-        public static float Calculate_NightLength(float hr)
-        {
-            return 60 * 60 * (24 - hr);
-        }
-
-        public static float Calculate_DayLength(float hr)
-        {
-            return 60 * 60 * hr;
-        }
-
-        public static float Calculate_hr(int DOY, double Latitude)
-        {
-            float TA;
-            float AC;
-            float LatRad;
-            float r;
-            float z;
-            float decl;
-            float z2;
-            float h;
-
-            LatRad = (float)Latitude * (2.0f * (float)Math.PI) / 360.0f;
-            r = 1 - (0.0167f * (float)Math.Cos(0.0172f * (DOY - 3)));
-            z = 0.39785f * (float)Math.Sin(4.868961f + 0.017203f * DOY + 0.033446f * (float)Math.Sin(6.224111f + 0.017202f * DOY));
-
-            if ((float)Math.Abs(z) < 0.7f) decl = (float)Math.Atan(z / ((float)Math.Sqrt(1.0f - z * z)));
-            else decl = (float)Math.PI / 2.0f - (float)Math.Atan((float)Math.Sqrt(1 - z * z) / z);
-
-            if ((float)Math.Abs(LatRad) >= (float)Math.PI / 2.0)
-            {
-                if (Latitude < 0) LatRad = (-1.0f) * ((float)Math.PI / 2.0f - 0.01f);
-                else LatRad = 1 * ((float)Math.PI / 2.0f - 0.01f);
-            }
-            z2 = -(float)Math.Tan(decl) * (float)Math.Tan(LatRad);
-
-            if (z2 >= 1.0) h = 0;
-            else if (z2 <= -1.0) h = (float)Math.PI;
-            else
-            {
-                TA = (float)Math.Abs(z2);
-                if (TA < 0.7) AC = 1.570796f - (float)Math.Atan(TA / (float)Math.Sqrt(1 - TA * TA));
-                else AC = (float)Math.Atan((float)Math.Sqrt(1 - TA * TA) / TA);
-                if (z2 < 0) h = 3.141593f - AC;
-                else h = AC;
-            }
-            return 2 * (h * 24) / (2 * (float)Math.PI);
-        }
-
-        #endregion
-
         #region private methods
 
         private SpeciesPnETVariables GetSpeciesVariables(MonthlyClimateRecord monthlyClimateRecord, bool wythers, bool dTemp, float daylength, float nightlength, ISpeciesPNET spc)
@@ -248,19 +101,19 @@ namespace Landis.Extension.Succession.BiomassPnET
             //-------------------FTempPSN (public for output file)
             if (dTemp)
             {
-                speciespnetvars.FTempPSN = DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
+                speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
             }
             else
             {
                 //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
-                speciespnetvars.FTempPSN = CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Modified 051216(BRM)
+                speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Modified 051216(BRM)
             }
 
             // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
-            float fTempRespDay = CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
+            float fTempRespDay = EcoregionPnETVariables.CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
 
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
-            float fTempRespNight = CalcQ10Factor(spc.Q10, Tmin, spc.PsnTOpt);
+            float fTempRespNight = EcoregionPnETVariables.CalcQ10Factor(spc.Q10, Tmin, spc.PsnTOpt);
 
             // Unitless respiration adjustment: public for output file only
             float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
@@ -302,17 +155,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             // Growth respiration factor
-            speciespnetvars.FTempRespDay = BaseFolResp * CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
+            speciespnetvars.FTempRespDay = BaseFolResp * EcoregionPnETVariables.CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
 
 
             return speciespnetvars;
-        }
-
-        private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
-        {
-            // Generic computation for a Q10 reduction factor used for respiration calculations
-            float q10Fact = ((float)Math.Pow(Q10, (Tday - PsnTOpt) / 10));
-            return q10Fact;
         }
 
         #endregion

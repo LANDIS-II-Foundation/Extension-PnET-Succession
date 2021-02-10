@@ -8,7 +8,7 @@ using Landis.Library.Climate;
 namespace Landis.Extension.Succession.BiomassPnET 
 {
     /// <summary>
-    /// The information for a tree species (its index and parameters).
+    /// The information for n ecoregion (its index and parameters).
     /// </summary>
     public class EcoregionPnET : IEcoregionPnET
     {
@@ -251,7 +251,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public static List<IEcoregionPnETVariables> GetClimateRegionData(IEcoregionPnET ecoregion, DateTime start, DateTime end, Climate.Phase spinupOrfuture)
         {
-            // Monthly simulation data untill but not including end
+            // Monthly simulation data until but not including end
             List<IEcoregionPnETVariables> data = new List<IEcoregionPnETVariables>();
 
             // Date: the last date in the collection of running data

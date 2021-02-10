@@ -119,7 +119,7 @@ namespace Landis.Extension.Succession.BiomassPnET
        
 
         #region static computation functions
-        private static int Calculate_DaySpan(int Month)
+        public static int Calculate_DaySpan(int Month)
         {
             if (Month == 1) return 31;
             else if (Month == 2) return 28;
@@ -391,7 +391,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return speciespnetvars;
         }
 
-        private float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
+        public static float CalcQ10Factor(float Q10, float Tday, float PsnTOpt)
         {
             // Generic computation for a Q10 reduction factor used for respiration calculations
             float q10Fact = ((float)Math.Pow(Q10, (Tday - PsnTOpt) / 10));

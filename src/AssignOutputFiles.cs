@@ -7,7 +7,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     public static class AssignOutputFiles
     {
         // Maps the output files by pixel that are prescribed by the user with the term "PnETOutputSites", i.e. cohort and 
-        // location specific output files. The  user can supply the location through the row and column number of the mao
+        // location specific output files. The  user can supply the location through the row and column number of the map
         // location where she wants to see output, or though coordinates X and Y. If using coordinates, the user 
         // should supply the border X, Y coorninates of the map. 
         public struct ParameterNames

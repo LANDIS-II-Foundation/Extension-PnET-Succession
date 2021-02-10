@@ -6,7 +6,7 @@ using System.Linq;
 namespace Landis.Extension.Succession.BiomassPnET
 {
     /// <summary>
-    /// Allocates litters that result from disturbanches. 
+    /// Allocates litters that result from disturbances. 
     /// Input parameters are fractions of litter that are allocated to different pools
     /// </summary>
     public class Allocation

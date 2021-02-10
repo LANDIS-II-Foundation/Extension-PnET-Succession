@@ -204,7 +204,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 fol = value;
         }
         }
-        // Aboveground Biomass (g/m2)
+        // Aboveground Biomass (gDW/m2)
         public int Biomass
         {
             get
@@ -212,7 +212,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return (int)Math.Round((1 - species.FracBelowG) * biomass) + (int)fol;
             }
         }
-        // Total Biomass (root + wood) (g/m2)
+        // Total Biomass (root + wood) (gDW/m2)
         public int TotalBiomass
         {
             get
@@ -220,7 +220,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return (int)Math.Round(biomass);
             }
         }
-        // Wood (g/m2)
+        // Wood (gDW/m2)
         public uint Wood
         {
             get
@@ -228,7 +228,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return (uint)Math.Round((1 - species.FracBelowG) * biomass);
             }
         }
-        // Root (g/m2)
+        // Root (gDW/m2)
         public uint Root
         {
             get
