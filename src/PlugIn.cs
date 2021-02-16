@@ -52,7 +52,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         private ICommunity initialCommunity;
         public static int CohortBinSize;
 
-        private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
 
         public void DeathEvent(object sender, Landis.Library.PnETCohorts.DeathEventArgs eventArgs)
@@ -88,11 +87,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             ModelCore = mCore;
 
-            parameters.Add(Names.ExtensionName, new Parameter<string>(Names.ExtensionName, InputParameterFile));
+            Names.parameters.Add(Names.ExtensionName, new Parameter<string>(Names.ExtensionName, InputParameterFile));
 
             //-------------PnET-Succession input files
             Dictionary<string, Parameter<string>> InputParameters = Names.LoadTable(Names.ExtensionName, Names.AllNames, null, true);
-            InputParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
+            InputParameters.ToList().ForEach(x => Names.parameters.Add(x.Key, x.Value));
 
             //-------------Read Species parameters input file
             List<string> SpeciesNames = PlugIn.ModelCore.Species.ToList().Select(x => x.Name).ToList();
@@ -101,9 +100,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             Dictionary<string, Parameter<string>> speciesparameters = Names.LoadTable(Names.PnETSpeciesParameters, SpeciesNames, SpeciesPars);
             foreach (string key in speciesparameters.Keys)
             {
-                if (parameters.ContainsKey(key)) throw new System.Exception("Parameter " + key + " was provided twice");
+                if (Names.parameters.ContainsKey(key)) throw new System.Exception("Parameter " + key + " was provided twice");
             }
-            speciesparameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
+            speciesparameters.ToList().ForEach(x => Names.parameters.Add(x.Key, x.Value));
 
             //-------------Ecoregion parameters
             List<string> EcoregionNames = PlugIn.ModelCore.Ecoregions.ToList().Select(x => x.Name).ToList();
@@ -111,10 +110,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             Dictionary<string, Parameter<string>> ecoregionparameters = Names.LoadTable(Names.EcoregionParameters, EcoregionNames, EcoregionParameters);
             foreach (string key in ecoregionparameters.Keys)
             {
-                if (parameters.ContainsKey(key)) throw new System.Exception("Parameter "+ key +" was provided twice");
+                if (Names.parameters.ContainsKey(key)) throw new System.Exception("Parameter "+ key +" was provided twice");
             }
 
-            ecoregionparameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
+            ecoregionparameters.ToList().ForEach(x => Names.parameters.Add(x.Key, x.Value));
 
 
 
@@ -122,23 +121,23 @@ namespace Landis.Extension.Succession.BiomassPnET
             Parameter<string> DisturbanceReductionsParameterFile;
             if (Names.TryGetParameter(Names.DisturbanceReductions, out DisturbanceReductionsParameterFile))
             {
-                Allocation.Initialize(DisturbanceReductionsParameterFile.Value, parameters);
+                Allocation.Initialize(DisturbanceReductionsParameterFile.Value, Names.parameters);
                 Cohort.AgeOnlyDeathEvent += DisturbanceReductions.Events.CohortDied;
             }
 
              
             //---------------SaxtonAndRawlsParameterFile
-            if (parameters.ContainsKey(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters) == false)
+            if (Names.parameters.ContainsKey(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters) == false)
             {
                 Parameter<string> SaxtonAndRawlsParameterFile = new Parameter<string>(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, (string)PnETDefaultsFolder + "\\SaxtonAndRawlsParameters.txt");
-                parameters.Add(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, SaxtonAndRawlsParameterFile);
+                Names.parameters.Add(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, SaxtonAndRawlsParameterFile);
             }
             Dictionary<string, Parameter<string>> SaxtonAndRawlsParameters = Names.LoadTable(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, null, PressureHeadSaxton_Rawls.ParameterNames);
             foreach (string key in SaxtonAndRawlsParameters.Keys)
             {
-                if (parameters.ContainsKey(key)) throw new System.Exception("Parameter " + key + " was provided twice");
+                if (Names.parameters.ContainsKey(key)) throw new System.Exception("Parameter " + key + " was provided twice");
             }
-            SaxtonAndRawlsParameters.ToList().ForEach(x => parameters.Add(x.Key, x.Value));
+            SaxtonAndRawlsParameters.ToList().ForEach(x => Names.parameters.Add(x.Key, x.Value));
 
             //--------------PnETGenericParameterFile
 
@@ -146,26 +145,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<string> RowLabels = new List<string>(Names.AllNames);
             RowLabels.AddRange(SpeciesPnET.ParameterNames); 
 
-            if (parameters.ContainsKey(Names.PnETGenericParameters))
+            if (Names.parameters.ContainsKey(Names.PnETGenericParameters))
             {
                 Dictionary<string, Parameter<string>> genericparameters = Names.LoadTable(Names.PnETGenericParameters,  RowLabels, null, true);
                 foreach (KeyValuePair<string, Parameter<string>> par in genericparameters)
                 {
-                    if (parameters.ContainsKey(par.Key)) throw new System.Exception("Parameter " + par.Key + " was provided twice");
-                    parameters.Add(par.Key, par.Value);
+                    if (Names.parameters.ContainsKey(par.Key)) throw new System.Exception("Parameter " + par.Key + " was provided twice");
+                    Names.parameters.Add(par.Key, par.Value);
                 }
             }
 
             //----------Load in default parameters to fill the gaps
             Parameter<string> PnETGenericDefaultParameterFile = new Parameter<string>(Names.PnETGenericDefaultParameters, (string)PnETDefaultsFolder + "\\PnETGenericDefaultParameters.txt");
-            parameters.Add(Names.PnETGenericDefaultParameters, PnETGenericDefaultParameterFile);
+            Names.parameters.Add(Names.PnETGenericDefaultParameters, PnETGenericDefaultParameterFile);
             Dictionary<string, Parameter<string>> genericdefaultparameters = Names.LoadTable(Names.PnETGenericDefaultParameters, RowLabels, null, true);
 
             foreach (KeyValuePair<string, Parameter<string>> par in genericdefaultparameters)
             {
-                if (parameters.ContainsKey(par.Key) == false)
+                if (Names.parameters.ContainsKey(par.Key) == false)
                 {
-                    parameters.Add(par.Key, par.Value);
+                    Names.parameters.Add(par.Key, par.Value);
                 }
             }
 
@@ -183,6 +182,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
             Cohort.DeathEvent += DeathEvent;
+            IMAX = ((Parameter<ushort>)Names.GetParameter(Names.IMAX)).Value;
+            EcoregionData.InitializeCore(ModelCore, IMAX);
+            EcoregionData.Initialize();
             SiteVars.Initialize();
 
             Landis.Utilities.Directory.EnsureExists("output");
@@ -217,8 +219,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             SpeciesPnET = new SpeciesPnET();
             Landis.Library.PnETCohorts.SpeciesParameters.LoadParameters(SpeciesPnET);
-
-            EcoregionData.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
  
@@ -227,9 +227,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             EstablishmentProbability.Initialize(Timestep);
             
-            IMAX = ((Parameter<ushort>)Names.GetParameter(Names.IMAX)).Value;
-
-            EcoregionData.InitializeCore(ModelCore, IMAX);
             //LeakageFrostDepth = ((Parameter<float>)GetParameter(Names.LeakageFrostDepth)).Value; //Now an ecoregion parameter
             //PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;// Now an ecoregion parameter
 
@@ -242,7 +239,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Reproduction.PlantingEstablish = PlantingEstablish;
 
             
-            SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), parameters["SeedingAlgorithm"].Value);
+            SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), Names.parameters["SeedingAlgorithm"].Value);
             
             base.Initialize(ModelCore, SeedAlgorithm);
              
@@ -320,7 +317,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             else
             {
-                PlugIn.ModelCore.UI.WriteLine($"Using climate files in ecoregion parameters: {PlugIn.parameters["EcoregionParameters"].Value}.");
+                PlugIn.ModelCore.UI.WriteLine($"Using climate files in ecoregion parameters: {Names.parameters["EcoregionParameters"].Value}.");
             }
         }
 
