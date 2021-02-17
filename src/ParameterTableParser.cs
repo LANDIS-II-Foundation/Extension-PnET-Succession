@@ -68,6 +68,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 InputVar<string> landisData = new InputVar<string>("LandisData");
                 ReadVar(landisData);
 
+                InputVar<string> climateConfigFile = new InputVar<string>(Names.ClimateConfigFile);
+                ReadVar(climateConfigFile);
+                parameters.Add(Names.ClimateConfigFile, new Parameter<string>(Names.ClimateConfigFile, climateConfigFile.Value.String));
+
                 if (landisData.Value.Actual != this.KeyWord)
                 {
                     throw new InputValueException(landisData.Value.String, "Landis Keyword expected " + this.KeyWord + " but read \"{0}\"" + this.FileName, landisData.Value.Actual);

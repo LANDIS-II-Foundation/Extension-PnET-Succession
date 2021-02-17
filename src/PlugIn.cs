@@ -315,7 +315,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 FTimeStep = 1.0F / Timestep;
 
             //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
-
             ObservedClimate.Initialize();
 
             SpeciesPnET = new SpeciesPnET();
