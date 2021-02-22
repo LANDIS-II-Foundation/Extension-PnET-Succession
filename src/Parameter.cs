@@ -8,7 +8,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         private Dictionary<string, T> values = new Dictionary<string, T>();
         string p_label;
-
+        //---------------------------------------------------------------------
         public List<T> Values
         {
             get
@@ -16,16 +16,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return new List<T>(values.Values);
             }
         }
-
+        //---------------------------------------------------------------------
         public Parameter(string name, T value, string label = null)
         {
             this.p_label = label;
             Add(name, value);
         }
+        //---------------------------------------------------------------------
         public Parameter(string label =null)
         {
             this.p_label = label;
         }
+        //---------------------------------------------------------------------
         public T Value
         {
             get
@@ -34,10 +36,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return values.First().Value;
             }
         }
+        //---------------------------------------------------------------------
         public bool ContainsKey(string key)
         {
             return values.ContainsKey(key);
         }
+        //---------------------------------------------------------------------
         public T this[string label]
         {
             get
@@ -56,11 +60,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 values[label] = value;
             }
         }
-        
+        //---------------------------------------------------------------------
         public void Add(string key, T value)
         {
             values.Add(key, value);
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<bool>(Parameter<T> m)
         {
             try
@@ -78,6 +83,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<float>(Parameter<T> m)
         {
             try
@@ -95,6 +101,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception("Cannot parse parameter "+ m.p_label +" "+e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<ushort>(Parameter<T> m)
         {
             try
@@ -112,6 +119,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<byte>(Parameter<T> m)
         {
             try
@@ -129,6 +137,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
+        //---------------------------------------------------------------------
         public static explicit operator Parameter<int>(Parameter<T> m)
         {
             try
@@ -146,8 +155,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception("Cannot parse parameter " + m.p_label + " " + e.Message);
             }
         }
-        
-        
+        //---------------------------------------------------------------------
         public static explicit operator Landis.Library.Parameters.Ecoregions.AuxParm<T>(Parameter<T> m)
         {
             string ecoregionname = null;
@@ -174,8 +182,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         
         }
-        
-        
+        //---------------------------------------------------------------------
         public static explicit operator Landis.Library.Parameters.Species.AuxParm<T>(Parameter<T> m)
         {
             T value;
@@ -203,25 +210,16 @@ namespace Landis.Extension.Succession.BiomassPnET
                 else throw new System.Exception("Error parsing parameter " + m.p_label + " for species " + speciesname + e.Message);
             }
         }
-        
-        
-
-
-
-        
+        //---------------------------------------------------------------------
         public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
         {
             return values.GetEnumerator();
         }
-
+        //---------------------------------------------------------------------
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
-       
-        
-
-
-
+        //---------------------------------------------------------------------
     }
 }

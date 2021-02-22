@@ -5,6 +5,8 @@ namespace Landis.Extension.Succession.BiomassPnET
     {
         public const string PET = "PET(mm)";
         public const string Time = "Time";
+        public const string Year = "Year";
+        public const string Month = "Month";
         public const string Ecoregion = "Ecoregion";
         public const string PAR0 = "PAR0";  
         public const string NrOfCohorts = "NrOfCohorts";
@@ -22,8 +24,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string GrossPsn = "GrossPsn(gC_m2_mo)";
         public const string NetPsn = "NetPsn(gC_m2_mo)";
         public const string FolResp = "FolResp(gC_m2_mo)";
-        public const string water = "water(mm/m)";
-        public const string availableWater = "available water (mm)";
+        public const string water = "Water(mm/m)";
+        public const string availableWater = "Available Water (mm)";
         public const string Leakage = "Leakage(mm)";
         public const string PressureHead = "PressureHead(mm)";
         public const string SnowPack = "SnowPack(mm)";
@@ -56,8 +58,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Interception = "Interception(mm)";
         public const string Evaporation = "Evaporation(mm)";
         public const string Transpiration = "Transpiration(mm)";
-        public const string DeliveryPotential = "DeliveryPotential";
-        public const string MaxWater = "MaxWater";
+        public const string DeliveryPotential = "DeliveryPotential(-)";
+        //public const string MaxWater = "MaxWater";
         public const string SoilType = "SoilType";
         public const string FOzone = "fOzone(-)";
         public const string FrostDepth = "FrostDepth(mm)";

@@ -8,7 +8,6 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class ParameterTableParser
          : TextParser<Dictionary<string, Parameter<string>>>  
     {
-
         public Dictionary<string, Parameter<string>> Parameters { get; private set; }
         public List<string> ExpectedRowLabels { get; private set; }
         public List<string> ExpectedColumnHeaders { get; private set; }
@@ -18,7 +17,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private string FileName;
         private string KeyWord;
         private bool transposed;
-
+        //---------------------------------------------------------------------
         public override string LandisDataValue
         {
             get
@@ -26,7 +25,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return Names.ExtensionName ;
             }
         }
-
+        //---------------------------------------------------------------------
         public ParameterTableParser(string FileName, string KeyWord, List<string> ExpectedRowLabels, List<string> ExpectedColumnHeaders, bool transposed = false)
         {
             this.ExpectedColumnHeaders = ExpectedColumnHeaders;
@@ -36,12 +35,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.FileName = FileName;
             this.speciesLineNums = new Dictionary<string, int>();
             this.speciesName = new InputVar<string>("Species");
-             
         }
+        //---------------------------------------------------------------------
         static bool ListContains(List<string> List, string value)
         { 
             return List.Any(s => s.Equals(value, StringComparison.OrdinalIgnoreCase));
         }
+        //---------------------------------------------------------------------
         void CheckHeaderCount(StringReader s, int ReadHeaderLabelsCount)
         {
             string headerline = s.ReadLine();
@@ -59,6 +59,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception("Headers/column numbers unequal");
             }
         }
+        //---------------------------------------------------------------------
         protected override Dictionary<string, Parameter<string>> Parse()
         {
             try
@@ -97,24 +98,16 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 speciesLineNums.Clear();
 
-
                 while (!AtEndOfInput)
                 {
-                    //string line2 = new StringReader(CurrentLine).ReadLine().Trim();
-                    //List<string> Terms = new List<string>(new StringReader(CurrentLine).ReadLine().Trim().Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries));
-
-                    
-
                     InputVar<string> RowLabel = new InputVar<string>("RowLabel");
 
                     StringReader s = new StringReader(CurrentLine);
 
                     CheckHeaderCount(new StringReader(CurrentLine), ReadHeaderLabels.Count);
                     
-
                     for (int column = 0; column < ReadHeaderLabels.Count; column++)
                     {
-
                         Parameter<string> parameter = null;
                         string parameterlabel = null;
                          
@@ -130,12 +123,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                             {
                                 throw new PnetSpeciesParameterFileFormatException("Unknown parameter label [" + var.Value + "] in "+ FileName + ".\nExpected labels are: [" + string.Join(" ,", ExpectedRowLabels.ToArray())+"].");
                             }
-
                             continue;
                         }
-                        
-                         
-
                         switch (transposed)
                         {
                             case true:
@@ -144,7 +133,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 break;
                             case false:
                                 parameterlabel = ReadHeaderLabels[column];
-                                
                                 valuekey = RowLabel.Value;
                                 break;
                         }
@@ -157,14 +145,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                         {
                             throw new System.Exception("Duplicate parameter label [" + var.Value + "] for parameter " + parameterlabel);
                         }
-
                         parameter.Add(valuekey, var.Value);
-
                     }
                     GetNextLine();
                 }
-
-
                 return parameters;
             }
             catch (System.Exception e)
@@ -182,19 +166,23 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
         }
-        
-
+        //---------------------------------------------------------------------
     }
+    //---------------------------------------------------------------------
     class PnetSpeciesParameterFileFormatException : Exception
     {
+        //---------------------------------------------------------------------
         public PnetSpeciesParameterFileFormatException()
         {
-            
+            // empty constructor
         }
+        //---------------------------------------------------------------------
         public PnetSpeciesParameterFileFormatException(string msg)
             :base(msg)
         {
 
         }
+        //---------------------------------------------------------------------
     }
+    //---------------------------------------------------------------------
 }

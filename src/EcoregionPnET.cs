@@ -84,7 +84,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         
         }
-
+        // Volumetric water content (mm/m) at field capacity
         public float FieldCap
         {
             get
@@ -95,6 +95,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 _fieldcap = value;
             }
         }
+        // Volumetric water content (mm/m) at wilting point
         public float WiltPnt
         {
             get
@@ -105,6 +106,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 _wiltpnt = value;
             }
         }
+        // Volumetric water content (mm/m) at porosity
         public float Porosity
         {
             get
@@ -116,13 +118,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 _porosity = value;
             }
         }
-         
+        // Proportion of water above field capacity that drains out of the soil rooting zone immediately after entering the soil (fast leakage) 
         public float LeakageFrac
         {
             get {
                 return _leakagefrac;
             }
         }
+        // Depth of surface water (mm) that can be held on site instead of running off
         public float RunoffCapture
         {
             get
@@ -130,6 +133,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _runoffcapture;
             }
         }
+        // Rate at which incoming precipitation is intercepted by foliage for each unit of LAI
         public float PrecIntConst
         {
             get
@@ -137,6 +141,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _precintconst;
             }
         }
+        // Depth of rooting zone in the soil (mm)
         public float RootingDepth {
             get {
                 return _rootingdepth;
@@ -150,6 +155,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _soiltype;
             }
         }
+        // Proportion of incoming precipitation that does not enter the soil - surface runoff due to impermeability, slope, etc.
         public float PrecLossFrac
         {
             get
@@ -193,6 +199,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Name;
             }
         }
+        // Proportion of snow pack that sublimates before melting
         public float SnowSublimFrac
         {
             get

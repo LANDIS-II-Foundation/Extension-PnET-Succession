@@ -10,33 +10,31 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class SpeciesPnET : ISpeciesPNET
     {
         static List<Tuple<ISpecies, ISpeciesPNET>> SpeciesCombinations;
-
-         
-         public List<ISpeciesPNET> AllSpecies 
+        //---------------------------------------------------------------------
+        public List<ISpeciesPNET> AllSpecies 
          { 
              get
              { 
                  return SpeciesCombinations.Select(combination => combination.Item2).ToList(); 
              } 
-         } 
- 
- 
-         public ISpeciesPNET this[ISpecies species] 
+         }
+        //---------------------------------------------------------------------
+        public ISpeciesPNET this[ISpecies species] 
          { 
              get
              { 
                  return SpeciesCombinations.Where(spc => spc.Item1 == species).First().Item2; 
              } 
-         } 
-         public ISpecies this[ISpeciesPNET species] 
+         }
+        //---------------------------------------------------------------------
+        public ISpecies this[ISpeciesPNET species] 
          { 
              get
              { 
                  return SpeciesCombinations.Where(spc => spc.Item2 == species).First().Item1; 
              } 
-         } 
-
-
+         }
+        //---------------------------------------------------------------------
         #region private variables
         private float _co2HalfSatEff;
         private float _cfracbiomass;
@@ -79,8 +77,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _coldTol;
         private int _initBiomass;
         private string name;
-        private int index;
-        
+        private int index;        
         private int  maxSproutAge;
         private int minSproutAge;
         private Landis.Core.PostFireRegeneration postfireregeneration;
@@ -99,10 +96,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _leafOnMinT;
         # endregion
 
-
         #region private static species variables
         private static Landis.Library.Parameters.Species.AuxParm<float> co2HalfSatEff;
-        //private static Landis.Library.Parameters.Species.AuxParm<float> wuecnst;
         private static Landis.Library.Parameters.Species.AuxParm<float> dnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> cfracbiomass;
         private static Landis.Library.Parameters.Species.AuxParm<float> kwdlit;
@@ -116,13 +111,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> h4;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwdel;
         private static Landis.Library.Parameters.Species.AuxParm<float> slwmax;    
-  
         private static Landis.Library.Parameters.Species.AuxParm<float> tofol;
         private static Landis.Library.Parameters.Species.AuxParm<float> halfsat;
         private static Landis.Library.Parameters.Species.AuxParm<float> toroot;
         private static Landis.Library.Parameters.Species.AuxParm<float> initialnsc;
         private static Landis.Library.Parameters.Species.AuxParm<float> k;
-        
         private static Landis.Library.Parameters.Species.AuxParm<float> towood;
         private static Landis.Library.Parameters.Species.AuxParm<float> estrad;
         private static Landis.Library.Parameters.Species.AuxParm<float> estmoist;
@@ -130,8 +123,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> follignin;
         private static Landis.Library.Parameters.Species.AuxParm<bool> preventestablishment;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntopt;
-
-
         private static Landis.Library.Parameters.Species.AuxParm<float> q10;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntmin;
         private static Landis.Library.Parameters.Species.AuxParm<float> psntmax;
@@ -141,14 +132,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
         private static Landis.Library.Parameters.Species.AuxParm<float> co2AMaxBEff;
-        
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> coldTol;
-
-
         private static Landis.Library.Parameters.Species.AuxParm<string> ozoneSens;
-
         private static Landis.Library.Parameters.Species.AuxParm<float> folNShape;
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFolN;
         private static Landis.Library.Parameters.Species.AuxParm<float> fracFolShape;
@@ -161,7 +148,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             #region initialization of private static species variables
             co2HalfSatEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2HalfSatEff"));
-            //wuecnst = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("WUEcnst"));
             dnsc =  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("DNSC"));
             cfracbiomass=  ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CFracBiomass"));
             kwdlit = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("kwdlit"));
@@ -200,11 +186,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
             ozoneSens = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("O3StomataSens"));
             folNShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FolNShape"));
-            maxFolN = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFolN"));
+            
+            maxFolN = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFolN")); //Optional
+            // If MaxFolN is not provided, then set to foln
             if (maxFolN[this] == -9999F)
                 maxFolN = foln;
-            fracFolShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolShape"));
-            maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFracFol"));
+            fracFolShape = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("FracFolShape"));            
+            maxFracFol = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("MaxFracFol")); //Optional
+            // If MaxFracFol is not provided, then set to fracfol
             if (maxFracFol[this] == -9999F)
                 maxFracFol = fracfol;
             o3Coeff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("O3GrowthSens"));            
@@ -220,16 +209,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             foreach (ISpecies spc in PlugIn.ModelCore.Species)
             {
                 SpeciesPnET species = new SpeciesPnET(spc);
-
                 SpeciesCombinations.Add(new Tuple<ISpecies, ISpeciesPNET>(spc, species));
             }
-
-
         }
-
-
-        SpeciesPnET(PostFireRegeneration postFireGeneration,
-            //float wuecnst, 
+        //---------------------------------------------------------------------
+        SpeciesPnET(PostFireRegeneration postFireGeneration, 
             float dnsc,
             float cfracbiomass,
             float kwdlit,
@@ -288,7 +272,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             )
         {
             this.postfireregeneration = postFireGeneration;
-            //this._wuecnst = wuecnst;
             this._dnsc = dnsc;
             this._cfracbiomass = cfracbiomass;
             this._kwdlit = kwdlit;
@@ -345,18 +328,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._maxFracFol = maxFracFol;
             this._o3Coeff = o3Coeff;
             this._leafOnMinT = leafOnMinT;
-            //  initBiomass = initBiomass - Senescence
             uint initBiomass = (uint)(initialnsc/(dnsc * cfracbiomass));
             this._initBiomass = (int)((initBiomass - ((uint)(fracbelowg * initBiomass))*toroot) - ((uint)((1 - fracbelowg) * initBiomass) * towood));
-            //senescence = ((Root * species.TOroot) + Wood * species.TOwood);
         }
-       
+        //---------------------------------------------------------------------
         private SpeciesPnET(ISpecies species)
         {
-            //_wuecnst = wuecnst[species];
             uint initBiomass = (uint)(cfracbiomass[species]/(dnsc[species] * initialnsc[species]));
             _initBiomass = (int)((initBiomass - ((uint)(fracbelowg[species] * initBiomass)) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * initBiomass) * towood[species]));
-            //_initBiomass = (int)((uint)(1F / dnsc[species] * (ushort)initialnsc[species]) - ((uint)(fracbelowg[species] * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * toroot[species]) - ((uint)((1 - fracbelowg[species]) * (uint)(1F / dnsc[species] * (ushort)initialnsc[species])) * towood[species]));
             _dnsc = dnsc[species];
             _cfracbiomass = cfracbiomass[species];
             _kwdlit = kwdlit[species];
@@ -416,12 +395,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             _maxFracFol = maxFracFol[species];
             _o3Coeff = o3Coeff[species];
             _leafOnMinT = leafOnMinT[species];
-          
         }
-        
-
+        //---------------------------------------------------------------------
         #region Accessors
-
+        //---------------------------------------------------------------------
         public int Index
         {
             get
@@ -429,6 +406,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return index;
             }
         }
+        //---------------------------------------------------------------------
         public float BFolResp
         {
             get
@@ -436,6 +414,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _bfolresp;
             }
         }
+        //---------------------------------------------------------------------
         public float ColdTol
         {
             get
@@ -443,6 +422,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _coldTol;
             }
         }
+        //---------------------------------------------------------------------
         public float AmaxA
         {
             get
@@ -450,6 +430,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _amaxa;
             }
         }
+        //---------------------------------------------------------------------
         public float AmaxB
         {
             get
@@ -457,6 +438,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _amaxb;
             }
         }
+        //---------------------------------------------------------------------
         public float CO2AMaxBEff
         {
             get
@@ -464,7 +446,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _co2AMaxBEff;
             }
         }
-       
+        //---------------------------------------------------------------------
         public float MaintResp
         {
             get
@@ -472,7 +454,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _maintresp;
             }
         }
-
+        //---------------------------------------------------------------------
         public float PsnTMin
         {
             get
@@ -480,6 +462,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _psntmin;
             }
         }
+        //---------------------------------------------------------------------
         public float PsnTMax
         {
             get
@@ -490,13 +473,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                     return _psntmax;
             }
         }
+        //---------------------------------------------------------------------
         public float DVPD1
         {
             get
             {
                 return _dvpd1;
             }
-        }
+        }//---------------------------------------------------------------------
         public float FolN
         {
             get
@@ -504,6 +488,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _foln;
             }
         }
+        //---------------------------------------------------------------------
         public float DVPD2
         {
             get
@@ -512,6 +497,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
         }
+        //---------------------------------------------------------------------
         public float PsnTOpt
         {
             get
@@ -519,6 +505,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _psntopt;
             }
         }
+        //---------------------------------------------------------------------
         public float Q10
         {
             get
@@ -526,6 +513,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _q10;
             }
         }
+        //---------------------------------------------------------------------
         public float EstRad
         {
             get
@@ -533,6 +521,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _estrad;
             }
         }
+        //---------------------------------------------------------------------
         public bool PreventEstablishment
         {
             get 
@@ -540,6 +529,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _preventestablishment; 
             }
         }
+        //---------------------------------------------------------------------
         public float FolLignin
         {
             get 
@@ -547,6 +537,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _follignin; 
             }
         }
+        //---------------------------------------------------------------------
         public float EstMoist
         {
             get 
@@ -554,6 +545,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _estmoist; 
             }
         }
+        //---------------------------------------------------------------------
         public float MaxPest
         {
             get
@@ -561,6 +553,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _maxPest;
             }
         }
+        //---------------------------------------------------------------------
         public float TOwood
         {
             get
@@ -568,8 +561,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _towood;
             }
         }
-
-
+        //---------------------------------------------------------------------
         public float K
         {
             get
@@ -577,6 +569,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _k;
             }
         }
+        //---------------------------------------------------------------------
         public float InitialNSC
         {
             get
@@ -584,6 +577,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _initialnsc;
             }
         }
+        //---------------------------------------------------------------------
         public float HalfSat
         {
             get
@@ -591,6 +585,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _halfsat;
             }
         }
+        //---------------------------------------------------------------------
         public float TOroot
         {
             get
@@ -598,6 +593,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _toroot;
             }
         }
+        //---------------------------------------------------------------------
         public float TOfol
         {
             get
@@ -605,6 +601,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _tofol;
             }
         }
+        //---------------------------------------------------------------------
         public float SLWDel
         {
             get
@@ -612,6 +609,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _slwdel;
             }
         }
+        //---------------------------------------------------------------------
         public float SLWmax
         {
             get
@@ -619,6 +617,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _slwmax;
             }
         }
+        //---------------------------------------------------------------------
         public float H4
         {
             get
@@ -626,6 +625,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _h4;
             }
         }
+        //---------------------------------------------------------------------
         public float H3
         {
             get
@@ -633,6 +633,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _h3;
             }
         }
+        //---------------------------------------------------------------------
         public float H2
         {
             get
@@ -640,6 +641,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _h2;
             }
         }
+        //---------------------------------------------------------------------
         public float H1
         {
             get
@@ -647,6 +649,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _h1;
             }
         }
+        //---------------------------------------------------------------------
         public float PsnAgeRed
         {
             get
@@ -654,6 +657,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _psnagered;
             }
         }
+        //---------------------------------------------------------------------
         public float KWdLit
         {
             get
@@ -661,6 +665,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _kwdlit;
             }
         }
+        //---------------------------------------------------------------------
         public float FrActWd
         {
             get
@@ -668,6 +673,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _fractWd;
             }
         }
+        //---------------------------------------------------------------------
         public float FracFol
         {
             get
@@ -675,6 +681,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _fracfol;
             }
         }
+        //---------------------------------------------------------------------
         public float FracBelowG
         {
             get
@@ -682,6 +689,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _fracbelowg;
             }
         }
+        //---------------------------------------------------------------------
         public float DNSC
         {
             get
@@ -689,6 +697,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _dnsc;
             }
         }
+        //---------------------------------------------------------------------
         public int InitBiomass
         {
             get
@@ -696,6 +705,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _initBiomass;
             }
         }
+        //---------------------------------------------------------------------
         public float CFracBiomass
         {
             get
@@ -703,6 +713,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _cfracbiomass;
             }
         }
+        //---------------------------------------------------------------------
         public string Name
         {
             get
@@ -710,8 +721,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return name;
             }
         }
-
-     
+        //---------------------------------------------------------------------
         public int MaxSproutAge
         {
             get
@@ -719,6 +729,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return maxSproutAge;
             }
         }
+        //---------------------------------------------------------------------
         public int MinSproutAge
         {
             get
@@ -726,7 +737,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return  minSproutAge;
             }
         }
-
+        //---------------------------------------------------------------------
         public float CO2HalfSatEff
         {
             get
@@ -734,15 +745,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _co2HalfSatEff;
             }
         }
+        //---------------------------------------------------------------------
         public Landis.Core.PostFireRegeneration PostFireRegeneration
         {
             get
             {
                 return postfireregeneration;
-
             }
         }
-        
+        //---------------------------------------------------------------------
         public int MaxSeedDist
         {
             get
@@ -750,6 +761,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return maxSeedDist;
             }
         }
+        //---------------------------------------------------------------------
         public int EffectiveSeedDist
         {
             get
@@ -757,7 +769,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return effectiveSeedDist;
             }
         }
-       
+        //---------------------------------------------------------------------
         public float VegReprodProb
         {
             get
@@ -765,6 +777,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return vegReprodProb;
             }
         }
+        //---------------------------------------------------------------------
         public byte FireTolerance
         {
             get
@@ -772,6 +785,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return fireTolerance;
             }
         }
+        //---------------------------------------------------------------------
         public byte ShadeTolerance
         {
             get
@@ -779,6 +793,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return shadeTolerance;
             }
         }
+        //---------------------------------------------------------------------
         public int Maturity
         {
             get
@@ -786,6 +801,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return maturity;
             }
         }
+        //---------------------------------------------------------------------
         public int Longevity
         {
             get
@@ -793,6 +809,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return longevity;
             }
         }
+        //---------------------------------------------------------------------
         public string O3StomataSens
         {
             get
@@ -800,7 +817,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _ozoneSens;
             }
         }
-
+        //---------------------------------------------------------------------
         public float FolNShape
         {
             get
@@ -808,6 +825,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _folNShape;
             }
         }
+        //---------------------------------------------------------------------
         public float MaxFolN
         {
             get
@@ -815,6 +833,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _maxFolN;
             }
         }
+        //---------------------------------------------------------------------
         public float FracFolShape
         {
             get
@@ -822,6 +841,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _fracFolShape;
             }
         }
+        //---------------------------------------------------------------------
         public float MaxFracFol
         {
             get
@@ -829,6 +849,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _maxFracFol;
             }
         }
+        //---------------------------------------------------------------------
         public float O3GrowthSens
         {
             get
@@ -836,6 +857,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _o3Coeff;
             }
         }
+        //---------------------------------------------------------------------
         public float LeafOnMinT
         {
             get
@@ -843,19 +865,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _leafOnMinT;
             }
         }
+        //---------------------------------------------------------------------
         #endregion
-
+        //---------------------------------------------------------------------
         public static List<string> ParameterNames
         {
             get
             {
                 System.Type type = typeof(SpeciesPnET); // Get type pointer
                 List<string> names = type.GetProperties().Select(x => x.Name).ToList(); // Obtain all fields
-
-
                 return names;
             }
         }
-       
+        //---------------------------------------------------------------------
     }
 }

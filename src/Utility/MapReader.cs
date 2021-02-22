@@ -13,8 +13,8 @@ namespace Landis.Extension.Succession.BiomassPnET
     /// </summary>
     public static class MapReader
     {
-        static private double maxLitter = 5176.124;
-        static private double maxWoodyDebris = 95007.64;
+        static private double maxLitter = 5176.124; //gDW/m2
+        static private double maxWoodyDebris = 95007.64;  //gDW/m2
         static private double minLitter = 0;
         static private double minWoodyDebris = 0;
 

@@ -12,7 +12,7 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class PnETEcoregion : IEcoregion
     {
         IEcoregion ecoregion;
-
+        //---------------------------------------------------------------------
         public string Description
         {
             get
@@ -20,6 +20,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Description;
             }
         }
+        //---------------------------------------------------------------------
         public ushort MapCode
         {
             get
@@ -27,6 +28,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.MapCode;
             }
         }
+        //---------------------------------------------------------------------
         public bool Active
         {
             get
@@ -34,6 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Active;
             }
         }
+        //---------------------------------------------------------------------
         public IEcoregion IEcoregion
         {
             get
@@ -41,7 +44,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion;
             }
         }
-
+        //---------------------------------------------------------------------
         public string Name
         {
             get
@@ -49,6 +52,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Name;
             }
         }
+        //---------------------------------------------------------------------
         public int Index
         {
             get
@@ -56,9 +60,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregion.Index;
             }
         }
-    
+        //---------------------------------------------------------------------
     }
-
+    //---------------------------------------------------------------------
     public class PnETEcoregions  
     {
         static ICore ModelCore;
@@ -73,7 +77,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public readonly float RootingDepth;
         public readonly string SoilType;
         public readonly string ClimateFileName;
-
+        //---------------------------------------------------------------------
         public IEcoregion this[ActiveSite site]
         {
             get
@@ -81,11 +85,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return ecoregions[site];
             }
         }
-
-        
-        
-        
-        
+        //---------------------------------------------------------------------
         public static List<string> ParameterNames
         {
             get
@@ -93,13 +93,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return typeof(PnETEcoregion).GetFields().Select(x => x.Name).ToList();
             }
         }
-
-
+        //---------------------------------------------------------------------
         public static void Initialize( ICore mCore)
         {
             ModelCore = mCore;
         }
-
+        //---------------------------------------------------------------------
         public PnETEcoregions(IEcoregion ecoregion, float AET, float LeakageFrac, float RunoffCapture, float PrecLossFrac, float RootingDepth, string SoilType, string ClimateFileName)
         {
             this.ecoregion = ecoregion;
@@ -110,7 +109,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.RootingDepth=RootingDepth;
             this.SoilType=SoilType;
             this.ClimateFileName = ClimateFileName;
-
         }
     }
 }

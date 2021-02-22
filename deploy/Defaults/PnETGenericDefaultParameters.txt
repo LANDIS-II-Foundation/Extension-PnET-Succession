@@ -47,8 +47,10 @@ WinterSTD			0.0
 Permafrost			false
 LeakageFrostDepth		0.0
 RunOffCapture			0.0
+>>RunOffFrac			1.0
 LeafOnMinT			-9999	>> Optional parameter, set to PsnMinT if not provided
 PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)
 MaxPest				1.0
 MossDepth			0.0
+>>PermafrostMinVegBiomass		1000
 InvertPest			false

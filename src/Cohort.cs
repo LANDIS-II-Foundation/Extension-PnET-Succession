@@ -1042,9 +1042,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             // Cohort output file
-            string s = Math.Round(monthdata.Year, 2) + "," +
-                        Age + "," +
-                        Layer + "," +
+            string s = Math.Round(monthdata.Time,2) + "," +
+                       monthdata.Year + "," +
+                       monthdata.Month + "," +
+                       Age + "," +
+                       Layer + "," +
                        SumLAI + "," +
                        GrossPsn.Sum() + "," +
                        FolResp.Sum() + "," +
@@ -1085,6 +1087,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             { 
                 // Cohort output file header
                 string hdr = OutputHeaders.Time + "," +
+                            OutputHeaders.Year + "," +
+                            OutputHeaders.Month + "," +
                             OutputHeaders.Age + "," +
                             OutputHeaders.Layer + "," +
                             OutputHeaders.LAI + "," +

@@ -65,7 +65,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public float PAR0 => (float)_monthlyClimateRecord.PAR0;
         public DateTime Date => _date;
         public float DaySpan => _dayspan;
-        public float Year => _date.Year + 1F / 12F * (_date.Month - 1);
+        public float Time => _date.Year + 1F / 12F * (_date.Month - 1);
+        public int Year => _date.Year;
         public float Tave => _tave;
         public float Tmin => (float)_monthlyClimateRecord.Tmin;
         public float Tmax => (float)_monthlyClimateRecord.Tmax;
@@ -98,7 +99,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float AmaxB_CO2 = (float)(AmaxB_slope * monthlyClimateRecord.CO2 + AmaxB_int);
             speciespnetvars.AmaxB_CO2 = AmaxB_CO2;
 
-            //-------------------FTempPSN (public for output file)
+            // FTempPSN: reduction factor due to temperature (public for output file)
             if (dTemp)
             {
                 speciespnetvars.FTempPSN = EcoregionPnETVariables.DTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax);
@@ -106,16 +107,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             else
             {
                 //speciespnetvars.FTempPSN = EcoregionPnETVariables.LinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Original PnET-Succession
-                speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin); // Modified 051216(BRM)
+                speciespnetvars.FTempPSN = EcoregionPnETVariables.CurvelinearPsnTempResponse(Tday, spc.PsnTOpt, spc.PsnTMin, spc.PsnTMax); // Modified 051216(BRM)
             }
 
-            // Dday  maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
+            // Daytime maintenance respiration factor (scaling factor of actual vs potential respiration applied to daily temperature)
             float fTempRespDay = EcoregionPnETVariables.CalcQ10Factor(spc.Q10, Tday, spc.PsnTOpt);
 
             // Night maintenance respiration factor (scaling factor of actual vs potential respiration applied to night temperature)
             float fTempRespNight = EcoregionPnETVariables.CalcQ10Factor(spc.Q10, Tmin, spc.PsnTOpt);
 
-            // Unitless respiration adjustment: public for output file only
+            // Unitless respiration adjustment based on temperature: public for output file only
             float FTempRespWeightedDayAndNight = (float)Math.Min(1.0, (fTempRespDay * daylength + fTempRespNight * nightlength) / ((float)daylength + (float)nightlength)); ;
             speciespnetvars.FTempRespWeightedDayAndNight = FTempRespWeightedDayAndNight;
             // Scaling factor of respiration given day and night temperature and day and night length

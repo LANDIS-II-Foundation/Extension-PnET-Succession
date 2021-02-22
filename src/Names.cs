@@ -36,9 +36,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string LeakageFrostDepth = "LeakageFrostDepth";
         public const string CohortBinSize = "CohortBinSize";
         public const string InvertPest = "InvertPest";
-        //public const string PermafrostMinVegBiomass = "PermafrostMinVegBiomass";
-        
-
+                
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";
         public const string RunoffCapture = "RunoffCapture";
@@ -52,8 +50,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string climateFileName = "climateFileName";
         public const string WinterSTD = "WinterSTD";
         public const string MossDepth = "MossDepth";
-
-
+        
         //Species parameters
         public const string FolNShape = "FolNShape";
         public const string MaxFolN = "MaxFolN";
@@ -62,6 +59,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string O3Coeff = "O3GrowthSens";
         public const string LeafOnMinT = "LeafOnMinT"; // Optional
 
+        //---------------------------------------------------------------------
+        // Does not appear this function is used anywhere
         public static void AssureIsName(string name)
         {
             if (IsName(name) == false)
@@ -70,6 +69,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception(msg);
             }
         }
+        //---------------------------------------------------------------------
+        // Does not appear this function is used anywhere
         public static bool IsName(string name)
         {
             List<string> Names = AllNames;
@@ -79,6 +80,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             return false;
         }
+        //---------------------------------------------------------------------
         public static List<string> AllNames
         {
             get
@@ -94,6 +96,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return Names;
             }
         }
-
+        //---------------------------------------------------------------------
     }
 }

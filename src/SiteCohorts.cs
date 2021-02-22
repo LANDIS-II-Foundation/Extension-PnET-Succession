@@ -25,10 +25,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float topFreezeDepth;
         private float soilDiffusivity;
         private float leakageFrac;
-        private float runoffCapture;
+        //private float runoffCapture;
 
         private float[] netpsn = null;
-        private float netpsnsum;
+        //private float netpsnsum;
         private float[] grosspsn = null;
         private float[] folresp = null;
         
@@ -625,7 +625,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             grosspsn = new float[13];
             maintresp = new float[13];
 
-            Dictionary<ISpeciesPNET, List<float>> annualEstab = new Dictionary<ISpeciesPNET, List<float>>();
+            //Dictionary<ISpeciesPNET, List<float>> annualEstab = new Dictionary<ISpeciesPNET, List<float>>();
             Dictionary<ISpeciesPNET, float> cumulativeEstab = new Dictionary<ISpeciesPNET, float>();
             Dictionary<ISpeciesPNET, List<float>> annualFwater = new Dictionary<ISpeciesPNET, List<float>>();
             Dictionary<ISpeciesPNET, float> cumulativeFwater = new Dictionary<ISpeciesPNET, float>();
@@ -637,7 +637,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
             {
-                annualEstab[spc] = new List<float>();
+                //annualEstab[spc] = new List<float>();
                 cumulativeEstab[spc] = 1;
                 annualFwater[spc] = new List<float>();
                 cumulativeFwater[spc] = 0;
@@ -860,7 +860,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         if (propNewFrozen > 0)  // freezing
                         {
                             float newFrozenSoil = propNewFrozen * Ecoregion.RootingDepth;
-                            bool successpct = hydrology.SetFrozenWaterPct (((hydrology.FrozenDepth * hydrology.FrozenWaterPct) + (newFrozenSoil * hydrology.Water)) / (hydrology.FrozenDepth + newFrozenSoil));
+                            bool successpct = hydrology.SetFrozenWaterContent (((hydrology.FrozenDepth * hydrology.FrozenWaterContent) + (newFrozenSoil * hydrology.Water)) / (hydrology.FrozenDepth + newFrozenSoil));
                             bool successdepth = hydrology.SetFrozenDepth(Ecoregion.RootingDepth * propRootBelowFrost); // Volume of rooting soil that is frozen
                             // Water is a volumetric value (mm/m) so frozen water does not need to be removed, as the concentration stays the same
                         }
@@ -869,9 +869,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         // Thawing soil water added to existing water - redistributes evenly in active soil
                         float existingWater = (1-lastPropBelowFrost) * hydrology.Water;
-                        float thawedWater = propThawed * hydrology.FrozenWaterPct;
+                        float thawedWater = propThawed * hydrology.FrozenWaterContent;
                         float newWaterContent = (existingWater + thawedWater) / propRootAboveFrost;
-                        hydrology.AddWater(newWaterContent - hydrology.Water);
+                        hydrology.AddWater(newWaterContent - hydrology.Water, Ecoregion.RootingDepth * propRootBelowFrost);
                         bool successdepth = hydrology.SetFrozenDepth(Ecoregion.RootingDepth * propRootBelowFrost);  // Volume of rooting soil that is frozen
                     }
                     float leakageFrostReduction = 1.0F;
@@ -936,7 +936,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                    if (propRootAboveFrost >= 1)
                     {                    
-                        bool successpct = hydrology.SetFrozenWaterPct(0F);
+                        bool successpct = hydrology.SetFrozenWaterContent(0F);
                         bool successdepth = hydrology.SetFrozenDepth(0F);
                     }
                 float MeltInWater = snowmelt;
@@ -1126,18 +1126,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    monthlyEstab = establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest);
+                    establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest);
 
                     foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                     {
-                        if (monthlyEstab.ContainsKey(spc))
+                        if (annualFwater.ContainsKey(spc))
                         {
                             //annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
                             // Calculate the cumulative probability that no months had successful establishment (later transformed)
                             //annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
 
                             // Store monthly values for later filtering
-                            annualEstab[spc].Add(monthlyEstab[spc]);
+                            //annualEstab[spc].Add(monthlyEstab[spc]);
                             annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
                             annualFrad[spc].Add(establishmentProbability.Get_FRad(spc));                            
                         }
@@ -1165,42 +1165,44 @@ namespace Landis.Extension.Succession.BiomassPnET
                     // When < 3 months, include all months
                     foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
                     {
-                        if (annualEstab[spc].Count > 3)
+                        if (annualFwater[spc].Count > 3)
                         {
-                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) * (1 - annualEstab[spc][3]);
+                            //cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) * (1 - annualEstab[spc][3]);
                             cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][1] + annualFwater[spc][2] + annualFwater[spc][3];
                             cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][1] + annualFrad[spc][2] + annualFrad[spc][3];
                             monthlyCount[spc] = monthlyCount[spc] + 3;
                 }
-                        else if(annualEstab[spc].Count > 2)
+                        else if(annualFwater[spc].Count > 2)
                         {
-                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) ;
+                            //cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) ;
                             cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] + annualFwater[spc][2];
                             cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] + annualFrad[spc][2];
                             monthlyCount[spc] = monthlyCount[spc] + 3;
             }
-                        else if(annualEstab[spc].Count > 1)
+                        else if(annualFwater[spc].Count > 1)
                         {
-                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]);
+                            //cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]);
                             cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] ;
                             cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] ;
                             monthlyCount[spc] = monthlyCount[spc] + 2;
                         }
-                        else if(annualEstab[spc].Count == 1)
+                        else if(annualFwater[spc].Count == 1)
                         {
-                            cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]);
+                            //cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]);
                             cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0];
                             cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0];
                             monthlyCount[spc] = monthlyCount[spc] + 1;
                         }
 
                         //Reset annual lists for next year
-                        annualEstab[spc].Clear();
+                        //annualEstab[spc].Clear();
                         annualFwater[spc].Clear();
                         annualFrad[spc].Clear();                        
                     }
                 }
             } //for (int m = 0; m < data.Count(); m++ )
+            // Above is monthly loop
+            // Below runs once per timestep
             if (PlugIn.ModelCore.CurrentTime > 0)
             {
                 foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
@@ -1211,7 +1213,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         //annualEstab[spc] = annualEstab[spc] / monthlyCount[spc];
                         // Transform cumulative probability of no successful establishments to probability of at least one successful establishment
-                        cumulativeEstab[spc] = 1 - cumulativeEstab[spc] ;
+                        //cumulativeEstab[spc] = 1 - cumulativeEstab[spc] ;
                         cumulativeFwater[spc] = cumulativeFwater[spc] / monthlyCount[spc];
                         cumulativeFrad[spc] = cumulativeFrad[spc] / monthlyCount[spc];
 
@@ -2315,6 +2317,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             
             string s = OutputHeaders.Time +  "," +
+                       OutputHeaders.Year + "," +
+                       OutputHeaders.Month + "," +
                        OutputHeaders.Ecoregion + "," + 
                        OutputHeaders.SoilType +"," +
                        OutputHeaders.NrOfCohorts + "," +
@@ -2326,8 +2330,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                        OutputHeaders.Tday + "," +
                        OutputHeaders.Tmax + "," +
                        OutputHeaders.Precip + "," +
-                        OutputHeaders.CO2 + "," +
-                         OutputHeaders.O3 + "," +
+                       OutputHeaders.CO2 + "," +
+                       OutputHeaders.O3 + "," +
                        OutputHeaders.RunOff + "," + 
                        OutputHeaders.Leakage + "," + 
                        OutputHeaders.PET + "," +
@@ -2367,7 +2371,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (layerstdev.Count() > 0)
                 maxLayerStdev = layerstdev.Max();
 
-            string s = monthdata.Year + "," +
+            string s = monthdata.Time + "," +
+                monthdata.Year + "," +
+                monthdata.Month + "," +
                         Ecoregion.Name + "," +
                         Ecoregion.SoilType + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
