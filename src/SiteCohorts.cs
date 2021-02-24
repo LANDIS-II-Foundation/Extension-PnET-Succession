@@ -64,6 +64,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static int nlayers;
         private static bool permafrost;
         private static bool invertPest;
+        //private static string parUnits;
         Dictionary<float, float> depthTempDict = new Dictionary<float, float>();  //for permafrost
         //float lastTempBelowSnow = float.MaxValue;
         private static float maxHalfSat;
@@ -253,13 +254,15 @@ namespace Landis.Extension.Succession.BiomassPnET
             MaxCanopyLayers = ((Parameter<byte>)PlugIn.GetParameter(Names.MaxCanopyLayers, 0, 20)).Value;
             permafrost = ((Parameter<bool>)PlugIn.GetParameter(Names.Permafrost)).Value;
             invertPest = ((Parameter<bool>)PlugIn.GetParameter(Names.InvertPest)).Value;
+            //parUnits = ((Parameter<string>)PlugIn.GetParameter(Names.PARunits)).Value;
+            
             Parameter<string> CohortBinSizeParm = null;
             if (PlugIn.TryGetParameter(Names.CohortBinSize, out CohortBinSizeParm))
             {
                 if (!Int32.TryParse(CohortBinSizeParm.Value, out CohortBinSize))
-                {             
+                {
                     throw new System.Exception("CohortBinSize is not an integer value.");
-        }
+                }
             }
             else
                 CohortBinSize = Timestep;

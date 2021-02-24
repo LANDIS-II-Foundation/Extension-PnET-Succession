@@ -116,7 +116,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception(msg);
             }
             
-            PlugIn.ModelCore.UI.WriteLine("Eco\t\tSoilt\t\tWiltPnt\t\tFieldCap(mm)\t\tFC-WP\t\tPorosity");
+            PlugIn.ModelCore.UI.WriteLine("Eco\tSoiltype\tWiltPnt\t\tFieldCap\tFC-WP\t\tPorosity");
             foreach (IEcoregionPnET eco in EcoregionPnET.Ecoregions) if (eco.Active)
             {
                     // Volumetric water content (mm/m) at field capacity
@@ -133,7 +133,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     eco.Porosity = (float)pressureheadtable.Porosity(eco.SoilType);
 
                 float f = eco.FieldCap - eco.WiltPnt;
-                PlugIn.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity );
+                PlugIn.ModelCore.UI.WriteLine(eco.Name + "\t" + eco.SoilType + "\t\t" + eco.WiltPnt + "\t" + eco.FieldCap + "\t" + f + "\t" + eco.Porosity );
             }
         }
         //---------------------------------------------------------------------
@@ -210,9 +210,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             float frostFreeSoilDepth = sitecohorts.Ecoregion.RootingDepth - FrozenDepth;
             float frostFreeProp = Math.Min(1.0F, frostFreeSoilDepth / sitecohorts.Ecoregion.RootingDepth);
 
+            float umolPAR = sitecohorts.SubcanopyPAR;
+            if(PlugIn.PARunits == "W/m2")
+                umolPAR = (sitecohorts.SubcanopyPAR * 2.02f); // convertsolar radiation (W/m2) to PAR (umol/m2*s) [Reis and Ribeiro 2019 (Consants and Values)]  
+
             // mm/month
-            //PET = (float)Calculate_PotentialEvapotranspiration(sitecohorts.SubcanopyPAR, sitecohorts.Ecoregion.Variables.Tday, sitecohorts.Ecoregion.Variables.Daylength);
-            PET = (float)Calculate_PotentialEvapotranspiration_umol(sitecohorts.SubcanopyPAR, sitecohorts.Ecoregion.Variables.Tday, sitecohorts.Ecoregion.Variables.DaySpan);
+            PET = (float)Calculate_PotentialEvapotranspiration_umol(umolPAR, sitecohorts.Ecoregion.Variables.Tday, sitecohorts.Ecoregion.Variables.DaySpan);
 
             float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(Water * 100)];
 

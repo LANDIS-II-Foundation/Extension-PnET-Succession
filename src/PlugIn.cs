@@ -54,6 +54,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
         public static int CohortBinSize;
+        public static string PARunits;
+        public static bool SpinUpWaterStress;
 
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -295,9 +297,18 @@ namespace Landis.Extension.Succession.BiomassPnET
             EcoregionPnET.Initialize();
             Hydrology.Initialize();
             SiteCohorts.Initialize();
+            PARunits = ((Parameter<string>)GetParameter(Names.PARunits)).Value;
+            if (PARunits != "umol" && PARunits != "W/m2")
+            {
+                throw new System.Exception("PARunits are not 'umol' or 'W/m2'.");
+            }
             InitializeClimateLibrary(); // John McNabb: initialize climate library after EcoregionPnET has been initialized
             //EstablishmentProbability.Initialize(Timestep);  // Not used
             IMAX = ((Parameter<ushort>)GetParameter(Names.IMAX)).Value;
+            string spinUpWaterStress = ((Parameter<string>)GetParameter(Names.SpinUpWaterStress)).Value;
+            SpinUpWaterStress = false;
+            if (spinUpWaterStress == "true" || spinUpWaterStress == "yes")
+                SpinUpWaterStress = true;
 
             // Initialize Reproduction routines:
             Reproduction.SufficientResources = SufficientResources;
@@ -383,6 +394,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             else
             {
                 PlugIn.ModelCore.UI.WriteLine($"Using climate files in ecoregion parameters: {PlugIn.parameters["EcoregionParameters"].Value}.");
+            }
+            if(PARunits == "umol")
+            {
+                PlugIn.ModelCore.UI.WriteLine("Using PAR units of umol/m2/s.");
+            }
+            else if(PARunits == "W/m2")
+            {
+                PlugIn.ModelCore.UI.WriteLine("Using PAR units of W/m2.");
+            }else
+            {
+                throw new ApplicationException(string.Format("PARunits units are not 'umol' or 'W/m2'"));
             }
         }
         //---------------------------------------------------------------------

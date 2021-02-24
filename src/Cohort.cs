@@ -689,16 +689,22 @@ namespace Landis.Extension.Succession.BiomassPnET
                 PressHead[index] = PressureHead;
                 fWaterOzone = ComputeFWater(-1, -1, species.H3, species.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
             }
-            else // Ignore H1 and H2 parameters during spinup
+            else // Spinup
             {
-                FWater[index] = ComputeFWater(-1, -1, species.H3, species.H4, PressureHead);
+                if (PlugIn.SpinUpWaterStress)
+                {
+                    FWater[index] = ComputeFWater(species.H1, species.H2, species.H3, species.H4, PressureHead);
+                    fWaterOzone = ComputeFWater(-1, -1, species.H3, species.H4, PressureHead); // ignores H1 and H2 parameters because only impacts when drought-stressed
+                }
+                else // Ignore H1 and H2 parameters during spinup
+                {
+                    FWater[index] = ComputeFWater(-1, -1, species.H3, species.H4, PressureHead);
+                    fWaterOzone = FWater[index];
+                }
                 Water[index] = hydrology.Water;
-                PressHead[index] = PressureHead;
-                fWaterOzone = FWater[index];
+                PressHead[index] = PressureHead;                
             }
-
-
-
+            
             // FoliarN adjusted based on canopy position (FRad)
             float folN_shape = species.FolNShape; //Slope for linear FolN relationship
             float maxFolN = species.MaxFolN; //Intercept for linear FolN relationship
