@@ -56,6 +56,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static int CohortBinSize;
         public static string PARunits;
         public static bool SpinUpWaterStress;
+        public static bool PrecipEventsWithReplacement;
 
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -309,6 +310,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             SpinUpWaterStress = false;
             if (spinUpWaterStress == "true" || spinUpWaterStress == "yes")
                 SpinUpWaterStress = true;
+            string precipEventsWithReplacement = ((Parameter<string>)GetParameter(Names.PrecipEventsWithReplacement)).Value;
+            PrecipEventsWithReplacement = true;
+            if (precipEventsWithReplacement == "false" || precipEventsWithReplacement == "no")
+                PrecipEventsWithReplacement = false;
+
 
             // Initialize Reproduction routines:
             Reproduction.SufficientResources = SufficientResources;

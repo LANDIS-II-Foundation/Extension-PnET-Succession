@@ -947,10 +947,26 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Randomly choose which layers will receive the precip events
                 // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
                 List<int> randomNumbers = new List<int>();
-                while (randomNumbers.Count < numEvents)
+                if (PlugIn.PrecipEventsWithReplacement)// Sublayer selection with replacement
                 {
-                    int rand = PlugIn.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
-                    randomNumbers.Add(rand);
+                    while (randomNumbers.Count < numEvents)
+                    {
+                        int rand = PlugIn.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
+                        randomNumbers.Add(rand);
+                    }
+                }
+                else // Sublayer selection without replacement
+                {
+                    while (randomNumbers.Count < numEvents)
+                    {
+                        List<int> subCanopyList = Enumerable.Range(1, SubCanopyCohorts.Count()).ToList();
+                        while ((randomNumbers.Count < numEvents) && (subCanopyList.Count() > 0))
+                        {
+                            int rand = PlugIn.DiscreteUniformRandom(0, subCanopyList.Count()-1);
+                            randomNumbers.Add(subCanopyList[rand]);
+                            subCanopyList.RemoveAt(rand);
+                        }
+                    }
                 }
                 var groupList = randomNumbers.GroupBy(i => i);
 
@@ -1435,10 +1451,26 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Randomly choose which layers will receive the precip events
             // If # of layers < precipEvents, some layers will show up multiple times in number list.  This ensures the same number of precip events regardless of the number of cohorts
             List<int> randomNumbers = new List<int>();
-            while (randomNumbers.Count < numEvents)
+            if (PlugIn.PrecipEventsWithReplacement)// Sublayer selection with replacement
             {
-                int rand = PlugIn.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
-                randomNumbers.Add(rand);
+                while (randomNumbers.Count < numEvents)
+                {
+                    int rand = PlugIn.DiscreteUniformRandom(1, SubCanopyCohorts.Count());
+                    randomNumbers.Add(rand);
+                }
+            }
+            else // Sublayer selection without replacement
+            {
+                while (randomNumbers.Count < numEvents)
+                {
+                    List<int> subCanopyList = Enumerable.Range(1, SubCanopyCohorts.Count()).ToList();
+                    while ((randomNumbers.Count < numEvents) && (subCanopyList.Count() > 0))
+                    {
+                        int rand = PlugIn.DiscreteUniformRandom(1, subCanopyList.Count());
+                        randomNumbers.Add(subCanopyList[rand]);
+                        subCanopyList.RemoveAt(rand);
+                    }
+                }
             }
             var groupList = randomNumbers.GroupBy(i => i);
 
