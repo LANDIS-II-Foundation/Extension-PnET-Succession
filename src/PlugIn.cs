@@ -51,6 +51,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static bool UsingClimateLibrary;
         private ICommunity initialCommunity;
         public static int CohortBinSize;
+        public static bool PrecipEventsWithReplacement;
 
         MyClock m = null;
 
@@ -226,10 +227,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             InitializeClimateLibrary();
 
             EstablishmentProbability.Initialize(Timestep);
-            
+
             //LeakageFrostDepth = ((Parameter<float>)GetParameter(Names.LeakageFrostDepth)).Value; //Now an ecoregion parameter
             //PrecipEvents = ((Parameter<float>)GetParameter(Names.PrecipEvents)).Value;// Now an ecoregion parameter
-
+            
 
             // Initialize Reproduction routines:
             Reproduction.SufficientResources = SufficientResources;
@@ -325,10 +326,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             ISpeciesPnET spc = SpeciesPnET[species];
             bool addCohort = true;
-            if (SiteVars.SiteCohorts[site].cohorts.ContainsKey(species))
+            if (SiteVars.SiteCohorts[site].cohorts.ContainsKey(spc))
             {
                 // This should deliver only one KeyValuePair
-                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(SiteVars.SiteCohorts[site].cohorts.Where(o => o.Key == species))[0];
+                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(SiteVars.SiteCohorts[site].cohorts.Where(o => o.Key == spc))[0];
                 List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
                 if (Cohorts.Count() > 0)
                 {

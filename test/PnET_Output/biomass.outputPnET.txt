@@ -1,0 +1,29 @@
+LandisData  "Output-PnET"
+
+Timestep  10
+
+Species ALL
+	  
+Biomass			output/biomass/{species}/biomass-{timestep}.img
+AbovegroundBiomass	output/AGbiomass/{species}AG/biomass-{timestep}.img
+BelowgroundBiomass 	output/BelowGroundBiom/BGB-{timestep}.img
+WoodySenescence		output/WoodySenescence/{species}/WoodySen-{timestep}.img
+FoliageSenescence	output/FolSenescence/{species}/FolSen-{timestep}.img
+LeafAreaIndex 		output/LeafAreaIndex/lai-{timestep}.img
+Establishment 		output/Establishments/{species}/Est-{species}-{timestep}.img
+EstablishmentProbability	output/EstabProb/{species}/EstProb-{species}-{timestep}.img
+MonthlyNetPsn		output/MonthlyNetPsn/MonthlyNetPsn-{timestep}.img
+MonthlyFolResp		output/MonthlyFolResp/MonthlyFolResp-{timestep}.img
+MonthlyGrossPsn		output/MonthlyGrossPsn/MonthlyGrossPsn-{timestep}.img
+MonthlyMaintResp	output/MonthlyMaintResp/MonthlyMaintResp-{timestep}.img
+Water 			output/SoilWater/water-{timestep}.img
+SubCanopyPAR 		output/SubCanopyPar/SCpar-{timestep}.img
+CohortsPerSpecies	output/CohortsPerspecies/{species}/cohorts-{timestep}.img
+AnnualPsn		output/AnnualPsn/{species}/AnnualPsn-{timestep}.img
+WoodyDebris 		output/WoodyDebris/WoodyDebris-{timestep}.img
+Litter			output/NonWoodyDebris/Litter-{timestep}.img
+AgeDistribution 	output/AgeDist/Age-{timestep}.img
+CohortBalance		output/TotalCohorts.csv
+EstablishmentTable	output/EstablishmentTable.csv
+MortalityTable		output/MortalityTable.csv
+                   

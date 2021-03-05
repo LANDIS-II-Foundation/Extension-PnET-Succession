@@ -1,0 +1,5 @@
+LandisData "Initial Communities"
+MapCode    0
+MapCode    1
+querrubr	10
+pinubank	40
