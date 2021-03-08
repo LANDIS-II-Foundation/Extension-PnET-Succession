@@ -526,6 +526,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
 
             sitecohorts[site].Grow(climate_vars);
+            sitecohorts[site].DisturbanceTypesReduced.Clear();
 
             Date = EndDate;
         }

@@ -32,13 +32,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
             DisturbanceReductionParameters.ToList().ForEach(x => parameters.Add("disturbance:"+x.Key, x.Value));
-       
         }
 
         public static void ReduceDeadPools(object sitecohorts, ExtensionType disturbanceType)
         {
-
-
             if (sitecohorts == null)
             {
                 throw new System.Exception("sitecohorts should not be null");
@@ -58,14 +55,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     plitterlost = float.Parse(parameter["LitterReduction"]);
                 }
-
             }
-
             ((SiteCohorts)sitecohorts).RemoveWoodyDebris(pdeadwoodlost);
             ((SiteCohorts)sitecohorts).RemoveLitter(plitterlost);
-
-
         }
+
         public static void Allocate(object sitecohorts, Cohort cohort, ExtensionType disturbanceType, double fraction)
         {
             if (sitecohorts == null)
@@ -73,7 +67,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 throw new System.Exception("sitecohorts should not be null");
             }
 
-            ReduceDeadPools(sitecohorts, disturbanceType);
+            //ReduceDeadPools(sitecohorts, disturbanceType); // moved to RemoveCohort and ReduceBiomass to avoid multiple calls
 
             // By default, all material is allocated to the woody debris or the litter pool
             float pwoodlost = 0;
@@ -97,8 +91,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     pfollost = float.Parse(parameter["FolReduction"]);
                 }
-
-
             }
             
             // Add new dead wood and litter

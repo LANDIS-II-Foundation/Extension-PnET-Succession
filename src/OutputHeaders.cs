@@ -10,7 +10,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string Ecoregion = "Ecoregion";
         public const string PAR0 = "PAR0";  
         public const string NrOfCohorts = "NrOfCohorts";
-        public const string MaxLayerStdev = "MaxLayerStdev";
+        public const string MaxLayerDev = "MaxLayerDev";
         public const string Layers = "Layers";
         public const string Tmin = "Tmin(C)";
         public const string Tave = "Tave(C)";

@@ -49,6 +49,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public List<int> CohortsKilledByFire = null;
         public List<int> CohortsKilledByWind = null;
         public List<int> CohortsKilledByOther = null;
+        public List<ExtensionType> DisturbanceTypesReduced = null;
 
         public IEcoregionPnET Ecoregion;
         public LocalOutput siteoutput;
@@ -292,6 +293,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             CohortsKilledByFire = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
             CohortsKilledByWind = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
             CohortsKilledByOther = new List<int>(new int[PlugIn.ModelCore.Species.Count()]);
+            DisturbanceTypesReduced = new List<ExtensionType>();
 
             uint key = ComputeKey((ushort)initialCommunity.MapCode, PlugIn.ModelCore.Ecoregion[site].MapCode);
 
@@ -1929,7 +1931,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             return array;
         }
 
-        uint CalculateLayerstdev(List<double> f)
+        uint CalculateLayerMaxDev(List<double> f)
         {
             return (uint)Math.Max(Math.Abs(f.Max() - f.Average()), Math.Abs(f.Min() - f.Average()));
 
@@ -1943,12 +1945,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             return new int[] { min, max };
         }
 
-        static List<uint> layerstdev = new List<uint>();
+        static List<uint> layermaxdev = new List<uint>();
 
         private List<List<int>> GetBins(List<double> CumCohortBiomass)
         {
             nlayers = 0;
-            layerstdev.Clear();
+            layermaxdev.Clear();
             if (CumCohortBiomass.Count() == 0)
             {                
                 return null;
@@ -1960,7 +1962,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             int[] Bin = null;
                        
 
-            float LayerStDev = float.MaxValue;
+            float LayerMaxDev = float.MaxValue;
 
             //=====================OPTIMIZATION LOOP====================================
             do
@@ -1972,31 +1974,31 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 while (Bin != null)
                 {
-                    layerstdev.Clear();
+                    layermaxdev.Clear();
 
                     if (Bin.Count() == 0)
                     {
-                        layerstdev.Add(CalculateLayerstdev(CumCohortBiomass));
+                        layermaxdev.Add(CalculateLayerMaxDev(CumCohortBiomass));
                     }
                     else for (int i = 0; i <= Bin.Count(); i++)
                     {
                         int[] MinMax = MinMaxCohortNr(Bin, i, CumCohortBiomass.Count());
 
                         // Get the within-layer variance in biomass
-                        layerstdev.Add(CalculateLayerstdev(CumCohortBiomass.GetRange(MinMax[0], MinMax[1] - MinMax[0])));
+                        layermaxdev.Add(CalculateLayerMaxDev(CumCohortBiomass.GetRange(MinMax[0], MinMax[1] - MinMax[0])));
                     }
 
                     // Keep the optimal (min within-layer variance) layer setting
-                    if (layerstdev.Max() < LayerStDev)
+                    if (layermaxdev.Max() < LayerMaxDev)
                     {
                         BestBin = new List<int>(Bin).ToArray();
-                        LayerStDev = layerstdev.Max();
+                        LayerMaxDev = layermaxdev.Max();
                     }
                     Bin = GetNextBinPositions(Bin, CumCohortBiomass.Count());
 
                 }
             }
-            while (layerstdev.Max() >= MaxDevLyrAv && nlayers < MaxCanopyLayers && nlayers < (CumCohortBiomass.Count()/PlugIn.IMAX));
+            while (layermaxdev.Max() >= MaxDevLyrAv && nlayers < MaxCanopyLayers && nlayers < (CumCohortBiomass.Count()/PlugIn.IMAX));
             //=====================OPTIMIZATION LOOP====================================
 
 
@@ -2263,7 +2265,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 cohorts.Remove(cohort.Species);
             }
 
-            Allocation.Allocate(this, cohort, disturbanceType, 1.0);  //Allocation fraction is 1.0 for complete removals
+            if (!DisturbanceTypesReduced.Contains(disturbanceType))
+            {
+                Allocation.ReduceDeadPools(this, disturbanceType); // Reduce dead pools before adding through Allocation
+                DisturbanceTypesReduced.Add(disturbanceType);
+            }
+            Allocation.Allocate(this, cohort, disturbanceType, 1.0);  // Allocation fraction is 1.0 for complete removals
+
 
         }
 
@@ -2357,7 +2365,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        OutputHeaders.Ecoregion + "," + 
                        OutputHeaders.SoilType +"," +
                        OutputHeaders.NrOfCohorts + "," +
-                       OutputHeaders.MaxLayerStdev + "," +
+                       OutputHeaders.MaxLayerDev + "," +
                        OutputHeaders.Layers + "," +
                        OutputHeaders.PAR0 + "," +
                        OutputHeaders.Tmin + "," +
@@ -2402,9 +2410,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private void AddSiteOutput(IEcoregionPnETVariables monthdata)
         {
-            uint maxLayerStdev = 0;
-            if (layerstdev.Count() > 0)
-                maxLayerStdev = layerstdev.Max();
+            uint maxLayerDev = 0;
+            if (layermaxdev.Count() > 0)
+                maxLayerDev = layermaxdev.Max();
 
             string s = monthdata.Time + "," +
                 monthdata.Year + "," +
@@ -2412,7 +2420,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Ecoregion.Name + "," +
                         Ecoregion.SoilType + "," +
                         cohorts.Values.Sum(o => o.Count) + "," +
-                        maxLayerStdev + "," +
+                        maxLayerDev + "," +
                         nlayers + "," +
                         monthdata.PAR0 + "," + 
                         monthdata.Tmin + "," +

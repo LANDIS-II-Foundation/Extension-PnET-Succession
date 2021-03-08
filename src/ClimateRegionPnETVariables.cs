@@ -133,14 +133,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             // BaseFolRespFrac
 
             // Base foliage respiration 
-            float BaseFolResp;
+            float BaseFolRespFrac;
 
             // Base parameter in Q10 temperature dependency calculation
             float Q10base;
             if (wythers == true)
             {
                 //Computed Base foliar respiration based on temp; this is species-level, so you can compute outside this IF block and use for all cohorts of a species
-                BaseFolResp = (0.138071F - 0.0024519F * Tave);
+                BaseFolRespFrac = (0.138071F - 0.0024519F * Tave);
 
                 //Midpoint between Tave and Optimal Temp; this is also species-level
                 float Tmidpoint = (Tave + spc.PsnTOpt) / 2F;
@@ -151,13 +151,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             else
             {
                 // The default PnET setting is that these 
-                BaseFolResp = spc.BFolResp;
+                BaseFolRespFrac = spc.BFolResp;
                 Q10base = spc.Q10;
             }
+            speciespnetvars.BaseFolRespFrac = BaseFolRespFrac;
 
-            // Growth respiration factor
-            speciespnetvars.FTempRespDay = BaseFolResp * EcoregionPnETVariables.CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
-
+            // Respiration Q10 factor
+            speciespnetvars.Q10Factor = EcoregionPnETVariables.CalcQ10Factor(Q10base, Tave, spc.PsnTOpt);
 
             return speciespnetvars;
         }
