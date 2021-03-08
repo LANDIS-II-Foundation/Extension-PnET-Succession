@@ -1,0 +1,10 @@
+LandisData PnETGenericParameters
+
+
+
+PnETGenericParameters Value
+
+DTemp		true
+Wythers		true
+PrecipEvents	25
+PrecipEventsWithReplacement	false

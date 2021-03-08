@@ -1,0 +1,10 @@
+LandisData EcoregionParameters	
+EcoregionParameters	AET	SoilType	RootingDepth	PrecLossFrac	LeakageFrac	ClimateFileName             
+>>mesic			537	SAND		1000		0.5		1.00		Oconto-climate.txt
+mesic			537	LOSA		1000		0.5		0.88		Oconto-climate.txt
+>>mesic			537	SALO		1000		0.5		0.45		Oconto-climate.txt
+>>mesic			537	SILO		1000		0.5		0.14		Oconto-climate.txt
+>>mesic			537	LOAM		1000		0.5		0.19		Oconto-climate.txt
+>>mesic			537	SILO		1000		0.5		0.14		Oconto-climate.txt
+>>mesic			537	CLLO		1000		0.5		0.07		Oconto-climate.txt
+									

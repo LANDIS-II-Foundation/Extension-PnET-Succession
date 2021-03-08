@@ -1,0 +1,4 @@
+LandisData "Initial Communities"
+MapCode	0
+MapCode	1
+poputrem4	1
