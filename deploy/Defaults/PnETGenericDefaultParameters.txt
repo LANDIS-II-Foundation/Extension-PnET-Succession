@@ -56,3 +56,4 @@ InvertPest			false
 PARunits			umol	>> Deafult umol/m2/s
 SpinUpWaterStress		false  
 PrecipEventsWithReplacement	true
+AmaxFrac			0.75

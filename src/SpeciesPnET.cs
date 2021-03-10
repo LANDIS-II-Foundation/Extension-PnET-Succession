@@ -70,6 +70,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _dvpd2;
         private float _amaxa;
         private float _amaxb;
+        private float _amaxfrac;
         private float _co2AMaxBEff;
         private float _maintresp;
         private float _bfolresp;
@@ -131,6 +132,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> foln;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxa;
         private static Landis.Library.Parameters.Species.AuxParm<float> amaxb;
+        private static Landis.Library.Parameters.Species.AuxParm<float> amaxfrac;
         private static Landis.Library.Parameters.Species.AuxParm<float> co2AMaxBEff;
         private static Landis.Library.Parameters.Species.AuxParm<float> maintresp;
         private static Landis.Library.Parameters.Species.AuxParm<float> bfolresp;
@@ -181,6 +183,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             foln = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("foln"));
             amaxa = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxa"));
             amaxb = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("amaxb"));
+            amaxfrac = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("AmaxFrac"));
             co2AMaxBEff = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("CO2AMaxBEff"));
             maintresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("maintresp"));
             bfolresp = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("bfolresp"));
@@ -247,6 +250,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float foln,
             float amaxa,
             float amaxb,
+            float amaxfrac,
             float co2AMaxBEff,
             float maintresp,
             float bfolresp,
@@ -305,6 +309,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._dvpd2 = dvpd2;
             this._amaxa = amaxa;
             this._amaxb = amaxb;
+            this._amaxfrac = amaxfrac;
             this._co2AMaxBEff = co2AMaxBEff;
             this._maintresp = maintresp;
             this._bfolresp = bfolresp;
@@ -369,6 +374,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _dvpd2 = dvpd2[species];
             _amaxa = amaxa[species];
             _amaxb = amaxb[species];
+            _amaxfrac = amaxfrac[species];
             _co2AMaxBEff = co2AMaxBEff[species];
             _maintresp = maintresp[species];
             _bfolresp = bfolresp[species];
@@ -436,6 +442,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _amaxb;
+            }
+        }
+        //---------------------------------------------------------------------        
+        public float AmaxFrac
+        {
+            get
+            {
+                return _amaxfrac;
             }
         }
         //---------------------------------------------------------------------

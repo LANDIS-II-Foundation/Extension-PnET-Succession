@@ -819,7 +819,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 float Amax = (float)(delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFolResp = ecoregion.Variables[species.Name].BaseFolRespFrac * Amax; //nmole CO2/g Fol/s
-                float GrossAmax = Amax + BaseFolResp; //nmole CO2/g Fol/s
+                float AmaxAdj = Amax * species.AmaxFrac;  //Amax adjustment as applied in PnET
+                float GrossAmax = AmaxAdj + BaseFolResp; //nmole CO2/g Fol/s
 
                 //Reference gross Psn (lab conditions) in gC/g Fol/month
                 float RefGrossPsn = ecoregion.Variables.DaySpan * (GrossAmax * ecoregion.Variables[species.Name].DVPD * ecoregion.Variables.Daylength * Constants.MC) / Constants.billion;

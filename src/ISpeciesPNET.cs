@@ -102,13 +102,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Vapor pressure deficit response parameter 
         float DVPD2 { get; }
 
-
         // Reference photosynthesis (g)
         float AmaxA { get; }
 
         // Response parameter for photosynthesis to N
         float AmaxB { get; }
-        
+
+        // Modifier of AmaxA due to averaging non-linear Amax data
+        float AmaxFrac { get; }
+
         // Referece maintenance respiration 
         float MaintResp { get; }
 
