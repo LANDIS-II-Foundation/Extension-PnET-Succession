@@ -52,3 +52,4 @@ PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)
 MaxPest				1.0
 MossDepth			0.0
 InvertPest			false
+PrecipEventsWithReplacement	true
