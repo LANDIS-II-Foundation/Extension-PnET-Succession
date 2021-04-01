@@ -1153,14 +1153,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                     {
                         if (annualFwater.ContainsKey(spc))
                         {
-                            //annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
-                            // Calculate the cumulative probability that no months had successful establishment (later transformed)
-                            //annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
+                            if (data[m].Tmin > spc.PsnTMin && data[m].Tmax < spc.PsnTMax)
+                            {
+                                //annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
+                                // Calculate the cumulative probability that no months had successful establishment (later transformed)
+                                //annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
 
-                            // Store monthly values for later filtering
-                            //annualEstab[spc].Add(monthlyEstab[spc]);
-                            annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
-                            annualFrad[spc].Add(establishmentProbability.Get_FRad(spc));                            
+                                // Store monthly values for later filtering
+                                //annualEstab[spc].Add(monthlyEstab[spc]);
+                                annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
+                                annualFrad[spc].Add(establishmentProbability.Get_FRad(spc));
+                            }
                         }
                     }
 
@@ -1192,22 +1195,22 @@ namespace Landis.Extension.Succession.BiomassPnET
                             cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][1] + annualFwater[spc][2] + annualFwater[spc][3];
                             cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][1] + annualFrad[spc][2] + annualFrad[spc][3];
                             monthlyCount[spc] = monthlyCount[spc] + 3;
-                }
-                        else if(annualFwater[spc].Count > 2)
+                        }
+                        else if (annualFwater[spc].Count > 2)
                         {
                             //cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]) * (1 - annualEstab[spc][2]) ;
                             cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] + annualFwater[spc][2];
                             cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] + annualFrad[spc][2];
                             monthlyCount[spc] = monthlyCount[spc] + 3;
-            }
-                        else if(annualFwater[spc].Count > 1)
+                        }
+                        else if (annualFwater[spc].Count > 1)
                         {
                             //cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]) * (1 - annualEstab[spc][1]);
-                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1] ;
-                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1] ;
+                            cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0] + annualFwater[spc][1];
+                            cumulativeFrad[spc] = cumulativeFrad[spc] + annualFrad[spc][0] + annualFrad[spc][1];
                             monthlyCount[spc] = monthlyCount[spc] + 2;
                         }
-                        else if(annualFwater[spc].Count == 1)
+                        else if (annualFwater[spc].Count == 1)
                         {
                             //cumulativeEstab[spc] = cumulativeEstab[spc] * (1 - annualEstab[spc][0]);
                             cumulativeFwater[spc] = cumulativeFwater[spc] + annualFwater[spc][0];
