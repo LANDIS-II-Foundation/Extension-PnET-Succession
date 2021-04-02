@@ -518,6 +518,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Subtract mainenance respiration (gC/mo)
             nsc -= MaintenanceRespiration[index];
+            if (nsc < 0)
+                nsc = 0f;
 
 
             // Woody decomposition: do once per year to reduce unnescessary computation time so with the last subcanopy layer 
@@ -551,6 +553,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     biomass += Allocation / species.CFracBiomass;  // convert gC to gDW
                     biomassmax = Math.Max(biomassmax, biomass);
                     nsc -= Allocation;
+                    if (nsc < 0)
+                        nsc = 0f;
                     age++;
 
                     //firstDefol = true;
@@ -609,6 +613,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                             // Subtract from NSC
                             nsc -= Folalloc;
+                            if (nsc < 0)
+                                nsc = 0f;
                         }
                     }
                     else if (ecoregion.Variables.Month == (int)Constants.Months.June) //Apply defoliation only in June
@@ -659,6 +665,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                             // Subtract from NSC
                             nsc -= Folalloc;
+                            if (nsc < 0)
+                                nsc = 0f;
                             //firstAlloc = false; // Denotes that allocation has been applied to one sublayer
                         }
                     }
@@ -721,9 +729,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             AdjFracFol[index] = adjFracFol; //Stored for output
 
 
-            float ciModifier = fWaterOzone; // if no ozone, ciModifier defaults to fWater
+            float ciModifier = FWater[index]; // if no ozone, ciModifier defaults to fWater
             if (o3_cum > 0)
             {
+                ciModifier = fWaterOzone;
                 // Regression coefs estimated from New 3 algorithm for Ozone drought.xlsx
                 // https://usfs.box.com/s/eksrr4d7fli8kr9r4knfr7byfy9r5z0i
                 // Uses data provided by Yasutomo Hoshika and Elena Paoletti
@@ -899,8 +908,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
                     if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
                 }
-                // Add net psn to non soluble carbons
+                // Add net psn to non structural carbons
                 nsc += NetPsn[index]; //gC
+                if (nsc < 0)
+                    nsc = 0f;
 
             }
             else

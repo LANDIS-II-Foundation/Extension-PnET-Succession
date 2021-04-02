@@ -428,8 +428,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                     sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
                 }
 
-                // Simulation time runs untill the next cohort is added
-                DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - (sortedAgeCohorts[0].Age - 1)), 1, 15);
+                // Simulation time runs for a timestep, or until the next cohort is added (whichever comes first)
+                DateTime EndDate_TS = new DateTime((int)(date.Year + Timestep), 1, 15);
+                DateTime EndDate_NextCohort = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - (sortedAgeCohorts[0].Age - 1)), 1, 15);
+                DateTime EndDate = (EndDate_TS < EndDate_NextCohort ? EndDate_TS : EndDate_NextCohort);
                 if (date.CompareTo(StartDate) == 0)
                     break;
 
@@ -1999,7 +2001,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
             while (layermaxdev.Max() >= MaxDevLyrAv && nlayers < MaxCanopyLayers && nlayers < (CumCohortBiomass.Count()/PlugIn.IMAX));
-            //=====================OPTIMIZATION LOOP====================================
+            //=====================END OPTIMIZATION LOOP====================================
 
 
             // Actual layer configuration
