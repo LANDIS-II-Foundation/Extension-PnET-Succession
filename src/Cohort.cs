@@ -625,7 +625,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             //firstDefol = false;
                         //}
                     }
-                    else if (ecoregion.Variables.Month > (int)Constants.Months.June) //During and after defoliation events
+                    else if (ecoregion.Variables.Month == (int)Constants.Months.July) // After defoliation events
                     {
                         if (defolProp > 0)
                         {
@@ -654,7 +654,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                             }
                             //firstAlloc = false;  // Denotes that allocation has been applied to one sublayer
                         }
-                        else if (IdealFol > fol)    //Non-defoliated trees refoliate 'normally', but only once per cohort
+                        // Non-defoliated trees do not add to their foliage
+                       /*else if (IdealFol > fol)    //Non-defoliated trees refoliate 'normally', but only once per cohort
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
@@ -668,7 +669,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             if (nsc < 0)
                                 nsc = 0f;
                             //firstAlloc = false; // Denotes that allocation has been applied to one sublayer
-                        }
+                        }*/
                     }
                 }
                 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^ MGM's restructuring 10/25/2018 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

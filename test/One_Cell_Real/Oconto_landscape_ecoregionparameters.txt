@@ -1,0 +1,17 @@
+LandisData EcoregionParameters	
+>>EcoregionParameters	SoilType	RootingDepth	PrecLossFrac	LeakageFrac	RunoffCapture	PrecIntConst	WinterSTD	ClimateFileName             
+>>eco1			LOAM		1000		0.0		1.00		0		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>eco2			LOSA		1000		0.0		1.00		0		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>eco3			SAND		1000		0.0		1.00		0		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>eco4			SALO		1000		0.0		1.00		0		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>eco5			SILO		1000		0.0		1.00		0		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>woodywet		SALO		500		0.0		0.01		75		0.02	7.0	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>woodywet		MUCK		500		0.0		0.0		75		0.01	7.7	Oconto_weather_Temp0_Prec0_PAR0.txt
+
+>>Eco4  			SILO		1000		0.0		1.00		0.1	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>Eco3  			SAND		1000		0.0		1.00		0.1	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>Eco2  			LOSA		1000		0.0		1.00		0.1	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>Eco1  			SALO		1000		0.0		1.00		0.1	Oconto_weather_Temp0_Prec0_PAR0.txt
+
+EcoregionParameters	SoilType	RootingDepth	PrecLossFrac	LeakageFrac	RunoffCapture	PrecIntConst	WinterSTD	ClimateFileName             
+eco4 			SALO		1000		0.0		1.00		0		0.1	6.67	Climate.txt
