@@ -396,46 +396,48 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Spins up sites if no biomass is provided
         private void SpinUp(DateTime StartDate, ActiveSite site, ICommunity initialCommunity, bool usingClimateLibrary, string SiteOutputName = null)
         {
-                List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
-                foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+            List<Landis.Library.AgeOnlyCohorts.ICohort> sortedAgeCohorts = new List<Landis.Library.AgeOnlyCohorts.ICohort>();
+            foreach (Landis.Library.AgeOnlyCohorts.ISpeciesCohorts speciesCohorts in initialCommunity.Cohorts)
+            {
+                foreach (Landis.Library.AgeOnlyCohorts.ICohort cohort in speciesCohorts)
                 {
-                    foreach (Landis.Library.AgeOnlyCohorts.ICohort cohort in speciesCohorts)
-                    {
-                        sortedAgeCohorts.Add(cohort);
-                    }
+                    sortedAgeCohorts.Add(cohort);
                 }
-                sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
+            }
+            sortedAgeCohorts = new List<Library.AgeOnlyCohorts.ICohort>(sortedAgeCohorts.OrderByDescending(o => o.Age));
 
-                if (sortedAgeCohorts.Count == 0) return;
+            if (sortedAgeCohorts.Count == 0) return;
 
-                DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age - 1));
+            DateTime date = StartDate.AddYears(-(sortedAgeCohorts[0].Age - 1));
 
             Landis.Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>> mydata = new Library.Parameters.Ecoregions.AuxParm<List<EcoregionPnETVariables>>(PlugIn.ModelCore.Ecoregions);
 
-                while (date.CompareTo(StartDate) < 0)
+            while (date.CompareTo(StartDate) <= 0)
+            {
+                //  Add those cohorts that were born at the current year
+                while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == (sortedAgeCohorts[0].Age - 1))
                 {
-                    //  Add those cohorts that were born at the current year
-                    while (sortedAgeCohorts.Count() > 0 && StartDate.Year - date.Year == (sortedAgeCohorts[0].Age - 1))
-                    {
-                        Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
+                    Cohort cohort = new Cohort(PlugIn.SpeciesPnET[sortedAgeCohorts[0].Species], (ushort)date.Year, SiteOutputName);
 
-                        bool addCohort = AddNewCohort(cohort);
+                    bool addCohort = AddNewCohort(cohort);
 
-                        sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
-                    }
-
-                    // Simulation time runs untill the next cohort is added
-                    DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - (sortedAgeCohorts[0].Age-1)), 1, 15);
-
-                    var climate_vars = usingClimateLibrary ? EcoregionPnET.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Phase.SpinUp_Climate) : EcoregionPnET.GetData(Ecoregion, date, EndDate);
-
-                    Grow(climate_vars);
-
-                    date = EndDate;
-
+                    sortedAgeCohorts.Remove(sortedAgeCohorts[0]);
                 }
-                if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
+
+                // Simulation time runs untill the next cohort is added
+                DateTime EndDate = (sortedAgeCohorts.Count == 0) ? StartDate : new DateTime((int)(StartDate.Year - (sortedAgeCohorts[0].Age - 1)), 1, 15);
+                if (date.CompareTo(StartDate) == 0)
+                    break;
+
+                var climate_vars = usingClimateLibrary ? EcoregionPnET.GetClimateRegionData(Ecoregion, date, EndDate, Climate.Phase.SpinUp_Climate) : EcoregionPnET.GetData(Ecoregion, date, EndDate);
+
+                Grow(climate_vars);
+
+                date = EndDate;
+
             }
+            if (sortedAgeCohorts.Count > 0) throw new System.Exception("Not all cohorts in the initial communities file were initialized.");
+        }
 
         List<List<int>> GetRandomRange(List<List<int>> bins)
         {
