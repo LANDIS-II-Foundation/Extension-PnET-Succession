@@ -8,6 +8,7 @@
 //       to InitialClimateLibrary() in Plugin.Initialize().
 //   (2) Modified EcoregionPnET to add GetClimateRegionData() which grabs climate data from ClimateRegionData.  This uses an intermediate
 //       MonthlyClimateRecord instance which is similar to ObservedClimate.
+//       MonthlyClimateRecord instance which is similar to ObservedClimate.
 //   (3) Added ClimateRegionPnETVariables class which is a copy of the EcoregionPnETVariables class which uses MonthlyClimateRecord rather than
 //       ObserverdClimate. I had hoped to use the same class, but the definition of IObservedClimate prevents MonthlyClimateRecord from implementing it.
 //       IMPORTANT NOTE: The climate library precipation is in cm/month, so that it is converted to mm/month in MonthlyClimateRecord.
@@ -32,6 +33,8 @@ using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Diagnostics;
 
 
 namespace Landis.Extension.Succession.BiomassPnET
@@ -49,6 +52,9 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static ISiteVar<SiteCohorts> sitecohorts;
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
+        public static readonly object CWDThreadLock = new object();
+        public static readonly object litterThreadLock = new object();
+        private static readonly object distributionThreadLock = new object();
         public static ushort IMAX;
         public static float FTimeStep;
         public static bool UsingClimateLibrary;
@@ -57,6 +63,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static string PARunits;
         public static bool SpinUpWaterStress;
         public static bool PrecipEventsWithReplacement;
+        public static int ParallelThreads;
 
         private static SortedDictionary<string, Parameter<string>> parameters = new SortedDictionary<string, Parameter<string>>(StringComparer.InvariantCultureIgnoreCase);
         MyClock m = null;
@@ -115,21 +122,28 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// <returns></returns>
         public static int DiscreteUniformRandom(int min, int max)
         {
-            ModelCore.ContinuousUniformDistribution.Alpha = min;
-            ModelCore.ContinuousUniformDistribution.Beta = max + 1;
-            ModelCore.ContinuousUniformDistribution.NextDouble();                       
-            double valueD = ModelCore.ContinuousUniformDistribution.NextDouble();
-            int value = Math.Min((int)valueD,max);
+            lock (distributionThreadLock)
+            {
+                ModelCore.ContinuousUniformDistribution.Alpha = min;
+                ModelCore.ContinuousUniformDistribution.Beta = max + 1;
+                ModelCore.ContinuousUniformDistribution.NextDouble();
+
+                double valueD = ModelCore.ContinuousUniformDistribution.NextDouble();
+                int value = Math.Min((int)valueD,max);
+            }
             return value;
         }
         //---------------------------------------------------------------------
         // Random double between min (inclusive) and max (exclusive)
         public static double ContinuousUniformRandom(double min = 0, double max = 1)
         {
-            ModelCore.ContinuousUniformDistribution.Alpha = min;
-            ModelCore.ContinuousUniformDistribution.Beta = max;
-            ModelCore.ContinuousUniformDistribution.NextDouble();
-            double value = ModelCore.ContinuousUniformDistribution.NextDouble();
+            lock (distributionThreadLock)
+            {
+                ModelCore.ContinuousUniformDistribution.Alpha = min;
+                ModelCore.ContinuousUniformDistribution.Beta = max;
+                ModelCore.ContinuousUniformDistribution.NextDouble();
+                double value = ModelCore.ContinuousUniformDistribution.NextDouble();
+            }
             return value;
         }
         //---------------------------------------------------------------------
@@ -158,6 +172,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             : base(Names.ExtensionName)
         {
             LocalOutput.PNEToutputsites = Names.PNEToutputsites;
+
+            // The number of thread workers to use in succession routines that have been optimized. Should
+            // more or less match the number of cores in the computer thats running LANDIS-II's processor
+            //this.ThreadCount = 3;
+            //this.ThreadCount = 1;
+
         }
         //---------------------------------------------------------------------
         public static Dictionary<string, Parameter<string>> LoadTable(string label, List<string> RowLabels, List<string> Columnheaders, bool transposed = false)
@@ -291,8 +311,43 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             else
                 CohortBinSize = Timestep;
-        
+
+            string Parallel = ((Parameter<string>)GetParameter(Names.Parallel)).Value;
+            if (Parallel == "false")
+            {
+                ParallelThreads = 1;
+                PlugIn.ModelCore.UI.WriteLine("  MaxParallelThreads = " + ParallelThreads.ToString() + ".");
+            }
+            else if (Parallel == "true")
+            {
+                ParallelThreads = -1;
+                PlugIn.ModelCore.UI.WriteLine("  MaxParallelThreads determined by system.");
+            }
+            else
+            {
+                if (Int32.TryParse(Parallel, out ParallelThreads))
+                {
+                    if (ParallelThreads < 1)
+                    {
+                        throw new System.Exception("Parallel cannot be < 1.");
+                    }
+                    else
+                    {
+                        PlugIn.ModelCore.UI.WriteLine("  MaxParallelThreads = " + ParallelThreads.ToString() + ".");
+                    }
+                }else
+                {
+                    throw new System.Exception("Parallel must be 'true', 'false' or an integer >= 1.");
+                }
+            }
+            this.ThreadCount = ParallelThreads;
+
+
+
             FTimeStep = 1.0F / Timestep;
+
+            //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
+
             ObservedClimate.Initialize();
             SpeciesPnET = new SpeciesPnET();
             EcoregionPnET.Initialize();

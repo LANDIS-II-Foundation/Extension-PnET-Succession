@@ -39,6 +39,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string PARunits = "PARunits";
         public const string SpinUpWaterStress = "SpinUpWaterStress";
         public const string PrecipEventsWithReplacement = "PrecipEventsWithReplacement";
+        public const string Parallel = "Parallel";
 
         //Ecoregion parameters
         public const string LeakageFrac = "LeakageFrac";

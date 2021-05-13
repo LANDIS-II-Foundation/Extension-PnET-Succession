@@ -22,9 +22,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         private bool leaf_on = false;
 
-        public static IEcoregionPnET ecoregion;
-        public static ActiveSite site;
-
         public static AddWoodyDebris addwoodydebris;
         
         public static AddLitter addlitter;
@@ -414,8 +411,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
              Cohort.addlitter = sitecohorts.AddLitter;
              Cohort.addwoodydebris = sitecohorts.AddWoodyDebris;
-             Cohort.ecoregion = sitecohorts.Ecoregion;
-             Cohort.site = sitecohorts.Site;
         }
         
 
@@ -427,8 +422,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Photosynthesis by canopy layer
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean)
-         {      
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, ref Hydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean, IEcoregionPnETVariables variables, IEcoregionPnET ecoregion, Location location)
+        {      
             bool success = true;
             float lastO3Effect = O3Effect;
             O3Effect = 0;
@@ -452,13 +447,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float capturedRunoff = 0;
                 if ((ecoregion.RunoffCapture > 0) & (meltrunoff >0))
                 {
-                    capturedRunoff = Math.Max(0, Math.Min(meltrunoff, (ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
-                    Hydrology.SurfaceWater += capturedRunoff;
+                    capturedRunoff = Math.Max(0, Math.Min(meltrunoff, (ecoregion.RunoffCapture - hydrology.SurfaceWater)));
+                    hydrology.SurfaceWater += capturedRunoff;
                 }
-                Hydrology.RunOff += (meltrunoff - capturedRunoff);
+                hydrology.RunOff += (meltrunoff - capturedRunoff);
 
                 success = hydrology.AddWater(MeltInByCanopyLayer - meltrunoff, ecoregion.RootingDepth * frostFreeProp);
-                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
             }
             float precipIn = 0;
             // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
@@ -473,33 +468,33 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float capturedRunoff = 0;
                 if ((ecoregion.RunoffCapture > 0) & (rainrunoff > 0))
                 {
-                    capturedRunoff = Math.Max(0,Math.Min(rainrunoff,(ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
-                    Hydrology.SurfaceWater += capturedRunoff;
+                    capturedRunoff = Math.Max(0,Math.Min(rainrunoff,(ecoregion.RunoffCapture - hydrology.SurfaceWater)));
+                    hydrology.SurfaceWater += capturedRunoff;
                 }
-                Hydrology.RunOff += (rainrunoff - capturedRunoff);
+                hydrology.RunOff += (rainrunoff - capturedRunoff);
                 
                 precipIn = PrecInByCanopyLayer - rainrunoff; //mm
 
                 // Add incoming precipitation to soil moisture
                 success = hydrology.AddWater(precipIn, ecoregion.RootingDepth * frostFreeProp);
-                if (success == false) throw new System.Exception("Error adding water, waterIn = " + precipIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                if (success == false) throw new System.Exception("Error adding water, waterIn = " + precipIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + location);
             }
 
             // Leakage only occurs following precipitation events or incoming melt water
             if (precipIn > 0 || MeltInByCanopyLayer > 0)
             {
                 float leakage = Math.Max((float)leakageFrac * (hydrology.Water - ecoregion.FieldCap), 0) * ecoregion.RootingDepth * frostFreeProp; //mm
-                Hydrology.Leakage += leakage;
+                hydrology.Leakage += leakage;
 
                 // Remove fast leakage
                 success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * frostFreeProp);
-                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
-                if (Hydrology.SurfaceWater > 0)
+                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                if (hydrology.SurfaceWater > 0)
                 {
-                    float surfaceInput = Math.Min(Hydrology.SurfaceWater,(ecoregion.Porosity - hydrology.Water));
-                    Hydrology.SurfaceWater -= surfaceInput;
+                    float surfaceInput = Math.Min(hydrology.SurfaceWater,(ecoregion.Porosity - hydrology.Water));
+                    hydrology.SurfaceWater -= surfaceInput;
                     success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + location);
                 }
             }               
             
@@ -514,8 +509,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //    if (success == false) throw new System.Exception("Error adding water, frozenWater = " + frozenWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             //}
             // Maintenance respiration depends on biomass,  non soluble carbon and temperature
-            MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, ecoregion.Variables[Species.Name].MaintRespFTempResp * (biomass * species.CFracBiomass));//gC //IMAXinverse
-
+            MaintenanceRespiration[index] = (1 / (float)PlugIn.IMAX) * (float)Math.Min(NSC, variables[Species.Name].MaintRespFTempResp * biomass);//gC //IMAXinverse
             // Subtract mainenance respiration (gC/mo)
             nsc -= MaintenanceRespiration[index];
 
@@ -524,7 +518,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (index == PlugIn.IMAX - 1)
             {
                 // In the last month
-                if (ecoregion.Variables.Month == (int)Constants.Months.December)
+                if (variables.Month == (int)Constants.Months.December)
                 {
                     //Check if nscfrac is below threshold to determine if cohort is alive
                     if (!this.IsAlive)
@@ -557,12 +551,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                    // firstAlloc = true;
                 }
             }
+            if (coldKillBoolean)
+            {
+                coldKill = (int)Math.Floor(variables.Tave - (3.0 * ecoregion.WinterSTD));
+                leaf_on = false;
+                nsc = 0.0F;
+                float foliageSenescence = FoliageSenescence();
+                addlitter(foliageSenescence, SpeciesPNET);
+                lastFoliageSenescence = foliageSenescence;
+            }
             // Phenology: do once per cohort per month, using the first sublayer 
             if (index == 0)
             {
                 if (coldKillBoolean)
                 {
-                    coldKill = (int)Math.Floor(ecoregion.Variables.Tave - (3.0 * ecoregion.WinterSTD));
+                    coldKill = (int)Math.Floor(variables.Tave - (3.0 * ecoregion.WinterSTD));
                     leaf_on = false;
                     nsc = 0.0F;
                     float foliageSenescence = FoliageSenescence();
@@ -572,7 +575,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 else
                 {
                     // When LeafOn becomes false for the first time in a year
-                    if (ecoregion.Variables.Tmin <= this.SpeciesPNET.LeafOnMinT)
+                    if (variables.Tmin <= this.SpeciesPNET.LeafOnMinT)
                     {
                         if (leaf_on == true)
                         {
@@ -671,7 +674,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             // Adjust HalfSat for CO2 effect
             float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
-            adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
+            adjHalfSat = species.CO2HalfSatEff * variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
             FRad[index] = ComputeFrad(SubCanopyPar, adjHalfSat);
 
@@ -756,8 +759,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Reference co2 ratio
                 float ci350 = 350 * modCiCaRatio;
                 // Elevated leaf internal co2 concentration
-                float ciElev = ecoregion.Variables.CO2 * modCiCaRatio;
-                float Ca_Ci = ecoregion.Variables.CO2 - ciElev;
+                float ciElev = variables.CO2 * modCiCaRatio;
+                float Ca_Ci = variables.CO2 - ciElev;
 
                 // Franks method
                 // (Franks,2013, New Phytologist, 197:1077-1094)
@@ -767,14 +770,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                 // Tested here but removed for release v3.0
                 // Bernacchi et al. 2002. Plant Physiology 130, 1992-1998
                 // Gamma* = e^(13.49-24.46/RTk) [R is universal gas constant = 0.008314 kJ/J/mole, Tk is absolute temperature]
-                //float Gamma_T = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (ecoregion.Variables.Tday + 273)));
+                //float Gamma_T = (float) Math.Exp(13.49 - 24.46 / (0.008314 * (variables.Tday + 273)));
 
                 float Ca0 = 350;  // 350
                 float Ca0_adj = Ca0 * cicaRatio;  // Calculated internal concentration given external 350
 
 
                 // Franks method (Franks,2013, New Phytologist, 197:1077-1094)
-                float delamax = (ecoregion.Variables.CO2 - Gamma) / (ecoregion.Variables.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
+                float delamax = (variables.CO2 - Gamma) / (variables.CO2 + 2 * Gamma) * (Ca0 + 2 * Gamma) / (Ca0 - Gamma);
                 if (delamax < 0)
                 {
                     delamax = 0;
@@ -782,7 +785,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Franks method (Franks,2013, New Phytologist, 197:1077-1094)
                 // Adj Ca0
-                float delamax_adj = (ecoregion.Variables.CO2 - Gamma) / (ecoregion.Variables.CO2 + 2 * Gamma) * (Ca0_adj + 2 * Gamma) / (Ca0_adj - Gamma);
+                float delamax_adj = (variables.CO2 - Gamma) / (variables.CO2 + 2 * Gamma) * (Ca0_adj + 2 * Gamma) / (Ca0_adj - Gamma);
                 if (delamax_adj < 0)
                 {
                     delamax_adj = 0;
@@ -812,12 +815,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //DelAmax[index] = delamaxCi_adj;  // Modified Franks with adjusted Ca0
 
                 // M. Kubiske method for wue calculation:  Improved methods for calculating WUE and Transpiration in PnET.
-                float V = (float)(8314.47 * (ecoregion.Variables.Tmin + 273) / 101.3);
-                float JCO2 = (float)(0.139 * ((ecoregion.Variables.CO2 - ciElev) / V) * 0.00001);
-                float JH2O = ecoregion.Variables[species.Name].JH2O * ciModifier;
+                float V = (float)(8314.47 * (variables.Tmin + 273) / 101.3);
+                float JCO2 = (float)(0.139 * ((variables.CO2 - ciElev) / V) * 0.00001);
+                float JH2O = variables[species.Name].JH2O * ciModifier;
                 float wue = (JCO2 / JH2O) * (44 / 18);  //44=mol wt CO2; 18=mol wt H2O; constant =2.44444444444444
-
-                float Amax = (float)(delamaxCi * (species.AmaxA + ecoregion.Variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
+                float Amax = (float)(delamaxCi * (species.AmaxA + variables[species.Name].AmaxB_CO2 * adjFolN)); //nmole CO2/g Fol/s
                 float BaseFolResp = ecoregion.Variables[species.Name].BaseFolRespFrac * Amax; //nmole CO2/g Fol/s
                 float AmaxAdj = Amax * species.AmaxFrac;  //Amax adjustment as applied in PnET
                 float GrossAmax = AmaxAdj + BaseFolResp; //nmole CO2/g Fol/s
@@ -841,7 +843,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Convert Psn gC/m2 ground/mo to umolCO2/m2 fol/s
                 // netPsn_ground = LayerNestPsn*1000000umol*(1mol/12gC) * (1/(60s*60min*14hr*30day))
-                float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (ecoregion.Variables.Daylength * ecoregion.Variables.DaySpan));
+                float netPsn_ground = nonOzoneNetPsn * 1000000F * (1F / 12F) * (1F / (variables.Daylength * variables.DaySpan));
                 float netPsn_leaf_s = 0;
                 if (netPsn_ground > 0 && LAI[index] > 0)
                 {
@@ -857,7 +859,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 //gwv_mol = NetPsn_leaf_s /(Ca-Ci) {umol/mol} * 1.6(molH20/molCO2)*1000 {mmol/mol}
                 float gwv_mol = (float)(netPsn_leaf_s / (Ca_Ci) * 1.6 * 1000);
                 //gwv = gwv_mol / (444.5 - 1.3667*Tc)*10    {denominator is from Koerner et al. 1979 (Sheet 3),  Tc = temp in degrees C, * 10 converts from cm to mm.  
-                float gwv = (float)(gwv_mol / (444.5 - 1.3667 * ecoregion.Variables.Tave) * 10);
+                float gwv = (float) (gwv_mol / (444.5 - 1.3667 * variables.Tave) * 10);
 
                 // Calculate gwv from Psn using Ollinger equation
                 // g = -0.3133+0.8126*NetPsn_leaf_s
@@ -875,7 +877,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 
                 //Apply reduction factor for Ozone
                 NetPsn[index] = nonOzoneNetPsn * FOzone[index];
-                               
+
+                // Net foliage respiration depends on reference psn (AMAX)
+                //float FTempRespDayRefResp = variables[species.Name].FTempRespDay * variables.DaySpan * variables.Daylength * Constants.MC / Constants.billion * variables[species.Name].Amax;
+                //Subistitute 24 hours in place of DayLength because foliar respiration does occur at night.  FTempRespDay uses Tave temps reflecting both day and night temperatures.
+                float FTempRespDayRefResp = variables[species.Name].FTempRespDay * variables.DaySpan * (Constants.SecondsPerHour * 24) * Constants.MC / Constants.billion * Amax;
+                
+                // Actal foliage respiration (growth respiration) 
+                FolResp[index] = FWater[index] * FTempRespDayRefResp * fol / (float)PlugIn.IMAX;
+
+                // Gross psn depends on net psn and foliage respiration
+                GrossPsn[index] = NetPsn[index] + FolResp[index];
+
                 // M. Kubiske equation for transpiration: Improved methods for calculating WUE and Transpiration in PnET.
                 // JH2O has been modified by CiModifier to reduce water use efficiency
                 Transpiration[index] = (float)(0.01227 * (GrossPsn[index] / (JCO2 / JH2O))); //mm
@@ -891,13 +904,13 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 // Subtract transpiration from hydrology
                 success = hydrology.AddWater(-1 * Transpiration[index], ecoregion.RootingDepth * frostFreeProp);
-                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
-                if (Hydrology.SurfaceWater > 0)
+                if (success == false) throw new System.Exception("Error adding water, Transpiration = " + Transpiration[index] + " water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + location);
+                if (hydrology.SurfaceWater > 0)
                 {
-                    float surfaceInput = Math.Min(Hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.Water));
-                    Hydrology.SurfaceWater -= surfaceInput;
+                    float surfaceInput = Math.Min(hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.Water));
+                    hydrology.SurfaceWater -= surfaceInput;
                     success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + location);
                 }
                 // Add net psn to non soluble carbons
                 nsc += NetPsn[index]; //gC

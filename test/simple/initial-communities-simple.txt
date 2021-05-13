@@ -1,0 +1,30 @@
+LandisData   "Initial Communities"
+
+>>Old jackpine oak 
+MapCode  0
+   pinubank 90
+
+>> young jackpine oak
+MapCode  1
+   pinubank  50
+
+>> young aspen   
+MapCode 2
+   poputrem 10 
+
+>> old aspen-birch
+MapCode 3
+   poputrem  100
+
+>> young northern hardwoods
+MapCode 4
+   betualle 40
+
+   
+>> old maple hardwoods
+MapCode 5
+   acersacc  200
+   
+>> old pine - spruce - fir
+MapCode 6
+   pinustro 200
