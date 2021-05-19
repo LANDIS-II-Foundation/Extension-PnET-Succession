@@ -13,10 +13,5 @@ MapCode    0
 <<tiliamer  60
 
 MapCode    1 << B
-acerrubr  60
-acersacc  60
-betupapy  60
-popugran  60
-poputrem  60
-querrubr  60
-tiliamer  60
+abiebals  1 (100)
+poputrem  11 (1500)

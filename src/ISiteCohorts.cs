@@ -16,7 +16,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float[] FolResp { get; }
         
         
-        byte CanopyLAImax{get;}
+        float CanopyLAImax{get;}
 
         int AverageAge { get; }
 

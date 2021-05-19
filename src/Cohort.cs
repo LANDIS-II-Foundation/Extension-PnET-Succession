@@ -15,6 +15,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static event Landis.Library.BiomassCohorts.DeathEventHandler<Landis.Library.BiomassCohorts.DeathEventArgs> AgeOnlyDeathEvent;
 
         public byte Layer;
+        public byte MaxLayer;
 
         public delegate void SubtractTranspiration(float transpiration, ISpeciesPNET Species);
         public delegate void AddWoodyDebris(float Litter, float KWdLit);
@@ -41,6 +42,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float lastFoliageSenescence; // last recorded foliage senescence
         private float lastFRad;  //last month's average FRad
         private List<float> lastSeasonFRad;  // last growing season FRad
+
         private float adjFracFol;
         private bool firstYear;
         private float adjHalfSat;
@@ -54,6 +56,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Leaf area index per subcanopy layer (m/m)
         public float[] LAI = null;
+
+        // last growing season maximum LAI per subcanopy layer
+        //private float[] lastSeasonLAI = null;  
 
         // Gross photosynthesis (gC/mo)
         public float[] GrossPsn = null;
@@ -103,6 +108,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         // List of DisturbanceTypes that have had ReduceDeadPools applied
         public List<ExtensionType> ReducedTypes = null;
 
+        // Index of growing season month
+        public int growMonth = -1;
 
         public void InitializeSubLayers()
         {
@@ -124,6 +131,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             AdjFracFol = new float[PlugIn.IMAX];
             CiModifier = new float[PlugIn.IMAX];
             DelAmax = new float[PlugIn.IMAX];
+            //lastSeasonLAI = new float[PlugIn.IMAX];
         }
 
         public void StoreFRad()
@@ -401,6 +409,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 this.fol = (adjFracFol * FActiveBiom * biomass);
                 LAI[index] = CalculateLAI(this.species, this.fol, index);
+                //lastSeasonLAI[index] = LAI[index];
             }
 
             if (SiteName != null)
@@ -427,7 +436,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
 
         // Photosynthesis by canopy layer
-        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, IHydrology hydrology, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean)
+        public bool CalculatePhotosynthesis(float PrecInByCanopyLayer,int precipCount, float leakageFrac, IHydrology hydrology, float mainLayerPAR, ref float SubCanopyPar, float o3_cum, float o3_month, int subCanopyIndex, int layerCount, ref float O3Effect, float frostFreeProp, float MeltInByCanopyLayer, bool coldKillBoolean)
          {      
             bool success = true;
             float lastO3Effect = O3Effect;
@@ -584,10 +593,20 @@ namespace Landis.Extension.Succession.BiomassPnET
                             float foliageSenescence = FoliageSenescence();
                             addlitter(foliageSenescence, SpeciesPNET);
                             lastFoliageSenescence = foliageSenescence;
+                            //lastSeasonLAI = LAI;
                         }
+                        growMonth = -1;
                     }
                     else
                     {
+                        if(leaf_on == false) // LeafOn becomes true for the first time in a year
+                        {
+                            growMonth = 1;
+                        }
+                        else
+                        {
+                            growMonth += 1;
+                        }
                         leaf_on = true;
                     }
                 }
@@ -599,14 +618,21 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (firstYear)
                         adjFracFol = species.FracFol;
                     float IdealFol = (adjFracFol * FActiveBiom * biomass); // Using adjusted FracFol
+                    float NSClimit = nsc;
+                    if(mainLayerPAR < ecoregion.Variables.PAR0) // indicates below the top layer
+                    {
+                        NSClimit = nsc - (species.NSCReserve * (FActiveBiom * (biomass + fol) * species.CFracBiomass));                        
+                    }
+                    //float IdealFol = CalculateTargetFoliage(layerLastLAI, layerMaxLAI, adjFracFol, index);
 
-                    if (ecoregion.Variables.Month < (int)Constants.Months.June) //Growing season before defoliation outbreaks
+                    //if (ecoregion.Variables.Month < (int)Constants.Months.June) //Growing season before defoliation outbreaks
+                    if(growMonth < 2)  // Growing season months before defoliation outbreaks - can add foliage in first growing season month
                     {
                         if (IdealFol > fol)
                         {
                             // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                             // carbon fraction of biomass to convert C to DW
-                            float Folalloc = Math.Max(0, Math.Min(nsc, species.CFracBiomass * (IdealFol - fol))); // gC/mo
+                            float Folalloc = Math.Max(0, Math.Min(NSClimit, species.CFracBiomass * (IdealFol - fol))); // gC/mo
 
                             // Add foliage allocation to foliage
                             fol += Folalloc / species.CFracBiomass;// gDW
@@ -617,7 +643,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                                 nsc = 0f;
                         }
                     }
-                    else if (ecoregion.Variables.Month == (int)Constants.Months.June) //Apply defoliation only in June
+                    //else if (ecoregion.Variables.Month == (int)Constants.Months.June) //Apply defoliation only in June
+                    if(growMonth == 2)  // Apply defoliation only in the second growing season month
                     {
                         //if (firstDefol) // prevents multiple rounds of defoliation within a cohort (which shares canopy variables, like foliage)
                         //{
@@ -625,17 +652,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                             //firstDefol = false;
                         //}
                     }
-                    else if (ecoregion.Variables.Month == (int)Constants.Months.July) // After defoliation events
+                    //else if (ecoregion.Variables.Month == (int)Constants.Months.July) // After defoliation events
+                    else if(growMonth == 3) // Refoliation can occur in the 3rd growing season month
                     {
-                        if (defolProp > 0)
+                        if (defolProp > 0)  // Only defoliated cohorts can add refoliate
                         {
                             if (defolProp > 0.60 && species.TOfol == 1)  // Refoliation at >60% reduction in foliage for deciduous trees - MGM
                             {
                                 // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                 // carbon fraction of biomass to convert C to DW
-                                float Folalloc = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * ((0.70f * IdealFol) - fol)));  // 70% refoliation
+                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, species.CFracBiomass * ((0.70f * IdealFol) - fol)));  // 70% refoliation
 
-                                float Folalloc2 = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * (0.95f * IdealFol - fol)));  // cost of refol is the cost of getting to IdealFol
+                                float Folalloc2 = Math.Max(0f, Math.Min(NSClimit, species.CFracBiomass * (0.95f * IdealFol - fol)));  // cost of refol is the cost of getting to IdealFol
 
                                 fol += Folalloc / species.CFracBiomass;// gDW
 
@@ -647,7 +675,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             {
                                 // Foliage allocation depends on availability of NSC (allows deficit at this time so no min nsc)
                                 // carbon fraction of biomass to convert C to DW
-                                float Folalloc = Math.Max(0f, Math.Min(nsc, species.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
+                                float Folalloc = Math.Max(0f, Math.Min(NSClimit, species.CFracBiomass * (0.10f * IdealFol))); // gC/mo 10% of IdealFol to take out NSC 
 
                                 // Subtract from NSC do not add Fol
                                 nsc -= Folalloc;
@@ -682,12 +710,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             float halfSatIntercept = species.HalfSat - 350 * species.CO2HalfSatEff;
             adjHalfSat = species.CO2HalfSatEff * ecoregion.Variables.CO2 + halfSatIntercept;
             // Reduction factor for radiation on photosynthesis
-            FRad[index] = ComputeFrad(SubCanopyPar, adjHalfSat);
-
-
-
+            float LayerPAR = (float) (mainLayerPAR * Math.Exp(-species.K * (LAI.Sum() - LAI[index])));
+            FRad[index] = ComputeFrad(LayerPAR, adjHalfSat);
+                       
             // Below-canopy PAR if updated after each subcanopy layer
-            SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
+            //SubCanopyPar *= (float)Math.Exp(-species.K * LAI[index]);
 
             // Get pressure head given ecoregion and soil water content (latter in hydrology)
             float PressureHead = hydrology.GetPressureHead(ecoregion);
@@ -1227,6 +1254,27 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             return LAIlayer;
         }
+        //---------------------------------------------------------------------
+        ///<summary>
+        /// Calculate target foliage by comparing lastSeasonLAI to layerMaxLAI
+        ///</summary>
+        /*public float CalculateTargetFoliage(float layerLastLAI, float layerMaxLAI, float adjFracFol, int index)
+        {
+            float fLAI = 1.0f;
+            int layer = this.Layer;
+            if (layerMaxLAI > 0)
+            {
+                if (layerLastLAI >= (layerMaxLAI / 2.0))
+                {
+                    fLAI = (float)(1.0f - ((layerLastLAI - (layerMaxLAI / 2.0)) / (layerMaxLAI / 2.0)));
+                }
+            }
+            float idealFol = (adjFracFol * FActiveBiom * biomass); // Using adjusted FracFol
+            float adjustedFol = lastSeasonLAI[index] + (idealFol - lastSeasonLAI[index]) * fLAI;
+            float targetFol = (float) Math.Min(idealFol, adjustedFol);
+
+            return targetFol;
+        }*/
         //---------------------------------------------------------------------
         /// <summary>
         /// Raises a Cohort.AgeOnlyDeathEvent.

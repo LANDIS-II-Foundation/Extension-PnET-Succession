@@ -147,5 +147,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         // Initial Biomass
         int InitBiomass { get; }
 
+        // Calculated maximum LAI from FrActWd
+        //float MaxLAI { get; }
+
+        // Lower canopy NSC reserve 
+        float NSCReserve { get; }
     }
 }

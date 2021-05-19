@@ -18,3 +18,4 @@ PARunits			umol	<<default
 AmaxFrac			0.75	<<default=0.75
 PrecipEventsWithReplacement	true	<<default
 MaxPest 			1.0	<<Establishment tuning knob
+NSCReserve		0.04

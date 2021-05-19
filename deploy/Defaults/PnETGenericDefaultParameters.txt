@@ -53,7 +53,8 @@ PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)
 MaxPest				1.0
 MossDepth			0.0
 InvertPest			false
-PARunits			umol	>> Deafult umol/m2/s
+PARunits			umol	>> Default umol/m2/s
 SpinUpWaterStress		false  
 PrecipEventsWithReplacement	true
 AmaxFrac			0.75
+NSCReserve			0.00 

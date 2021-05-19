@@ -95,6 +95,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _maxFracFol;
         private float _o3Coeff;
         private float _leafOnMinT;
+        //private float _maxLAI;
+        private float _NSCreserve;
         # endregion
 
         #region private static species variables
@@ -144,6 +146,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> maxFracFol;
         private static Landis.Library.Parameters.Species.AuxParm<float> o3Coeff;
         private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
+        //private static Landis.Library.Parameters.Species.AuxParm<float> maxLAI;
+        private static Landis.Library.Parameters.Species.AuxParm<float> NSCreserve;
         #endregion
 
         public SpeciesPnET()
@@ -205,6 +209,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             // If LeafOnMinT is not provided, then set to PsnMinT
             if (leafOnMinT[this] == -9999F)
                 leafOnMinT = psntmin;
+            NSCreserve = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("NSCReserve"));
+
             #endregion
 
             SpeciesCombinations = new List<Tuple<ISpecies, ISpeciesPNET>>();
@@ -272,7 +278,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             float fracFolShape,
             float maxFracFol,
             float o3Coeff,
-            float leafOnMinT
+            float leafOnMinT,
+            //float maxLAI,
+            float NSCreserve
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -335,6 +343,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             this._leafOnMinT = leafOnMinT;
             uint initBiomass = (uint)(initialnsc/(dnsc * cfracbiomass));
             this._initBiomass = (int)((initBiomass - ((uint)(fracbelowg * initBiomass))*toroot) - ((uint)((1 - fracbelowg) * initBiomass) * towood));
+            float optimalBiomass = (float)(1.5234 * (System.Math.Pow(fractWd, -0.959)));
+            //this._maxLAI = (float)((optimalBiomass * fracfol * System.Math.Exp(-1.0 * fractWd * optimalBiomass)) / slwmax);
+            this._NSCreserve = NSCreserve;
         }
         //---------------------------------------------------------------------
         private SpeciesPnET(ISpecies species)
@@ -381,6 +392,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _coldTol = coldTol[species];
             _co2HalfSatEff = co2HalfSatEff[species];
             _ozoneSens = ozoneSens[species];
+            _NSCreserve = NSCreserve[species];
             index = species.Index;
             name = species.Name;
 
@@ -401,6 +413,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             _maxFracFol = maxFracFol[species];
             _o3Coeff = o3Coeff[species];
             _leafOnMinT = leafOnMinT[species];
+            float optimalBiomass = (float)(1.5234 * (System.Math.Pow(_fractWd, -0.959)));
+            //_maxLAI = (float)((optimalBiomass * _fracfol * System.Math.Exp(-1.0 * _fractWd * optimalBiomass)) / _slwmax);
         }
         //---------------------------------------------------------------------
         #region Accessors
@@ -877,6 +891,22 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _leafOnMinT;
+            }
+        }
+        //---------------------------------------------------------------------
+        /*public float MaxLAI
+        {
+            get
+            {
+                return _maxLAI;
+            }
+        }*/
+        //---------------------------------------------------------------------
+        public float NSCReserve
+        {
+            get
+            {
+                return _NSCreserve;
             }
         }
         //---------------------------------------------------------------------
