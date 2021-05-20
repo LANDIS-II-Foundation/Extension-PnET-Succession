@@ -1,6 +1,6 @@
 LandisData  Scenario
 	  
-Duration  50
+Duration  200
 Species   Landscape-Oconto_species_CCA2.txt
 
 Ecoregions      One_cell_ecoregion.txt

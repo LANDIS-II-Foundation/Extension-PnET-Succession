@@ -549,7 +549,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
 
             List<List<int>> LayeredBins = new List<List<int>>(); ;
-            if (rawBins.Count() - 1 < MaxLayer) // cohort(s) were previously in a higher layer
+            if ((rawBins != null) && (rawBins.Count() - 1 < MaxLayer)) // cohort(s) were previously in a higher layer
             {
                 for (int i = 0; i < rawBins.Count(); i++)
                 {                    
