@@ -1,0 +1,63 @@
+LandisData   "Initial Communities"
+
+>>Old jackpine oak 
+MapCode  0
+   acerrubr 30
+   pinubank 90
+   pinuresi  140
+   querelli 40 120 240
+
+>> young jackpine oak
+MapCode  1
+   pinubank  50
+   querelli 10  70
+
+>> young aspen   
+MapCode 2
+   poputrem 10 
+
+>> old aspen-birch
+MapCode 3
+   acerrubr  30
+   betualle  40
+   betupapy 80 
+   fraxamer 50
+   poputrem  100
+   pinustro 240
+   querrubr 20 
+   thujocci 60
+   tiliamer 10
+
+>> young northern hardwoods
+MapCode 4
+   abiebals 10
+   acerrubr  40
+   acersacc  20
+   betualle 40 70
+   betupapy 90
+   fraxamer 30  60
+   poputrem 90
+   querrubr 80
+   thujocci 30 80
+   tiliamer 10 50
+   tsugcana 10
+   
+>> old maple hardwoods
+MapCode 5
+   abiebals 10 60 120
+   acerrubr  120
+   acersacc 20  150 200
+   betualle 40 140 200
+   fraxamer 10 100  180
+   piceglau 180
+   querrubr 100  180
+   thujocci 200  260
+   tiliamer 20 80  150
+   tsugcana 30 120 220  340
+   
+>> old pine - spruce - fir
+MapCode 6
+   abiebals 10 80
+   piceglau 100  180  220
+   pinuresi 140  180
+   pinustro 200 280 350
