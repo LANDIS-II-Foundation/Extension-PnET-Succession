@@ -2200,6 +2200,11 @@ namespace Landis.Extension.Succession.BiomassPnET
         static List<float> layerThreshRatio = new List<float>();
         private List<List<double>> GetBinsByCohort(List<double> CohortBiomassList)
         {
+            if (CohortBiomassList.Count() == 0)
+            {
+                return null;
+            }
+
             nlayers = 1;
             layerThreshRatio.Clear();
             float diffProp = LayerThreshRatio;
