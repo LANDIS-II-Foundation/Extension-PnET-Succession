@@ -1,8 +1,7 @@
 LandisData PnETGenericParameters
 PnETGenericParameters 		Value
 MaxCanopyLayers			3
-MaxDevLyrAv 			10000
->>WUEcnst				10.9
+LayerThreshRatio		0.5
 IMAX				5
 DNSC				0.05 <<target NSCfraction
 MaintResp			0.0027	<<0.0027
@@ -18,4 +17,4 @@ PARunits			umol	<<default
 AmaxFrac			0.75	<<default=0.75
 PrecipEventsWithReplacement	true	<<default
 MaxPest 			1.0	<<Establishment tuning knob
-NSCReserve		0.04
+NSCReserve			0.04

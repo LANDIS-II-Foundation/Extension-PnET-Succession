@@ -2,7 +2,7 @@ LandisData	PnETGenericDefaultParameters
 PnETGenericDefaultParameters		Value
 >>----------------------------------------
 MaxCanopyLayers			3
-MaxDevLyrAv			10000
+LayerThreshRatio		0.5
 IMAX				5
 PsnAgeRed			5.0
 DVPD1				0.05

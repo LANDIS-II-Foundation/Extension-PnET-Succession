@@ -13,5 +13,5 @@ MapCode    0
 <<tiliamer  60
 
 MapCode    1 << B
-popubals  11
-poputrem  1
+poputrem  80 (4000)
+pinustro  70 (10000)

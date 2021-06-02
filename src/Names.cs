@@ -17,7 +17,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         public const string StartYear = "StartYear";
         public const string Timestep = "Timestep";
         public const string SeedingAlgorithm = "SeedingAlgorithm";
-        public const string MaxDevLyrAv = "MaxDevLyrAv";
+        //public const string MaxDevLyrAv = "MaxDevLyrAv";
+        public const string LayerThreshRatio = "LayerThreshRatio";
         public const string MaxCanopyLayers = "MaxCanopyLayers";
         public const string IMAX = "IMAX";
         public const string InitialCommunities = "InitialCommunities";

@@ -959,13 +959,27 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Based on Michaelis-Menten saturation curve
         // https://en.wikibooks.org/wiki/Structural_Biochemistry/Enzyme/Michaelis_and_Menten_Equation
-        public static float ComputeFrad(float Radiation, float HalfSat)
+        // Used in official releases 1.0 - 4.0
+        /*public static float ComputeFrad(float Radiation, float HalfSat)
         {
             // Derived from Michaelis-Menton equation
             // https://en.wikibooks.org/wiki/Structural_Biochemistry/Enzyme/Michaelis_and_Menten_Equation
 
             return Radiation / (Radiation + HalfSat);
+        }*/
+
+        // LightEffect equation from PnET
+        // Used in official releases >= 5.0
+        public static float ComputeFrad(float Radiation, float HalfSat)
+        {
+            float fRad = 0.0f;
+            if(HalfSat > 0)
+                fRad = (float)(1.0 - Math.Exp(-1.0 * Radiation * Math.Log(2.0) / HalfSat));
+            else
+                throw new System.Exception("HalfSat <= 0. Cannot calculate fRad.");
+            return fRad;
         }
+
         public static float ComputeFWater(float H1, float H2, float H3, float H4, float pressurehead)
         {
             float minThreshold = H1;
