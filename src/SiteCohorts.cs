@@ -558,14 +558,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                     SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);*/
                     SubCanopyCohorts.Add(subLayerIndex, AllCohorts[cohort]);
-                    if (rawBins.Count() < (cohortLayer + 1))
+                    while (rawBins.Count() < (cohortLayer + 1))
                     {
                         List<int> subList = new List<int>();
-                        subList.Add(subLayerIndex);
+                        //subList.Add(subLayerIndex);
                         rawBins.Add(subList);
                     }
-                    else
-                        rawBins[cohortLayer].Add(subLayerIndex);
+                    //else
+                    rawBins[cohortLayer].Add(subLayerIndex);
                     subLayerIndex++;
                 }
                 if (!cohortAges.Contains(AllCohorts[cohort].Age))
