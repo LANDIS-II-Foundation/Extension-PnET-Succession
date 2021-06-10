@@ -1210,6 +1210,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 CanopyLAI = new float[MaxCanopyLayers];
                 float[] CanopyLAISum = new float[MaxCanopyLayers];
                 float[] CanopyLAICount = new float[MaxCanopyLayers];
+                //PlugIn.ModelCore.UI.WriteLine("DEBUG: Site = \"{0}\", Year = \"{1}\", Month = \"{2}\".", this.Site, Ecoregion.Variables.Year, Ecoregion.Variables.Month);
                 foreach (Cohort cohort in AllCohorts)
                 {
                     folresp[Ecoregion.Variables.Month - 1] += cohort.FolResp.Sum();
@@ -2226,44 +2227,64 @@ namespace Landis.Extension.Succession.BiomassPnET
                 layerThreshRatio.Add((float)ratio);
                 if (ratio > (diffProp + 1))
                 {
-                    layerIndex++;
-                    nlayers++;
+                    //if (nlayers < (MaxCanopyLayers))
+                    //{
+                        layerIndex++;
+                        nlayers++;
 
-                    if (CohortBins.Count() < (layerIndex + 1))
-                    {
-                        CohortBins.Add(new List<double>());
-                    }
+                        if (CohortBins.Count() < (layerIndex + 1))
+                        {
+                            CohortBins.Add(new List<double>());
+                        }
+                    //}
                 }
                 if (!(CohortBins[layerIndex].Contains(cohortBio)))
                     CohortBins[layerIndex].Add(cohortBio);
             }
-
-
-           /* // Actual layer configuration
-            List<List<int>> Bins = new List<List<int>>();
-            if (CohortBins.Count() == 0)
+            bool tooManyLayers = false;
+            if (CohortBins.Count() > MaxCanopyLayers)
             {
-                // One canopy layer
-                Bins.Add(new List<int>());
-                for (int i = 0; i < CumSublayerBiomass.Count(); i++)
-                {
-                    Bins[0].Add(i);
-                }
+                tooManyLayers = true;
             }
-            else for (int i = 0; i <= CohortBins.Count(); i++)
+            if(tooManyLayers)
+            { 
+                List<float> sortedRatios = layerThreshRatio.ToList();
+                sortedRatios.Sort();
+                sortedRatios.Reverse();
+                List<float> highestRatios = new List<float>();
+                for(int r = 0; r < (MaxCanopyLayers-1); r++)
                 {
-                    // Multiple canopy layers
-                    Bins.Add(new List<int>());
-
-                    int[] minmax = MinMaxCohortNr(CohortBins, i, CumSublayerBiomass.Count());
-
-                    // Add index numbers to the Bins array
-                    for (int a = minmax[0]; a < ((i == CohortBins.Count()) ? minmax[1] + 1 : minmax[1]); a++)
-                    {
-                        Bins[i].Add(a);
-                    }
+                    highestRatios.Add(sortedRatios[r]);
                 }
-                */
+
+                CohortBins.Clear();
+                layerIndex = 0;
+                nlayers = 1;
+                CohortBins.Add(new List<double>());
+                CohortBins[0].Add(CohortBiomassList[0]);
+                int cohortInd = 0;
+                foreach (float cohortRatio in layerThreshRatio)
+                {
+                    if (highestRatios.Contains(cohortRatio))
+                    {
+                        //if (nlayers < (MaxCanopyLayers))
+                        //{
+                        layerIndex++;
+                        nlayers++;
+
+                        if (CohortBins.Count() < (layerIndex + 1))
+                        {
+                            CohortBins.Add(new List<double>());
+                        }
+                        //}
+                    }
+                    if (!(CohortBins[layerIndex].Contains(CohortBiomassList[cohortInd])))
+                        CohortBins[layerIndex].Add(CohortBiomassList[cohortInd]);
+                    cohortInd++;
+                }
+
+            }
+
             return CohortBins;
         }
 
