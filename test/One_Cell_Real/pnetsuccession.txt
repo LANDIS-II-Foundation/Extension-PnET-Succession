@@ -18,7 +18,7 @@ PnETSpeciesParameters	LandscapeExpt-PnET_Oconto_Species_oldhalfsat.txt
 											
 EcoregionParameters	Oconto_landscape_ecoregionparameters.txt
    								
-PnETGenericParameters		GenericPnETSpeciesParameters.txt
+PnETGenericParameters	GenericPnETSpeciesParameters.txt
 ClimateConfigFile	ClimateConfigFile_RCP2_6.txt
 
 DisturbanceReductions	disturbance_reductions.txt

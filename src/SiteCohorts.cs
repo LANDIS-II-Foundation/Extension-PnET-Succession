@@ -72,6 +72,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //float lastTempBelowSnow = float.MaxValue;
         private static float maxHalfSat;
         private static float minHalfSat;
+        Dictionary<double, bool> ratioAbove10 = new Dictionary<double, bool>();
 
         /// <summary>
         /// Occurs when a site is disturbed by an age-only disturbance.
@@ -531,6 +532,22 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
      
             //List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+            //Debug
+            if(PlugIn.ModelCore.CurrentTime == 10 && this.Site.Location.Row == 188 && this.Site.Location.Column == 22 && CohortBiomassList.Count() == 9)
+            {
+                PlugIn.ModelCore.UI.WriteLine("AllCohorts = ");
+                foreach(Cohort c in AllCohorts)
+                {
+                    PlugIn.ModelCore.UI.WriteLine("Species = ", c.Species.Name, "; Age = ", c.Age.ToString(),"; Biomass = ",c.Biomass.ToString(),"; Layer = ",c.Layer.ToString());
+                }
+
+                PlugIn.ModelCore.UI.WriteLine("CohortBiomassList = ");
+                foreach(double cohortBio in CohortBiomassList)
+                {
+                    PlugIn.ModelCore.UI.WriteLine(cohortBio.ToString());
+                }
+            }
+            ratioAbove10.Clear();
             List<List<double>> cohortBins = GetBinsByCohort(CohortBiomassList);
 
             List<int> cohortAges = new List<int>();
@@ -574,9 +591,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
 
-            List<List<int>> LayeredBins = new List<List<int>>(); 
+            List<List<int>> LayeredBins = new List<List<int>>();
+            double maxCohortBiomass = CohortBiomassList.Max();
             if ((rawBins != null) && (rawBins.Count() - 1 < MaxLayer)) // cohort(s) were previously in a higher layer
-            {
+            {   
                 for (int i = 0; i < rawBins.Count(); i++)
                 {                    
                     List<int> binLayers = rawBins[i];
@@ -585,7 +603,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         int layerKey = binLayers[b];
                         int canopyIndex = i;
                         Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
-                        if(layerCohort.Layer > i)
+                        double cohortBio = layerCohort.TotalBiomass;
+                        bool highRatio = ((maxCohortBiomass / cohortBio) > 10.0);
+                        if(layerCohort.Layer > i && !highRatio)
                         {
                             canopyIndex = layerCohort.Layer;
                         }
@@ -604,103 +624,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 LayeredBins = rawBins;
             }
+            nlayers = LayeredBins.Count();
 
-            // Sort through bins to put cohort sublayers in the same bin based on majority
-            List<List<int>> bins = new List<List<int>>();
-            /*if((LayeredBins != null) && (LayeredBins.Count > 1))
-            {
-                Dictionary<string, Dictionary<int,int>> speciesLayerIndex = new Dictionary<string, Dictionary<int,int>>();
-                List<int> addedValues = new List<int>();
-                foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
-                {
-                    foreach (int thisAge in cohortAges)
-                    {
-                        Dictionary<int, double> sumBio = new Dictionary<int, double>();
-                        for (int i = 0; i < LayeredBins.Count(); i++)
-                        {
-                            double sumLayerBio = 0;
-                            List<int> binLayers = LayeredBins[i];
-                            for (int b = 0; b < binLayers.Count(); b++)
-                            {
-                                int layerKey = binLayers[b];
-                                Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
-                                if ((layerCohort.SpeciesPNET.Name == spc.Name) && (layerCohort.Age == thisAge))
-                                {
-                                    sumLayerBio += ((double)layerCohort.TotalBiomass) / ((double)PlugIn.IMAX);
-                                }
-                            }
-                            sumBio.Add(i, sumLayerBio);
-                        }                      
-
-                        int layerMaxBio = sumBio.LastOrDefault(x => x.Value == sumBio.Values.Max()).Key;
-
-                        if (sumBio.Values.Max() > 0)
-                        {
-                            if (speciesLayerIndex.Keys.Contains(spc.Name))
-                            {
-                                Dictionary<int, int> ageIndex = speciesLayerIndex[spc.Name];
-                                ageIndex.Add(thisAge, layerMaxBio);
-                                speciesLayerIndex[spc.Name] = ageIndex;
-                            }
-                            else
-                            {
-                                Dictionary<int, int> ageIndex = new Dictionary<int, int>();
-                                ageIndex.Add(thisAge, layerMaxBio);
-                                speciesLayerIndex.Add(spc.Name, ageIndex);
-                            }
-                            addedValues.Add(layerMaxBio);
-                        }
-                    }
-                }
-                //step through subcanopycohorts
-                int subLayerKey = 0;
-
-                // There shouldn't be more layers than cohorts
-                int numberOfLayers = Math.Min(addedValues.Max()+1, (int)((float)SubCanopyCohorts.Count() / (float)PlugIn.IMAX));
-
-                // Final layer indices should not skip any layers
-                List<int> distinctValues = addedValues.Distinct().ToList();
-                distinctValues.Sort();
-                Dictionary<int, int> indexLookup = new Dictionary<int, int>();
-                for (int j = 0; j < distinctValues.Count(); j++ )
-                {
-                    indexLookup.Add(distinctValues[j], j);
-                }
-
-                for (int i = 0; i < numberOfLayers; i++)
-                {
-                    bins.Add(new List<int>());
-                }
-                foreach (KeyValuePair<double, Cohort> entry in SubCanopyCohorts)
-                {
-                    ISpecies spc = entry.Value.SpeciesPNET;
-                    int thisAge = entry.Value.Age;
-                    int tempIndex = indexLookup[speciesLayerIndex[spc.Name][thisAge]];
-                    int layerIndex = Math.Max(tempIndex,entry.Value.Layer);  //Once a cohort reaches a canopy layer it cannot be dropped below that position
-                    if(layerIndex > MaxCanopyLayers - 1)
-                    {
-                        throw new System.Exception("layerIndex  " + layerIndex + " is greater than MaxCanopyLayers - 1: " + (MaxCanopyLayers-1));
-                    }
-                    if (bins.ElementAtOrDefault(layerIndex) == null)
-                    {
-                        while (bins.ElementAtOrDefault(layerIndex) == null)
-                        {
-                            bins.Add(new List<int>());                           
-                        }
-                    }
-                    bins[layerIndex].Add(subLayerKey);
-                    
-                    subLayerKey += 1;
-                }
-
-            }
-            else
-            */
-            //{
-                bins = LayeredBins;
-            //}
-
-            List<List<int>> random_range = GetRandomRange(bins);
+            //List<List<int>> bins = new List<List<int>>();
+            //bins = LayeredBins;
+           
+            List<List<int>> random_range = GetRandomRange(LayeredBins);
              
             folresp = new float[13];
             netpsn = new float[13];
@@ -1077,9 +1006,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float subCanopyPrecip = 0;
                 float subCanopyMelt = 0;
                 int subCanopyIndex = 0;
-                if (bins != null)
+                if (LayeredBins != null)
                 {
-                    for (int b = bins.Count() - 1; b >= 0; b--) // main canopy layers
+                    for (int b = LayeredBins.Count() - 1; b >= 0; b--) // main canopy layers
                     {
                         float mainLayerPARweightedSum = 0;
                         float mainLayerBioSum = 0;
@@ -1207,11 +1136,22 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     CanopyLAI[i] = 0;
                 }*/
+                int cohortCount = AllCohorts.Count();
                 CanopyLAI = new float[MaxCanopyLayers];
                 float[] CanopyLAISum = new float[MaxCanopyLayers];
                 float[] CanopyLAICount = new float[MaxCanopyLayers];
                 //PlugIn.ModelCore.UI.WriteLine("DEBUG: Site = \"{0}\", Year = \"{1}\", Month = \"{2}\".", this.Site, Ecoregion.Variables.Year, Ecoregion.Variables.Month);
-                foreach (Cohort cohort in AllCohorts)
+                //PlugIn.ModelCore.UI.WriteLine("DEBUG: CohortCount = \"{0}\", CanopyLAISum = \"{1}\", CAnopyLAICount = \"{2}\".", AllCohorts.Count(), CanopyLAISum.Count(), CanopyLAICount.Count());
+                //Debug
+                if (PlugIn.ModelCore.CurrentTime == 10 && this.Site.Location.Row == 188 && this.Site.Location.Column == 22 && CohortBiomassList.Count() == 9)
+                {
+                    PlugIn.ModelCore.UI.WriteLine("AllCohorts = ");
+                    foreach (Cohort c in AllCohorts)
+                    {
+                        PlugIn.ModelCore.UI.WriteLine("Species = ", c.Species.Name, "; Age = ", c.Age.ToString(), "; Biomass = ", c.Biomass.ToString(), "; Layer = ", c.Layer.ToString());
+                    }
+                }
+                    foreach (Cohort cohort in AllCohorts)
                 {
                     folresp[Ecoregion.Variables.Month - 1] += cohort.FolResp.Sum();
                     netpsn[Ecoregion.Variables.Month - 1] += cohort.NetPsn.Sum();
@@ -1418,7 +1358,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             canopylaimax = float.MinValue;
 
-            SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
+            /*SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
 
             List<double> CohortBiomassList = new List<double>();
             int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.Biomass);
@@ -1433,7 +1373,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 CohortBiomassList.Add(AllCohorts[cohort].TotalBiomass);
             }
 
-            //List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+            ratioAbove10.Clear();
             List<List<double>> cohortBins = GetBinsByCohort(CohortBiomassList);
 
             List<int> cohortAges = new List<int>();
@@ -1568,8 +1508,117 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 bins = rawBins;
             }
+            */
+            SortedDictionary<double, Cohort> SubCanopyCohorts = new SortedDictionary<double, Cohort>();
+            List<double> CohortBiomassList = new List<double>();
+            int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.Biomass);
 
-            List<List<int>> random_range = GetRandomRange(bins);
+            int MaxLayer = 0;
+            for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
+            {
+                if (PlugIn.ModelCore.CurrentTime > 0)
+                {
+                    AllCohorts[cohort].CalculateDefoliation(Site, SiteAboveGroundBiomass);
+                }
+
+                CohortBiomassList.Add(AllCohorts[cohort].TotalBiomass);
+            }
+
+            //List<List<int>> rawBins = GetBins(new List<double>(SubCanopyCohorts.Keys));
+            //Debug
+            if (PlugIn.ModelCore.CurrentTime == 10 && this.Site.Location.Row == 188 && this.Site.Location.Column == 22 && CohortBiomassList.Count() == 9)
+            {
+                PlugIn.ModelCore.UI.WriteLine("AllCohorts = ");
+                foreach (Cohort c in AllCohorts)
+                {
+                    PlugIn.ModelCore.UI.WriteLine("Species = ", c.Species.Name, "; Age = ", c.Age.ToString(), "; Biomass = ", c.Biomass.ToString(), "; Layer = ", c.Layer.ToString());
+                }
+
+                PlugIn.ModelCore.UI.WriteLine("CohortBiomassList = ");
+                foreach (double cohortBio in CohortBiomassList)
+                {
+                    PlugIn.ModelCore.UI.WriteLine(cohortBio.ToString());
+                }
+            }
+            ratioAbove10.Clear();
+            List<List<double>> cohortBins = GetBinsByCohort(CohortBiomassList);
+
+            List<int> cohortAges = new List<int>();
+            List<List<int>> rawBins = new List<List<int>>();
+            int subLayerIndex = 0;
+            for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
+            {
+                int cohortLayer = 0;
+                for (int j = 0; j < cohortBins.Count(); j++)
+                {
+                    if (cohortBins[j].Contains(AllCohorts[cohort].TotalBiomass))
+                        cohortLayer = j;
+                }
+                if (AllCohorts[cohort].Layer > MaxLayer)
+                    MaxLayer = AllCohorts[cohort].Layer;
+                for (int i = 1; i <= PlugIn.IMAX; i++)
+                {
+                    //double CumCohortBiomass = ((float)i / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
+                    /*double CumCohortBiomass = (1f / (float)PlugIn.IMAX) * AllCohorts[cohort].TotalBiomass;
+                    while (SubCanopyCohorts.ContainsKey(CumCohortBiomass))
+                    {
+                        // Add a negligable value [-1e-10; + 1e-10] to CumCohortBiomass in order to prevent duplicate keys
+                        double k = 1e-10 * 2.0 * (PlugIn.ContinuousUniformRandom() - 0.5);
+                        CumCohortBiomass += k;
+                    }
+                    SubCanopyCohorts.Add(CumCohortBiomass, AllCohorts[cohort]);*/
+                    SubCanopyCohorts.Add(subLayerIndex, AllCohorts[cohort]);
+                    while (rawBins.Count() < (cohortLayer + 1))
+                    {
+                        List<int> subList = new List<int>();
+                        //subList.Add(subLayerIndex);
+                        rawBins.Add(subList);
+                    }
+                    //else
+                    rawBins[cohortLayer].Add(subLayerIndex);
+                    subLayerIndex++;
+                }
+                if (!cohortAges.Contains(AllCohorts[cohort].Age))
+                {
+                    cohortAges.Add(AllCohorts[cohort].Age);
+                }
+            }
+
+            List<List<int>> LayeredBins = new List<List<int>>();
+            if ((rawBins != null) && (rawBins.Count() - 1 < MaxLayer)) // cohort(s) were previously in a higher layer
+            {
+                for (int i = 0; i < rawBins.Count(); i++)
+                {
+                    List<int> binLayers = rawBins[i];
+                    for (int b = 0; b < binLayers.Count(); b++)
+                    {
+                        int layerKey = binLayers[b];
+                        int canopyIndex = i;
+                        Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
+                        double cohortBio = layerCohort.TotalBiomass;
+                        bool highRatio = ratioAbove10[cohortBio];
+                        if (layerCohort.Layer > i && !highRatio)
+                        {
+                            canopyIndex = layerCohort.Layer;
+                        }
+                        if (LayeredBins.ElementAtOrDefault(canopyIndex) == null)
+                        {
+                            while (LayeredBins.ElementAtOrDefault(canopyIndex) == null)
+                            {
+                                LayeredBins.Add(new List<int>());
+                            }
+                        }
+                        LayeredBins[canopyIndex].Add(layerKey);
+                    }
+                }
+            }
+            else
+            {
+                LayeredBins = rawBins;
+            }
+            nlayers = LayeredBins.Count();
+
+            List<List<int>> random_range = GetRandomRange(LayeredBins);
 
             List<IEcoregionPnETVariables> climate_vars = EcoregionPnET.GetData(Ecoregion, StartDate, StartDate.AddMonths(1));
 
@@ -1652,9 +1701,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             float subCanopyPrecip = 0;
             int subCanopyIndex = 0;
-            if (bins != null)
+            if (LayeredBins != null)
             {
-                for (int b = bins.Count() - 1; b >= 0; b--)
+                for (int b = LayeredBins.Count() - 1; b >= 0; b--)
                 {
                     foreach (int r in random_range[b])
                     {
@@ -1670,9 +1719,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                             }
                         }
                         Cohort c = SubCanopyCohorts.Values.ToArray()[r];
-                        ISpeciesPNET spc = c.SpeciesPNET;
-
-        
+                        ISpeciesPNET spc = c.SpeciesPNET;        
 
                         // A cohort cannot be reduced to a lower layer once it reaches a higher layer
                         //if (c.Layer > bins.Count())
@@ -2224,7 +2271,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     smallestThisLayer = CohortBins[layerIndex][0];
                 }
                 double ratio = (cohortBio / smallestThisLayer);
-                layerThreshRatio.Add((float)ratio);
+                
                 if (ratio > (diffProp + 1))
                 {
                     //if (nlayers < (MaxCanopyLayers))
@@ -2238,8 +2285,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                         }
                     //}
                 }
+                
+                // Add a negligable value [-1e-10; + 1e-10] to ratio in order to prevent duplicate keys
+                double k = 1e-10 * 2.0 * (PlugIn.ContinuousUniformRandom() - 0.5);
+                layerThreshRatio.Add((float)(ratio + k));
                 if (!(CohortBins[layerIndex].Contains(cohortBio)))
                     CohortBins[layerIndex].Add(cohortBio);
+                bool largeRatio = (ratio > 10.0);
+                if(!(ratioAbove10.ContainsKey(cohortBio)))
+                {
+                    ratioAbove10.Add(cohortBio, largeRatio);
+                }
             }
             bool tooManyLayers = false;
             if (CohortBins.Count() > MaxCanopyLayers)
