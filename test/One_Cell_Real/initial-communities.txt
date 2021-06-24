@@ -14,5 +14,4 @@ MapCode    0
 
 MapCode    1 << B
 poputrem  1
-betupend  1
 pinusylv  1
