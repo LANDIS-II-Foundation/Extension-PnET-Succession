@@ -236,7 +236,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     throw new System.Exception("Parallel must be 'true', 'false' or an integer >= 1.");
                 }
             }
-            this.ThreadCount = (uint)ParallelThreads;
+            this.ThreadCount = (int)ParallelThreads;
 
             FTimeStep = 1.0F / Timestep;
 
