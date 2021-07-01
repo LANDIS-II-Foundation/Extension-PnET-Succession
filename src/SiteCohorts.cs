@@ -605,8 +605,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         int canopyIndex = i;
                         Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
                         double cohortBio = layerCohort.TotalBiomass;
-                        bool highRatio = ((maxCohortBiomass / cohortBio) > 10.0);
-                        if(layerCohort.Layer > i && !highRatio)
+                        //bool highRatio = ((maxCohortBiomass / cohortBio) > 10.0);
+                        //if(layerCohort.Layer > i && !highRatio)
+                        if (layerCohort.Layer > i)
                         {
                             canopyIndex = layerCohort.Layer;
                         }
@@ -1605,8 +1606,9 @@ namespace Landis.Extension.Succession.BiomassPnET
                         int canopyIndex = i;
                         Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
                         double cohortBio = layerCohort.TotalBiomass;
-                        bool highRatio = ratioAbove10[cohortBio];
-                        if (layerCohort.Layer > i && !highRatio)
+                        //bool highRatio = ratioAbove10[cohortBio];
+                        //if (layerCohort.Layer > i && !highRatio)
+                        if (layerCohort.Layer > i)
                         {
                             canopyIndex = layerCohort.Layer;
                         }
