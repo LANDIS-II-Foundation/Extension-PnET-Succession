@@ -78,8 +78,8 @@
     <Reference Include="Landis.Library.PnETCohorts-v1">
       <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.PnETCohorts-v1.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Succession-v8">
-      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Succession-v8.dll</HintPath>
+    <Reference Include="Landis.Library.Succession-v9">
+      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Succession-v9.dll</HintPath>
     </Reference>
   </ItemGroup>
 
