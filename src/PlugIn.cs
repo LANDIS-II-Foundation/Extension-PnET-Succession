@@ -236,7 +236,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     throw new System.Exception("Parallel must be 'true', 'false' or an integer >= 1.");
                 }
             }
-            this.ThreadCount = (int)ParallelThreads;
+            this.ThreadCount = ParallelThreads;
 
             FTimeStep = 1.0F / Timestep;
 
@@ -368,7 +368,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             bool addSiteOutput = false;
             addSiteOutput = (SiteOutputNames.ContainsKey(site) && addCohort);
-            Cohort cohort = new Cohort(spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null);
+            Cohort cohort = new Cohort(species, spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null);
             
             addCohort = SiteVars.SiteCohorts[site].AddNewCohort(cohort);
 
