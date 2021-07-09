@@ -58,3 +58,4 @@ SpinUpWaterStress		false
 PrecipEventsWithReplacement	true
 AmaxFrac			0.75
 NSCReserve			0.00 
+Lifeform			tree

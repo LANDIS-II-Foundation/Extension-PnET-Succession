@@ -1,17 +1,17 @@
 LandisData "Initial Communities"
 MapCode    0
-<<MapCode    1 << A
-<<acerrubr  40 60
-<<acersacc  40 60
+MapCode    1 << A
+acerrubr  40 60
+acersacc  40 60
 <<betupapy  60
-<<fagugran  30
-<<fraxamer  10 40
+fagugran  30
+fraxamer  10 40
 <<piceglau  30
 <<popugran  60
-<<poputrem  60
-<<querrubr  30 60
-<<tiliamer  60
+poputrem  60
+querrubr  30 60
+tiliamer  60
 
-MapCode    1 << B
-poputrem  1
-pinusylv  1
+<<MapCode    1 << B
+<<poputrem  1
+<<pinusylv  1

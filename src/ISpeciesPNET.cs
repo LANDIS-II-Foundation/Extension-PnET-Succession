@@ -152,5 +152,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         // Lower canopy NSC reserve 
         float NSCReserve { get; }
+
+        // Lifeform
+        string Lifeform { get; }
     }
 }

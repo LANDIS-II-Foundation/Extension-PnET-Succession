@@ -13,6 +13,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public const string MaxLayerDev = "MaxLayerDev";
         public const string MaxLayerRatio = "MaxLayerRatio";
         public const string Layers = "Layers";
+        public const string TopLayer = "TopLayer";
         public const string Tmin = "Tmin(C)";
         public const string Tave = "Tave(C)";
         public const string Tday = "Tday(C)";

@@ -97,6 +97,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private float _leafOnMinT;
         //private float _maxLAI;
         private float _NSCreserve;
+        private string _lifeform;
         # endregion
 
         #region private static species variables
@@ -148,6 +149,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Landis.Library.Parameters.Species.AuxParm<float> leafOnMinT;
         //private static Landis.Library.Parameters.Species.AuxParm<float> maxLAI;
         private static Landis.Library.Parameters.Species.AuxParm<float> NSCreserve;
+        private static Landis.Library.Parameters.Species.AuxParm<string> lifeform;
         #endregion
 
         public SpeciesPnET()
@@ -210,6 +212,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (leafOnMinT[this] == -9999F)
                 leafOnMinT = psntmin;
             NSCreserve = ((Landis.Library.Parameters.Species.AuxParm<float>)(Parameter<float>)PlugIn.GetParameter("NSCReserve"));
+            lifeform = ((Landis.Library.Parameters.Species.AuxParm<string>)(Parameter<string>)PlugIn.GetParameter("Lifeform"));
+            
 
             #endregion
 
@@ -280,7 +284,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             float o3Coeff,
             float leafOnMinT,
             //float maxLAI,
-            float NSCreserve
+            float NSCreserve,
+            string lifeform
             )
         {
             this.postfireregeneration = postFireGeneration;
@@ -346,6 +351,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             float optimalBiomass = (float)(1.5234 * (System.Math.Pow(fractWd, -0.959)));
             //this._maxLAI = (float)((optimalBiomass * fracfol * System.Math.Exp(-1.0 * fractWd * optimalBiomass)) / slwmax);
             this._NSCreserve = NSCreserve;
+            this._lifeform = lifeform;
         }
         //---------------------------------------------------------------------
         private SpeciesPnET(ISpecies species)
@@ -393,6 +399,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             _co2HalfSatEff = co2HalfSatEff[species];
             _ozoneSens = ozoneSens[species];
             _NSCreserve = NSCreserve[species];
+            _lifeform = lifeform[species];
             index = species.Index;
             name = species.Name;
 
@@ -907,6 +914,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             get
             {
                 return _NSCreserve;
+            }
+        }  
+        //---------------------------------------------------------------------
+        public string Lifeform
+        {
+            get
+            {
+                return _lifeform;
             }
         }
         //---------------------------------------------------------------------

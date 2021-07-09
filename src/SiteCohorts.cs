@@ -65,6 +65,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static byte Timestep;
         private static int CohortBinSize;
         private static int nlayers;
+        private static int MaxLayer;
         private static bool permafrost;
         private static bool invertPest;
         //private static string parUnits;
@@ -520,7 +521,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<double> CohortBiomassList = new List<double>();
             int SiteAboveGroundBiomass = AllCohorts.Sum(a => a.Biomass);
 
-            int MaxLayer = 0;
+            MaxLayer = 0;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 if (PlugIn.ModelCore.CurrentTime > 0)
@@ -553,6 +554,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<int> cohortAges = new List<int>();
             List<List<int>> rawBins = new List<List<int>>();
             int subLayerIndex = 0;
+            bool reducedLayer = false;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 int cohortLayer = 0;
@@ -560,6 +562,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     if (cohortBins[j].Contains(AllCohorts[cohort].TotalBiomass))
                         cohortLayer = j;
+                }
+                if ((AllCohorts[cohort].Layer > cohortLayer) && (System.String.Compare(AllCohorts[cohort].SpeciesPNET.Lifeform, "tree", System.StringComparison.OrdinalIgnoreCase) == 0))
+                {
+                    reducedLayer = true;
                 }
                 if (AllCohorts[cohort].Layer > MaxLayer)
                     MaxLayer = AllCohorts[cohort].Layer;
@@ -593,7 +599,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             List<List<int>> LayeredBins = new List<List<int>>();            
            
-            if ((rawBins.Count > 0) && (rawBins.Count() - 1 < MaxLayer)) // cohort(s) were previously in a higher layer
+            if ((rawBins.Count > 0) && (reducedLayer )) // cohort(s) were previously in a higher layer
             {
                 double maxCohortBiomass = CohortBiomassList.Max();
                 for (int i = 0; i < rawBins.Count(); i++)
@@ -626,11 +632,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 LayeredBins = rawBins;
             }
-            nlayers = LayeredBins.Count();
+            nlayers = 0;
+            foreach(List<int> layerList in LayeredBins)
+            {
+                if (layerList.Count > 0)
+                    nlayers++;
+            }
+            MaxLayer = LayeredBins.Count - 1;
 
             //List<List<int>> bins = new List<List<int>>();
             //bins = LayeredBins;
-           
+
             List<List<int>> random_range = GetRandomRange(LayeredBins);
              
             folresp = new float[13];
@@ -1556,6 +1568,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             List<int> cohortAges = new List<int>();
             List<List<int>> rawBins = new List<List<int>>();
             int subLayerIndex = 0;
+            bool reducedLayer = false;
             for (int cohort = 0; cohort < AllCohorts.Count(); cohort++)
             {
                 int cohortLayer = 0;
@@ -1563,6 +1576,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 {
                     if (cohortBins[j].Contains(AllCohorts[cohort].TotalBiomass))
                         cohortLayer = j;
+                }
+                if ((AllCohorts[cohort].Layer > cohortLayer) && (System.String.Compare(AllCohorts[cohort].SpeciesPNET.Lifeform, "tree", System.StringComparison.OrdinalIgnoreCase) == 0))
+                {
+                    reducedLayer = true;
                 }
                 if (AllCohorts[cohort].Layer > MaxLayer)
                     MaxLayer = AllCohorts[cohort].Layer;
@@ -1595,8 +1612,10 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             List<List<int>> LayeredBins = new List<List<int>>();
-            if ((rawBins != null) && (rawBins.Count() - 1 < MaxLayer)) // cohort(s) were previously in a higher layer
+
+            if ((rawBins.Count > 0) && (reducedLayer)) // cohort(s) were previously in a higher layer
             {
+                double maxCohortBiomass = CohortBiomassList.Max();
                 for (int i = 0; i < rawBins.Count(); i++)
                 {
                     List<int> binLayers = rawBins[i];
@@ -1606,8 +1625,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                         int canopyIndex = i;
                         Cohort layerCohort = SubCanopyCohorts.Values.ToArray()[layerKey];
                         double cohortBio = layerCohort.TotalBiomass;
-                        //bool highRatio = ratioAbove10[cohortBio];
-                        //if (layerCohort.Layer > i && !highRatio)
+                        //bool highRatio = ((maxCohortBiomass / cohortBio) > 10.0);
+                        //if(layerCohort.Layer > i && !highRatio)
                         if (layerCohort.Layer > i)
                         {
                             canopyIndex = layerCohort.Layer;
@@ -1627,7 +1646,13 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 LayeredBins = rawBins;
             }
-            nlayers = LayeredBins.Count();
+            nlayers = 0;
+            foreach (List<int> layerList in LayeredBins)
+            {
+                if (layerList.Count > 0)
+                    nlayers++;
+            }
+            MaxLayer = LayeredBins.Count - 1;
 
             List<List<int>> random_range = GetRandomRange(LayeredBins);
 
@@ -2696,6 +2721,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                        //OutputHeaders.MaxLayerDev + "," +
                        OutputHeaders.MaxLayerRatio + "," +
                        OutputHeaders.Layers + "," +
+                       OutputHeaders.TopLayer + "," +
                        OutputHeaders.PAR0 + "," +
                        OutputHeaders.Tmin + "," +
                        OutputHeaders.Tave + "," +
@@ -2756,6 +2782,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         //maxLayerDev + "," +
                         maxLayerRatio + "," +
                         nlayers + "," +
+                        MaxLayer + "," +
                         monthdata.PAR0 + "," + 
                         monthdata.Tmin + "," +
                         monthdata.Tave + "," +
