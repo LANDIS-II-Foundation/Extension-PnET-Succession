@@ -13,8 +13,8 @@ InitialCommunities      "./initial-communities.txt"
 InitialCommunitiesMap   "./initial-communities.gis"
 
 PnETGenericParameters		GenericPnETParameters.txt
-PnETSpeciesParameters		PnETSpeciesParameters.txt
+PnETSpeciesParameters		LandscapeExpt-PnET_Oconto_Species.txt
 
 EcoregionParameters 	EcoregionParameters.txt
-Parallel	3
+>>Parallel	3
  
