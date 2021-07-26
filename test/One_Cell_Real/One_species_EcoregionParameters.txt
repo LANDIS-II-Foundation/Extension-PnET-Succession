@@ -1,0 +1,9 @@
+LandisData EcoregionParameters	
+EcoregionParameters	SoilType	RootingDepth	PrecLossFrac	LeakageFrac	RunoffCapture	PrecIntConst	WinterSTD	ClimateFileName             
+>>mesic			SAND		1000		0.0		1.00		0.00		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt	<<NO. super drt tol=pinubank,carycord
+>>mesic			LOSA		1000		0.0		1.00		0.00		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt	<<	
+mesic			SALO		1000		0.0		1.00		0.00		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt	<<everything else
+>>mesic			SILO		1000		0.0		1.00		0.00		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt
+>>mesic			LOAM		1000		0.0		1.00		0.00		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt	<<NO. Drought intol=aibebals,fagugran,tsugcana
+>>mesic			CLLO		1000		0.0		1.00		0.00		0.1	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt	<<
+>>mesic			MUCK 		1000		0.0		0.0		300		0.02	6.67	Oconto_weather_Temp0_Prec0_PAR0.txt	<<(wet) waterlog tol=picemari,larilari,taxodist,fraxnigr,thujocci,acersach

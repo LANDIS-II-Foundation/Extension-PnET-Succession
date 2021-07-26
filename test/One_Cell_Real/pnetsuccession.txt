@@ -14,7 +14,7 @@ PNEToutputsites 	PnEToutputsites_onecell.txt
 InitialCommunities      initial-communities.txt											
 InitialCommunitiesMap   initial-communities.img	
 
-PnETSpeciesParameters	LandscapeExpt-PnET_Oconto_Species_oldhalfsat.txt		
+PnETSpeciesParameters	LandscapeExpt-PnET_Oconto_Species_OptTemps_OriginalHalfSat_LoLAI.txt		
 											
 EcoregionParameters	Oconto_landscape_ecoregionparameters.txt
    								
@@ -23,4 +23,4 @@ ClimateConfigFile	ClimateConfigFile_RCP2_6.txt
 
 DisturbanceReductions	disturbance_reductions.txt
  											
- 										
+Parallel  1 										

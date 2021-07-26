@@ -1,0 +1,40 @@
+LandisData  Scenario
+	  
+Duration 130 <<800 7
+Species   Landscape-Oconto_species.txt
+
+Ecoregions      One_cell_ecoregion.txt
+EcoregionsMap   One_cell_ecoregion.img
+
+CellLength  30 << meters, so cell area = 900 m2
+
+>> Succession Extension     Initialization File
+>> --------------------     -------------------
+   "PnET-Succession"    One_species_PnETbiosuccession.txt
+>>  "Biomass Insects"	    BiomassInsectsInput.txt
+
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------   -------------------
+>>    "Biomass Insects"	    BiomassInsectsInput_GM2.txt
+>>      "Base Harvest"	    harvest100yr.txt
+>>     "Base Wind"	    wind_input.txt  
+   
+>>   DisturbancesRandomOrder  yes  << optional parameter; default = no
+
+
+>> Output Extensions        Initialization File
+>> -----------------        -------------------
+>>  "Output Max Species Age"      max-spp-age.output.txt
+>>  "Output Biomass Reclass"	BiomReclass.txt
+>> "Output Biomass PnET"		biomass.outputPnET.txt
+>>  "Output Cohort Statistics"    cohort-stats.output.txt
+>>  "Output Biomass Reclass"	biomass-reclass.output.txt
+
+
+
+>>  randomly generated in R. First 5 reps are: 2415, 3914, 2222, 3253, 985
+>>     RandomNumberSeed 6516
+>>     RandomNumberSeed 2415
+>>     RandomNumberSeed 3914
+     RandomNumberSeed 2222

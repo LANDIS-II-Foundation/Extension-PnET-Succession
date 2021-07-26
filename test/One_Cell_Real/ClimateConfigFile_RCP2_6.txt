@@ -5,7 +5,7 @@ ClimateFile		Future-Climate-File-RCP2_6-400y_eco4.csv
 ClimateFileFormat	Monthly_Temp-C_Precip-mmMonth
 
 SpinUpClimateTimeSeries	Monthly_SequencedYears	<<Monthly_Temp-C_Precip-mmMonth
-SpinUpClimateFile	GFDL_Spinup-Climate-File_eco4.csv  <<../Spinup-Climate-File.csv
+SpinUpClimateFile	GFDL_Spinup-Climate-File_eco4.csv
 SpinUpClimateFileFormat	Monthly_Temp-C_Precip-mmMonth
 
 UsingFireClimate	no
