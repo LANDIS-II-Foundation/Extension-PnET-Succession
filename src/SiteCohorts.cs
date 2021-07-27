@@ -1020,7 +1020,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 float subCanopyPrecip = 0;
                 float subCanopyMelt = 0;
                 int subCanopyIndex = 0;
-                if (LayeredBins != null)
+                if (LayeredBins != null && LayeredBins.Count() > 0)
                 {
                     for (int b = LayeredBins.Count() - 1; b >= 0; b--) // main canopy layers
                     {
@@ -1211,12 +1211,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 canopylaimax = (float)Math.Max(canopylaimax, CanopyLAI.Sum());
                 watermax = Math.Max(hydrology.Water, watermax);                
                 subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
-                if (propRootAboveFrost > 0)
+                if (propRootAboveFrost > 0 && snowPack == 0)
                 {
                     Hydrology.Evaporation = hydrology.CalculateEvaporation(this); //mm
                 }else
                 {
                     Hydrology.Evaporation = 0;
+                    Hydrology.PET = 0;
                 }
                 success = hydrology.AddWater(-1 * Hydrology.Evaporation, Ecoregion.RootingDepth * propRootAboveFrost);
                 if (success == false)
@@ -1778,13 +1779,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             watermax = Math.Max(hydrology.Water, watermax);
             subcanopyparmax = Math.Max(subcanopyparmax, subcanopypar);
 
-            if (propRootAboveFrost > 0)
+            if (propRootAboveFrost > 0 && snowPack == 0)
             {
                 Hydrology.Evaporation = hydrology.CalculateEvaporation(this); //mm
             }else
             {
                 Hydrology.Evaporation = 0;
-        }
+                Hydrology.PET = 0;
+            }
             bool success = hydrology.AddWater(-1 * Hydrology.Evaporation, Ecoregion.RootingDepth * propRootAboveFrost);
             if (success == false)
             {

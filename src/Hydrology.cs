@@ -183,16 +183,17 @@ namespace Landis.Extension.Succession.BiomassPnET
             return PET * _daySpan;  //mm/month
         }
         //---------------------------------------------------------------------
-        static float Calculate_PotentialEvapotranspiration_umol(double _Rads, double _Tair, float _daySpan)
+        static float Calculate_PotentialEvapotranspiration_umol(double _Rads, double _Tair, float _daySpan, float _daylength)
         {
-            //double _Rads                  // Solar Radiation (micromol(PAR)/m2/s)
+            //double _Rads                  // Daytime Solar Radiation (PAR) (micromol/m2/s)
             //double _Tair                  // Daytime air temperature (°C) [Tday]
             //float _daySpan                // Number of days in the month
+            //float _daylength              // Number of seconds in the month
 
             // Caculations based on Stewart & Rouse 1976 and Cabrera et al. 2016
             float PET = 0; //mm/month
 
-            float Rs_W = (float)(_Rads / 2.02); // convert PAR (umol/m2*s) to total solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
+            float Rs_W = (float)(_Rads / (2.02 * 24 * Constants.SecondsPerHour / _daylength)); // convert daytime PAR (umol/m2*s) to total daily solar radiation (W/m2) [Reis and Ribeiro 2019 (Consants and Values)]  
             float Rs = Rs_W * 0.0864F; // convert Rs_W (W/m2) to Rs (MJ/m2*d) [Reis and Ribeiro 2019 (eq. 13)]
             float Gamma = 0.062F; // kPa/C; [Cabrera et al. 2016 (Table 1)]
             float es = 0.6108F * (float)Math.Pow(10, (7.5 * _Tair) / (237.3 + _Tair)); // water vapor saturation pressure (kPa); [Cabrera et al. 2016 (Table 1)]
@@ -212,10 +213,10 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             float umolPAR = sitecohorts.SubcanopyPAR;
             if(PlugIn.PARunits == "W/m2")
-                umolPAR = (sitecohorts.SubcanopyPAR * 2.02f); // convertsolar radiation (W/m2) to PAR (umol/m2*s) [Reis and Ribeiro 2019 (Consants and Values)]  
+                umolPAR = (sitecohorts.SubcanopyPAR * 2.02f); // convert daytime solar radiation (W/m2) to daytime PAR (umol/m2*s) [Reis and Ribeiro 2019 (Consants and Values)]  
 
             // mm/month
-            PET = (float)Calculate_PotentialEvapotranspiration_umol(umolPAR, sitecohorts.Ecoregion.Variables.Tday, sitecohorts.Ecoregion.Variables.DaySpan);
+            PET = (float)Calculate_PotentialEvapotranspiration_umol(umolPAR, sitecohorts.Ecoregion.Variables.Tday, sitecohorts.Ecoregion.Variables.DaySpan, sitecohorts.Ecoregion.Variables.Daylength);
 
             float pressurehead = pressureheadtable[sitecohorts.Ecoregion, (int)Math.Round(Water * 100)];
 
