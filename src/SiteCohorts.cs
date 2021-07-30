@@ -1143,29 +1143,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                         Hydrology.SurfaceWater -= surfaceInput;
                         success = hydrology.AddWater(surfaceInput, Ecoregion.RootingDepth * propRootAboveFrost);
                         if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + Ecoregion.Name + "; site = " + Site.Location);
-                }
+                    }
                 }
 
-                //float LAISum = 0;
-                /*for(int i=0; i<MaxCanopyLayers; i++)
-                {
-                    CanopyLAI[i] = 0;
-                }*/
                 int cohortCount = AllCohorts.Count();
                 CanopyLAI = new float[MaxCanopyLayers];
                 float[] CanopyLAISum = new float[MaxCanopyLayers];
                 float[] CanopyLAICount = new float[MaxCanopyLayers];
-                //PlugIn.ModelCore.UI.WriteLine("DEBUG: Site = \"{0}\", Year = \"{1}\", Month = \"{2}\".", this.Site, Ecoregion.Variables.Year, Ecoregion.Variables.Month);
-                //PlugIn.ModelCore.UI.WriteLine("DEBUG: CohortCount = \"{0}\", CanopyLAISum = \"{1}\", CAnopyLAICount = \"{2}\".", AllCohorts.Count(), CanopyLAISum.Count(), CanopyLAICount.Count());
-                //Debug
-                /*if (PlugIn.ModelCore.CurrentTime == 10 && this.Site.Location.Row == 188 && this.Site.Location.Column == 22 && CohortBiomassList.Count() == 9)
-                {
-                    PlugIn.ModelCore.UI.WriteLine("AllCohorts = ");
-                    foreach (Cohort c in AllCohorts)
-                    {
-                        PlugIn.ModelCore.UI.WriteLine("Species = " + c.Species.Name + "; Age = " + c.Age.ToString() + "; Biomass = " + c.Biomass.ToString() + "; Layer = " + c.Layer.ToString());
-                    }
-                }*/
                 foreach (Cohort cohort in AllCohorts)
                 {
                     folresp[Ecoregion.Variables.Month - 1] += cohort.FolResp.Sum();
@@ -1193,17 +1177,27 @@ namespace Landis.Extension.Succession.BiomassPnET
                         CanopyLAI[layer] = 0;
                 }
 
-                /*AllCohorts.ForEach(x =>
+                // Calculate establishment probability
+                if (PlugIn.ModelCore.CurrentTime > 0)
                 {
-                    folresp[Ecoregion.Variables.Month - 1] += x.FolResp.Sum();
-                    netpsn[Ecoregion.Variables.Month - 1] += x.NetPsn.Sum();
-                    grosspsn[Ecoregion.Variables.Month - 1] += x.GrossPsn.Sum();
-                    maintresp[Ecoregion.Variables.Month - 1] += x.MaintenanceRespiration.Sum();
-                    LAISum += x.LAI.Sum();
-                    transpiration += x.Transpiration.Sum();
+                    establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest);
+
+                    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
+                    {
+                        if (annualFwater.ContainsKey(spc))
+                        {
+                            if (data[m].Tmin > spc.PsnTMin && data[m].Tmax < spc.PsnTMax) // Active growing season
+                            {
+                                // Store monthly values for later averaging
+                                //annualEstab[spc].Add(monthlyEstab[spc]);
+                                annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
+                                annualFrad[spc].Add(establishmentProbability.Get_FRad(spc));
+                            }
+                        }
+                    }
                 }
-            );*/
-                //CanopyLAI = LAISum;
+
+                // Soil water Evaporation
                 // Surface PAR is effectively 0 when snowpack is present
                 if (snowPack > 0)
                     subcanopypar = 0;
@@ -1243,29 +1237,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     sumPressureHead += hydrology.GetPressureHead(Ecoregion);
                     countPressureHead += 1;
                 }
-                if (PlugIn.ModelCore.CurrentTime > 0)
-                {
-                    establishmentProbability.Calculate_Establishment_Month(data[m], Ecoregion, subcanopypar, hydrology, minHalfSat, maxHalfSat, invertPest);
 
-                    foreach (ISpeciesPNET spc in PlugIn.SpeciesPnET.AllSpecies)
-                    {
-                        if (annualFwater.ContainsKey(spc))
-                        {
-                            if (data[m].Tmin > spc.PsnTMin && data[m].Tmax < spc.PsnTMax)
-                            {
-                                //annualEstab[spc] = annualEstab[spc] + monthlyEstab[spc];
-                                // Calculate the cumulative probability that no months had successful establishment (later transformed)
-                                //annualEstab[spc] = annualEstab[spc] * (1- monthlyEstab[spc]);
-
-                                // Store monthly values for later filtering
-                                //annualEstab[spc].Add(monthlyEstab[spc]);
-                                annualFwater[spc].Add(establishmentProbability.Get_FWater(spc));
-                                annualFrad[spc].Add(establishmentProbability.Get_FRad(spc));
-                            }
-                        }
-                    }
-
-                }
                 // Store growing season FRad values                
                 AllCohorts.ForEach(x => x.StoreFRad());
                 // Reset all cohort values

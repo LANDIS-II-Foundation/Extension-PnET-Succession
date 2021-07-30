@@ -228,13 +228,16 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Delivery potential is 1 if pressurehead < evapCritWater, and declines to 0 at wilting point (153 mH2O)
             DeliveryPotential = Cohort.ComputeFWater(-1, -1, evapCritWaterPH, 153, pressurehead);
 
-            // mm/month
-            float AET = Math.Min(DeliveryPotential * PET, Water * sitecohorts.Ecoregion.RootingDepth * frostFreeProp);
+            // Evaporation is limited to frost free soil above EvapDepth
+            float evapSoilDepth = Math.Min(sitecohorts.Ecoregion.RootingDepth * frostFreeProp, sitecohorts.Ecoregion.EvapDepth);
+
+            // Evaporation cannot remove water below wilting point           
+            float AET = Math.Min(DeliveryPotential * PET, (Water - sitecohorts.Ecoregion.WiltPnt) * evapSoilDepth);  // mm/month
             sitecohorts.SetAet(AET, sitecohorts.Ecoregion.Variables.Month);
 
-            // Evaporation cannot remove water below wilting point, evaporation cannot be negative
+            // Evaporation cannot be negative
             // Transpiration is assumed to replace evaporation
-            Evaporation = (float)Math.Max(0, Math.Min((Water - sitecohorts.Ecoregion.WiltPnt) * sitecohorts.Ecoregion.RootingDepth * frostFreeProp, Math.Max(0, AET - (double)sitecohorts.Transpiration)));
+            Evaporation = (float) Math.Max(0, AET - (double)sitecohorts.Transpiration);
 
             return Evaporation; //mm/month
         }
