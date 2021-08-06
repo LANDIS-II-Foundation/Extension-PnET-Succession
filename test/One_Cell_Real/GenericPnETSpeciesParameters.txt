@@ -19,3 +19,4 @@ SpinUpWaterStress		true	<<default	The following used w v4.1
 PARunits			umol	<<default
 AmaxFrac			0.75	<<default=0.75
 PrecipEventsWithReplacement	true	<<default
+EvapDepth			200

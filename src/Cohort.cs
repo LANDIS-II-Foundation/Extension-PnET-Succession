@@ -470,48 +470,69 @@ namespace Landis.Extension.Succession.BiomassPnET
                 if (success == false) throw new System.Exception("Error adding water, MeltInByCanopyLayer = " + MeltInByCanopyLayer + "; water = " + hydrology.Water + "; meltrunoff = " + meltrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
             }
             float precipIn = 0;
-            // If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
-            for (int p = 1; p <= precipCount; p++)
-            {
-                // Incoming precipitation
-                // Instantaneous runoff (excess of porosity)
-                float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp; //mm
-                float rainrunoff = Math.Min(PrecInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + PrecInByCanopyLayer - waterCapacity, 0));
-                //if ((hydrology.Water + rainrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
-                //    rainrunoff = (hydrology.Water + rainrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
-                float capturedRunoff = 0;
-                if ((ecoregion.RunoffCapture > 0) & (rainrunoff > 0))
+            if (PrecInByCanopyLayer > 0)
+            {// If more than one precip event assigned to layer, repeat precip, runoff, leakage for all events prior to respiration
+                for (int p = 1; p <= precipCount; p++)
                 {
-                    capturedRunoff = Math.Max(0,Math.Min(rainrunoff,(ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
-                    Hydrology.SurfaceWater += capturedRunoff;
-                }
-                Hydrology.RunOff += (rainrunoff - capturedRunoff);
-                
-                precipIn = PrecInByCanopyLayer - rainrunoff; //mm
+                    // Incoming precipitation
+                    // Instantaneous runoff (excess of porosity)
+                    float waterCapacity = ecoregion.Porosity * ecoregion.RootingDepth * frostFreeProp; //mm
+                    float rainrunoff = Math.Min(PrecInByCanopyLayer, Math.Max(hydrology.Water * ecoregion.RootingDepth * frostFreeProp + PrecInByCanopyLayer - waterCapacity, 0));
+                    //if ((hydrology.Water + rainrunoff) > (ecoregion.Porosity + ecoregion.RunoffCapture))
+                    //    rainrunoff = (hydrology.Water + rainrunoff) - (ecoregion.Porosity + ecoregion.RunoffCapture);
+                    float capturedRunoff = 0;
+                    if ((ecoregion.RunoffCapture > 0) & (rainrunoff > 0))
+                    {
+                        capturedRunoff = Math.Max(0, Math.Min(rainrunoff, (ecoregion.RunoffCapture - Hydrology.SurfaceWater)));
+                        Hydrology.SurfaceWater += capturedRunoff;
+                    }
+                    Hydrology.RunOff += (rainrunoff - capturedRunoff);
 
-                // Add incoming precipitation to soil moisture
-                success = hydrology.AddWater(precipIn, ecoregion.RootingDepth * frostFreeProp);
-                if (success == false) throw new System.Exception("Error adding water, waterIn = " + precipIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                    precipIn = PrecInByCanopyLayer - rainrunoff; //mm
+
+                    // Add incoming precipitation to soil moisture
+                    success = hydrology.AddWater(precipIn, ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, waterIn = " + precipIn + "; water = " + hydrology.Water + "; rainrunoff = " + rainrunoff + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+
+                    float leakage = Math.Max((float)leakageFrac * (hydrology.Water - ecoregion.FieldCap), 0) * ecoregion.RootingDepth * frostFreeProp; //mm
+                    Hydrology.Leakage += leakage;
+
+                    // Remove fast leakage
+                    success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+
+                    // Add surface water to soil
+                    if (Hydrology.SurfaceWater > 0)
+                    {
+                        float surfaceInput = Math.Min(Hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.Water));
+                        Hydrology.SurfaceWater -= surfaceInput;
+                        success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
+                        if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                    }
+                }
             }
-
-            // Leakage only occurs following precipitation events or incoming melt water
-            if (precipIn > 0 || MeltInByCanopyLayer > 0)
+            else
             {
-                float leakage = Math.Max((float)leakageFrac * (hydrology.Water - ecoregion.FieldCap), 0) * ecoregion.RootingDepth * frostFreeProp; //mm
-                Hydrology.Leakage += leakage;
-
-                // Remove fast leakage
-                success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * frostFreeProp);
-                if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
-                if (Hydrology.SurfaceWater > 0)
+                // Leakage only occurs following precipitation events or incoming melt water
+                if ( MeltInByCanopyLayer > 0)
                 {
-                    float surfaceInput = Math.Min(Hydrology.SurfaceWater,(ecoregion.Porosity - hydrology.Water));
-                    Hydrology.SurfaceWater -= surfaceInput;
-                    success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
-                    if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                    float leakage = Math.Max((float)leakageFrac * (hydrology.Water - ecoregion.FieldCap), 0) * ecoregion.RootingDepth * frostFreeProp; //mm
+                    Hydrology.Leakage += leakage;
+
+                    // Remove fast leakage
+                    success = hydrology.AddWater(-1 * leakage, ecoregion.RootingDepth * frostFreeProp);
+                    if (success == false) throw new System.Exception("Error adding water, Hydrology.Leakage = " + Hydrology.Leakage + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+
+                    // Add surface water to soil
+                    if (Hydrology.SurfaceWater > 0)
+                    {
+                        float surfaceInput = Math.Min(Hydrology.SurfaceWater, (ecoregion.Porosity - hydrology.Water));
+                        Hydrology.SurfaceWater -= surfaceInput;
+                        success = hydrology.AddWater(surfaceInput, ecoregion.RootingDepth * frostFreeProp);
+                        if (success == false) throw new System.Exception("Error adding water, Hydrology.SurfaceWater = " + Hydrology.SurfaceWater + "; water = " + hydrology.Water + "; ecoregion = " + ecoregion.Name + "; site = " + site.Location);
+                    }
                 }
-            }               
-            
+            }
             //// Adjust soil water for freezing - Now done when calculating frozen depth
             //if (frostFreeProp < 1.0)
             //{
