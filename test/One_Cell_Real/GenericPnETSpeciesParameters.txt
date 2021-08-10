@@ -1,0 +1,22 @@
+LandisData PnETGenericParameters
+PnETGenericParameters 		Value
+MaxCanopyLayers			3
+>>MaxDevLyrAv 			10000
+LayerThreshRatio		0.5
+IMAX				5
+DNSC				0.05 <<target NSCfraction 0.05
+>>BFolResp			0.1	<<default
+MaintResp			0.002	<<0.0027
+>>FracBelowG			0.33
+PrecipEvents			11
+PreventEstablishment		true
+Wythers				true
+DTEMP				true
+Permafrost			false
+LeakageFrostDepth  		3000
+>>CohortBinSize			10
+SpinUpWaterStress		true	<<default	The following used w v4.1
+PARunits			umol	<<default
+AmaxFrac			0.75	<<default=0.75
+PrecipEventsWithReplacement	true	<<default
+EvapDepth			200

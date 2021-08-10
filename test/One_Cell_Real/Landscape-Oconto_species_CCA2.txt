@@ -1,0 +1,81 @@
+LandisData  Species
+
+>>                      Sexual    Shade  Fire  Seed Dispersal Dist  Vegetative   Sprout Age  Post-Fire
+>> Name      Longevity  Maturity  Tol.   Tol.  Effective  Maximum  Reprod Prob  Min   Max   Regen 
+>> ----      ---------  --------  -----  ----  ---------  -------  -----------  ----------  -------- <<actual longevity in single-spp test
+abiebals 	100 	30 	   4 	  1 	30  	  160   	0.0 	0	0	none <<long 150
+acerrubr 	180 	15 	   4 	  1 	100 	  200  		0.5 	20	100	resprout <<long 200
+acersacc 	350 	40 	   5 	  1 	100 	  200  		0.5 	20	80 	none << >300
+betualle 	250 	40 	   4 	  2 	100 	  400  		0.2 	20	100 	none <<long 300
+betupapy 	90 	40 	   2 	  2 	300 	  4000 		0.5 	20	80	resprout <<long 130
+carycord 	150 	30 	   2 	  2 	30  	  1000 		0.6 	20	130	none <<long 200	<<Bitternut hickory
+fagugran	250	40	   5	  1	30	  120		0.6	20	70	resprout
+fraxamer 	200 	35 	   4 	  1 	70  	  140  		0.5 	20	120  	resprout << >210; shade tolerance less than red oak
+fraxnigr 	150 	40 	   2 	  1 	100 	  200  		0.6 	20	80	none	<<long 160
+fraxpenn 	120 	30 	   2 	  2 	70  	  140  		0.5 	20	80  	resprout <<long 200
+larilari 	180 	35 	   1 	  1 	50  	  200  		0.0 	0	0	none	
+piceglau 	200 	20 	   3 	  2 	30  	  200  		0.0 	0	0   	none << >210
+picemari 	200 	18 	   3 	  3 	80  	  200  		0.0 	0	0	none 
+pinubank 	100  	25 	   1 	  2 	30  	  100  		0.0 	0	0	serotiny 
+pinuresi 	250 	30 	   2 	  4 	30  	  275  		0.0 	0	0	none << >210
+pinustro 	300 	25 	   3 	  3 	30 	  120  		0.0 	0	0	none
+poputrem 	90  	20 	   1 	  2 	500  	  5000 		0.95 	20	90	resprout << 87
+popubals 	100  	11 	   1 	  3 	500  	  5000 		0.9 	20	100	resprout << long 140
+popugran 	95  	30 	   1 	  2 	500  	  5000	   	0.95 	20	90	resprout
+prunsero 	150 	15 	   1 	  1 	30  	  200 		0.8 	20	80	resprout 
+queralba 	350 	40 	   3 	  2 	30  	  100 		0.6 	20	200	resprout <<300; intermediate shade tol. less shade tolerant when young
+querelli 	200 	35 	   2 	  4 	30  	  100 		0.6 	20	170	none
+quermacr	350	50	   3	  4	30  	  100 		0.6	20	170	resprout <<long 300
+querrubr 	250 	40 	   3 	  3 	30  	  100 		0.6 	20	170	resprout << >210; less shade tol than white oak???  Maybe only when older.
+quervelu	150	20	   2	  2	30	  100		0.6	20	100	resprout	<<long 200
+thujocci 	350 	30 	   3 	  1 	45  	  60   		0.2 	20	350	none	<<long 400; sprout = layering
+tiliamer 	150 	15 	   4 	  1 	30  	  120  		0.8 	20	120	resprout <<long 150
+tsugcana 	450 	30	   5	  2 	30	  100  		0.0 	0	0	none
+
+<<Non-native species
+>>ABBA40	 	100 	30 	   4 	  1 	30  	  160   	0.0 	0	0	none <<long 150
+>>abiefras  	100 	30 	   4 	  1 	30  	  160   	0.0 	0	0	none <<long 150	once considered a subspecies of ABBA
+>>acernigr	200 	20 	   5 	  1 	100 	  200  		0.5 	20	80 	none 	<<black maple												<<black maple
+>>ACRU40 		180 	15 	   4 	  1 	100 	  200  		0.5 	20	100	resprout <<long 200
+>>ACSA40 		350 	40 	   5 	  1 	100 	  200  		0.5 	20	80 	none << >300
+>>acersaci	150	11	   2	  1	100	  200		0.6 	20	100	none 
+>>BEAL40 		250 	40 	   4 	  2 	100 	  400  		0.2 	20	100 	none <<long 300
+>>BEPA40 		90 	40 	   2 	  2 	300 	  4000 		0.5 	20	80	resprout <<long 130
+>>betulent	150	40	   2	  1	200 	  1000 		0.5 	20	100	none	<<black (sweet) birch.  Parms from Savage River
+>>betunigr	90 	40 	   1 	  2 	200 	  1000		0.5 	20	50	resprout <<River birch
+>>caryglab	300	30	3	1	30	  120		0.5	20	300	resprout	<<pignut hickory
+>>chamthyo	300	10	3	3	45  	  60   		0.2 	40	250	resprout <<atlantic white cedar
+>>liqustyr	300	25	1	3	60	  200		0.0	0	0	none	<<sweet gum 
+>>lirituli	250	30	1	2	60	200	0.5	20	250	resprout		
+>>nysssylv	250	30	1	1	60	100	0.5	20	50	resprout	<<Black tupelo
+>>PIGL40 		200 	20 	   3 	  2 	30  	  200  		0.0 	0	0   	none << >210
+>>picerube	400	30	4	1	100	200		0	0	0	none	<<red spruce
+>>PIMA40 		200 	18 	   3 	  3 	80  	  200  		0.0 	0	0	none 
+>>PIBA40 		100  	25 	   1 	  2 	30  	  100  		0.0 	0	0	serotiny 
+>>pinupond 	400	10	2	5	30	100		0	0	0	none	<<Ponderosa pine
+>>PIRE40 		250 	30 	   2 	  4 	30  	  275  		0.0 	0	0	none << >210
+>>PIST40 		300 	25 	   3 	  3 	30 	  120  		0.0 	0	0	none
+>>pinuechi	200	20	2	4	20	100		0	0	0	none		<<shortleaf pine
+>>pinurigi	200	15	1	4	20	100		0	20	60	none	<<pitch pine
+>>pinutaed	200	20	2	4	20	100		0	0	0	none		<<loblolly pine 
+>>pinusylv     	300       15        2      4      142	     150       0.0        0     0   serotiny 	<<long 250  <<serotiny forces pine to regenerate after fire
+>>POTR40 		90  	20 	   1 	  2 	500  	  5000 		0.95 	20	90	resprout << 87
+>>POGR40		100  	11 	   1 	  3 	500  	  5000 		0.9 	20	100	resprout << long 140
+>>PODEdelt 	90	10	1	1	500	5000		0.9 	20	50	resprout 
+>>PODEocci 	90	10	1	1	500	5000		0.9 	20	50	resprout 
+>>PRSO40 		150 	15 	   1 	  1 	30  	  200 		0.8 	20	80	resprout 
+quercocc	150	35	   1	  3	60	  210		0.7	20	120	resprout
+>>QUEL40 		200 	35 	   2 	  4 	30  	  100 		0.6 	20	170	none
+>>querprin	400	20	2	3	30	100		0.5	20	230	resprout	<<chestnut oak
+>>QURU40 		250 	40 	   3 	  3 	30  	  100 		0.6 	20	170	resprout << >210; less shade tol than white oak???  Maybe only when older.
+>>quershum	200	25	1	2	30	100		0	0	0	none	<<shumard oak
+>>querfalc	150	25	3	2	30	100		0.6 	20	110	resprout <<southern red oak, cherrybark oak
+>>quermich	150	20	1	1	30	100		0.4	20	90	resprout<<swamp chestnut oak
+>>querbico	300	20	3	1	30  	  100 		0.5 	20	200	resprout <<swamp white oak 
+>>querlyra	350	30	3	1	30  	  100		0.2	20	60	resprout <<overcup oak
+>>salxnigr	85	10	1	2	500	5000		0.8	5	85	resprout	<<black willow
+taxodist	500	30	   2	  1	40	  200		0.5	20	70	resprout  <<slow growing, cones float to disperse
+>>TIAM40 		150 	15 	   4 	  1 	30  	  120  		0.8 	20	120	resprout <<long 150
+>>tilihete	150	15	   4	  1	30  	  120		0.8	20	120	resprout <<white basswood
+ulmuamer	125	40	   3	  1	30	  400		0.8	20	90	resprout
+>>ULAM40		125	40	   3	  1	30	  400		0.8	20	90	resprout

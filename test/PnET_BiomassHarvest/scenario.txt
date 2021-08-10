@@ -17,7 +17,7 @@ CellLength  100 << meters, 100 x 100 m = 1 ha
 
 >> Disturbance Extensions   Initialization File
 >> ----------------------   -------------------
-"Biomass Harvest"
+"Biomass Harvest"		biomass-harvest_SetUp_s2e1.txt
 
 >> Other Extensions         Initialization File
 >> ----------------         -------------------	

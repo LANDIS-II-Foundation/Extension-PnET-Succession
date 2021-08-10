@@ -2,7 +2,7 @@ LandisData	PnETGenericDefaultParameters
 PnETGenericDefaultParameters		Value
 >>----------------------------------------
 MaxCanopyLayers			3
-MaxDevLyrAv			10000
+LayerThreshRatio		0.5
 IMAX				5
 PsnAgeRed			5.0
 DVPD1				0.05
@@ -53,8 +53,11 @@ PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)
 MaxPest				1.0
 MossDepth			0.0
 InvertPest			false
-PARunits			umol	>> Deafult umol/m2/s
+PARunits			umol	>> Default umol/m2/s
 SpinUpWaterStress		false  
 PrecipEventsWithReplacement	true
 AmaxFrac			0.75
-Parallel			true
+NSCReserve			0.00 
+Lifeform			tree
+EvapDepth			25	>> mm
+Parallel			1
