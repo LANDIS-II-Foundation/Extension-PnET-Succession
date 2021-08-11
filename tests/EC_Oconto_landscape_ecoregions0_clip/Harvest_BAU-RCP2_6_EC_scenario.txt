@@ -1,0 +1,43 @@
+LandisData  Scenario
+	  
+Duration 400
+Species   ../Landscape-Oconto_species.txt
+
+Ecoregions      ../Oconto_8_ecoregions.txt
+EcoregionsMap   EC_lkwd_ssurgo_nlcd_eco_clip.img
+
+CellLength  30 << meters
+
+
+
+>> Succession Extension     Initialization File
+>> --------------------     -------------------
+   "PnET-Succession"    Landscape_PnETbiosuccession_EC_RCP26_CCA2.txt
+
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------   -------------------
+    "Biomass Insects"	    BiomassInsectsInput.txt
+	"Biomass Harvest"   Harvest_BAU_EC.txt	<<local file with local MA and stand maps
+	"Base Wind"	    ../MicroburstWind_RCP2_6.txt 
+	"Linear Wind" 	    ../LinearWind_RCP2_6.txt
+	"Base Fire"	    BaseFire_2_6_EC.txt	<<local fire region map
+	"Base BDA"	    ../BDA-Oconto.txt
+>>	"Root Rot"	    RootRot_input-2.6.txt
+   
+>>   DisturbancesRandomOrder  yes  << optional parameter; default = no
+
+
+>> Output Extensions        Initialization File
+>> -----------------        -------------------
+>>>>  "Output Max Species Age"	../max-spp-age.output.txt
+  "Output Biomass Reclass"	../Oconto.biomass-reclass.output.txt
+  "Output-PnET"			../biomass.outputPnET.txt
+>>  "Output Cohort Statistics"    ../output_cohort_stats.txt
+
+
+
+>>  randomly generated in R. First 5 reps are: 2415, 3914, 2222, 3253, 985
+     RandomNumberSeed 79936 <<Rep1
+>>     RandomNumberSeed 56865 <<Rep2
+>>    RandomNumberSeed 05859 <<Rep3

@@ -1,0 +1,76 @@
+LandisData  "Output Biomass Reclass"
+
+Timestep   10
+
+ReclassMaps
+
+>> Map Name	Forest Type	Species	<<Total of 71 spp.
+>> --------	-------------	-------
+>>Proofread ================================= (done)  <<comment 
+ForestType ->	AspenBirch	popubals popugran poputrem betupapy POTR40 POGR40 PODEdelt PODEocci BEPA40 betunigr betulent
+		Oaks		queralba querelli quermacr querrubr quervelu quercocc QURU40 QUEL40 querbico querlyra querprin quershum querfalc quermich 
+		NHdwd		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 acernigr betulent <<acerrubr 
+		MixedHdwd	acerrubr fraxamer carycord prunsero ulmuamer ACRU40 PRSO40 lirituli liqustyr tilihete <<fraxnigr fraxpenn querrubr tiliamer QURU40 
+		Pines		pinuresi  pinustro  pinubank tsugcana PIBA40 pinurigi PIRE40 pinupond pinuechi PIST40 pinusylv <<combine pines
+		SpruceFir	abiebals piceglau picerube nysssylv abiefras 
+		LowHdwd		fraxnigr fraxpenn acersaci ulmuamer ULAM40 salxnigr quermich querlyra 
+		LowConif	larilari picemari thujocci taxodist chamthyo 
+>>		Empty		-acerrubr -carycord -fraxnigr -prunsero -queralba -querelli -quermacr -querrubr -quervelu -thujocci -acersacc -betupapy -fraxamer -piceglau -pinubank -pinuresi -pinustro -popubals -popugran -poputrem -tiliamer -tsugcana -abiebals -betualle -fagugran -fraxpenn -picemari -taxodist
+		
+ DroughtTol ->	Intolerant	betupapy fraxnigr popubals popugran poputrem taxodist ulmuamer BEPA40 ULAM40 abiefras lirituli picerube <<100/140 (H3/H4)
+		SomewhIntol	abiebals acersacc betualle carycord tsugcana ACSA40 acersaci betulent nysssylv querlyra tiliamer TIAM40 <<105/145. thujocci 
+		SomewhTol	acerrubr fagugran fraxamer fraxpenn piceglau pinustro prunsero querrubr quervelu tiliamer larilari acernigr ACRU40 BEPA40 caryglab liqustyr pinupond PIRE40 PIST40 pinuechi pinutaed POTR40 POGR40 PRSO40 querbico QURU40 quershum quermich <<111/152. 
+		Tolerant	pinubank pinuresi queralba quercocc querelli quermacr picemari thujocci PIBA40 pinurigi pinusylv querprin querfalc <<118/160
+		WaterlogTol	acerrubr acersaci betualle fraxnigr fraxpenn larilari picemari taxodist thujocci ulmuamer ACRU40 BEAL40 ULAM40 pinurigi	betunigr chamthyo liqustyr PODEdelt PODEocci salxnigr tilihete <<H2 <3
+
+ ShadeTol ->	Intolerant	pinubank popubals popugran poputrem larilari quercocc liqustyr lirituli PIBA40 pinurigi	pinuechi pinusylv PODEdelt PODEocci POTR40 POGR40 quershum quermich salxnigr <<300 (HalfSat)
+		SomewhIntol	acersaci betupapy carycord fraxnigr pinuresi prunsero queralba querelli BEPA40 betulent	betunigr pinupond PIRE40 pinutaed PRSO40 QUEL40	querprin <<250
+		Intermediate	fraxamer fraxpenn piceglau picemari pinustro quermacr querrubr quervelu taxodist thujocci ulmuamer caryglab chamthyo PIST40 querbico querlyra QURU40 querfalc ULAM40	<<200
+		SomewhTol	abiebals acerrubr betualle tiliamer abiefras ACRU40 BEAL40 nysssylv picerube TIAM40 tilihete	<<150
+		Tolerant	acersacc fagugran tsugcana acernigr ACSA40	<<100
+
+ OptTemp ->	LT20		larilari piceglau picemari pinubank 
+		20-24.5		abiebals betualle betupapy fraxnigr pinuresi popubals popugran poputrem thujocci PIBA40 abiefras BEPA40	picerube pinupond PIRE40 pinusylv POTR40 
+		24.6-28		acersacc pinustro querelli quermacr tiliamer tsugcana acernigr BEAL40 betunigr chamthyo PIST40 POGR40 querbico QUEL40 TIAM40
+		GT28		acerrubr acersaci carycord fagugran fraxamer fraxpenn prunsero queralba quercocc querrubr quervelu taxodist ulmuamer ACRU40 ACSA40 betulent caryglab liqustyr lirituli nysssylv pinurigi pinuechi pinutaed PODEdelt PODEocci PRSO40 querlyra querprin QURU40 quershum querfalc quermich salxnigr tilihete ULAM40
+
+>> EconValue ->	High		acersacc betualle fraxamer piceglau pinubank pinustro prunsero queralba quercocc querelli querrubr quervelu thujocci chamthyo ACSA40 BEAL40 PIBA40 PIST40 PRSO40 QUEL40 QURU40 querbico querlyra querprin quershum querfalc picerube pinuechi pinutaed 
+>>		Medium		abiebals betupapy carycord fraxnigr picemari pinuresi popubals popugran poputrem quermacr taxodist tiliamer larilari ulmuamer quermich abiefras BEPA40 PIRE40 POGR40 POTR40 TIAM40 ULAM40 betulent caryglab lirituli nysssylv pinupond pinusylv	tilihete
+>>		Low		acerrubr acersaci fagugran tsugcana ACRU40 PODEdelt PODEocci betunigr pinurigi salxnigr	
+
+>>  edit this =======================(done)
+ Products ->	Sawtimber	acersacc acersaci betualle carycord fagugran fraxamer fraxnigr fraxpenn prunsero queralba quercocc querelli quermacr querrubr quervelu tiliamer ulmuamer ACRU40 ACSA40 BEAL40 PRSO40 QUEL40 QURU40 TIAM40 ULAM40 acernigr betulent betunigr caryglab liqustyr lirituli nysssylv tilihete querbico querlyra querprin quershum querfalc quermich pinuresi pinustro taxodist thujocci tsugcana pinurigi pinupond pinuechi PIST40 pinutaed picerube chamthyo 
+		Pulpwood	acerrubr betupapy popubals popugran poputrem BEPA40 POGR40 POTR40 PODEdelt PODEocci salxnigr abiebals larilari piceglau picemari pinubank PIBA40 PIRE40 pinusylv abiefras 
+>>		None		
+
+>> EcolValue ->	High		acerrubr carycord fraxnigr prunsero queralba quercocc querelli quermacr querrubr quervelu thujocci chamthyo ACRU40 PRSO40 QUEL40 QURU40 querbico querlyra querprin quershum querfalc quermich caryglab	
+>>		Medium		acersacc acersaci betupapy fraxamer piceglau pinubank pinuresi pinustro popubals popugran poputrem taxodist tiliamer tsugcana ulmuamer larilari ACSA40 BEPA40 PIBA40 PIRE40 PIST40 POGR40 POTR40 TIAM40 ULAM40
+>>		Low		abiebals betualle fagugran fraxpenn picemari abiefras 
+
+>>Edit ====================(done)
+ MastValue ->	Hardmast	carycord queralba quercocc querelli quermacr querrubr quervelu QUEL40 QURU40 querbico querlyra querprin quershum querfalc quermich caryglab 
+		Softmast	prunsero tiliamer PRSO40 TIAM40 nysssylv tilihete
+		Seed		abiebals betualle picemari betupapy piceglau pinubank pinuresi pinustro popubals popugran poputrem taxodist thujocci chamthyo tsugcana larilari abiefras BEAL40 BEPA40 PIBA40 PIRE40 PIST40 POGR40 POTR40 betulent betunigr lirituli pinurigi pinupond pinuechi pinutaed pinusylv picerube PODEdelt PODEocci salxnigr acersacc acersaci acerrubr fagugran fraxamer fraxnigr fraxpenn ulmuamer ACSA40 ACRU40 ULAM40 acernigr liqustyr 
+
+ LifeTrait ->	Conifer		abiebals larilari piceglau picemari pinubank pinuresi pinustro taxodist thujocci tsugcana PIBA40 pinurigi PIRE40 pinupond pinuechi PIST40 pinutaed pinusylv picerube abiefras chamthyo 
+		Deciduous 	acerrubr acersacc acersaci betualle betupapy carycord fagugran fraxamer fraxnigr fraxpenn prunsero popubals popugran poputrem queralba quercocc querelli quermacr querrubr quervelu tiliamer ulmuamer ACRU40 ACSA40 BEAL40 BEPA40 PRSO40 POGR40 POTR40 QUEL40 QURU40 TIAM40 ULAM40 acernigr betulent betunigr caryglab liqustyr lirituli nysssylv PODEdelt PODEocci tilihete querbico querlyra querprin quershum querfalc quermich salxnigr 
+
+ClimateTrait -> Boreal		popubals popugran poputrem betupapy pinubank abiebals piceglau larilari picemari
+		TempNorth	betualle tsugcana pinustro pinuresi fraxnigr thujocci POGR40 POTR40 BEPA40 PIBA40 abiefras picerube pinusylv	
+		TempMid		queralba querelli quermacr querrubr quervelu quercocc ulmuamer carycord prunsero acersacc ACSA40 fagugran tiliamer TIAM40 fraxpenn acersaci acerrubr fraxamer BEAL40 PIST40 PIRE40 QURU40 QUEL40 chamthyo betunigr betulent pinupond
+		TempSouth	taxodist ACRU40 caryglab liqustyr lirituli nysssylv pinurigi pinuechi pinutaed PODEdelt PODEocci PRSO40 querlyra querprin QURU40 quershum querfalc quermich salxnigr tilihete ULAM40
+
+MapleSyrup ->	High		acersacc ACSA40 acernigr 
+		Medium		acerrubr ACRU40 
+		None		acersaci 
+
+>> Ensure that all species are listed ===================(done)
+FallColors ->	Brilliant	acersacc ACSA40 acerrubr ACRU40 acernigr fraxamer fraxnigr fraxpenn fagugran nysssylv liqustyr 
+		Subtle		carycord caryglab queralba quercocc querrubr QURU40 quershum acersaci betualle BEAL40 betupapy BEPA40 betulent betunigr tiliamer TIAM40 tilihete ulmuamer ULAM40 PODEdelt PODEocci popugran POGR40 poputrem POTR40 lirituli salxnigr taxodist larilari 
+		Dull		querelli QUEL40 querbico quermacr quervelu querlyra querprin querfalc quermich prunsero PRSO40 popubals 
+		None		abiebals piceglau picemari pinubank pinuresi pinustro thujocci tsugcana PIBA40 pinurigi PIRE40 pinupond pinuechi PIST40 pinutaed pinusylv picerube abiefras chamthyo 
+
+MapFileNames   output/reclass/{reclass-map-name}-{timestep}.img
+
+
+

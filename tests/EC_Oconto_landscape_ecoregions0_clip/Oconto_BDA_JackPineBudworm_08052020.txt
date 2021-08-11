@@ -1,0 +1,79 @@
+LandisData "BDA Agent"
+>>Parameters came from fila that was run annually
+BDAAgentName		JPbudworm
+BDPCalibrator		1
+SRDMode			max  << Expert opinion from Mike and Jana is that other species do not affect liklihood of disturbance
+				<<This suggests using the "max" value to estimate SRD.  But See Neightborhood Resource Inputs Below
+
+
+>>-------- Regional Outbreak Inputs -------------
+OutbreakPattern	CyclicNormal  << CyclicNormal or CyclicUniform
+Mean			11  << Annual Time step
+StDev			1
+TimeSinceLastEpidemic	2  	<< years
+TemporalType	variablepulse	<< pulse or variablepulse 
+		<< Use variablepulse to allow variability in outbreak severity
+		<< JANA ALBERS NOTED VARIATION IN DAMAGE BETWEEN OUTBREAKS
+		<< ON AVERAGE, ABOUT EVERY THIRD OUTBREAK HAS APPROX 1/3 THE DAMAGE.
+
+MinROS		0
+MaxROS		3
+		<<For the variable pulse outbreak type, the ROS value is randomly selected for each outbreak
+		<< event from the range between MinROS+1 and MaxROS.  
+                << background ROS (i.e., outbreak severity during nonoutbreak years) is defined as the MINROS
+                << MINROS = 0 means that mortality only occurs during outbreak years  
+		<< 1+1+0.33 = 2.33/3 = 	 0.78 (AVERAGE INTENSITY BASED ON JANA'S EXPERT OPINION)
+		<< 1+0.66 = 1.66/2 = 0.83 (AVERAGE INTENSITY IS SLIGHTLY HIGHER USING 
+                <<   THESE PARAMETERS - RIGHT BALLPARK)
+
+>>-------- Dispersal Inputs ----------------------
+Dispersal             no   <<yes or no -- NO DISPERSAL SIMULATED
+DispersalRate	      100	<<meters/year
+EpidemicThresh	      0.3
+InitialEpicenterNum	5
+OutbreakEpicenterCoeff	0.01
+OutbreakEpicenterThresh 1.0
+SeedEpicenter	      yes	<<yes or no
+SeedEpicenterCoeff	20
+DispersalTemplate	      4N	<<MaxRadius, 4N,
+		                  <<8N, 12N, or 24N
+
+
+
+>>-------- Neighborhood Resource Inputs-----------------
+NeighborFlag	yes	  <<yes or no -- NOTE that Radeloff et al. 2000 (Oikos 90:417-430) 
+			<< demonstrates defoliation is correlated with pct JP in neighborhood.  
+NeighborSpeedUp	none	  <<none, 2x, 3x, or 4x
+NeighborRadius	1000	  <<meters  
+                             
+NeighborShape	uniform <<uniform, linear, or gaussian
+NeighborWeight	1  << Radeloff et al. 2000 (Oikos 90:417-430) suggests that neighborhood JP accounts for 50% of the variance in defol 
+
+
+>>-- Intensity Class Thresholds --
+IntensityClass2_BDP 0.25
+IntensityClass3_BDP 0.50
+
+>>Ecoregion Modifiers
+
+>> THESE MODIFIERS WILL ELIMINATE THE PROBABILITY THAT JACK PINE BUDWORM DISTURBANCE OCCURS IN THE
+>> EASTERN HALF OF THE STUDY AREA
+
+BDASpeciesParameters
+>>                                               | Susceptibility  				  | Special
+>>Species  MinorHost    2ndHost      MajorHost   | Class3        Class2        Class1       	  | Dead
+>>Name     Age SRDProb  Age SRDProb  Age SRDProb | Age MortProb  Age MortProb  Age MortProb 	  | Fuel?
+>> -------------------------------------------------------------------------------------------------
+pinubank    0   0.25	  21  0.5	 40  1.0    21  0.11	      40  0.53	     60  0.65	     yes
+
+>> Notes from discussion with Mike and Jana Albers
+>>  -  0-20 year jack pine = minor host, 21-40 year jack pine =  secondary host, 41+ = primary host.
+>>  -  Susceptibility class: 0-20 year jack pine should not be killed by defoliation (min age for Class 3 = 21 years)
+>>  Mortality rates from Kuhlman et al. 1963 for moderate to heavy defoliation = 7.5% for 30 year, 35% for 40 year, and 43% for 60 year
+>>  Assume a mean SRD BDP of 0.66 for moderate to severe defoliation.  Divide the above numbers by 0.66 to account for probability of site 
+>> being affected.   
+
+>> Anticipated behavior - jack pine longevity should be effectively limited in the western region to approximately half its >> assigned longevity by budworm disturbance.  Examine the age distributions of jack pine in east vs west (where east is defined by 
+>> ecoregions above) to evaluate appropriate behavior.
+
+

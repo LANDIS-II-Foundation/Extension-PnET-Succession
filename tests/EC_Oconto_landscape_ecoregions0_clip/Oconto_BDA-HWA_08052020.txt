@@ -1,0 +1,69 @@
+LandisData "BDA Agent"
+>>intended time step not known      ????????????????????????
+BDAAgentName	HemlockWoollyAdelgid													
+BDPCalibrator	1	<< 100% cohort death at infection												
+SRDMode		mean													
+		
+
+>>-------- Regional Outbreak Inputs -------------
+OutbreakPattern		CyclicNormal	<<CyclicNormal or CyclicUniform
+Mean			1		<< years
+StDev			0.0000001		<<!!!!!!!! value should=0. !!!!!!!!!!  years
+TimeSinceLastEpidemic	0		<<years
+TemporalType 		variablepulse	<<pulse or variablepulse
+MinROS			3
+MaxROS			3
+
+>>-------- Dispersal Inputs ----------------------														
+Dispersal	no	<<yes or no												
+DispersalRate	240	<<meters/year 30000x30000 m in approx 20 years 					IGNORE							
+EpidemicThresh	0.0001	<< to calibrate, compare how rapidly it spreads accross the landscape"												
+InitialEpicenterNum	1													
+OutbreakEpicenterCoeff	0.01	
+OutbreakEpicenterThresh 0.0												
+SeedEpicenter	no	<<yes or no												
+SeedEpicenterCoeff	0.5													
+DispersalTemplate	MaxRadius	<<MaxRadius, 4N,8N, 12N, or 24N"	
+
+
+>>Neighborhood Resource Inputs 														
+NeighborFlag	yes	<<yes:  http://onlinelibrary.wiley.com.ezproxy.lib.purdue.edu/doi/10.1046/j.1365-2699.2002.00765.x/pdf												
+NeighborSpeedUp	none	<<none, 2x, 3x, or 4x"											Area	70685.83471
+NeighborRadius	150	<<meters												
+NeighborShape	uniform	<<uniform, linear, or gaussian"												
+NeighborWeight	1													
+
+>>-- Intensity Class Thresholds --
+>>IntensityClass1_BDP 	0   -- Hardwired value
+IntensityClass2_BDP 	0.25
+IntensityClass3_BDP 	0.50  
+
+BDASpeciesParameters														
+														
+>>Susceptibility                                          														
+>>Species 	MinorHost 	2ndHost MajorHost  	Class3   	Class2	Class1	CFS							
+>>Name     	Age		Age	Age		Age		Age	Age	Conifer							
+tsugcana   	10	0.25	40  0.5	40   1.0	10  1.0		40  1.0	40  1.0	no	<<Primary host in forest	<< check literature!! Size/age restrictions	
+													
+IgnoredSpecies	<< what determines if another species should appear in this list?  There are 71 species total in this study.
+acerrubr
+acersacc
+betulent
+caryglab
+fagugran
+fraxamer
+lirituli
+nysssylv
+pinustro
+prunsero
+queralba
+quercocc
+querprin
+querrubr
+quervelu
+tiliamer
+													
+>> REFERENCES														
+>>http://na.fs.fed.us/pubs/alb/alb-and-host-trees-09-12-2012-screen.pdf														
+>> http://onlinelibrary.wiley.com/doi/10.1111/j.1461-9563.2009.00443.x/pdf														
+													

@@ -1,0 +1,35 @@
+LandisData  "Output-PnET"
+
+Timestep  10
+
+Species	All <<none 
+	  
+>>Biomass	output/biomass/{species}/Biomass_{timestep}.img
+
+>>LeafAreaIndex  output/LeafAreaIndex/lai_{timestep}.img
+
+>>Establishment output/Establishments/{species}/Est_{timestep}.img
+
+>>AnnualTranspiration output/Transpiration/Tr-{timestep}.img
+
+>>Water output/SoilWater/water_{timestep}.img
+
+>>SubCanopyPARMapNames output/SCpar/SCpar-{timestep}.img
+
+>>BelowgroundMapNames output/BGB/BGB-{timestep}.img
+
+>>WoodyDebrisMapNames output/WoodyDebris/WoodyDebris-{timestep}.img
+
+>>LitterMapNames	output/NonWoodyDebris/Litter-{timestep}.img
+
+>>AgeDistributionFileNames	output/AgeDist/Age-{timestep}.txt		<<CRASHED!!!!!!!!!!!!!!!!!
+
+>>AnnualPsn output/AnnualPsn/AnnualPsn_{timestep}.img
+
+>>CohortsPerSpecies output/cohortnum/{species}/cohortnum-{timestep}.img
+
+CohortBalance	output/TotalCohorts.csv
+
+EstablishmentTable	output/EstablishTable.csv
+
+MortalityTable		output/MortalityTable.csv

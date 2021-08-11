@@ -1,0 +1,2336 @@
+LandisData  "Biomass Harvest"
+
+>>-------------------------------------------------------------------------------------------------
+>>  TIMESTEP
+
+Timestep    5
+
+>>-------------------------------------------------------------------------------------------------
+>>  MANAGEMENT AREAS: the .gis file which defines the management areas.
+
+ManagementAreas EC_Oconto_landscape_mngt.img
+
+>>-------------------------------------------------------------------------------------------------
+>>  STANDS: the .gis file which defines the stands.  A stand can belong to one and only one management area.
+
+Stands      EC_Oconto_landscape_stand.img
+
+>> ====================================================
+>>Adaptive climate change experiment
+>>Three treatment factors: 1) cutting practices, 2) planting practices, 3) climate 
+>>Cutting practices: cutting intensity of two components of stand harvesting practices.  1) retention (% biomass remaining in harvested areas (gaps?) and 2) gaps (% area of stand actually cut).  
+>>Cutting practices levels: retention=50%, 30%, 10% (BAU), which equals 50%, 70%, 90% removed; total gap area=50%, 70%, 90% (BAU) [OR add by increments ~40% of minumum]
+>>Planting practices: forced establishment of a different suite of species after cutting.
+>>Planting practices levels: 
+>> 1) BAU planting practices 
+>> 2) enrichment planting (additional planting of endemic species to increase diversity) 
+>> 3) assisted migration (combination of enrichment planting and some planting of non-endemic species).
+
+>>To modify treatment levels, edit:
+>>  (1) Patchcutting %
+>>  (2) CohortsRemoved % (multiple) 
+>>  (3) Planting list(s)
+>> --------------------------------------------
+
+>>NOTE: Required statements are generally less restrictive and Forbidden statements are generally more restrictive for rare types.  Opposite true for more common types.
+
+>>======================    START PRESCRIPTIONS    =================================================
+    Prescription    Selection_NH	<<thinning 
+
+>>  STAND RANKING METHOD:
+
+	StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+    MinimumAge  60	<<Minimum STAND age when thinning may begin.  The age of a stand is the mean maximum age of all cells within the stand.
+>>    MaximumAge	<<used to protect old growth as necessary
+>>     StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>     AdjacencyType	StandAge << or TimeSinceLastHarvested (if time since last harvest of neighbor is important, but neighbor age per se is not)
+    MinimumTimeSinceLastHarvest  15	<<Back to BAU bc elevated CO2 enhances growth
+
+  ForestTypeTable  <<Target to northern hardwood, hemlock 
+>> Inclusion Rule	ageRange	percentCells	species	
+    Optional		60-500		highest		acerrubr acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 
+    Optional		60-500		51		tsugcana	<<stands with large mature hemlock component are harvested by this selection cutting prescription
+>>    Forbidden	species lists appearing in Required & Optional rules for other forest types 
+>>    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 lirituli liqustyr tilihete	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 				<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent  				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>	SiteSelection PatchCutting	95% 	0.09	ALLOWOVERLAP	<<  95%; Patch size=0.09; 
+    CohortsRemoved  SpeciesList	
+>>ADD NEW SPP to LISTS
+    abiebals  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 	
+    acerrubr  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 	
+    acersacc  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 				
+    acersaci  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 				
+    betualle  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 				
+    betupapy  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 				
+    carycord  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    fraxamer  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    fagugran  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    fraxnigr  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    fraxpenn  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 
+    larilari  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 
+    piceglau  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    picemari  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    pinubank  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    pinuresi  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 
+    pinustro  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    popubals  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    popugran  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    poputrem  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)  			
+    prunsero  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    queralba  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    quercocc  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    querelli  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    quermacr  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 		
+    querrubr  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    quervelu  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    taxodist  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 				
+    thujocci  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 				
+    tiliamer  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 			
+    tsugcana  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 
+    ulmuamer  61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 
+>>ABBA40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+abiefras 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%) 
+acernigr 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+ACRU40 	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+ACSA40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+BEAL40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+BEPA40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+betulent 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+betunigr 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+caryglab 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+liqustyr 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+lirituli 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+nysssylv 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+>>PIGL40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+picerube 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+>>PIMA40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+PIBA40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+pinupond 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+PIRE40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+PIST40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+pinuechi 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+pinurigi 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+pinutaed 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+pinusylv 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)  
+POTR40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+POGR40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+PODEdelt 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+PODEocci 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+PRSO40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+QUEL40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+querprin 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+QURU40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+quershum 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+querfalc 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+quermich 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+querbico 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+querlyra 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+salxnigr 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+TIAM40	 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+tilihete 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)	
+ULAM40   61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+chamthyo 61-75 (30%) 76-90 (30%) 91-105 (30%) 106-450 (98%)
+
+>>planted species depend on planting treatment
+  Plant	ACSA40 BEAL40 TIAM40 <<Asst Migr In-range: ACSA40 BEAL40 TIAM40
+>>  Plant carycord queralba acernigr <<Asst Migr Out-range: carycord queralba acernigr
+>>  Plant liqustyr betulent <<Asst Migr Long-range: liqustyr betulent
+  
+>>MultipleRepeat	15	<<Repeat thinnings every 15 years; BAU
+>>  ################################################################################################################################
+    Prescription    Shelter_Hdwd	<<for more shade-intolerant hardwoods
+
+>>  STAND RANKING METHOD:
+
+	StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+    MinimumAge  65	<<Age when cutting may begin.  The age of a stand is the mean maximum age of all cells within the stand.
+>>    MaximumAge	<<used to protect old growth as necessary
+>>     StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>     AdjacencyType	StandAge << or TimeSinceLastHarvested (if time since last harvest of neighbor is important, but neighbor age per se is not)
+    MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  <<Target to shade-intolerant hardwoods
+>> Inclusion Rule	ageRange	percentCells	species		
+    Required		65-500		51		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 <<shade-intolerant hardwoods typing rule
+>>    Optional	Other FTs managed by Thinning
+>>    Forbidden	species lists appearing in Required & Optional rules for other forest types 
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+>>    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab		<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum  <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent  				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51	 	carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting	95% 	1.0	ALLOWOVERLAP	<<gap size=1.0; % of stand cut treatment levels: 50% (size=3.1 ha), 70% (4.3), 90% (5.5), with 90% being BAU
+
+    CohortsRemoved  SpeciesList	
+    abiebals  65-500	(46%)	
+    acerrubr  65-500	(46%)				
+    acersacc  65-500	(46%)				
+    acersaci  65-500	(46%)				
+    betualle  65-500	(46%)				
+    betupapy  65-500	(46%)				
+>>    carycord  65-500	(46%)				
+>>    fraxamer  65-500	(46%)				
+    fagugran  65-500	(46%)				
+    fraxnigr  65-500	(46%)				
+    fraxpenn  65-500	(46%)				
+    larilari  65-500	(46%)
+    piceglau  65-500	(46%)				
+    picemari  65-500	(46%)				
+    pinubank  65-500	(46%)				
+    pinuresi  65-500	(46%)				
+    pinustro  65-500	(46%)				
+    popubals  65-500	(46%)				
+    popugran  65-500	(46%)				
+    poputrem  65-500	(46%)				
+>>    prunsero  65-500	(46%)				
+    queralba  65-500	(46%)				
+    quercocc  65-500	(46%)				
+    querelli  65-500	(46%)				
+    quermacr  65-500	(46%)				
+>>    querrubr  65-500	(46%)				
+    quervelu  65-500	(46%)				
+    taxodist  65-500	(46%)					
+    thujocci  65-500	(46%)					
+    tiliamer  65-500	(46%)				
+    tsugcana  65-500	(46%)
+>>    ulmuamer
+>>ABBA40	   65-500	(46%)
+abiefras   65-500	(46%)	
+acernigr   65-500	(46%)	
+ACRU40    65-500	(46%)
+ACSA40    65-500	(46%)
+BEAL40    65-500	(46%)
+BEPA40    65-500	(46%)
+betulent   65-500	(46%)
+betunigr  65-500	(46%)
+>>caryglab  65-500	(46%)
+liqustyr  65-500	(46%)	
+lirituli  65-500	(46%)
+nysssylv  65-500	(46%)	
+>>PIGL40    65-500	(46%)
+picerube  65-500	(46%)	
+>>PIMA40   65-500	(46%)
+PIBA40   65-500	(46%)
+pinupond  65-500	(46%)
+PIRE40    65-500	(46%)
+PIST40    65-500	(46%)
+pinuechi  65-500	(46%)	
+pinurigi  65-500	(46%)	
+pinutaed  65-500	(46%)
+pinusylv  65-500	(46%)  
+POTR40   65-500	(46%)
+POGR40	  65-500	(46%)	
+PODEdelt  65-500	(46%)
+PODEocci  65-500	(46%)
+>>PRSO40  
+QUEL40    65-500	(46%)
+querprin  65-500	(46%)	
+>>QURU40  
+quershum  65-500	(46%)
+querfalc  65-500	(46%)
+quermich  65-500	(46%)
+querbico  65-500	(46%)	
+querlyra  65-500	(46%)	
+salxnigr  65-500	(46%)	
+TIAM40    65-500	(46%)
+tilihete  65-500	(46%)	
+>>ULAM40    65-500	(46%)
+chamthyo  65-500	(46%)
+
+>>planted species depend on planting treatment; maybe none for thinning
+  Plant	ACRU40 PRSO40 QURU40 <<Asst Migr In-range: ACRU40 PRSO40 QURU40
+>>  Plant carycord queralba quervelu <<Asst Migr Out-range: carycord queralba quervelu
+>>  Plant lirituli liqustyr tilihete <<Asst Migr Long-range: lirituli liqustyr tilihete
+
+SingleRepeat	10	
+>>2nd entry - 
+    CohortsRemoved  SpeciesList	
+    abiebals  75-500	<<(95%)
+    acerrubr  75-500	<<(95%) 	
+    acersacc  75-500	<<(95%)
+    acersaci  75-500	<<(95%)
+    betualle  75-500	<<(95%)
+    betupapy  75-500	<<(95%)
+    carycord  75-500	(95%)	<<Leave 5% of mid-tolerant hardwoods in overstory
+    fraxamer  75-500	(95%)
+    fagugran  75-500	<<(95%)
+    fraxnigr  75-500	<<(95%)
+    fraxpenn  75-500	(95%)
+    larilari  75-500	<<(95%)
+    piceglau  75-500	<<(95%)
+    picemari  75-500	<<(95%)
+    pinubank  75-500	<<(95%)
+    pinuresi  75-500	<<(95%)
+    pinustro  75-500	(95%)
+    popubals  75-500	<<(95%)
+    popugran  75-500	<<(95%)
+    poputrem  75-500	<<(95%)
+    prunsero  75-500	(95%)
+    queralba  75-500	<<(95%)
+    quercocc  75-500	<<(95%)
+    querelli  75-500	<<(95%)
+    quermacr  75-500	<<(95%)
+    querrubr  75-500	(95%)
+    quervelu  75-500	<<(95%)
+    taxodist  75-500	<<(95%)
+    thujocci  75-500	<<(95%)
+    tiliamer  75-500	<<(95%)
+    tsugcana  75-500	<<(95%)
+    ulmuamer  75-500	(95%)
+>>ABBA40	  75-500	<<(95%)	<<intermed tol: acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 lirituli liqustyr tilihete
+abiefras  75-500	<<(95%)
+acernigr  75-500	<<(95%)	
+ACRU40 	  75-500	<<(95%)
+ACSA40 	  75-500	<<(95%)
+BEAL40 	  75-500	<<(95%)
+BEPA40	  75-500	<<(95%)
+betulent  75-500	<<(95%)
+betunigr  75-500	<<(95%)
+caryglab  75-500	(95%)
+liqustyr  75-500	<<(95%)	
+lirituli  75-500	<<(95%)
+nysssylv  75-500	<<(95%)
+>>PIGL40	  75-500	<<(95%)
+picerube  75-500	<<(95%)	
+>>PIMA40	  75-500	<<(95%)
+PIBA40	  75-500	<<(95%)
+pinupond  75-500	<<(95%)
+PIRE40	  75-500	<<(95%)
+PIST40	  75-500	(95%)
+pinuechi  75-500	<<(95%)	
+pinurigi  75-500	<<(95%)	
+pinutaed  75-500	<<(95%)
+pinusylv  75-500	<<(95%)  
+POTR40	  75-500	<<(95%)
+POGR40	  75-500	<<(95%)	
+PODEdelt  75-500	<<(95%)
+PODEocci  75-500	<<(95%)
+PRSO40	  75-500	(95%)	
+QUEL40	  75-500	<<(95%)
+querprin  75-500	<<(95%)	
+QURU40	  75-500	(95%)
+quershum  75-500	<<(95%)
+querfalc  75-500	<<(95%)
+quermich  75-500	<<(95%)
+querbico  75-500	<<(95%)	
+querlyra  75-500	<<(95%)	
+salxnigr  75-500	<<(95%)	
+TIAM40	  75-500	<<(95%)
+tilihete  75-500	<<(95%)
+ULAM40    75-500	(95%)
+chamthyo  75-500	<<(95%)
+
+>>no planting on second entry that removes overstory
+>>  ################################################################################################################################
+    Prescription    CC_Aspen	  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  50	
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10  <<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  55	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to aspen, birch
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci
+>>species lists appearing inclusion rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+>>    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab				<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 		<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting	95% 	3.0	ALLOWOVERLAP	<<gap size= 3.0; % of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  SpeciesList		
+    abiebals  1-500	(98%)	
+    acerrubr  1-500	(98%)	
+    acersacc  1-500	(98%)
+    acersaci  1-500	(98%)
+    betualle  1-500	(98%)
+    betupapy  1-500	(98%)
+    carycord  1-500	(98%)
+    fraxamer  1-500	(98%)
+    fagugran  1-500	(98%)
+    fraxnigr  1-500	(98%)
+    fraxpenn  1-500	(98%)
+    larilari  1-500	(98%)
+    piceglau  1-500	(98%)
+    picemari  1-500	(98%)
+    pinubank  1-500	(98%)
+    pinuresi  1-500	(98%)
+    pinustro  1-500	(98%)
+    popubals  1-500	(98%)
+    popugran  1-500	(98%)
+    poputrem  1-500	(98%)
+    prunsero  1-500	(98%)
+    queralba  1-500	(98%)
+    quercocc  1-500	(98%)
+    querelli  1-500	(98%)
+    quermacr  1-500	(98%)
+    querrubr  1-500	(98%)
+    quervelu  1-500	(98%)
+    thujocci  1-500	(98%)
+    taxodist  1-500	(98%)
+    tiliamer  1-500	(98%)
+    tsugcana  1-500	(98%)
+    ulmuamer  1-500	(98%)
+>>ABBA40	  1-500	(98%)	
+abiefras  1-500	(98%)	  
+acernigr  1-500	(98%)		
+ACRU40   1-500	(98%)	
+ACSA40   1-500	(98%)	
+BEAL40   1-500	(98%)	
+BEPA40   1-500	(98%)	
+betulent  1-500	(98%)	
+betunigr  1-500	(98%)	
+caryglab  1-500	(98%)	
+liqustyr  1-500	(98%)	
+lirituli  1-500	(98%)	
+nysssylv  1-500	(98%)	
+>>PIGL40   1-500	(98%)	
+picerube  1-500	(98%)	
+>>PIMA40   1-500	(98%)	
+PIBA40   1-500	(98%)	
+pinupond  1-500	(98%)	
+PIRE40   1-500	(98%)	
+PIST40   1-500	(98%)	
+pinuechi 1-500	(98%)	
+pinurigi 1-500	(98%)	
+pinutaed 1-500	(98%)	
+pinusylv  1-500	(98%)	
+POTR40   1-500	(98%)	
+POGR40	 1-500	(98%)	
+PODEdelt  1-500	(98%)	
+PODEocci  1-500	(98%)	
+PRSO40   1-500	(98%)	
+QUEL40   1-500	(98%)	
+querprin  1-500	(98%)	
+QURU40   1-500	(98%)	
+quershum  1-500	(98%)	
+querfalc  1-500	(98%)	
+quermich  1-500	(98%)	
+querbico  1-500	(98%)	
+querlyra  1-500	(98%)	
+salxnigr  1-500	(98%)	
+TIAM40   1-500	(98%)	
+tilihete  1-500	(98%)	
+ULAM40   1-500	(98%)	
+chamthyo 1-500	(98%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+  Plant	POTR40 POGR40 <<Asst Migr In-range: POTR40 POGR40
+>>  Plant PODEdelt <<Asst Migr Out-range: PODEdelt
+>>  Plant PODEocci <<Asst Migr Long-range: PODEocci
+
+>>   MultipleRepeat	70
+
+>>  ################################################################################################################################
+    Prescription    CC_JPine 	
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  52	<<could be 50
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  52	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to jack pine
+>> Inclusion Rule	ageRange	percentCells	species	
+    Required 		52-500 		45 		pinubank PIBA40 <<pinuechi
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci 		<<Aspen typing rule
+>>    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest			abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+>>    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 				<<Red pine typing rule
+>>    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba quermacr quervelu querbico quershum 		<<modified Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 		<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	3.0	ALLOWOVERLAP	<<gap=3.0; % of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  SpeciesList	
+    abiebals  1-500	<<(95%)	<<maybe remove more of shade tolerants to better allow quercocc to thrive
+    acerrubr  1-500	<<(95%)	
+    acersacc  1-500	<<(95%)
+    acersaci  1-500	<<(95%)
+    betualle  1-500	<<(95%)
+    betupapy  1-500	<<(95%)
+    carycord  1-500	<<(95%)
+    fraxamer  1-500	<<(95%)
+    fagugran  1-500	<<(95%)
+    fraxnigr  1-500	<<(95%)
+    fraxpenn  1-500	<<(95%)
+    larilari  1-500	<<(95%)
+    piceglau  1-500	<<(95%)
+    picemari  1-500	<<(95%)
+    pinubank  1-500	(98%)
+    pinuresi  1-500	<<(95%)
+    pinustro  1-500	<<(95%)
+    popubals  1-500	<<(95%)
+    popugran  1-500	<<(95%)
+    poputrem  1-500	<<(95%)
+    prunsero  1-500	<<(95%)
+    queralba  1-500	<<(95%)
+    quercocc  1-500	<<(95%)
+    querelli  1-500	<<(95%)
+    quermacr  1-500	<<(95%)
+    querrubr  1-500	<<(95%)
+    quervelu  1-500	<<(95%)
+    taxodist  1-500	<<(95%)
+    thujocci  1-500	<<(95%)
+    tiliamer  1-500	<<(95%)
+    tsugcana  1-500	<<(95%)
+    ulmuamer  1-500	<<(95%)
+>>ABBA40	   1-500	<<pinubank querprin PIBA40 pinurigi <<pinuechi
+abiefras  1-500	
+acernigr 1-500	
+ACRU40   1-500	
+ACSA40   1-500	
+BEAL40   1-500	
+BEPA40   1-500	
+betulent  1-500	
+betunigr  1-500	
+caryglab  1-500	
+liqustyr  1-500	
+lirituli  1-500	
+nysssylv  1-500	
+>>PIGL40   1-500	
+picerube  1-500	
+>>PIMA40   1-500	
+PIBA40    1-500	(98%)
+pinupond   1-500	
+PIRE40 	   1-500	
+PIST40 	   1-500	
+pinuechi   1-500	(98%)	
+pinurigi   1-500	(98%)	
+pinutaed   1-500	
+pinusylv   1-500	
+POTR40    1-500	
+POGR40	   1-500	
+PODEdelt    1-500	
+PODEocci    1-500	
+PRSO40 	   1-500	
+QUEL40 	   1-500	
+querprin   1-500	(98%)
+QURU40 	   1-500	
+quershum   1-500	
+querfalc  1-500	
+quermich  1-500	
+querbico   1-500	
+querlyra   1-500	
+salxnigr   1-500	
+TIAM40 	   1-500	
+tilihete   1-500	
+ULAM40     1-500
+chamthyo   1-500
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+  Plant	PIBA40 <<Asst Migr In-range: PIBA40
+>>  Plant pinurigi quervelu <<Asst Migr Out-range: pinurigi quervelu
+>>  Plant pinuechi querfalc querprin <<Asst Migr Long-range: pinuechi querfalc querprin
+
+>>MultipleRepeat	55
+
+>>  ################################################################################################################################
+    Prescription    CC_Spru_Fir  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  90
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  100	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to w spruce, b fir
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		90-500 		51	 	abiebals piceglau picerube nysssylv abiefras <<ABBA40 PIGL40  
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+>>    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum  <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent 				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 		<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	3.0	ALLOWOVERLAP	<<gap=3.0; % of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  SpeciesList	
+    abiebals  1-500	(95%)	
+    acerrubr  1-500	(95%)	
+    acersacc  1-500	(95%)
+    acersaci  1-500	(95%)
+    betualle  1-500	(95%)
+    betupapy  1-500	(95%)
+    carycord  1-500	(95%)
+    fraxamer  1-500	(95%)
+    fagugran  1-500	(95%)
+    fraxnigr  1-500	(95%)
+    fraxpenn  1-500	(95%)
+    larilari  1-500	(95%)
+    piceglau  1-500	(95%)
+    picemari  1-500	(95%)
+    pinubank  1-500	(95%)
+    pinuresi  1-500	(95%)
+    pinustro  1-500	(95%)
+    popubals  1-500	(95%)
+    popugran  1-500	(95%)
+    poputrem  1-500	(95%)
+    prunsero  1-500	(95%)
+    queralba  1-500	(95%)
+    quercocc  1-500	(95%)
+    querelli  1-500	(95%)
+    quermacr  1-500	(95%)
+    querrubr  1-500	(95%)
+    quervelu  1-500	(95%)
+    taxodist  1-500	(95%)
+    thujocci  1-500	(95%)
+    tiliamer  1-500	(95%)
+    tsugcana  1-500	(95%)
+    ulmuamer  1-500	(95%)
+>>ABBA40	   1-500	(95%)
+abiefras    1-500	(95%)
+acernigr   1-500	(95%)
+ACRU40     1-500	(95%)
+ACSA40     1-500	(95%)
+BEAL40     1-500	(95%)
+BEPA40     1-500	(95%)
+betulent   1-500	(95%)
+betunigr   1-500	(95%)
+caryglab   1-500	(95%)
+liqustyr   1-500	(95%)
+lirituli   1-500	(95%)
+nysssylv   1-500	(95%)
+>>PIGL40     1-500	(95%)
+picerube   1-500	(95%)
+>>PIMA40    1-500	(95%)
+PIBA40     1-500	(95%)
+pinupond   1-500	(95%)
+PIRE40     1-500	(95%)
+PIST40     1-500	(95%)
+pinuechi   1-500	(95%)
+pinurigi   1-500	(95%)
+pinutaed   1-500	(95%)
+pinusylv   1-500	(95%)
+POTR40     1-500	(95%)
+POGR40	   1-500	(95%)
+PODEdelt   1-500	(95%)
+PODEocci   1-500	(95%)
+PRSO40     1-500	(95%)
+QUEL40     1-500	(95%)
+querprin   1-500	(95%)
+QURU40     1-500	(95%)
+quershum   1-500	(95%)
+querfalc   1-500	(95%)
+quermich   1-500	(95%)
+querbico   1-500	(95%)
+querlyra   1-500	(95%)
+salxnigr   1-500	(95%)
+TIAM40     1-500	(95%)
+tilihete   1-500	(95%)
+ULAM40     1-500	(95%)
+chamthyo   1-500	(95%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+  Plant queralba 	<<Asst Migr In-range: PIGL40 ABBA40
+>>  Plant nysssylv picerube <<Asst Migr Out-range: queralba nysssylv picerube
+>>  Plant querfalc abiefras <<Asst Migr Long-range: querfalc abiefras
+>>  ################################################################################################################################
+    Prescription    CC_RPine  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  120
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  175	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to larch, cedar, swamp hardwood
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		120-500		highest		pinuresi PIRE40	pinupond pinuechi <<for stands where r pine is most abundant, but not on >50% of cells
+    Optional		120-500		51		pinuresi PIRE40 pinupond pinuechi 
+>>species lists appearing in Required & Optional rules for other forest types
+>>    Forbidden		60-500		highest		acersacc 				 <<modified NH typing rule - avoid hardwood stands that should be managed by thinning
+>>    Forbidden		70-500		highest		acerrubr 				 <<modified shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+>>    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba quermacr quervelu querbico quershum 		<<modified Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent  				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	3.0	ALLOWOVERLAP	<<gap=3.0; % of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  SpeciesList		
+    abiebals  1-500	(95%)	
+    acerrubr  1-500	(95%)	
+    acersacc  1-500	(95%)
+    acersaci  1-500	(95%)
+    betualle  1-500	(95%)
+    betupapy  1-500	(95%)
+    carycord  1-500	(95%)
+    fraxamer  1-500	(95%)
+    fagugran  1-500	(95%)
+    fraxnigr  1-500	(95%)
+    fraxpenn  1-500	(95%)
+    piceglau  1-500	(95%)
+    larilari  1-500	(95%)
+    picemari  1-500	(95%)
+    pinubank  1-500	(95%)
+    pinuresi  1-500	(95%)
+    pinustro  1-500	(95%)
+    popubals  1-500	(95%)
+    popugran  1-500	(95%)
+    poputrem  1-500	(95%)
+    prunsero  1-500	(95%)
+    queralba  1-500	(95%)
+    quercocc  1-500	(95%)
+    querelli  1-500	(95%)
+    quermacr  1-500	(95%)
+    querrubr  1-500	(95%)
+    quervelu  1-500	(95%)
+    taxodist  1-500	(95%)
+    thujocci  1-500	(95%)
+    tiliamer  1-500	(95%)
+    tsugcana  1-500	(95%)
+    ulmuamer  1-500	(95%)
+>>ABBA40	   1-500	(95%)
+abiefras    1-500	(95%)
+acernigr   1-500	(95%)
+ACRU40     1-500	(95%)
+ACSA40     1-500	(95%)
+BEAL40     1-500	(95%)
+BEPA40     1-500	(95%)
+betulent   1-500	(95%)
+betunigr   1-500	(95%)
+caryglab   1-500	(95%)
+liqustyr   1-500	(95%)
+lirituli   1-500	(95%)
+nysssylv   1-500	(95%)
+>>PIGL40     1-500	(95%)
+picerube   1-500	(95%)
+>>PIMA40    1-500	(95%)
+PIBA40     1-500	(95%)
+pinupond   1-500	(95%)
+PIRE40     1-500	(95%)
+PIST40     1-500	(95%)
+pinuechi   1-500	(95%)
+pinurigi   1-500	(95%)
+pinutaed   1-500	(95%)
+pinusylv   1-500	(95%)
+POTR40     1-500	(95%)
+POGR40	   1-500	(95%)
+PODEdelt   1-500	(95%)
+PODEocci   1-500	(95%)
+PRSO40     1-500	(95%)
+QUEL40     1-500	(95%)
+querprin   1-500	(95%)
+QURU40     1-500	(95%)
+quershum   1-500	(95%)
+querfalc   1-500	(95%)
+quermich   1-500	(95%)
+querbico   1-500	(95%)
+querlyra   1-500	(95%)
+salxnigr   1-500	(95%)
+TIAM40     1-500	(95%)
+tilihete   1-500	(95%)
+ULAM40     1-500	(95%)
+chamthyo   1-500	(95%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  
+  Plant	PIRE40 <<Asst Migr In-range: PIRE40
+>>  Plant pinupond quervelu <<Asst Migr Out-range: pinupond quervelu
+>>  Plant pinutaed pinuechi quercocc <<Asst Migr Long-range: pinutaed pinuechi quercocc
+>>  ################################################################################################################################
+    Prescription    CC_WPine  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  135
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  150	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to larch, cedar, swamp hardwood
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab	<<for stands where w pine is most abundant, but not on >50% of cells
+    Optional		135-500		51		pinustro PIST40 pinupond pinusylv caryglab
+>>species lists appearing in Required & Optional rules for other forest types
+>>    Forbidden		60-500		highest		acersacc 				 <<modified NH typing rule - avoid hardwood stands that should be managed by thinning
+>>    Forbidden		70-500		highest		acerrubr 				 <<modified shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 				<<Red pine typing rule
+>>    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba quermacr quervelu querbico quershum 		<<modified Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	3.0	ALLOWOVERLAP	<<gap=3.0; % of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  SpeciesList	
+    abiebals  1-500	(95%)	
+    acerrubr  1-500	(95%)	
+    acersacc  1-500	(95%)
+    acersaci  1-500	(95%)
+    betualle  1-500	(95%)
+    betupapy  1-500	(95%)
+    carycord  1-500	(95%)
+    fraxamer  1-500	(95%)
+    fagugran  1-500	(95%)
+    fraxnigr  1-500	(95%)
+    fraxpenn  1-500	(95%)
+    larilari  1-500	(95%)
+    piceglau  1-500	(95%)
+    picemari  1-500	(95%)
+    pinubank  1-500	(95%)
+    pinuresi  1-500	(95%)
+    pinustro  1-500	(95%)
+    popubals  1-500	(95%)
+    popugran  1-500	(95%)
+    poputrem  1-500	(95%)
+    prunsero  1-500	(95%)
+    queralba  1-500	(95%)
+    quercocc  1-500	(95%)
+    querelli  1-500	(95%)
+    quermacr  1-500	(95%)
+    querrubr  1-500	(95%)
+    quervelu  1-500	(95%)
+    taxodist  1-500	(95%)
+    thujocci  1-500	(95%)
+    tiliamer  1-500	(95%)
+    tsugcana  1-500	(95%)
+    ulmuamer  1-500	(95%)
+>>ABBA40	   1-500	(95%)
+abiefras    1-500	(95%)
+acernigr   1-500	(95%)
+ACRU40     1-500	(95%)
+ACSA40     1-500	(95%)
+BEAL40     1-500	(95%)
+BEPA40     1-500	(95%)
+betulent   1-500	(95%)
+betunigr   1-500	(95%)
+caryglab   1-500	(95%)
+liqustyr   1-500	(95%)
+lirituli   1-500	(95%)
+nysssylv   1-500	(95%)
+>>PIGL40     1-500	(95%)
+picerube   1-500	(95%)
+>>PIMA40    1-500	(95%)
+PIBA40     1-500	(95%)
+pinupond   1-500	(95%)
+PIRE40     1-500	(95%)
+PIST40     1-500	(95%)
+pinuechi   1-500	(95%)
+pinurigi   1-500	(95%)
+pinutaed   1-500	(95%)
+pinusylv   1-500	(95%)
+POTR40     1-500	(95%)
+POGR40	   1-500	(95%)
+PODEdelt   1-500	(95%)
+PODEocci   1-500	(95%)
+PRSO40     1-500	(95%)
+QUEL40     1-500	(95%)
+querprin   1-500	(95%)
+QURU40     1-500	(95%)
+quershum   1-500	(95%)
+querfalc   1-500	(95%)
+quermich   1-500	(95%)
+querbico   1-500	(95%)
+querlyra   1-500	(95%)
+salxnigr   1-500	(95%)
+TIAM40     1-500	(95%)
+tilihete   1-500	(95%)
+ULAM40     1-500	(95%)
+chamthyo   1-500	(95%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  
+  Plant	PIST40 <<Asst Migr In-range: PIST40
+>>  Plant pinupond quervelu <<Asst Migr Out-range: pinupond quervelu
+>>  Plant pinutaed pinusylv caryglab <<Asst Migr Long-range: pinutaed pinusylv caryglab
+>>  ################################################################################################################################
+     Prescription    Shelter_Oak		<<patch shelterwood
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  90	<<50 years to first entry; re-entry 30 years later?
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  15	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  	<<target to oaks
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum << oaks  (51 instead of highest?)
+    Optional		90-500 		51	  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum << where oaks are abundant but not highest
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab				<<White pine typing rule
+>>    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent  				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	1.0	ALLOWOVERLAP	<<gap=1.0; % of stand cut treatment levels: 60 (size=3.7 ha), 70 (4.3), 80% (4.9), with 80% being BAU
+>>1st entry
+    CohortsRemoved  SpeciesList	
+    abiebals  90-500	(57%)	<<this removal % is HIGHER than BAU or RESTORE.
+    acerrubr  90-500	(57%)	
+    acersacc  90-500	(57%)				
+    acersaci  90-500	(57%)				
+    betualle  90-500	(57%)				
+    betupapy  90-500	(57%)				
+    carycord  90-500	(57%)				
+    fraxamer  90-500	(57%)				
+    fagugran  90-500	(57%)				
+    fraxnigr  90-500	(57%)				
+    fraxpenn  90-500	(57%)				
+    larilari  90-500	(57%)
+    piceglau  90-500	(57%)				
+    picemari  90-500	(57%)				
+    pinubank  90-500	(57%)				
+    pinuresi  90-500	(57%)				
+    pinustro  90-500	(57%)				
+    popubals  90-500	(57%)				
+    popugran  90-500	(57%)				
+    poputrem  90-500	(57%)				
+    prunsero  90-500	(57%)				
+    queralba  90-500	(57%)	<<remove some oak biomass to increase light?  These were commented out (no oak biomass removed).			
+    quercocc  90-500	(57%)	
+    querelli  90-500	(57%)	
+    quermacr  90-500	(57%)	
+    querrubr  90-500	(57%)	
+    quervelu  90-500	(57%)	
+    taxodist  90-500	(57%)				
+    thujocci  90-500	(57%)				
+    tiliamer  90-500	(57%)				
+    tsugcana  90-500	(57%)				
+    ulmuamer  90-500	(57%)				
+>>ABBA40	  90-500	(57%)	
+abiefras  90-500	(57%)	
+acernigr  90-500	(57%)	
+ACRU40    90-500	(57%)	
+ACSA40    90-500	(57%)	
+BEAL40    90-500	(57%)	
+BEPA40    90-500	(57%)	
+betulent  90-500	(57%)	
+betunigr  90-500	(57%)	
+caryglab  90-500	(57%)	
+liqustyr  90-500	(57%)	
+lirituli  90-500	(57%)	
+nysssylv  90-500	(57%)	
+>>PIGL40    90-500	(57%)	
+picerube  90-500	(57%)	
+>>PIMA40   90-500	(57%)	
+PIBA40    90-500	(57%)	
+pinupond  90-500	(57%)	
+PIRE40    90-500	(57%)	
+PIST40    90-500	(57%)	
+pinuechi  90-500	(57%)	
+pinurigi  90-500	(57%)	
+pinutaed  90-500	(57%)	
+pinusylv  90-500	(57%)	
+POTR40    90-500	(57%)	
+POGR40	  90-500	(57%)	
+PODEdelt  90-500	(57%)	
+PODEocci  90-500	(57%)	
+PRSO40    90-500	(57%)	
+QUEL40    90-500	(57%)	
+querprin  90-500	(57%)	
+QURU40    90-500	(57%)	
+quershum  90-500	(57%)	
+querfalc  90-500	(57%)	
+quermich  90-500	(57%)	
+querbico  90-500	(57%)	
+querlyra  90-500	(57%)	
+salxnigr  90-500	(57%)	
+TIAM40    90-500	(57%)	
+tilihete  90-500	(57%)	
+ULAM40    90-500	(57%)
+chamthyo  90-500	(57%)
+
+>>planted species depend on planting treatment
+    Plant	QURU40 QUEL40 <<Asst Migr In-range: QURU40 QUEL40
+>>  Plant queralba querbico quermacr <<Asst Migr Out-range: queralba querbico quermacr
+
+SingleRepeat	10	
+>>2nd entry - completely remove overstory (100%)
+    CohortsRemoved  SpeciesList	
+    abiebals  100-500	<<(95%)	<<leave 5% of oaks in the overstory
+    acerrubr  100-500	<<(95%)
+    acersacc  100-500	<<(95%)
+    acersaci  100-500	<<(95%)
+    betualle  100-500	<<(95%)
+    betupapy  100-500	<<(95%)
+    carycord  100-500	<<(95%)
+    fraxamer  100-500	<<(95%)
+    fagugran  100-500	<<(95%)
+    fraxnigr  100-500	<<(95%)
+    fraxpenn  100-500	<<(95%)
+    larilari  100-500	<<(95%)
+    piceglau  100-500	<<(95%)
+    picemari  100-500	<<(95%)
+    pinubank  100-500	<<(95%)
+    pinuresi  100-500	<<(95%)
+    pinustro  100-500	<<(95%)
+    popubals  100-500	<<(95%)
+    popugran  100-500	<<(95%)
+    poputrem  100-500	<<(95%)
+    prunsero  100-500	<<(95%)
+    queralba  100-500	(95%)	<<leave 5% of oaks in the overstory
+    quercocc  100-500	(95%)
+    querelli  100-500	(95%)
+    quermacr  100-500	(95%)
+    querrubr  100-500	(95%) 
+    quervelu  100-500	(95%)
+    taxodist  100-500	<<(95%)
+    thujocci  100-500	<<(95%)
+    tiliamer  100-500	<<(95%)
+    tsugcana  100-500	<<(95%)
+    ulmuamer  100-500	<<(95%)
+>>ABBA40	 100-500	(95%) 
+abiefras 100-500	
+acernigr 100-500	
+ACRU40  100-500	
+ACSA40  100-500	
+BEAL40  100-500		 
+BEPA40  100-500		
+betulent 100-500	
+betunigr 100-500
+caryglab 100-500
+liqustyr 100-500
+lirituli 100-500
+nysssylv 100-500
+>>PIGL40   100-500	 
+picerube 100-500
+>>PIMA40  100-500
+PIBA40  100-500
+pinupond 100-500
+PIRE40  100-500
+PIST40  100-500
+pinuechi 100-500
+pinurigi 100-500
+pinutaed 100-500
+pinusylv 100-500
+POTR40  100-500
+POGR40	 100-500
+PODEdelt 100-500
+PODEocci 100-500
+PRSO40  100-500
+QUEL40  100-500 	(95%)	
+querprin 100-500	(95%)
+QURU40   100-500	(95%)
+quershum 100-500	(95%)
+querfalc 100-500	(95%)
+quermich 100-500	(95%)
+querbico 100-500	(95%)
+querlyra 100-500	(95%)
+salxnigr 100-500
+TIAM40  100-500
+tilihete 100-500
+ULAM40   100-500
+chamthyo 100-500
+
+>>  Plant quershum querfalc <<Asst Migr Long-range: quershum querfalc
+
+>>  ################################################################################################################################
+     Prescription    Shelter_Birch	
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  65
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  	<<target to w pine, w birch, r maple, b fir?
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		65-400 		highest	  	betupapy BEPA40 betunigr betulent	<<set the minimum presence of birch-stands that also qualify for other prescriptions will be eliminated by Forbidden statements below
+    Optional		65-400 		51	  	betupapy BEPA40 betunigr 		<<betulent is found in NH stands, so omit here 
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci 		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 				<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum  <<Oak typing rule
+>>    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent 				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	1.0	ALLOWOVERLAP	<<gap=1.0; % of stand cut treatment levels: 60, 70, 80%, with 80% being BAU
+>>1st entry
+    CohortsRemoved  SpeciesList	
+    abiebals  40-500	(80%)
+    acerrubr  40-500	(80%)
+    acersacc  40-500	(80%)				
+    acersaci  40-500	(80%)				
+    betualle  40-500	(80%)				
+    betupapy  30-500	(60%)	<<leave more birch, but limit shade
+    carycord  40-500	(80%)				
+    fraxamer  40-500	(80%)				
+    fagugran  40-500	(80%)				
+    fraxnigr  40-500	(80%)				
+    fraxpenn  40-500	(80%)				
+    larilari  40-500	(80%)
+    piceglau  40-500	(80%)				
+    picemari  40-500	(80%)				
+    pinubank  40-500	(80%)				
+    pinuresi  40-500	(80%)				
+    pinustro  40-500	(80%)				
+    popubals  40-500	(80%)				
+    popugran  40-500	(80%)				
+    poputrem  40-500	(80%)				
+    prunsero  40-500	(80%)				
+    queralba  40-500	(80%)				
+    quercocc  40-500	(80%)				
+    querelli  40-500	(80%)				
+    quermacr  40-500	(80%)				
+    querrubr  40-500	(80%)				
+    quervelu  40-500	(80%)				
+    taxodist  40-500	(80%)				
+    thujocci  40-500	(80%)				
+    tiliamer  40-500	(80%)				
+    tsugcana  40-500	(80%)				
+    ulmuamer  40-500	(80%)				
+>>ABBA40	   40-500	(80%)	
+abiefras   40-500	(80%)	
+acernigr   40-500	(80%)	
+ACRU40    40-500	(80%)	
+ACSA40    40-500	(80%)	
+BEAL40    40-500	(80%)	
+BEPA40    40-500	(60%)	<<leave more birch, but limit shade	
+betulent  40-500	(60%)	
+betunigr  40-500	(60%)	
+caryglab  40-500	(80%)	
+liqustyr  40-500	(80%)	
+lirituli  40-500	(80%)	
+nysssylv  40-500	(80%)	
+>>PIGL40    40-500	(80%)	
+picerube  40-500	(80%)	
+>>PIMA40   40-500	(80%)	
+PIBA40    40-500	(80%)	
+pinupond  40-500	(80%)	
+PIRE40    40-500	(80%)	
+PIST40    40-500	(80%)	
+pinuechi  40-500	(80%)	
+pinurigi  40-500	(80%)	
+pinutaed  40-500	(80%)	
+pinusylv  40-500	(80%)	
+POTR40    40-500	(80%)	
+POGR40	  40-500	(80%)	
+PODEdelt  40-500	(80%)	
+PODEocci  40-500	(80%)	
+PRSO40    40-500	(80%)	
+QUEL40    40-500	(80%)	
+querprin  40-500	(80%)	
+QURU40    40-500	(80%)	
+quershum  40-500	(80%)	
+querfalc  40-500	(80%)	
+quermich  40-500	(80%)	
+querbico  40-500	(80%)	
+querlyra  40-500	(80%)	
+salxnigr  40-500	(80%)	
+TIAM40    40-500	(80%)	
+tilihete  40-500	(80%)	
+ULAM40    40-500	(80%)
+chamthyo  40-500	(80%)
+
+>>planted species depend on planting treatment
+  Plant	BEPA40 <<Asst Migr In-range: BEPA40 
+>>  Plant betunigr <<Asst Migr Out-range: betunigr
+
+SingleRepeat	10	<<10 years later-results in 65 yr rotation
+>>2nd entry
+    CohortsRemoved  SpeciesList	
+    abiebals  11-500	(98%)	<<leave some shelter in overstory to modify microclimate
+    acerrubr  11-500	<<(95%)
+    acersacc  11-500	<<(95%)
+    acersaci  11-500	<<(95%)
+    betualle  11-500	(98%)	
+    betupapy  45-500	(98%)	<<leave all of the younger age classes; also leaves some shade.
+    carycord  11-500	<<(95%)
+    fraxamer  11-500	<<(95%)
+    fagugran  11-500	<<(95%)
+    fraxnigr  11-500	<<(95%)
+    fraxpenn  11-500	<<(95%)
+    larilari  11-500	<<(95%)
+    piceglau  11-500	(98%)	
+    picemari  11-500	<<(95%)
+    pinubank  11-500	<<(95%)
+    pinuresi  30-500	(98%)	
+    pinustro  30-500	<<(95%)	
+    popubals  11-500	<<(95%) 
+    popugran  11-500	<<(95%)
+    poputrem  11-500	<<(95%)
+    prunsero  30-500	<<(95%)
+    queralba  11-500	(98%)	
+    quercocc  11-500	<<(95%)
+    querelli  11-500	<<(95%)
+    quermacr  11-500	<<(95%)
+    querrubr  11-500	(98%)	
+    quervelu  11-500	<<(95%)
+    taxodist  11-500	<<(95%)
+    thujocci  11-500	<<(95%)
+    tiliamer  11-500	<<(95%)
+    tsugcana  30-500	<<(95%)
+    ulmuamer  30-500	<<(95%)
+>>ABBA40	  11-500	(98%)	
+abiefras  11-500	
+acernigr  11-500	
+ACRU40    11-500	
+ACSA40    11-500	
+BEAL40    11-500	(98%)	
+BEPA40    45-500	(98%)	
+betulent  11-500	
+betunigr  11-500	
+caryglab  11-500	
+liqustyr  11-500	
+lirituli  11-500	
+nysssylv  11-500	
+>>PIGL40    11-500	(98%)	
+picerube  11-500	
+>>PIMA40   11-500	
+PIBA40   11-500	
+pinupond  11-500	
+PIRE40    11-500	(98%)	
+PIST40    11-500	
+pinuechi  11-500	
+pinurigi  11-500	
+pinutaed  11-500	
+pinusylv  11-500	
+POTR40   11-500	
+POGR40	  11-500	
+PODEdelt  11-500	
+PODEocci  11-500	
+PRSO40    11-500	
+QUEL40    11-500	
+querprin  11-500	
+QURU40    11-500	(98%)	
+quershum  11-500	
+querfalc  11-500	
+quermich  11-500	
+querbico  11-500	
+querlyra  11-500	
+salxnigr  11-500	
+TIAM40    11-500	
+tilihete  11-500	
+ULAM40    11-500
+chamthyo  11-500
+
+>>  Plant betulent <<Asst Migr Long-range: betulent
+
+>>  ################################################################################################################################
+    Prescription    CC_LowConif  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  105
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  30	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  	<<target to bl spruce, tamarack
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		105-500 	51	 	picemari larilari taxodist chamthyo <<PIMA40 
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci 		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 				<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent  				<<Birch typing rule
+>>    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	3.0	ALLOWOVERLAP	<<% of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+     CohortsRemoved  SpeciesList	
+    abiebals  1-500	(95%)				
+    acerrubr  1-500	<<(95%)				<<completely remove wet-tolerant hardwoods
+    acersacc  1-500	<<(95%)				
+    acersaci  1-500	<<(95%)				
+    betualle  1-500	<<(95%)				
+    betupapy  1-500	<<(95%)				
+    carycord  1-500	<<(95%)				
+    fraxamer  1-500	<<(95%)				
+    fagugran  1-500	<<(95%)				
+    fraxnigr  1-500	<<(95%)				
+    fraxpenn  1-500	<<(95%)				
+    larilari  1-500	(95%)				
+    piceglau  1-500	<<(95%)				
+    picemari  1-500	(95%)				
+    pinubank  1-500	<<(95%)				
+    pinuresi  1-500	<<(95%)				
+    pinustro  1-500	<<(95%)				
+    popubals  1-500	<<(95%)				
+    popugran  1-500	<<(95%)				
+    poputrem  1-500	<<(95%)				
+    prunsero  1-500	<<(95%)				
+    queralba  1-500	<<(95%)				
+    quercocc  1-500	<<(95%)				
+    querelli  1-500	<<(95%)				
+    quermacr  1-500	<<(95%)				
+    querrubr  1-500	<<(95%)				
+    quervelu  1-500	<<(95%)				
+    taxodist  1-500	(95%)				
+    thujocci  1-500	<<(95%)				
+    tiliamer  1-500	<<(95%)				
+    tsugcana  1-500	<<(95%)				
+    ulmuamer   1-500	<<(95%)				
+>>ABBA40	   1-500	(95%)	
+abiefras   1-500	(95%)	
+acernigr   1-500	<<(95%)				
+ACRU40 	   1-500	<<(95%)				
+ACSA40     1-500	<<(95%)				
+BEAL40	   1-500	<<(95%)				
+BEPA40	   1-500	<<(95%)				
+betulent   1-500	<<(95%)				
+betunigr   1-500	<<(95%)				
+caryglab   1-500	<<(95%)				
+liqustyr   1-500	<<(95%)				
+lirituli   1-500	<<(95%)	
+nysssylv   1-500	<<(95%)	
+>>PIGL40     1-500	<<(95%)	
+picerube   1-500	<<(95%)	
+>>PIMA40    1-500	(95%)	
+PIBA40     1-500	<<(95%)	
+pinupond   1-500	<<(95%)	
+PIRE40     1-500	<<(95%)	
+PIST40     1-500	<<(95%)	
+pinuechi   1-500	<<(95%)	
+pinurigi   1-500	<<(95%)	
+pinutaed   1-500	<<(95%)	
+pinusylv   1-500	<<(95%)	
+POTR40     1-500	<<(95%)	
+POGR40	   1-500	<<(95%)	
+PODEdelt   1-500	<<(95%)	
+PODEocci   1-500	<<(95%)	
+PRSO40     1-500	<<(95%)	
+QUEL40     1-500	<<(95%)	
+querprin   1-500	<<(95%)	
+QURU40     1-500	<<(95%)	
+quershum   1-500	<<(95%)	
+querfalc   1-500	<<(95%)	
+quermich   1-500	<<(95%)	
+querbico   1-500	<<(95%)	
+querlyra   1-500	<<(95%)	
+salxnigr   1-500	<<(95%)	
+TIAM40     1-500	<<(95%)	
+tilihete   1-500	<<(95%)	
+ULAM40     1-500	<<(95%)	
+chamthyo   1-500	(95%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+  Plant larilari <<Asst Migr In-range: PIMA40
+>>  Plant chamthyo acersaci querbico <<Asst Migr Out-range: chamthyo acersaci querbico
+>>  Plant taxodist <<Asst Migr Long-range: taxodist
+
+>>  ################################################################################################################################
+     Prescription    Shelter_LowHdwd
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  90
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  	<<target to bl ash
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum  <<Oak typing rule
+    Forbidden		65-400 		highest	  	BEPA40 betulent  				<<modified Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+>>    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 		<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting 	95% 	1.0	ALLOWOVERLAP	<<% of stand cut treatment levels: 60, 70, 80%, with 80% being BAU
+>>1st entry
+    CohortsRemoved  SpeciesList	
+    abiebals   30-500	<<(50%)		
+    acerrubr  90-500	(40%)		<<leave more waterlogging tolerant hardwoods to help keep water table down?
+    acersacc  90-500	(40%)		
+    acersaci  30-500	<<(50%)		
+    betualle  90-500	(40%)		
+    betupapy   30-500	<<(50%)		
+    carycord  30-500	<<(50%)						
+    fraxamer  30-500	<<(50%)						
+    fagugran  30-500	<<(50%)						
+    fraxnigr  90-500	(40%)		
+    fraxpenn  90-500	(40%)		
+    larilari  90-500	(40%)		
+    piceglau   30-500	<<(50%)						
+    picemari  90-500	(40%)		
+    pinubank   30-500	<<(50%)						
+    pinuresi   30-500	<<(50%)						
+    pinustro   30-500	<<(50%)						
+    popubals   30-500	<<(50%)						
+    popugran   30-500	<<(50%)						
+    poputrem   30-500	<<(50%)						
+    prunsero   30-500	<<(50%)						
+    queralba   30-500	<<(50%)	
+    quercocc   30-500	<<(50%)					
+    querelli  30-500	<<(50%)						
+    quermacr  30-500	<<(50%)						
+    querrubr  30-500	<<(50%)						
+    quervelu  30-500	<<(50%)	
+    taxodist  90-500	(40%)		
+    thujocci  90-500	(40%)		
+    tiliamer   30-500	<<(50%)						
+    tsugcana   30-500	<<(50%)						
+    ulmuamer  90-500	(40%)		
+>>ABBA40	  30-500			<<fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 
+abiefras  30-500
+acernigr  30-500
+ACRU40    90-500	(40%)	
+ACSA40    30-500
+BEAL40    90-500	(40%)	
+BEPA40    30-500
+betulent  30-500
+betunigr  90-500	(40%)	
+caryglab  30-500
+liqustyr  30-500	
+lirituli  30-500
+nysssylv  30-500
+>>PIGL40    30-500
+picerube  30-500
+>>PIMA40   30-500
+PIBA40   30-500
+pinupond  30-500
+PIRE40    30-500
+PIST40    30-500
+pinuechi  30-500
+pinurigi  30-500
+pinutaed  30-500
+pinusylv  30-500
+POTR40   30-500
+POGR40	  30-500
+PODEdelt  30-500
+PODEocci  30-500
+PRSO40    30-500
+QUEL40    30-500
+querprin  30-500
+QURU40    30-500
+quershum  30-500
+querfalc  30-500
+quermich  90-500	(40%)
+querbico  30-500
+querlyra  90-500	(40%)	
+salxnigr  90-500	(40%)
+TIAM40    30-500
+tilihete  30-500
+ULAM40 	  90-500	(40%)
+chamthyo  90-500	(40%)
+
+>>planted species depend on planting treatment
+  Plant	ACRU40 BEAL40 ULAM40 <<Asst Migr In-range: ACRU40 BEAL40 ULAM40
+>>  Plant acersaci querbico salxnigr <<Asst Migr Out-range: acersaci querbico salxnigr
+>>  Plant querlyra quermich <<Asst Migr Long-range: querlyra quermich
+
+SingleRepeat	10	<<10 years later-results in 70 yr rotation
+>>2nd entry
+    CohortsRemoved  SpeciesList	
+    abiebals  1-500	<<(85%)	<<Completely remove overstory and potential competitors
+    acerrubr  40-500	(50%)	<<only remove overstory of older cohorts of lowland hardwoods
+    acersacc  1-500	<<(85%)	
+    acersaci  40-500	(50%)	
+    betualle  40-500	(50%)	
+    betupapy  1-500	<<(85%)	
+    carycord  1-500	<<(85%)	
+    fraxamer  1-500	<<(85%)	
+    fagugran  1-500	<<(85%)	
+    fraxnigr  40-500	(50%)	
+    fraxpenn  40-500	(50%)	
+    larilari  40-500	(50%)	
+    piceglau  1-500	<<(85%)	
+    picemari  40-500	(50%)	
+    pinubank  1-500	<<(85%)	
+    pinuresi  1-500	<<(85%)	
+    pinustro  1-500	<<(85%)	
+    popubals  1-500	<<(85%)	
+    popugran  1-500	<<(85%)	
+    poputrem  1-500	<<(85%)	
+    prunsero  1-500	<<(85%)	
+    queralba  1-500	<<(85%)	
+    quercocc  1-500	<<(85%)					
+    querelli  1-500	<<(85%)	
+    quermacr  1-500	<<(85%)	
+    querrubr  1-500	<<(85%)	
+    quervelu  1-500	<<(85%)	
+    taxodist  40-500	(50%)		
+    thujocci  40-500	(50%)	
+    tiliamer  1-500	<<(85%)	
+    tsugcana  1-500	<<(85%)	
+    ulmuamer  40-500	(50%)	
+>>ABBA40	  1-500	
+abiefras  1-500	
+acernigr  1-500	
+ACRU40    1-500		(50%)
+ACSA40    1-500	
+BEAL40    1-500		(50%)
+BEPA40    1-500	
+betulent  1-500	
+betunigr  40-500	(50%)	
+caryglab  1-500	
+liqustyr  1-500	
+lirituli  1-500	
+nysssylv  1-500	
+>>PIGL40    1-500	
+picerube  1-500	
+>>PIMA40   1-500	
+PIBA40   1-500	
+pinupond  1-500	
+PIRE40    1-500	
+PIST40    1-500	
+pinuechi  1-500	
+pinurigi  1-500	
+pinutaed  1-500	
+pinusylv  1-500	
+POTR40   1-500	
+POGR40	  1-500	
+PODEdelt  1-500		(50%)
+PODEocci  1-500		(50%)
+PRSO40    1-500	
+QUEL40    1-500	
+querprin  1-500	
+QURU40    1-500	
+quershum  1-500	
+querfalc  1-500	
+quermich  40-500	(50%)	
+querbico  1-500	
+querlyra  40-500	(50%)		
+salxnigr  40-500	(50%)	
+TIAM40    1-500	
+tilihete  1-500	
+ULAM40    40-500	(50%)	
+chamthyo  40-500	(50%)
+
+>>no planting at second entry
+>>  ################################################################################################################################
+    Prescription    Central_Hdwd	<<Shelterwood Rx for assisted-migration hardwoods
+
+>>  STAND RANKING METHOD:
+
+	StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+    MinimumAge  65	<<Age when cutting may begin.  The age of a stand is the mean maximum age of all cells within the stand.
+>>    MaximumAge	<<used to protect old growth as necessary
+>>     StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>     AdjacencyType	StandAge << or TimeSinceLastHarvested (if time since last harvest of neighbor is important, but neighbor age per se is not)
+    MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  <<Target to shade-intolerant hardwoods
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+>>    Forbidden	species lists appearing in Required & Optional rules for other forest types 
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab		<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum  <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent  				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+>>    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting	95% 	1.0	ALLOWOVERLAP	<<gap size=1.0; % of stand cut treatment levels: 50% (size=3.1 ha), 70% (4.3), 90% (5.5), with 90% being BAU
+
+    CohortsRemoved  SpeciesList	
+    abiebals  65-500	(46%)	
+    acerrubr  65-500	(46%)				
+    acersacc  65-500	(46%)				
+    acersaci  65-500	(46%)				
+    betualle  65-500	(46%)				
+    betupapy  65-500	(46%)				
+>>    carycord  65-500	(46%)	<<leave carycord queralba acernigr betulent liqustyr 			
+    fraxamer  65-500	(46%)				
+    fagugran  65-500	(46%)				
+    fraxnigr  65-500	(46%)				
+    fraxpenn  65-500	(46%)				
+    larilari  65-500	(46%)
+    piceglau  65-500	(46%)				
+    picemari  65-500	(46%)				
+    pinubank  65-500	(46%)				
+    pinuresi  65-500	(46%)				
+    pinustro  65-500	(46%)				
+    popubals  65-500	(46%)				
+    popugran  65-500	(46%)				
+    poputrem  65-500	(46%)				
+    prunsero  65-500	(46%)				
+>>    queralba  65-500	(46%)				
+    quercocc  65-500	(46%)				
+    querelli  65-500	(46%)				
+    quermacr  65-500	(46%)				
+>>    querrubr  65-500	(46%)				
+    quervelu  65-500	(46%)				
+    taxodist  65-500	(46%)					
+    thujocci  65-500	(46%)					
+    tiliamer  65-500	(46%)				
+    tsugcana  65-500	(46%)
+    ulmuamer  65-500	(46%)
+>>ABBA40	   65-500	(46%)
+abiefras   65-500	(46%)
+>>acernigr   65-500	(46%)	
+ACRU40    65-500	(46%)
+ACSA40    65-500	(46%)
+>>BEAL40 
+BEPA40    65-500	(46%)
+>>betulent
+betunigr  65-500	(46%)
+caryglab  65-500	(46%)
+>>liqustyr  65-500	(46%)	
+lirituli  65-500	(46%)
+nysssylv  65-500	(46%)	
+>>PIGL40    65-500	(46%)
+picerube  65-500	(46%)	
+>>PIMA40   65-500	(46%)
+PIBA40    65-500	(46%)
+pinupond  65-500	(46%)
+PIRE40    65-500	(46%)
+PIST40    65-500	(46%)
+pinuechi  65-500	(46%)	
+pinurigi  65-500	(46%)	
+pinutaed  65-500	(46%)
+pinusylv  65-500	(46%)  
+POTR40    65-500	(46%)
+POGR40	  65-500	(46%)	
+PODEdelt  65-500	(46%)
+PODEocci  65-500	(46%)
+PRSO40    65-500	(46%)
+QUEL40    65-500	(46%)
+querprin  65-500	(46%)	
+QURU40    65-500	(46%)
+quershum  65-500	(46%)
+querfalc  65-500	(46%)
+quermich  65-500	(46%)
+querbico  65-500	(46%)	
+querlyra  65-500	(46%)	
+salxnigr  65-500	(46%)	
+TIAM40    65-500	(46%)
+tilihete  65-500	(46%)	
+ULAM40    65-500	(46%)  
+chamthyo  65-500	(46%)
+
+>>planted species depend on planting treatment; maybe none for thinning
+  Plant	ACRU40 PRSO40 QURU40 <<Asst Migr In-range: This Rx should never be implemented in ShortRange treatments bc required species are never planted
+>>  Plant carycord queralba acernigr <<Asst Migr Out-range: carycord queralba acernigr
+>>  Plant liqustyr betulent <<Asst Migr Long-range: liqustyr betulent
+
+SingleRepeat	10	
+>>2nd entry - 
+    CohortsRemoved  SpeciesList			<<remove central hardwood overstory
+    abiebals  75-500	<<(95%)
+    acerrubr  75-500	<<(95%) 	
+    acersacc  75-500	<<(95%)
+    acersaci  75-500	<<(95%)
+    betualle  75-500	<<(95%)
+    betupapy  75-500	<<(95%)
+    carycord  75-500	(95%)	<<Leave 5% of central hardwoods in overstory
+    fraxamer  75-500	<<(95%)
+    fagugran  75-500	<<(95%)
+    fraxnigr  75-500	<<(95%)
+    fraxpenn  75-500	<<(95%)
+    larilari  75-500	<<(95%)
+    piceglau  75-500	<<(95%)
+    picemari  75-500	<<(95%)
+    pinubank  75-500	<<(95%)
+    pinuresi  75-500	<<(95%)
+    pinustro  75-500	<<(95%)
+    popubals  75-500	<<(95%)
+    popugran  75-500	<<(95%)
+    poputrem  75-500	<<(95%)
+    prunsero  75-500	<<(95%)
+    queralba  75-500	(95%)
+    quercocc  75-500	<<(95%)
+    querelli  75-500	<<(95%)
+    quermacr  75-500	<<(95%)
+    querrubr  75-500	<<(95%)
+    quervelu  75-500	<<(95%)
+    taxodist  75-500	<<(95%)
+    thujocci  75-500	<<(95%)
+    tiliamer  75-500	<<(95%)
+    tsugcana  75-500	<<(95%)
+    ulmuamer  75-500	<<(95%)
+>>ABBA40	  75-500	<<(95%)	<<central harwoods: carycord queralba acernigr betulent liqustyr
+abiefras  75-500	<<(95%)
+acernigr  75-500	(95%)	
+ACRU40 	  75-500	<<(95%)
+ACSA40 	  75-500	<<(95%)
+BEAL40 	  75-500	<<(95%)
+BEPA40	  75-500	<<(95%)
+betulent  75-500	(95%)
+betunigr  75-500	<<(95%)
+caryglab  75-500	<<(95%)
+liqustyr  75-500	(95%)	
+lirituli  75-500	<<(95%)
+nysssylv  75-500	<<(95%)
+>>PIGL40	  75-500	<<(95%)
+picerube  75-500	<<(95%)	
+>>PIMA40	  75-500	<<(95%)
+PIBA40	  75-500	<<(95%)
+pinupond  75-500	<<(95%)
+PIRE40	  75-500	<<(95%)
+PIST40	  75-500	<<(95%)
+pinuechi  75-500	<<(95%)	
+pinurigi  75-500	<<(95%)	
+pinutaed  75-500	<<(95%)
+pinusylv  75-500	<<(95%)  
+POTR40	  75-500	<<(95%)
+POGR40	  75-500	<<(95%)	
+PODEdelt  75-500	<<(95%)
+PODEocci  75-500	<<(95%)
+PRSO40	  75-500	<<(95%)	
+QUEL40	  75-500	<<(95%)
+querprin  75-500	<<(95%)	
+QURU40	  75-500	<<(95%)
+quershum  75-500	<<(95%)
+querfalc  75-500	<<(95%)
+quermich  75-500	<<(95%)
+querbico  75-500	<<(95%)	
+querlyra  75-500	<<(95%)	
+salxnigr  75-500	<<(95%)	
+TIAM40	  75-500	<<(95%)
+tilihete  75-500	<<(95%)
+ULAM40    75-500	<<(95%)
+chamthyo  75-500	<<(95%)
+
+>>no planting on second entry that removes overstory
+>>  ################################################################################################################################
+    Prescription    CC_PineOak		<<core jack pine stands that are converted to pine-oak, managed by shelterwood cutting
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  100	
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  100	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to jack pine
+>> Inclusion Rule	ageRange	percentCells	species
+    Required 		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci 		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 			<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+>>    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 				<<Red pine typing rule
+>>    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab			<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba quermacr quervelu querbico quershum 		<<modified Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 		<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+>>    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting	95% 	1.0	ALLOWOVERLAP	<<gap size=1.0; % of stand cut treatment levels: 50% (size=3.1 ha), 70% (4.3), 90% (5.5), with 90% being BAU
+>>			Removal %
+    CohortsRemoved  SpeciesList	
+    abiebals  65-500	(46%)	
+    acerrubr  65-500	(46%)				
+    acersacc  65-500	(46%)				
+    acersaci  65-500	(46%)				
+    betualle  65-500	(46%)				
+    betupapy  65-500	(46%)				
+    carycord  65-500	(46%)			
+    fraxamer  65-500	(46%)				
+    fagugran  65-500	(46%)				
+    fraxnigr  65-500	(46%)				
+    fraxpenn  65-500	(46%)				
+    larilari  65-500	(46%)
+    piceglau  65-500	(46%)				
+    picemari  65-500	(46%)				
+>>    pinubank  65-500	(46%	<<quervelu pinurigi pinuechi querfalc querprin; include remnant jack pine		
+    pinuresi  65-500	(46%)				
+    pinustro  65-500	(46%)				
+    popubals  65-500	(46%)				
+    popugran  65-500	(46%)				
+    poputrem  65-500	(46%)				
+    prunsero  65-500	(46%)				
+    queralba  65-500	(46%)				
+    quercocc  65-500	(46%)				
+    querelli  65-500	(46%)				
+    quermacr  65-500	(46%)				
+    querrubr  65-500	(46%)				
+>>    quervelu  65-500	(46%)				
+    taxodist  65-500	(46%)					
+    thujocci  65-500	(46%)					
+    tiliamer  65-500	(46%)				
+    tsugcana  65-500	(46%)
+    ulmuamer  65-500	(46%)
+>>ABBA40	   65-500	(46%)	<<quervelu pinurigi pinuechi querfalc querprin
+abiefras   65-500	(46%)
+acernigr   65-500	(46%)	
+ACRU40    65-500	(46%)
+ACSA40    65-500	(46%)
+BEAL40    65-500	(46%)
+BEPA40    65-500	(46%)
+betulent   65-500	(46%)
+betunigr  65-500	(46%)
+caryglab  65-500	(46%)
+liqustyr  65-500	(46%)	
+lirituli  65-500	(46%)
+nysssylv  65-500	(46%)	
+>>PIGL40    65-500	(46%)
+picerube  65-500	(46%)	
+>>PIMA40   65-500	(46%)
+>>PIBA40   65-500	(46%)
+pinupond  65-500	(46%)
+PIRE40    65-500	(46%)
+PIST40    65-500	(46%)
+>>pinuechi  65-500	(46%)	
+>>pinurigi  65-500	(46%)	
+pinutaed  65-500	(46%)
+pinusylv  65-500	(46%)  
+POTR40    65-500	(46%)
+POGR40	  65-500	(46%)	
+PODEdelt  65-500	(46%)
+PODEocci  65-500	(46%)
+PRSO40    65-500	(46%)
+QUEL40    65-500	(46%)
+>>querprin  65-500	(46%)	
+QURU40    65-500	(46%)
+quershum  65-500	(46%)
+>>querfalc  65-500	(46%)
+quermich  65-500	(46%)
+querbico  65-500	(46%)	
+querlyra  65-500	(46%)	
+salxnigr  65-500	(46%)	
+TIAM40    65-500	(46%)
+>>tilihete  65-500	(46%)	
+ULAM40     65-500	(46%)
+chamthyo  65-500	(46%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+  Plant	PIBA40 <<Asst Migr In-range: PIBA40 This Rx should never be implemented in ShortRange treatments bc required species are never planted
+>>  Plant pinurigi quervelu <<Asst Migr Out-range: pinurigi quervelu
+>>  Plant pinuechi querfalc querprin <<Asst Migr Long-range: pinuechi querfalc querprin
+
+SingleRepeat	10	
+>>2nd entry - 
+    CohortsRemoved  SpeciesList		<<remove pine-oak overstory
+    abiebals  75-500	<<(95%)
+    acerrubr  75-500	<<(95%) 	<<Leave 5% of pine-oak in overstory
+    acersacc  75-500	<<(95%)
+    acersaci  75-500	<<(95%)
+    betualle  75-500	<<(95%)
+    betupapy  75-500	<<(95%)
+    carycord  75-500	<<(95%)
+    fraxamer  75-500	<<(95%)
+    fagugran  75-500	<<(95%)
+    fraxnigr  75-500	<<(95%)
+    fraxpenn  75-500	<<(95%)
+    larilari  75-500	<<(95%)
+    piceglau  75-500	<<(95%)
+    picemari  75-500	<<(95%)
+    pinubank  75-500	(95%)
+    pinuresi  75-500	<<(95%)
+    pinustro  75-500	<<(95%)
+    popubals  75-500	<<(95%)
+    popugran  75-500	<<(95%)
+    poputrem  75-500	<<(95%)
+    prunsero  75-500	<<(95%)
+    queralba  75-500	<<(95%)
+    quercocc  75-500	<<(95%)
+    querelli  75-500	<<(95%)
+    quermacr  75-500	<<(95%)
+    querrubr  75-500	<<(95%)
+    quervelu  75-500	(95%)
+    taxodist  75-500	<<(95%)
+    thujocci  75-500	<<(95%)
+    tiliamer  75-500	<<(95%)
+    tsugcana  75-500	<<(95%)
+    ulmuamer  75-500	<<(95%)
+>>ABBA40	  75-500	<<(95%)	<<quervelu pinurigi pinuechi querfalc querprin
+abiefras  75-500	<<(95%)
+acernigr  75-500	<<(95%)	
+ACRU40 	  75-500	<<(95%)
+ACSA40 	  75-500	<<(95%)
+BEAL40 	  75-500	<<(95%)
+BEPA40	  75-500	<<(95%)
+betulent  75-500	<<(95%)
+betunigr  75-500	<<(95%)
+caryglab  75-500	<<(95%)
+liqustyr  75-500	<<(95%)	
+lirituli  75-500	<<(95%)
+nysssylv  75-500	<<(95%)
+>>PIGL40	  75-500	<<(95%)
+picerube  75-500	<<(95%)	
+>>PIMA40	  75-500	<<(95%)
+PIBA40	  75-500	(95%)
+pinupond  75-500	<<(95%)
+PIRE40	  75-500	<<(95%)
+PIST40	  75-500	<<(95%)
+pinuechi  75-500	(95%)	
+pinurigi  75-500	(95%)	
+pinutaed  75-500	<<(95%)
+pinusylv  75-500	<<(95%)  
+POTR40	  75-500	<<(95%)
+POGR40	  75-500	<<(95%)	
+PODEdelt  75-500	<<(95%)
+PODEocci  75-500	<<(95%)
+PRSO40	  75-500	<<(95%)	
+QUEL40	  75-500	<<(95%)
+querprin  75-500	(95%)	
+QURU40	  75-500	<<(95%)
+quershum  75-500	<<(95%)
+querfalc  75-500	(95%)
+quermich  75-500	<<(95%)
+querbico  75-500	<<(95%)	
+querlyra  75-500	<<(95%)	
+salxnigr  75-500	<<(95%)	
+TIAM40	  75-500	<<(95%)
+tilihete  75-500	<<(95%)
+ULAM40    75-500	<<(95%)
+chamthyo  75-500	<<(95%)
+
+>>no planting on second entry that removes overstory
+
+>>  ################################################################################################################################
+    Prescription    Southern_Hdwd	<<shade-intolerant southern hardwoods
+
+>>  STAND RANKING METHOD:
+
+	StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+    MinimumAge  65	<<Age when cutting may begin.  The age of a stand is the mean maximum age of all cells within the stand.
+>>    MaximumAge	<<used to protect old growth as necessary
+>>     StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>     AdjacencyType	StandAge << or TimeSinceLastHarvested (if time since last harvest of neighbor is important, but neighbor age per se is not)
+    MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  <<Target to shade-intolerant hardwoods
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+>>    Optional	Other FTs managed by Thinning
+>>    Forbidden	species lists appearing in Required & Optional rules for other forest types 
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana ACSA40 BEAL40 TIAM40 	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		65-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer ACRU40 PRSO40 QURU40 	<<shade-intolerant hardwoods typing rule
+    Forbidden		50-500		highest		poputrem popugran popubals POTR40 POGR40 PODEdelt PODEocci		<<Aspen typing rule
+    Forbidden		52-500 		45 		pinubank PIBA40 				<<Jack pine typing rule
+    Forbidden		90-500 		highest		abiebals piceglau picerube nysssylv abiefras	<<Spruce-fir typing rule ABBA40 PIGL40 
+    Forbidden		120-500		highest		pinuresi PIRE40	pinupond pinuechi 		<<Red pine typing rule
+    Forbidden		135-500		highest		pinustro PIST40 pinupond pinusylv caryglab		<<White pine typing rule
+    Forbidden		90-500 		highest  	queralba querelli quermacr querrubr quervelu QURU40 QUEL40 querbico quershum  <<Oak typing rule
+    Forbidden		65-400 		highest	  	betupapy BEPA40 betunigr betulent  				<<Birch typing rule
+    Forbidden		105-500 	51	 	picemari larilari taxodist chamthyo		<<Lowland conifer typing rule PIMA40 
+    Forbidden		90-500 		40	  	fraxnigr fraxpenn acersaci ULAM40 salxnigr quermich querlyra 	<<Lowland hardwood typing rule   
+    Forbidden		65-500		51		carycord queralba acernigr betulent liqustyr <<central hardwoods typing rule
+    Forbidden		100-500 	51 		quervelu pinurigi pinuechi querfalc querprin	<<PineOak type that replaces jack pine
+>>    Forbidden		65-500		51		carycord quervelu lirituli liqustyr tilihete 	<<shade-intolerant southern hardwoods typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+   SiteSelection Complete	<<100% stand cut
+>>  SiteSelection PatchCutting	95% 	1.0	ALLOWOVERLAP	<<gap size=1.0; % of stand cut treatment levels: 50% (size=3.1 ha), 70% (4.3), 90% (5.5), with 90% being BAU
+>>			Removal %
+    CohortsRemoved  SpeciesList	
+    abiebals  65-500	(46%)	
+    acerrubr  65-500	(46%)				
+    acersacc  65-500	(46%)				
+    acersaci  65-500	(46%)				
+    betualle  65-500	(46%)				
+    betupapy  65-500	(46%)				
+>>    carycord  65-500	(46%)	<<carycord queralba quervelu lirituli liqustyr tilihete 			
+    fraxamer  65-500	(46%)				
+    fagugran  65-500	(46%)				
+    fraxnigr  65-500	(46%)				
+    fraxpenn  65-500	(46%)				
+    larilari  65-500	(46%)
+    piceglau  65-500	(46%)				
+    picemari  65-500	(46%)				
+    pinubank  65-500	(46%)				
+    pinuresi  65-500	(46%)				
+    pinustro  65-500	(46%)				
+    popubals  65-500	(46%)				
+    popugran  65-500	(46%)				
+    poputrem  65-500	(46%)				
+    prunsero  65-500	(46%)				
+>>    queralba  65-500	(46%)				
+    quercocc  65-500	(46%)				
+    querelli  65-500	(46%)				
+    quermacr  65-500	(46%)				
+    querrubr  65-500	(46%)				
+>>    quervelu  65-500	(46%)				
+    taxodist  65-500	(46%)					
+    thujocci  65-500	(46%)					
+    tiliamer  65-500	(46%)				
+    tsugcana  65-500	(46%)
+    ulmuamer  65-500	(46%)
+>>ABBA40	   65-500	(46%)	<<carycord queralba quervelu lirituli liqustyr tilihete
+abiefras   65-500	(46%)
+acernigr   65-500	(46%)	
+ACRU40    65-500	(46%)
+ACSA40    65-500	(46%)
+BEAL40    65-500	(46%)
+BEPA40    65-500	(46%)
+betulent   65-500	(46%)
+betunigr  65-500	(46%)
+caryglab  65-500	(46%)
+>>liqustyr  65-500	(46%)	
+>>lirituli  65-500	(46%)
+nysssylv  65-500	(46%)	
+>>PIGL40    65-500	(46%)
+picerube  65-500	(46%)	
+>>PIMA40   65-500	(46%)
+PIBA40   65-500	(46%)
+pinupond  65-500	(46%)
+PIRE40    65-500	(46%)
+PIST40    65-500	(46%)
+pinuechi  65-500	(46%)	
+pinurigi  65-500	(46%)	
+pinutaed  65-500	(46%)
+pinusylv  65-500	(46%)  
+POTR40    65-500	(46%)
+POGR40	  65-500	(46%)	
+PODEdelt  65-500	(46%)
+PODEocci  65-500	(46%)
+PRSO40    65-500	(46%)
+QUEL40    65-500	(46%)
+querprin  65-500	(46%)	
+QURU40    65-500	(46%)
+quershum  65-500	(46%)
+querfalc  65-500	(46%)
+quermich  65-500	(46%)
+querbico  65-500	(46%)	
+querlyra  65-500	(46%)	
+salxnigr  65-500	(46%)	
+TIAM40    65-500	(46%)
+>>tilihete  65-500	(46%)	
+ULAM40     65-500	(46%)
+chamthyo  65-500	(46%)
+
+>>planted species depend on planting treatment; maybe none for thinning
+  Plant	ACRU40 PRSO40 QURU40 <<Asst Migr In-range: ACRU40 PRSO40 QURU40  This Rx should never be implemented in ShortRange treatments bc required species are never planted
+>>  Plant carycord queralba quervelu <<Asst Migr Out-range: carycord queralba quervelu
+>>  Plant lirituli liqustyr tilihete <<Asst Migr Long-range: lirituli liqustyr tilihete
+
+SingleRepeat	10	
+>>2nd entry - 
+    CohortsRemoved  SpeciesList		<<remove southern hardwood overstory
+    abiebals  75-500	<<(95%)
+    acerrubr  75-500	<<(95%) 	<<Leave 5% of mid-tolerant southern hardwoods in overstory
+    acersacc  75-500	<<(95%)
+    acersaci  75-500	<<(95%)
+    betualle  75-500	<<(95%)
+    betupapy  75-500	<<(95%)
+    carycord  75-500	(95%)		<<carycord queralba quervelu lirituli liqustyr tilihete
+    fraxamer  75-500	<<(95%)
+    fagugran  75-500	<<(95%)
+    fraxnigr  75-500	<<(95%)
+    fraxpenn  75-500	<<(95%)
+    larilari  75-500	<<(95%)
+    piceglau  75-500	<<(95%)
+    picemari  75-500	<<(95%)
+    pinubank  75-500	<<(95%)
+    pinuresi  75-500	<<(95%)
+    pinustro  75-500	<<(95%)
+    popubals  75-500	<<(95%)
+    popugran  75-500	<<(95%)
+    poputrem  75-500	<<(95%)
+    prunsero  75-500	<<(95%)
+    queralba  75-500	(95%)
+    quercocc  75-500	(95%)	<<this is a  southern species that is not in typing rule, but cut it anyway
+    querelli  75-500	<<(95%)
+    quermacr  75-500	<<(95%)
+    querrubr  75-500	<<(95%)
+    quervelu  75-500	(95%)
+    taxodist  75-500	<<(95%)
+    thujocci  75-500	<<(95%)
+    tiliamer  75-500	<<(95%)
+    tsugcana  75-500	<<(95%)
+    ulmuamer  75-500	<<(95%)
+>>ABBA40	  75-500	<<(95%)	<<lirituli liqustyr tilihete
+abiefras  75-500	<<(95%)
+acernigr  75-500	<<(95%)	
+ACRU40 	  75-500	<<(95%)
+ACSA40 	  75-500	<<(95%)
+BEAL40 	  75-500	<<(95%)
+BEPA40	  75-500	<<(95%)
+betulent  75-500	<<(95%)
+betunigr  75-500	<<(95%)
+caryglab  75-500	<<(95%)
+liqustyr  75-500	(95%)	
+lirituli  75-500	(95%)
+nysssylv  75-500	<<(95%)
+>>PIGL40	  75-500	<<(95%)
+picerube  75-500	<<(95%)	
+>>PIMA40	  75-500	<<(95%)
+PIBA40	  75-500	<<(95%)
+pinupond  75-500	<<(95%)
+PIRE40	  75-500	<<(95%)
+PIST40	  75-500	<<(95%)
+pinuechi  75-500	<<(95%)	
+pinurigi  75-500	<<(95%)	
+pinutaed  75-500	<<(95%)
+pinusylv  75-500	<<(95%)  
+POTR40	  75-500	<<(95%)
+POGR40	  75-500	<<(95%)	
+PODEdelt  75-500	<<(95%)
+PODEocci  75-500	<<(95%)
+PRSO40	  75-500	<<(95%)	
+QUEL40	  75-500	<<(95%)
+querprin  75-500	<<(95%)	
+QURU40	  75-500	<<(95%)
+quershum  75-500	<<(95%)
+querfalc  75-500	<<(95%)
+quermich  75-500	<<(95%)
+querbico  75-500	<<(95%)	
+querlyra  75-500	<<(95%)	
+salxnigr  75-500	<<(95%)	
+TIAM40	  75-500	<<(95%)
+tilihete  75-500	(95%)
+ULAM40    75-500	<<(95%)
+chamthyo  75-500	<<(95%)
+
+>>no planting on second entry that removes overstory
+>>  ################################################################################################################################
+
+>>End prescriptions ************************************************************************
+
+>>------------------------------------------------------------------------------------------------
+>>  HARVEST IMPLEMENTATION TABLE
+>>  The following table defines which management area (defined in the ManagementArea file) is
+>>  treated by which prescription(s).  
+
+    HarvestImplementations
+
+>>There is only 1 MA in the map
+>>  Mgmt Area   Prescription    Harvest Area    Begin Time  End Time	
+>>				(per timestep)
+>>5 year timestep ==================== 5 yr
+    1		CC_Aspen	1.011% 					<<(control rotation length) This will spread out initial cuts across 5 decades
+    1		Shelter_Hdwd	1.930%	1	80			<<Use this rate for first rotation
+    1		Shelter_Hdwd	2.5%	81	210			<<double rate to allow harvest of the big increase in red maple; min time to harvest will prevent the excess from being harvest all at once
+    1		Selection_NH	1.972%					<<includes hemlock stands in the % landscape occupied by this type
+    1		CC_JPine 	0.024% 					<<double rate bc it does not decline w/ decline of spp. (control rotation length) This will spread out initial cuts across 6 decades
+    1		CC_RPine	0.123%					<<% sets rotation length according to initial abundance of the FT. Target r.l. is 100 yrs. If FT increases in abundance, oldest will be cut first
+    1		CC_WPine	0.262%					<<% sets rotation length according to initial abundance of the FT. Target r.l. is 120 yrs. If FT increases in abundance, oldest will be cut first	
+    1		Shelter_Oak	0.296%	
+    1		CC_Spru_Fir  	0.318%	 				<<% sets rotation length according to initial abundance of the FT. Target r.l. is 80 yrs. If FT increases in abundance, oldest will be cut first
+    1		Shelter_Birch	0.021%			
+    1		Shelter_LowHdwd 0.574%	1	20			<<double initial rate to proactively beat EAB	
+    1		Shelter_LowHdwd 0.287%	21	210			<<% sets rotation length according to initial abundance of the FT. Target r.l. is 100 yrs. If FT increases in abundance, oldest will be cut first	
+    1		CC_LowConif	0.502%	 				<<% sets rotation length according to initial abundance of the FT. Target r.l. is 120 yrs. If FT increases in abundance, oldest will be cut first
+    1		Central_Hdwd	1.000%					<<Should cut all of these newly created types as they reach rotation age	
+    1		CC_PineOak	1.000%					<<Should cut all of these newly created types as they reach rotation age	
+    1		Southern_Hdwd	1.000%					<<Should cut all of these newly created types as they reach rotation age
+>>-------------------------------------------------------------------------------------------------
+>> OUTPUT FILES
+
+PrescriptionMaps    harvest/prescripts-{timestep}.gis
+>>BiomassMaps         harvest/biomass-removed-{timestep}.gis
+EventLog            harvest/log.csv
+SummaryLog	    harvest/SummaryLog.csv
+>>-------------------------------------------------------------------------------------------------
+
+
+
+

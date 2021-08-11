@@ -1,0 +1,52 @@
+LandisData	"BDA Agent"
+>>intended time step not known
+BDAAgentName	EmeraldAshBorer								
+BDPCalibrator	1	 							
+SRDMode	mean								
+									
+>>-------- Regional Outbreak Inputs -------------
+OutbreakPattern                             CyclicUniform    <<CyclicNormal or CyclicUniform
+MaxInterval                                       1                              << years
+MinInterval                                       1                              << years
+TimeSinceLastEpidemic                 0                              <<years
+TemporalType                                   variablepulse     <<pulse or variablepulse
+MinROS                                               3
+MaxROS                                               3
+									
+>>-------- Dispersal Inputs ----------------------									
+Dispersal	no	<<yes or no							
+DispersalRate	240	<<meters/year 30000x30000 m in approx 20 years 							
+EpidemicThresh	0.0001	<< to calibrate, compare how rapidly it spreads accross the landscape							
+InitialEpicenterNum	1								
+OutbreakEpicenterCoeff	0.01		
+OutbreakEpicenterThresh 0.0						
+SeedEpicenter	no	<<yes or no							
+SeedEpicenterCoeff	0.5								
+DispersalTemplate	MaxRadius	<<MaxRadius, 4N,8N, 12N, or 24N							
+				 					
+									
+>>Neighborhood Resource Inputs 									
+NeighborFlag	no 	<<yes or no							
+NeighborSpeedUp	none	<<none, 2x, 3x, or 4x							
+NeighborRadius	1	<<meters							
+NeighborShape	uniform	<<uniform, linear, or gaussian							
+NeighborWeight	1								
+
+>>-- Intensity Class Thresholds --
+>>IntensityClass1_BDP 	0   -- Hardwired value
+IntensityClass2_BDP 	0.25
+IntensityClass3_BDP 	0.50 	
+								
+BDASpeciesParameters									
+		
+>>         -------------Host Value--------------  -------------Susceptibility-------------
+>>Species  MinorHost    2ndHost      MajorHost    Class3(least) Class2        Class1	    CFS
+>>Name     Age SRDProb  Age SRDProb  Age SRDProb  Age VulnProb  Age VulnProb  Age VulnProb  Conifer?
+>> ---------------------------------------------------------------------------------------------
+fraxamer     1   1.0	42   0.5     81  0.5	  1   1.0	42   0.5     81  0.5		no	<<1.0, 0.85, 0.65
+fraxnigr     1   1.0	32   0.5     61  0.5	  1   1.0	32   0.5     61  0.5		no	<<1.0, 0.6, 0.4
+fraxpenn     1   1.0	32   0.5     61  0.5	  1   1.0	32   0.5     61  0.5		no
+>>fraxnigr     1    1.0   1   1.0	     1   1.0	  1   1.0	1   1.0	     1   1.0		no
+>>fraxpenn     1    1.0   1   1.0	     1   1.0	  1   1.0	1   1.0	     1   1.0		no
+
+ 									

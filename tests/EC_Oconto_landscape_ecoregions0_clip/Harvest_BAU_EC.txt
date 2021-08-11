@@ -1,0 +1,835 @@
+LandisData  "Biomass Harvest"
+
+>>-------------------------------------------------------------------------------------------------
+>>  TIMESTEP
+
+Timestep    5
+
+>>-------------------------------------------------------------------------------------------------
+>>  MANAGEMENT AREAS: the .gis file which defines the management areas.
+
+ManagementAreas EC_Oconto_landscape_mngt.img
+
+>>-------------------------------------------------------------------------------------------------
+>>  STANDS: the .gis file which defines the stands.  A stand can belong to one and only one management area.
+
+Stands      EC_Oconto_landscape_stand.img
+
+>> ====================================================
+>>Adaptive climate change experiment
+>>Three treatment factors: 1) cutting practices, 2) planting practices, 3) climate 
+>>Cutting practices: cutting intensity of two components of stand harvesting practices.  1) retention (% biomass remaining in harvested areas (gaps?) and 2) gaps (% area of stand actually cut).  
+>>Cutting practices levels: retention=50%, 30%, 10% (BAU), which equals 50%, 70%, 90% removed; total gap area=50%, 70%, 90% (BAU) [OR add by increments ~40% of minumum]
+>>Planting practices: forced establishment of a different suite of species after cutting.
+>>Planting practices levels: 
+>> 1) BAU planting practices 
+>> 2) enrichment planting (additional planting of endemic species to increase diversity) 
+>> 3) assisted migration (combination of enrichment planting and some planting of non-endemic species).
+
+>>To modify treatment levels, edit:
+>>  (1) Patchcutting %
+>>  (2) CohortsRemoved % (multiple) 
+>>  (3) Planting list(s)
+>> --------------------------------------------
+
+>>NOTE: Required statements are generally less restrictive and Forbidden statements are generally more restrictive for rare types.  Opposite true for more common types.
+
+>>======================    START PRESCRIPTIONS    =================================================
+    Prescription    Selection_NH	<<thinning 
+
+>>  STAND RANKING METHOD:
+
+	StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+    MinimumAge  60	<<Minimum STAND age when thinning may begin.  The age of a stand is the mean maximum age of all cells within the stand.
+>>    MaximumAge	<<used to protect old growth as necessary
+>>     StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>     AdjacencyType	StandAge << or TimeSinceLastHarvested (if time since last harvest of neighbor is important, but neighbor age per se is not)
+    MinimumTimeSinceLastHarvest  15	<<Decide if we should alter timestep
+
+  ForestTypeTable  <<Target to northern hardwood, hemlock 
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		60-500		highest		acerrubr acersacc fagugran tiliamer betualle tsugcana	<<MAY need to add acerrubr. a diverse stand dominated by these spp. is considered NH
+>>    Optional		60-500		51		acersacc fagugran tiliamer betualle tsugcana 	<<any stand with these hardwood sp. on >50% of cells is NH
+>>    Optional		60-500		40		acersacc acerrubr tiliamer fagugran betualle fraxamer querrubr carycord prunsero <<any stand with these hardwood sp. on >40% of cells is NH
+    Optional		60-500		50		tsugcana	<<stands with large mature hemlock component are harvested by this selection cutting prescription
+>>    Forbidden	species lists appearing in Required & Optional rules for other forest types 
+>>    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete	<<PatchCutting	90% 		5.5	<<% of stand cut treatment levels: 50% (size=3.1 ha), 70% (4.3), 90% (5.5), with 90% being BAU
+
+    CohortsRemoved  SpeciesList	
+    abiebals  61-75 (25%) 76-450 <<(100%) 	
+    acerrubr  61-75 (25%) 76-450 <<(100%)		
+    acersacc  61-75 (25%) 76-450 <<(100%)				
+    betualle  61-75 (25%) 76-450 <<(100%)				
+    betupapy  61-75 (25%) 76-450 <<(100%)				
+    carycord  61-75 (25%) 76-450 <<(100%)				
+    fraxamer  61-75 (25%) 76-450 <<(100%)				
+    fagugran  61-75 (25%) 76-450 <<(100%)				
+    fraxnigr  61-75 (25%) 76-450 <<(100%)				
+    fraxpenn  61-75 (25%) 76-450 <<(100%)				
+    larilari  61-75 (25%) 76-450 <<(100%)
+    piceglau  61-75 (25%) 76-450 <<(100%)				
+    picemari  61-75 (25%) 76-450 <<(100%)				
+    pinubank  61-75 (25%) 76-450 <<(100%)				
+    pinuresi  61-75 (25%) 76-450 <<(100%)				
+    pinustro  61-75 (25%) 76-450 <<(100%)				
+    popubals  61-75 (25%) 76-450 <<(100%)				
+    popugran  61-75 (25%) 76-450 <<(100%)				
+    poputrem  61-75 (25%) 76-450 <<(100%)				
+    prunsero  61-75 (25%) 76-450 <<(100%)				
+    queralba  61-75 (25%) 76-450 <<(100%)				
+    querelli  61-75 (25%) 76-450 <<(100%)				
+    quermacr  61-75 (25%) 76-450 <<(100%)				
+    querrubr  61-75 (25%) 76-450 <<(100%)				
+    quervelu  61-75 (25%) 76-450 <<(100%)				
+    quercocc  61-75 (25%) 76-450 <<(100%)				
+    thujocci  61-75 (25%) 76-450 <<(100%)					
+    tiliamer  61-75 (25%) 76-450 <<(100%)				
+    tsugcana  61-75 (25%) 76-450 <<(100%)
+
+>>planted species depend on planting treatment; none for thinning
+>>  Plant	<<BAU species 	
+>>  Plant	<<endemic species 
+>>  Plant	<<exotic+endemic species 
+
+>>MultipleRepeat	15	<<Repeat thinnings every 15 years
+>>  ################################################################################################################################
+    Prescription    Shelter_Hdwd	<<for more shade-intolerant hardwoods
+
+>>  STAND RANKING METHOD:
+
+	StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+    MinimumAge  60	<<Age when thinning may begin.  The age of a stand is the mean maximum age of all cells within the stand.
+>>    MaximumAge	<<used to protect old growth as necessary
+>>     StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>     AdjacencyType	StandAge << or TimeSinceLastHarvested (if time since last harvest of neighbor is important, but neighbor age per se is not)
+    MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  <<Target to shade-intolerant hardwoods
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		60-500		51		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+>>    Optional	Other FTs managed by Thinning
+>>    Forbidden	species lists appearing in Required & Optional rules for other forest types 
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+>>    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete 	<<PatchCutting	90% 		5.5	<<% of stand cut treatment levels: 50% (size=3.1 ha), 70% (4.3), 90% (5.5), with 90% being BAU
+
+    CohortsRemoved  SpeciesList	
+    abiebals  60-500	(40%)			<<% of biomass removal treatment levels: 20%, 30%, 40%, with 40% being BAU
+>>    acerrubr  60-500	(40%)				
+    acersacc  60-500	(40%)				
+    betualle  60-500	(40%)				
+    betupapy  60-500	(40%)				
+>>    carycord  60-500	(40%)				
+>>    fraxamer  60-500	(40%)				
+    fagugran  60-500	(40%)				
+    fraxnigr  60-500	(40%)				
+    fraxpenn  60-500	(40%)				
+    larilari  80-500	(40%)
+    piceglau  60-500	(40%)				
+    picemari  60-500	(40%)				
+    pinubank  60-500	(40%)				
+    pinuresi  60-500	(40%)				
+    pinustro  60-500	(40%)				
+    popubals  60-500	(40%)				
+    popugran  60-500	(40%)				
+    poputrem  60-500	(40%)				
+>>    prunsero  60-500	(40%)				
+    queralba  60-500	(40%)				
+    querelli  60-500	(40%)				
+    quermacr  60-500	(40%)				
+>>    querrubr  60-500	(40%)				
+    quervelu  60-500	(40%)				
+    quercocc  60-500	(40%)
+    thujocci  60-500	(40%)					
+    tiliamer  60-500	(40%)				
+    tsugcana  60-500	(40%)
+>>    ulmuamer	60-500	(40%)
+
+>>planted species depend on planting treatment; maybe none for thinning
+>>  Plant	<<BAU species 		
+>>  Plant	<<endemic species 
+>>  Plant	<<exotic+endemic species 
+
+SingleRepeat	10	<<could be 5 years
+>>2nd entry - completely remove overstory (100%)
+    CohortsRemoved  SpeciesList	
+    abiebals  70-500	<<Completely remove overstory
+    acerrubr  70-500	(98%)	<<leave some mid-tolerants
+    acersacc  70-500	
+    betualle  70-500	 
+    betupapy  70-500	
+    carycord  70-500	(98%)
+    fraxamer  70-500	(98%)
+    fagugran  70-500	
+    fraxnigr  70-500	(98%)
+    fraxpenn  70-500	
+    larilari  90-500
+    piceglau  70-500	
+    picemari  70-500	
+    pinubank  70-500	
+    pinuresi  70-500	
+    pinustro  70-500	
+    popubals  70-500	
+    popugran  70-500	
+    poputrem  70-500	
+    prunsero  70-500	(98%)
+    queralba  70-500	
+    querelli  70-500	
+    quermacr  70-500	
+    querrubr  70-500	
+    quervelu  70-500	
+    quercocc  70-500	
+    thujocci  70-500	
+    tiliamer  70-500	
+    tsugcana  70-500	
+>>    ulmuamer  70-500
+
+>>no planting on second entry that removes overstory
+>>  ################################################################################################################################
+    Prescription    CC_Aspen	  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  40	
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10  <<private owners don't care.	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  40	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to aspen, birch
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		40-500		highest		poputrem popugran popubals 
+>>    Optional		45-500		highest		poputrem popugran popubals 
+>>    Optional 		45-500 		51		poputrem popugran popubals <<use this if there is trouble finding enough stands to meet target
+>>species lists appearing inclusion rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+>>    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete	<<PatchCutting	90% 		5.5	<<% of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  ClearCut	<<SpeciesList	
+>>    abiebals  1-500	(90%)				<<% of biomass removal treatment levels: 50, 70, 90%, with 100% being BAU
+>>    acerrubr  1-500	(90%)				<<vary youngest age cut depending on FT of stand?
+>>    acersacc  1-500	(90%)
+>>    betualle  1-500	(90%)
+>>    betupapy  1-500	(90%)
+>>    carycord  1-500	(90%)
+>>    fraxamer  1-500	(90%)
+>>    fagugran  1-500	(90%)
+>>    fraxnigr  1-500	(90%)
+>>    fraxpenn  1-500	(90%)
+>>    larilari  1-500	(90%)
+>>    piceglau  1-500	(90%)
+>>    picemari  1-500	(90%)
+>>    pinubank  1-500	(90%)
+>>    pinuresi  1-500	(90%)
+>>    pinustro  1-500	(90%)
+>>    popubals  1-500	(90%)
+>>    popugran  1-500	(90%)
+>>    poputrem  1-500	(90%)
+>>    prunsero  1-500	(90%)
+>>    queralba  1-500	(90%)
+>>    querelli  1-500	(90%)
+>>    quermacr  1-500	(90%)
+>>    querrubr  1-500	(90%)
+>>    quervelu  1-500	(90%)
+>>    quercocc  11-500	
+>>    thujocci  1-500	(90%)
+>>    tiliamer  1-500	(90%)
+>>    tsugcana  1-500	(90%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+>>  Plant	<<let existing species resprout	 
+>>  Plant	<<endemic species 
+>>  Plant	<<exotic+endemic species 
+>>   MultipleRepeat	40
+
+>>  ################################################################################################################################
+    Prescription    CC_JPine 	
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  50	
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  50	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to jack pine
+>> Inclusion Rule	ageRange	percentCells	species
+>>    Required		50-500		highest		pinubank 
+    Optional		50-500		40		pinubank 
+    Optional 		50-500 		50 		pinubank querelli			<< add this bc pure jack pine stands may be hard to find
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+>>    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete	<<PatchCutting 	90% 		5.5	<<% of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved SpeciesList <<ClearCut 	
+    abiebals  1-500		
+    acerrubr  1-500	
+    acersacc  1-500	
+    acersach  1-500	
+    betualle  1-500	
+    betupapy  1-500	
+    carycord  1-500	
+    fraxamer  1-500	
+    fagugran  1-500	
+    fraxnigr  1-500	
+    fraxpenn  1-500	
+    larilari  1-500	
+    piceglau  1-500	
+    picemari  1-500	
+    pinubank  1-500
+    pinuresi  1-500	
+    pinustro  1-500	
+    popubals  1-500	
+    popugran  1-500	
+    poputrem  1-500	
+    prunsero  1-500	
+    queralba  1-500	
+    quercocc  1-500	
+    querelli  1-500	
+    quermacr  1-500	
+    querrubr  1-500	
+    quervelu  1-500	
+    taxodist  1-500	
+    thujocci  1-500	
+    tiliamer  1-500	
+    tsugcana  1-500	
+    ulmuamer  1-500	
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+  Plant	pinubank	<<BAU species
+>>  Plant	<<endemic species - add red pine
+>>  Plant	<<exotic+endemic species 
+>>   MultipleRepeat	50
+
+>>  ################################################################################################################################
+    Prescription    CC_Spru_Fir  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  80
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  80	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to w spruce, b fir
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		80-500 		51	 	abiebals piceglau 
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+>>    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete  <<PatchCutting 	90% 		5.5	<<% of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  SpeciesList <<ClearCut 
+    abiebals  1-500	(99%)	<<leave 1% of fir for natural regen
+    acerrubr  1-500		
+    acersacc  1-500	
+    acersach  1-500	
+    betualle  1-500	
+    betupapy  1-500	
+    carycord  1-500	
+    fraxamer  1-500	
+    fagugran  1-500	
+    fraxnigr  1-500	
+    fraxpenn  1-500	
+    larilari  1-500	
+    piceglau  1-500	(99%)	<<leave 1% of spruce for natural regen	
+    picemari  1-500	
+    pinubank  1-500	
+    pinuresi  1-500	
+    pinustro  1-500	
+    popubals  1-500	
+    popugran  1-500	
+    poputrem  1-500	
+    prunsero  1-500	
+    queralba  1-500	
+    quercocc  1-500	
+    querelli  1-500	
+    quermacr  1-500	
+    querrubr  1-500	
+    quervelu  1-500	
+    taxodist  1-500	
+    thujocci  1-500	
+    tiliamer  1-500	
+    tsugcana  1-500	
+    ulmuamer  1-500	
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  <<conifer/hardwood mixture?
+>>  Plant	piceglau  <<BAU species - let spruce and bals fir regen naturally
+>>  Plant	<<endemic species 
+>>  Plant	<<exotic+endemic species 
+
+>>  ################################################################################################################################
+    Prescription    CC_RPine  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  100
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  100	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to red pine
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		100-500		highest		pinuresi 	<<for stands where r pine is most abundant, but not on >50% of cells
+    Optional		100-500		51		pinuresi 
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+>>    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete  <<PatchCutting 	90% 		5.5	<<% of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  SpeciesList <<ClearCut 
+    abiebals  1-500	
+    acerrubr  1-500		
+    acersacc  1-500	
+    acersach  1-500	
+    betualle  1-500	
+    betupapy  1-500	
+    carycord  1-500	
+    fraxamer  1-500	
+    fagugran  1-500	
+    fraxnigr  1-500	
+    fraxpenn  1-500	
+    larilari  1-500	
+    piceglau  1-500	
+    picemari  1-500	
+    pinubank  1-500	
+    pinuresi  1-500	<<(99%)	<<leave 1% of r pine for natural regen	
+    pinustro  1-500	
+    popubals  1-500	
+    popugran  1-500	
+    poputrem  1-500	
+    prunsero  1-500	
+    queralba  1-500	
+    quercocc  1-500	
+    querelli  1-500	
+    quermacr  1-500	
+    querrubr  1-500	
+    quervelu  1-500	
+    taxodist  1-500	
+    thujocci  1-500	
+    tiliamer  1-500	
+    tsugcana  1-500	
+    ulmuamer  1-500	
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  
+  Plant	pinuresi  <<BAU species; plant regen for consistency with RESTORE treatment
+>>  Plant	<<endemic species 
+>>  Plant	<<exotic+endemic species 
+
+>>  ################################################################################################################################
+    Prescription    CC_WPine  
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  120
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+>>  MinimumTimeSinceLastHarvest  120	<<sets rotation length given high rate of implementation
+
+  ForestTypeTable  	<<target to w pine
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		120-500		highest		pinustro  	<<for stands where w pine is most abundant, but not on >50% of cells
+    Optional		120-500		51		pinustro  
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+>>    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete  <<PatchCutting 	90% 		5.5	<<% of stand cut treatment levels: 50, 70, 90%, with 90% being BAU
+
+    CohortsRemoved  ClearCut  <<SpeciesList	
+>>    abiebals  1-500	(90%)				<<% of biomass removal treatment levels: 50, 70, 90%, with 90% being BAU
+>>    acerrubr  1-500	(90%)				<<vary youngest age cut depending on FT of stand?
+>>    acersacc  1-500	(90%)
+>>    betualle  1-500	(90%)
+>>    betupapy  1-500	(90%)
+>>    carycord  1-500	(90%)
+>>    fraxamer  1-500	(90%)
+>>    fagugran  1-500	(90%)
+>>    fraxnigr  1-500	(90%)
+>>    fraxpenn  1-500	(90%)
+>>    larilari  1-500	(90%)
+>>    piceglau  1-500	(90%)
+>>    picemari  1-500	(90%)
+>>    pinubank  1-500	(90%)
+>>    pinuresi  1-500	(90%)
+>>    pinustro  1-500	(90%)
+>>    popubals  1-500	(90%)
+>>    popugran  1-500	(90%)
+>>    poputrem  1-500	(90%)
+>>    prunsero  1-500	(90%)
+>>    queralba  1-500	(90%)
+>>    querelli  1-500	(90%)
+>>    quermacr  1-500	(90%)
+>>    querrubr  1-500	(90%)
+>>    quervelu  1-500	(90%)
+>>    quercocc  11-500	
+>>    thujocci  1-500	(90%)
+>>    tiliamer  1-500	(90%)
+>>    tsugcana  1-500	(90%)
+
+>>planted species depend on planting treatment; can plant to ensure regen of desired species  
+  Plant	pinustro  <<BAU species 
+>>  Plant	<<endemic species - add red pine
+>>  Plant	<<exotic+endemic species 
+
+>>  ################################################################################################################################
+     Prescription    Shelter_Oak		<<patch shelterwood
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  80	<<50 years to first entry; re-entry 30 years later?
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  	<<target to oaks
+>> Inclusion Rule	ageRange	percentCells	species
+    Optional		80-500 		highest  	queralba querelli quermacr querrubr quervelu << oaks
+    Optional		80-500 		51	  	queralba querelli quermacr querrubr quervelu << where oaks are abundant but not highest
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+>>    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+    Forbidden		90-400 		51	  	quercocc  				<<scarlet oak typing rule
+    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete  <<PatchCutting 	80% 		4.9	<<% of stand cut treatment levels: 60 (size=3.7 ha), 70 (4.3), 80% (4.9), with 80% being BAU
+>>1st entry
+    CohortsRemoved  SpeciesList	
+    abiebals  80-500	(50%)	 <<Completely remove biomass of species not targeted for regen?
+    acerrubr  80-500	(50%)		
+    acersacc  80-500	(50%)				
+    betualle  80-500	(50%)				
+    betupapy  80-500	(50%)				
+    carycord  80-500	(50%)				
+    fraxamer  80-500	(50%)				
+    fagugran  80-500	(50%)				
+    fraxnigr  80-500	(50%)				
+    fraxpenn  80-500	(50%)				
+    larilari  80-500	(50%)
+    piceglau  80-500	(50%)				
+    picemari  80-500	(50%)				
+    pinubank  80-500	(50%)				
+    pinuresi  80-500	(50%)				
+    pinustro  80-500	(50%)				
+    popubals  80-500	(50%)				
+    popugran  80-500	(50%)				
+    poputrem  80-500	(50%)				
+    prunsero  80-500	(50%)				
+    queralba  80-500	(50%)	<<remove some oak biomass to increase light?  These were commented out (no oak biomass removed).			
+    quercocc  80-500	(50%)				
+    querelli  80-500	(50%)				
+    quermacr  80-500	(50%)				
+    querrubr  80-500	(50%)				
+    quervelu  80-500	(50%)				
+    thujocci  80-500	(50%)				
+    tiliamer  80-500	(50%)				
+    tsugcana  80-500	(50%)				
+
+>>planted species depend on planting treatment
+>>  Plant		querrubr	<<1st entry; BAU species   
+>>  Plant	querrubr queralba	<<endemic species 
+>>  Plant	<<exotic+endemic species 
+
+SingleRepeat	10	
+>>2nd entry - complletely remove overstory (100%)
+    CohortsRemoved  SpeciesList	
+    abiebals  90-500	
+    acerrubr  90-500	
+    acersacc  90-500	
+    betualle  90-500	
+    betupapy  90-500	
+    carycord  90-500	
+    fraxamer  90-500	
+    fagugran  90-500	
+    fraxnigr  90-500	
+    fraxpenn  90-500	
+    larilari  90-500
+    piceglau  90-500	
+    picemari  90-500	
+    pinubank  90-500	
+    pinuresi  90-500	
+    pinustro  90-500	
+    popubals  90-500	
+    popugran  90-500	
+    poputrem  90-500	
+    prunsero  90-500	
+    queralba  90-500 (98%)	<<Leave small amount of oak biomass - scattered trees
+    quercocc  90-500 (98%)
+    querelli  90-500 (98%)	
+    quermacr  90-500 (98%)	
+    querrubr  90-500 (98%)	
+    quervelu  90-500 (98%)	
+    thujocci  90-500	
+    tiliamer  90-500	
+    tsugcana  90-500	
+
+>>no planting on second entry that removes overstory
+
+>>  ################################################################################################################################
+     Prescription    Shelter_Birch	
+
+>>  STAND RANKING METHOD:
+
+  StandRanking    MaxCohortAge	<<"Economic", "MaxCohortAge", "RegulateAges", "Random", "FireHazard"
+
+>>  INCLUSION RULES:
+
+  MinimumAge  60
+>>    MaximumAge	<<used to protect old growth as necessary
+>>  StandAdjacency	10	<<Cannot cut a stand having a neighbor less than this age
+>>  AdjacencyType	StandAge
+  MinimumTimeSinceLastHarvest  20	<<minimum time to be reconsidered for harvest
+
+  ForestTypeTable  	<<target to w pine, w birch, r maple, b fir?
+>> Inclusion Rule	ageRange	percentCells	species
+    Required		60-400 		51	  	betupapy   	<<set the minimum presence of birch-stands that also qualify for other prescriptions will be eliminated by Forbidden statements below
+>>species lists appearing in Required & Optional rules for other forest types
+    Forbidden		60-500		highest		acersacc fagugran tiliamer betualle tsugcana	<<NH typing rule - avoid hardwood stands that should be managed by thinning
+    Forbidden		60-500		highest		acerrubr fraxamer querrubr carycord prunsero ulmuamer <<shade-intolerant hardwoods typing rule
+    Forbidden		40-500 		highest		poputrem popugran popubals 		<<Aspen typing rule
+    Forbidden		50-500		50		pinubank querelli			<<Jack pine typing rule
+    Forbidden		80-500 		highest		abiebals piceglau			<<Spruce-fir typing rule
+    Forbidden		100-500		highest		pinuresi				<<Red pine typing rule
+    Forbidden		120-500		highest		pinustro  				<<White pine typing rule
+    Forbidden		80-500 		highest  	queralba querelli quermacr querrubr quervelu <<Oak typing rule
+>>    Forbidden		60-400 		highest		betupapy   				<<Birch typing rule
+
+>>  CUTTING RULES:
+>>				PercentageCut Patch Size (ha)
+>> 				----------    ----------
+  SiteSelection Complete  <<PatchCutting 	80% 		4.9	<<% of stand cut treatment levels: 60, 70, 80%, with 80% being BAU
+>>1st entry
+    CohortsRemoved  SpeciesList	
+    abiebals  40-500	(70%)		
+    acerrubr  40-500	(70%)	
+    acersacc  40-500	(70%)				
+    betualle  40-500	(70%)				
+    betupapy  30-500	(50%)	<<leave more birch, but limit shade	
+    carycord  40-500	(70%)				
+    fraxamer  40-500	(70%)				
+    fagugran  40-500	(70%)				
+    fraxnigr  40-500	(70%)				
+    fraxpenn  40-500	(70%)				
+    larilari  40-500	(70%)
+    piceglau  40-500	(70%)				
+    picemari  40-500	(70%)				
+    pinubank  40-500	(70%)				
+    pinuresi  40-500	(70%)				
+    pinustro  40-500	(70%)				
+    popubals  40-500	(70%)				
+    popugran  40-500	(70%)				
+    poputrem  40-500	(70%)				
+    prunsero  40-500	(70%)				
+    queralba  40-500	(70%)				
+    quercocc  40-500	(70%)
+    querelli  40-500	(70%)				
+    quermacr  40-500	(70%)				
+    querrubr  40-500	(70%)				
+    quervelu  40-500	(70%)				
+    thujocci  40-500	(70%)				
+    tiliamer  40-500	(70%)				
+    tsugcana  40-500	(70%)				
+
+>>planted species depend on planting treatment
+>>>>  Plant	betupapy <<1st entry;  Resprouting seems to not be sufficient to regen birch	!!!!!!!!!!!!!Temporarily disabled  !!!!!!!########################
+>>  Plant	<<endemic species 
+>>  Plant	<<exotic+endemic species 
+
+SingleRepeat	10	<<10 years later-results in 70 yr rotation
+>>2nd entry
+    CohortsRemoved  SpeciesList	
+    abiebals  11-500	<<Completely remove overstory and potential competitors
+    acerrubr  11-500	<<90-500 age range??
+    acersacc  11-500	
+    betualle  11-500	
+    betupapy  50-500	
+    carycord  11-500	
+    fraxamer  11-500	
+    fagugran  11-500	
+    fraxnigr  11-500	
+    fraxpenn  11-500	
+    larilari  11-500
+    piceglau  11-500	
+    picemari  11-500	
+    pinubank  11-500	
+    pinuresi  30-500	
+    pinustro  30-500	
+    popubals  11-500		
+    popugran  11-500	
+    poputrem  11-500	
+    prunsero  30-500	
+    queralba  11-500	
+    quercocc  11-500	
+    querelli  11-500	
+    quermacr  11-500	
+    querrubr  11-500	
+    quervelu  11-500	
+    thujocci  11-500	
+    tiliamer  11-500	
+    tsugcana  30-500	
+
+>>no planting at second entry
+>>  ################################################################################################################################
+
+>>End prescriptions ************************************************************************
+
+>>------------------------------------------------------------------------------------------------
+>>  HARVEST IMPLEMENTATION TABLE
+>>  The following table defines which management area (defined in the ManagementArea file) is
+>>  treated by which prescription(s).  
+
+    HarvestImplementations
+
+>>There is only 1 MA in the map
+>>  Mgmt Area   Prescription    Harvest Area    Begin Time  End Time	
+>>				(per timestep)
+>>5 year timestep ====================  <<Percentages computed in file: Oconto FT_proportions.xlsx
+    1		CC_Aspen	1.994% 					<<(control rotation length) This will spread out initial cuts across 5 decades
+    1		Shelter_Hdwd	0.384%	1	60			<<Use this rate for first rotation
+    1		Shelter_Hdwd	0.768%	61	300			<<double rate to allow harvest of the big increase in red maple; min time to harvest will prevent the excess from being harvest all at once
+    1		Selection_NH	2.504%					<<includes hemlock stands in the % landscape occupied by this type
+    1		CC_JPine 	0.026% 					<<(control rotation length) This will spread out initial cuts across 6 decades
+    1		CC_RPine	0.285%					<<% sets rotation length according to initial abundance of the FT. Target r.l. is 100 yrs. If FT increases in abundance, oldest will be cut first
+    1		CC_WPine	0.152%					<<% sets rotation length according to initial abundance of the FT. Target r.l. is 120 yrs. If FT increases in abundance, oldest will be cut first	
+    1		Shelter_Oak	0.231%	
+    1		CC_Spru_Fir  	0.196%	 				<<% sets rotation length according to initial abundance of the FT. Target r.l. is 80 yrs. If FT increases in abundance, oldest will be cut first
+    1		Shelter_Birch	0.158%			
+>>    1		Shelter_LowHdwd 0.xxx%					<<not cut under BAU
+>>    1		CC_LowConif	0.xxx%				 	<<not cut under BAU
+
+>>-------------------------------------------------------------------------------------------------
+>> OUTPUT FILES
+
+PrescriptionMaps    harvest/prescripts-{timestep}.gis
+>>BiomassMaps         harvest/biomass-removed-{timestep}.gis
+EventLog            harvest/log.csv
+SummaryLog	    harvest/SummaryLog.csv
+>>-------------------------------------------------------------------------------------------------
+
+
+
+

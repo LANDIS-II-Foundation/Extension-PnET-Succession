@@ -1,0 +1,98 @@
+LandisData "Base Fire"
+
+Timestep 10
+
+>> Fire Region Parameters (ha)
+>> Region Map Mean Min   Max   Ignition
+>> Name  Code Size Size  Size  Prob      k (lower k=faster fuel accumulation)
+>> -----------------------------------------------
+eco0	  0   0.09  0.09 0.1 0.0	999 <<inactive
+lowl9     9   0.09  0.09   5 0.00000003	769 <<MUCK  10.5% of map.  Year 1-50 *1.184
+eco5	  5   1.7  0.09  500 0.00000051	5 <<SILO  1.5%
+eco1	  1   1.7  0.09  500 0.00000280	5 <<LOAM  8.3%
+eco4  	  4   1.7  0.09  500 0.00001264	5 <<SALO  37.5%
+eco2	  2   1.7  0.09  500 0.00000856	5 <<LOSA  25.4%
+eco3	  3   1.7  0.09  500 0.00000566	5 <<SAND  16.8%
+
+lowl19    19  0.09 0.09    5 0.00000003 769 <<MUCK  10.5% of map.  Year 60-100 *1.088
+eco15	  15  1.7  0.09  500 0.00000046	5 <<SILO  1.5%
+eco11	  11  1.7  0.09  500 0.00000257	5 <<LOAM  8.3%
+eco14  	  14  1.7  0.09  500 0.00001161	5 <<SALO  37.5%
+eco12	  12  1.7  0.09  500 0.00000786	5 <<LOSA  25.4%
+eco13	  13  1.7  0.09  500 0.00000520	5 <<SAND  16.8%
+
+lowl29    29  0.09 0.09    5 0.00000003 769 <<MUCK  10.5% of map.  Year 110-400 *0.988
+eco25	  25  1.7  0.09  500 0.00000042	5 <<SILO  1.5%
+eco21	  21  1.7  0.09  500 0.00000233	5 <<LOAM  8.3%
+eco24  	  24  1.7  0.09  500 0.00001054	5 <<SALO  37.5%
+eco22	  22  1.7  0.09  500 0.00000714	5 <<LOSA  25.4%
+eco23	  23  1.7  0.09  500 0.00000472	5 <<SAND  16.8%
+
+InitialFireRegionsMap EC_Oconto_landscape_ecoregions0_clip.img
+
+DynamicFireRegionTable << Optional
+>>Year FileName
+60 EC_Oconto_landscape_ecoregions60_clip.img << year 60-100
+110 EC_Oconto_landscape_ecoregions110_clip.img << year 110-400
+
+
+FuelCurveTable
+>> Ecoregion 	S1 S2 S3 S4 S5 	<<minimum time since last fire to reach severity class
+>> -----------------------------------
+lowl9	 	20 50 -1 -1 -1	<<MUCK
+eco5		10 20 50 80 -1	<<SILO
+eco2		10 20 50 80 -1	<<LOSA
+eco1  		10 20 50 -1 -1	<<LOAM
+eco4  		10 20 50 70 -1	<<SALO
+eco3		5  10 20 40 80	<<SAND
+
+lowl19	 	20 50 -1 -1 -1	<<MUCK
+eco15		10 20 50 80 -1	<<SILO
+eco12		10 20 50 80 -1	<<LOSA
+eco11  		10 20 50 -1 -1	<<LOAM
+eco14  		10 20 50 70 -1	<<SALO
+eco13		5  10 20 40 80	<<SAND
+
+lowl29	 	20 50 -1 -1 -1	<<MUCK
+eco25		10 20 50 80 -1	<<SILO
+eco22		10 20 50 80 -1	<<LOSA
+eco21  		10 20 50 -1 -1	<<LOAM
+eco24  		10 20 50 70 -1	<<SALO
+eco23		5  10 20 40 80	<<SAND
+
+WindCurveTable
+>> Ecoregion 	S5  S4 S3 S2 S1	<<maximum value for time-since-last-wind for that severity
+>> ----------------------------------
+lowl9	 	-1  -1 -1  5 10			<<MUCK
+eco5		-1  -1 5  10 20			<<SILO
+eco2		-1  -1 5  10 20			<<LOSA
+eco1		-1  -1 5  10 20			<<LOAM
+eco4		-1  -1 5  10 20			<<SALO
+eco3		-1   5 10 20 30			<<SAND
+
+lowl19	 	-1  -1 -1  5 10			<<MUCK
+eco15		-1  -1 5  10 20			<<SILO
+eco12		-1  -1 5  10 20			<<LOSA
+eco11		-1  -1 5  10 20			<<LOAM
+eco14		-1  -1 5  10 20			<<SALO
+eco13		-1   5 10 20 30			<<SAND
+
+lowl29	 	-1  -1 -1  5 10			<<MUCK
+eco25		-1  -1 5  10 20			<<SILO
+eco22		-1  -1 5  10 20			<<LOSA
+eco21		-1  -1 5  10 20			<<LOAM
+eco24		-1  -1 5  10 20			<<SALO
+eco23		-1   5 10 20 30			<<SAND
+
+FireDamageTable
+>> Cohort Age 		FireSeverity -
+>> % of longevity 	FireTolerance
+>> -------------- 	--------------
+20% 			-2
+50% 			-1
+85% 			0
+100% 			1
+
+MapNames fire/severity-{timestep}.gis
+LogFile fire/log.csv
+SummaryLogFile fire/summary-log.csv

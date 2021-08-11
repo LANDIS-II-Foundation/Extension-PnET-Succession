@@ -1,0 +1,10 @@
+LandisData "Biomass Insects"
+
+Timestep	1
+
+MapNames	Output/Insects/{insectName}/{insectName}-{timestep}.img
+
+LogFile		Output/Insects/Insect-log.csv
+
+InsectInputFiles	Oconto_GM_Biomass_Insects_11242020.txt
+			Oconto_FTC_Biomass_Insects_11242020.txt

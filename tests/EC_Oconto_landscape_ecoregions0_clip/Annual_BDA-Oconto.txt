@@ -1,0 +1,10 @@
+LandisData "Base BDA"
+
+Timestep 1
+
+MapNames	bda/{agentName}-{timestep}.img
+LogFile		bda/bda-log.csv
+
+BDAInputFiles	Oconto_BDA_JackPineBudworm_08052020.txt
+		Oconto_BDA_SBW_08052020.txt
+		BDA-EAB.txt	<<actually should run decadal

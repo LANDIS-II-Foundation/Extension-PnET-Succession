@@ -1,0 +1,9 @@
+LandisData "Base BDA"
+
+Timestep 10
+
+MapNames	bda/{agentName}-{timestep}.img
+LogFile		bda/bda-log.csv
+
+BDAInputFiles	BDA-EAB.txt
+		Oconto_BDA-HWA_08052020.txt

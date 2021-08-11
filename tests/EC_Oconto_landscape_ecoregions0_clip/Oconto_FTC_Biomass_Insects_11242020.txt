@@ -1,0 +1,130 @@
+LandisData InsectDefoliator
+
+InsectName	FTC
+
+>> Brian S defined these duration and interval parameters based on the 82-year aerial survey record provided by Jana Albers.  
+DurationDistribution	Weibull << Weibull, Normal or Exponential.
+DurationParameter1	2.0 <<2.370419<< Exponential rate, Weibull shape, or Normal mean. 
+DurationParameter2	1.25   <<1.692427<< Weibull scale or Normal standard deviation. If using Exponential, set to 1 and ignore.
+MaxDuration  5	
+
+MeanTimeBetweenOutbreaks	14 <<11
+StdDevTimeBetweenOutbreaks	3  <<2
+
+NeighborhoodSize	150	<< meters BORROWED FROM THE MARYLAND PARAMETERS
+
+>> Lower this number to lower probabilities of patch generation, i.e. start fewer patches. 
+InitialPatchOutbreakSensitivity	0.00170 <<0.00016	<< must be > 0.0  --- Calibrated (BiomassInsexts_outbreak_area.R) for patch area to be 0.25 to 0.75 of active sites
+
+>>JANE FOSTER CORRESPONDENCE: 
+>>I have at least looked at the patch size distribution for FTC in NE Minnesota. This is further East than the Chippewa, but something closer than MD. 
+>>So far I have looked at patterns from the outbreak in 2002. You could try parameters from a weibull distribution fit to defoliation patches in that 2002 map. Here are the fitted values.
+>>      shape          scale    
+>>  7.017139e-01   1.192957e+03 
+>> (2.728496e-02) (1.115158e+02)
+>>These are pretty different from my Green Ridge simulations, so you may have to play with the InitialOutbreakSensitivity to get to the desired mean defoliation levels. 
+
+InitialPatchDistribution	Weibull	<<Weibull, Beta, or Gamma
+>> Patch size distribution should be based on patch radius distribution? patch area distribution? Units?
+InitialPatchValue1	0.7017	<<depends on the distribution, must be > 0.0 -- FROM JANE FOSTER'S ANALYSIS OF FTC DEFOLIATION PATTERNS IN EASTERN MN
+InitialPatchValue2	119.0	<<depends on the distribution, must be > 0.0 -- FROM JANE FOSTER'S ANALYSIS OF FTC DEFOLIATION PATTERNS IN EASTERN MN
+
+SpeciesParameters
+MortalityEstimate  Annual << 'Annual' or '7Year'
+>> Susceptibility class by species
+>> Species	Susceptibility	 Growth Reduction Parameters  Mortality Parameters
+>>		Class		 Slope	Intercept	      Slope	Intercept	<<susceptibility class, 1 = preferred, 3 = nonhost
+>>--------------------------------------------------------------------------------
+abiebals	3	-0.8	1	0.009	7	
+abiefras  	3	-0.8	1	0.009	7	<<assumed same as balsam fir
+>>acernegu	2	-0.8	1	0.006	2.202	<< Same as acersacc. Not used.
+acernigr	2	-0.8	1	0.006	2.202	<<black maple-very similar to sugar maple
+acerrubr	3	-0.8	1	0.006	2.202	
+ACRU40		3	-0.8	1	0.006	2.202	
+acersacc	2	-0.8	1	0.006	2.202	<<Growth slope - Jane's current analysis, IALE15, Mortality- Jane's analysis of Campbell&Valentine 1972 Acerrubr
+ACSA40		2	-0.8	1	0.006	2.202
+acersaci	2	-0.8	1	0.006	2.202	<<silver maple; assumed same as other maples
+>>acerspic	2	-0.8	1	0.006	2.202	<<not used	
+betualle	1	-0.8	1	0.008	2.135	<< Diffuse porous, same as populus	
+BEAL40		1	-0.8	1	0.008	2.135
+betulent       2  	-0.8	1	0.0098	1.2480	<< Group3	<<black birch
+betunigr	1	-0.8	1	0.008	2.135	<<river birch; assumed same as betupapy #############guess
+betupapy	1	-0.8	1	0.008	2.135	<< Diffuse porous, same as populus
+BEPA40		1	-0.8	1	0.008	2.135	
+carycord 	2	-0.16	1	0.0124	-0.1235	<<assumed same as caryglab
+caryglab       2	-0.16	1	0.0124	-0.1235	<< Group4										
+>>celtis	2	-0.8	1	0.008	1.704	<< Ring-porous, same as quercus.  Not used.
+chamthyo	3	-0.5	1	0.009	7	<<Atlantic white cedar; assumed same as thujocci
+fagugran       2	-0.8	1	0.0098	1.2480	<< Group3
+fraxamer	3	-0.8	1	0.008	1.704	<< Ring-porous, same as quercus
+fraxnigr	3	-0.8	1	0.008	1.704	<< Ring-porous, same as quercus
+fraxpenn	3	-0.8	1	0.008	1.704	<< Ring-porous, same as quercus
+larilari	3	-0.8	1	0.009	7	
+liqustyr	1	-0.8	1	0.0098	1.2480	<<sweet gum; assumed same as black tupelo #############guess
+lirituli       3	-0.8	1	0.0098	1.2480	<< Group3				
+nysssylv       1	-0.8	1	0.0098	1.2480	<< Group3 <<black tupelo
+>>ostrvirg	2	-0.8	1	0.008	2.135	<< Diffuse porous, same as populus.  Not used.	
+piceglau	3	-0.8	1	0.006	5	
+picemari	3	-0.8	1	0.006	5	
+picerube	3	-0.8	1	0.006	5	<<red spruce; assumed same as other spruces
+pinubank	3	-0.8	1	0.009	7	
+PIBA40		3	-0.8	1	0.009	7
+pinuechi       3	-1	1	0.0169	1.0444  << Group2 <<shortleaf pine
+pinupond 	3	-1	1	0.016	4	<<ponderosa pine; assumed same as red pine  #############guess
+pinuresi	3	-1	1	0.016	4	
+PIRE40		3	-1	1	0.016	4
+pinurigi       3	-1	1	0.0169	1.0444  << Group2 <<pitch pine
+pinustro	3	-1	1	0.016	4	
+PIST40		3	-1	1	0.016	4
+pinusylv	3	1	1	0.016	4	<<Scots pine; assumed same as red pine #############guess
+pinutaed	3	1	1	0.016	4	<<loblloly pine; assumed same as red pine #############guess
+popubals	1	-0.8	1	0.008	2.135	<< Growth slope - Jane's current analysis, IALE15, Mortality- Jane's analysis of Mann et al. 2008
+PODEdelt	1	-0.8	1	0.008	2.135	<<eastern cottonwood
+PODEocci 	1	-0.8	1	0.008	2.135	<<western subspecies; assumed same as PODEdelt
+popugran	1	-0.8	1	0.008	2.135	
+POGR40		1	-0.8	1	0.008	2.135	
+poputrem	1	-0.8	1	0.008	2.135	
+POTR40		1	-0.8	1	0.008	2.135	
+>>prunpens	2	-0.8	1	0.008	2.135	<<Not used.
+prunsero	2	-0.8	1	0.008	2.135	
+PRSO40		2	-0.8	1	0.008	2.135
+>>prunvirg	2	-0.8	1	0.008	2.135	<<Not used.
+>>OAKS are not all the same - taken from two different studies. Those assigned to a Group are from MD study.
+queralba	1	-0.165	1	0.008	1.704	<< Growth slope, Naidoo & Lechowicz, Mortality params, Rubstov 1996.
+querbico	1	-0.165	1	0.008	1.704	<<swamp white oak #############guess
+quercocc       1	-0.16	1	0.0124	-0.1235	<< Group4 <<scarlet oak
+querelli	1	-0.165	1	0.008	1.704	
+QUEL40		1	-0.165	1	0.008	1.704	
+querfalc	1	-0.165	1	0.008	1.704	<<S red oak; assumed same as N red oak #############guess
+querlyra	1	-0.16	1	0.0124	-0.1235	<<overcup oak (v. waterlog tol) #############guess
+quermacr	1	-0.165	1	0.008	1.704	
+quermich	1	-0.165	1	0.008	1.704	<<swamp chestnut oak #############guess
+querprin       1	-0.16	1	0.0124	-0.1235	<< Group4 <<chestnut oak
+querrubr	1	-0.165	1	0.008	1.704	<<red oak
+QURU40		1	-0.165	1	0.008	1.704	
+quershum	1	-0.165	1	0.008	1.704	<<Shumard oak #############guess
+quervelu       1	-0.16	1	0.0124	-0.1235	<< Group4
+salxnigr	2	-0.8	1	0.008	2.135	<< Diffuse porous, same as populus	
+taxodist	3	-0.8	1	0.009	7	<<bald cypress; assumed same as larilari
+thujocci	3	-0.5	1	0.009	7	
+tiliamer	1	-0.17	1	0.008	2.135	<< Diffuse porous, same as populus
+TIAM40		1	-0.17	1	0.008	2.135	
+tilihete	1	-0.17	1	0.008	2.135	<<white basswood; assumed same as tiliamer
+tsugcana       3	-1	1	0.0169	1.0444  << Group2 <<eastern hemlock
+ulmuamer	2	-0.8	1	0.008	2.135	
+ULAM40		2	-0.8	1	0.008	2.135
+>>ulmurubr	2	-0.8	1	0.008	2.135	<<Not used.
+
+Susceptibilities
+>> susceptibility class is defined by expert opinion (Jana and Mike Albers)
+>>Remaining parameters are borrowed from Arjan DeBruijn's parameters in Maryland - need to refine for aspen (have local data)
+
+>> 40-80 are the same, will simplify model to only have 9 distributions (vs. 15 now).
+>> Host	Dist80	S1_80	S2_80	Dist60	S1_60	S2_60	Dist40	S1_40	S2_40	Dist20	S1_20	S2_20	Dist0	S1_0	S2_0
+1	Beta	1.06	0.81	Beta	1.06	0.81	Beta	1.06	0.81	Beta	1.17	2.64	Beta	0.29	4.12
+2	Beta	0.73	0.75	Beta	0.73	0.75	Beta	0.73	0.75	Beta	0.76	2.13	Beta	0.26	4.92
+3	Beta	0	10	Beta	0	10	Beta	0	10	Beta	0	10	Beta	0	10
+
+MapNames  insects/severity-{timestep}.gis															
+LogFile   insects/log.csv															
+

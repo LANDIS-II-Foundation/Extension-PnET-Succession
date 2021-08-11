@@ -1,0 +1,120 @@
+LandisData InsectDefoliator															
+															
+InsectName	GypsyMoth														
+															
+DurationDistribution	Weibull << Estimated by Jane to match previously used durations
+DurationParameter1	2.082698
+DurationParameter2	2.424410
+MaxDuration  5													
+															
+MeanTimeBetweenOutbreaks	7														
+StdDevTimeBetweenOutbreaks	1														
+															
+NeighborhoodSize	100	<<meters													
+															
+															
+InitialPatchOutbreakSensitivity 0.00014  << JANE'S DISERTATION = 0.00008, BUT SPREAD FUNCTION CHANGED; Calibrated to give %area in patches 8-22% (BiomassInsects_outbreak_area.R)
+															
+InitialPatchDistribution	Weibull	<<Weibull, Beta, or Gamma												
+>> Patch size distribution should be based on patch patch area distribution; Units = ha															
+InitialPatchValue1	1.5	<<depends on the distribution, must be > 0.0; Calibrated to give range that matches Jane's simulations (BiomassInsects_outbreak_area.R, BioInsects_Outbreak_Area.xlsx)
+InitialPatchValue2	350	<<depends on the distribution, must be > 0.0													
+															
+SpeciesParameters															
+															
+MortalityEstimate  Annual  << 'Annual' or '7Year'															
+>> Susceptibility class by species (from Liebhold et al... reference here)															
+>> Species	Susceptibility	 Growth Reduction Parameters  		Mortality Parameters											
+>>	Class	 Slope	Intercept	      Slope	Intercept										
+>>--------------------------------------------------------------------------------														
+abiebals 	2	-1	1	0.0169	1.0444  << Group2??
+abiefras  	2	-1	1	0.0169	1.0444  << Group2??
+acernigr	2	-0.8	1	0.0083	1.0078	<< Group1??  <<bl maple
+acerrubr        2	-0.8	1	0.0083	1.0078	<< Group1 === this appears to be maples						
+ACRU40 		2	-0.8	1	0.0083	1.0078	
+acersacc       	2	-0.8	1	0.0083	1.0078	<< Group1
+ACSA40 		2	-0.8	1	0.0083	1.0078	
+acersaci	2	-0.8	1	0.0083	1.0078	<< Group1??  <<silv maple
+betualle 	2  	-0.8	1	0.0098	1.2480 	<< Group3??							
+BEAL40 		2  	-0.8	1	0.0098	1.2480 
+betulent	2  	-0.8	1	0.0098	1.2480 	<< Group3 === this appears to be aspens, birch, beech, misc. hardwoods
+betunigr	2  	-0.8	1	0.0098	1.2480 	<< Group3??
+betupapy 	2  	-0.8	1	0.0098	1.2480 	<< Group3??
+BEPA40 		2  	-0.8	1	0.0098	1.2480 	
+chamthyo	2	-1	1	0.0169	1.0444  << Group2??  <<atlantic white cedar
+carycord 	2	-0.16	1	0.0124	-0.1235	<< Group4??
+caryglab       	2	-0.16	1	0.0124	-0.1235	<< Group4 ==== this appears to be primary hosts; oaks, hickories; ash, elms								
+>>castdent	2	-0.16	1	0.0124	-0.1235	<< Group4  ==== not used
+fagugran	1	-0.8	1	0.0098	1.2480 	<< Group3											
+fraxamer       	3	-0.16	1	0.0124	-0.1235	<< Group4								
+fraxnigr 	2	-0.16	1	0.0124	-0.1235	<< Group4??
+fraxpenn 	2	-0.16	1	0.0124	-0.1235	<< Group4??
+>>juglnigr       	3	-0.8	1	0.0098	1.2480	<< Group3								
+larilari 	2	-1	1	0.0169	1.0444  << Group2??
+liqustyr	2  	-0.8	1	0.0098	1.2480 	<< Group3??  <<sweet gum
+lirituli       	3	-0.8	1	0.0098	1.2480	<< Group3									
+>>magnacum       	3	-0.8	1	0.0098	1.2480	<< Group3								
+nysssylv       	2	-0.8	1	0.0098	1.2480	<< Group3									
+piceglau 	2	-1	1	0.0169	1.0444  << Group2??
+picemari 	2	-1	1	0.0169	1.0444  << Group2??
+picerube	2	-1	1	0.0169	1.0444  << Group2??
+pinubank 	2	-1	1	0.0169	1.0444  << Group2??
+PIBA40 		2	-1	1	0.0169	1.0444  
+pinuechi       	2	-1	1	0.0169	1.0444  << Group2 === this appears to be confifers									
+pinupond 	2	-1	1	0.0169	1.0444  << Group2??
+>>pinupung       	2	-1	1	0.0169	1.0444  << Group2									
+pinuresi 	2	-1	1	0.0169	1.0444  << Group2??
+PIRE40 		2	-1	1	0.0169	1.0444  
+pinurigi       	2	-1	1	0.0169	1.0444  << Group2									
+pinustro       	2	-1	1	0.0169	1.0444  << Group2									
+PIST40 		2	-1	1	0.0169	1.0444  
+pinusylv 	2	-1	1	0.0169	1.0444  << Group2??
+pinutaed	2	-1	1	0.0169	1.0444  << Group2??
+>>pinuvirg       	2	-1	1	0.0169	1.0444  << Group2
+popubals 	2  	-0.8	1	0.0098	1.2480 	<< Group3??
+PODEdelt 	2  	-0.8	1	0.0098	1.2480 	<< Group3??  <<E cottonwood
+PODEocci 	2  	-0.8	1	0.0098	1.2480 
+popugran       1	-0.8	1	0.0098	1.2480	<< Group3											
+POGR40		2  	-0.8	1	0.0098	1.2480 
+poputrem       1	-0.8	1	0.0098	1.2480	<< Group3									
+POTR40 		2  	-0.8	1	0.0098	1.2480 
+prunsero       	2	-0.8	1	0.0098	1.2480	<< Group3									
+PRSO40 		2  	-0.8	1	0.0098	1.2480 
+queralba       	1	-0.16	1	0.0124	-0.1235	<< Group4									
+querbico	1	-0.16	1	0.0124	-0.1235	<< Group4??
+quercocc       	1	-0.16	1	0.0124	-0.1235	<< Group4										
+querelli 	1	-0.16	1	0.0124	-0.1235	<< Group4??
+QUEL40 		1	-0.16	1	0.0124	-0.1235	
+querfalc	1	-0.16	1	0.0124	-0.1235	<< Group4??
+querlyra	1	-0.16	1	0.0124	-0.1235	<< Group4??
+quermacr	1	-0.16	1	0.0124	-0.1235	<< Group4??
+quermich	1	-0.16	1	0.0124	-0.1235	<< Group4??
+querprin       	1	-0.16	1	0.0124	-0.1235	<< Group4										
+querrubr       	1	-0.16	1	0.0124	-0.1235	<< Group4									
+QURU40 		1	-0.16	1	0.0124	-0.1235	
+quershum	2	-0.16	1	0.0124	-0.1235	<< Group4??
+quervelu       	1	-0.16	1	0.0124	-0.1235	<< Group4									
+>>robipseu       	3	-0.16	1	0.0124	-0.1235	<< Group4									
+salxnigr	2  	-0.8	1	0.0098	1.2480 	<< Group3??
+>>sassalbi       	2	-0.16	1	0.0124	-0.1235	<< Group4									
+taxodist	2	-1	1	0.0169	1.0444  << Group2??
+thujocci 	2	-1	1	0.0169	1.0444  << Group2??
+tiliamer       	1	-0.16	1	0.0098	1.2480	<< Group3								
+TIAM40 		1	-0.16	1	0.0098	1.2480	
+tilihete	2  	-0.8	1	0.0098	1.2480 	<< Group3??
+tsugcana       	2	-1	1	0.0169	1.0444  << Group2								
+ulmuamer       	2	-0.16	1	0.0124	-0.1235	<< Group4									
+ULAM40		2	-0.16	1	0.0124	-0.1235
+>> Mortality curves fit from Insect_WoodBio_NoMort_050416.xlsx to work with PnET-Succession
+
+   															
+Susceptibilities															
+>> Host	Dist80	S1_80	S2_80	Dist60	S1_60	S2_60	Dist40	S1_40	S2_40	Dist20	S1_20	S2_20	Dist0	S1_0	S2_0
+1	Beta	1.06	0.81	Beta	1.06	0.81	Beta	1.06	0.81	Beta	1.17	2.64	Beta	0.29	4.12
+2	Beta	0.73	0.75	Beta	0.73	0.75	Beta	0.73	0.75	Beta	0.76	2.13	Beta	0.26	4.92
+3	Beta	0	10	Beta	0	10	Beta	0	10	Beta	0	10	Beta	0	10															
+															
+MapNames  insects/severity-{timestep}.gis															
+LogFile   insects/log.csv															
+
+>>Shields, VDC, Broomell, BP and Salako, JOB.  2003.  Host selection and acceptability of selected tree species by Gypsy moth larvae, Lymantria dispar (L.)  Ann. Entomol. Soc. Am. 96(6): 920-926

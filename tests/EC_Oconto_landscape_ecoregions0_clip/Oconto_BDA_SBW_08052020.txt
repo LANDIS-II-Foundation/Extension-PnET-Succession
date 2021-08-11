@@ -1,0 +1,83 @@
+LandisData "BDA Agent"
+>>Parameters came from fila that was run annually
+BDAAgentName		SpruceBudworm
+BDPCalibrator		1
+SRDMode			mean
+
+>>-------- Regional Outbreak Inputs -------------
+>>NOT SURE WHERE THE NEXT 3 LINES GO, or IF THEY REPLACE OTHER LINES  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+OutbreakPattern         CyclicNormal  << CyclicNormal or CyclicUniform
+Mean                                    40  << Annual Time step  
+StDev                                   10 
+TimeSinceLastEpidemic	10	<<years
+TemporalType 		pulse	<<pulse, 
+				<<variablepulse,
+				<<or continuous
+>>RandomFunction		RFnormal<<RFnormal or RFuniform
+
+>> >>ALL OUTBREAKS ARE SIMULATED
+>>RandomParameter1	33.5
+>>RandomParameter2	10.6
+MinROS			0
+MaxROS			3
+
+>>-------- Dispersal Inputs ----------------------
+Dispersal		no	<<yes or no
+DispersalRate		4000	<<meters/year
+EpidemicThresh		0.5
+InitialEpicenterNum	0
+OutbreakEpicenterCoeff	0.01
+OutbreakEpicenterThresh 1.0
+SeedEpicenter		yes	<<yes or no
+SeedEpicenterCoeff	0.5
+DispersalTemplate	MaxRadius	<<MaxRadius, 4N,
+				<<8N, 12N, or 24N
+
+>>-------- Neighborhood Resource Inputs -----------
+NeighborFlag	yes	<<yes or no
+NeighborSpeedUp none	<<none, 2x, 3x, or 4x
+NeighborRadius	150	<<meters
+NeighborShape	uniform	<<uniform, linear, or gaussian
+NeighborWeight	100
+
+>>-- Intensity Class Thresholds --
+IntensityClass2_BDP 0.25
+IntensityClass3_BDP 0.50
+
+>>BFAgeCutoff  10	<<old BDA version?
+
+>>EcoregionModifiers
+>>Ecoregion	Modifier
+
+>>DisturbanceModifiers
+>>Type	Duration	Value
+
+>> note from BRS - back up these parameters with literature
+BDASpeciesParameters
+>>                                                Susceptibility  
+>>Species  MinorHost    2ndHost      MajorHost    Class3        Class2        Class1	    CFS
+>>Name     Age SRDProb  Age SRDProb  Age SRDProb |Age MortProb  Age MortProb  Age MortProb| Fuel?
+>> ---------------------------------------------------------------------------------------------
+abiebals   0   0.25	20  0.5	     40  1.0	  0   0		20  0.5	     50  1.0		yes
+abiefras   0   0.25	20  0.5	     40  1.0	  0   0		20  0.5	     50  1.0		yes  <<assumed same as abiebals
+piceglau   0   0.25	20  0.5      40  1.0	  0   0		20  0.15     50  0.42		yes
+picemari   0   0.25	20  0.5	     40  1.0	  0   0		20  0	     50  0		yes
+picerube   0   0.25	20  0.5	     40  1.0	  0   0		20  0.15     50  0.42		yes  <<assumed same as piceglau
+
+IgnoredSpecies  <<assumed all confiers should be listed
+chamthyo	<<Atlantic white cedar
+larilari
+pinubank
+pinuechi	
+pinupond 
+pinurigi	
+pinuresi
+PIRE40 
+pinustro
+PIST40 
+pinusylv     
+pinutaed	<<loblolly
+taxodist	<<bald cypress	
+thujocci
+tsugcana 
+
