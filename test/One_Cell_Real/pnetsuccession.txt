@@ -23,4 +23,4 @@ ClimateConfigFile	ClimateConfigFile_RCP2_6.txt
 
 DisturbanceReductions	disturbance_reductions.txt
  											
->>Parallel  1 										
+Parallel  1 										
