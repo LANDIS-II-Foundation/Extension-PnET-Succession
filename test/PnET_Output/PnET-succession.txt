@@ -17,4 +17,4 @@ PnETSpeciesParameters		PnETSpeciesParameters.txt
 
 EcoregionParameters 	EcoregionParameters.txt
 
-Parallel 1
+Parallel 3
