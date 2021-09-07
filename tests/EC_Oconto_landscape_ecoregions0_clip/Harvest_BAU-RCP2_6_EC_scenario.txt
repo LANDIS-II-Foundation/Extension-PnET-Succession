@@ -1,9 +1,9 @@
 LandisData  Scenario
 	  
 Duration 400
-Species   ../Landscape-Oconto_species.txt
+Species   Landscape-Oconto_species_CCA2.txt
 
-Ecoregions      ../Oconto_8_ecoregions.txt
+Ecoregions      Oconto_8_ecoregions.txt
 EcoregionsMap   EC_lkwd_ssurgo_nlcd_eco_clip.img
 
 CellLength  30 << meters
@@ -18,11 +18,11 @@ CellLength  30 << meters
 >> Disturbance Extensions   Initialization File
 >> ----------------------   -------------------
     "Biomass Insects"	    BiomassInsectsInput.txt
-	"Biomass Harvest"   Harvest_BAU_EC.txt	<<local file with local MA and stand maps
-	"Base Wind"	    ../MicroburstWind_RCP2_6.txt 
-	"Linear Wind" 	    ../LinearWind_RCP2_6.txt
-	"Base Fire"	    BaseFire_2_6_EC.txt	<<local fire region map
-	"Base BDA"	    ../BDA-Oconto.txt
+>>	"Biomass Harvest"   Harvest_BAU_EC.txt	<<local file with local MA and stand maps
+>>	"Base Wind"	    ../MicroburstWind_RCP2_6.txt 
+>>	"Linear Wind" 	    ../LinearWind_RCP2_6.txt
+>>	"Base Fire"	    BaseFire_2_6_EC.txt	<<local fire region map
+>>	"Base BDA"	    ../BDA-Oconto.txt
 >>	"Root Rot"	    RootRot_input-2.6.txt
    
 >>   DisturbancesRandomOrder  yes  << optional parameter; default = no
@@ -31,8 +31,8 @@ CellLength  30 << meters
 >> Output Extensions        Initialization File
 >> -----------------        -------------------
 >>>>  "Output Max Species Age"	../max-spp-age.output.txt
-  "Output Biomass Reclass"	../Oconto.biomass-reclass.output.txt
-  "Output-PnET"			../biomass.outputPnET.txt
+>>  "Output Biomass Reclass"	../Oconto.biomass-reclass.output.txt
+  "Output-PnET"			biomass.outputPnET.txt
 >>  "Output Cohort Statistics"    ../output_cohort_stats.txt
 
 

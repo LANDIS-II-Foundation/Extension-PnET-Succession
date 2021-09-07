@@ -13,6 +13,6 @@ MapCode    0
 <<tiliamer  60
 
 MapCode    1 << B
-abiebals  40
-<<poputrem  11
+abiebals  1
+poputrem  11
 <<pinustro  1

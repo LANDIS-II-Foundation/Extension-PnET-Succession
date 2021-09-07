@@ -16,5 +16,6 @@ PnETGenericParameters		GenericPnETParameters.txt
 PnETSpeciesParameters		LandscapeExpt-PnET_Oconto_Species.txt
 
 EcoregionParameters 	EcoregionParameters.txt
->>Parallel	3
+
+Parallel	1
  

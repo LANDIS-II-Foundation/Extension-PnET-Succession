@@ -115,6 +115,5 @@ Susceptibilities
 3	Beta	0	10	Beta	0	10	Beta	0	10	Beta	0	10	Beta	0	10															
 															
 >>MapNames  insects/severity-{timestep}.gis															
->>LogFile   insects/log.csv															
 
 >>Shields, VDC, Broomell, BP and Salako, JOB.  2003.  Host selection and acceptability of selected tree species by Gypsy moth larvae, Lymantria dispar (L.)  Ann. Entomol. Soc. Am. 96(6): 920-926

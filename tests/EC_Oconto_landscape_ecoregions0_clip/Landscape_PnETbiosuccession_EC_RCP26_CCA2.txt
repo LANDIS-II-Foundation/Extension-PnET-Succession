@@ -2,7 +2,7 @@ LandisData  "PnET-Succession"
 											
 PnET-Succession		Value											
 >>-----------------------------										
-Timestep  5	
+Timestep  1	
 StartYear	2010										
 										
 SeedingAlgorithm  WardSeedDispersal											

@@ -17,7 +17,7 @@ CellLength  30 << meters
 
 >> Disturbance Extensions   Initialization File
 >> ----------------------   -------------------
->>	"Biomass Insects"   BiomassInsectsInput.txt
+	"Biomass Insects"   BiomassInsectsInput.txt
 >>	"Biomass Harvest"   Harvest_CCA-2_ShortRange.txt	<<Harvest_CCA-2_MidRange.txt	Harvest_CCA-2_LongRange.txt	<<local file with local MA and stand maps
 >>	"Base Wind"	    MicroburstWind_RCP2_6.txt 
 >>	"Linear Wind" 	    LinearWind_RCP2_6.txt
