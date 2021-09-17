@@ -2,7 +2,9 @@
 
 using Landis.Core;
 using Landis.Utilities;
+using Landis.Library.Succession;
 using Landis.Library.BiomassCohorts;
+using Landis.Library.DensityCohorts;
 using Landis.SpatialModeling;
 using Landis.Library.Biomass;
 using Landis.Library.Metadata;

@@ -33,10 +33,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Landis.Library.DensityCohorts;
-using System.Net;
-//using Landis.Library.AgeOnlyCohorts;
+using Landis.Library.Metadata;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
@@ -44,9 +43,6 @@ namespace Landis.Extension.Succession.BiomassPnET
         //public static ISiteVar<float> SiteRD;
         public static SpeciesDensity SpeciesDensity;
         //=====================================================================================
-        //public static ISiteVar<Landis.Library.Biomass.Pool> WoodyDebris;
-        //public static ISiteVar<Landis.Library.Biomass.Pool> Litter;
-        //public static ISiteVar<Double> FineFuels;
         public static DateTime Date;
         public static ICore ModelCore;
         private static ISiteVar<SiteCohorts> sitecohorts;
@@ -295,7 +291,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             Reproduction.MaturePresent = MaturePresent;
             Reproduction.PlantingEstablish = PlantingEstablish;
             Reproduction.DensitySeeds = DensitySeeds;
-            
+            Reproduction.EstablishmentProbability = EstabProbability;
 
 
             StartDate = new DateTime(((Parameter<int>)GetParameter(Names.StartYear)).Value, 1, 15);
@@ -335,8 +331,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     throw new System.Exception("Cannot convert Density SiteCohorts to age-only site cohorts");
                 }
             }
-            ModelCore.RegisterSiteVar(DensityCohorts, "Succession.CohortsDensity");
-            ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
+            ModelCore.RegisterSiteVar(DensityCohorts, "Succession.DensityCohorts");
+            //ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
             ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");          
         }
 
@@ -362,8 +358,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType, double propBiomass = 1.0)
         {
-            ISpeciesDensity spc = SpeciesDensity[species];
-            Cohort cohort = new Cohort(spc, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null);
+            Cohort cohort = new Cohort(species, (ushort)Date.Year, (SiteOutputNames.ContainsKey(site)) ? SiteOutputNames[site] : null, (int)propBiomass);
             
             sitecohorts[site].AddNewCohort(cohort);
 
@@ -463,7 +458,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             //IEcoregionPnET ecoregion_pnet = EcoregionPnET.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
             //List<IEcoregionClimateVariables> climate_vars = UsingClimateLibrary ? EcoregionPnET.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionPnET.GetData(ecoregion_pnet, date, EndDate);
-            
+
+            DynamicEcoregions.ChangeDynamicParameters(PlugIn.ModelCore.CurrentTime);
+
             sitecohorts[site].Grow(site, successionTimestep.HasValue);
            
             Date = EndDate;
@@ -489,7 +486,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             
             base.Run();
         }
-
 
 
         public void AddLittersAndCheckResprouting(object sender, Landis.Library.AgeOnlyCohorts.DeathEventArgs eventArgs)
@@ -539,12 +535,12 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// Determines if a species can establish on a site.
         /// This is a Delegate method to the succession library.
         /// </summary>
-        public double DensitySeeds(ISpecies species, ActiveSite site)
+        public int DensitySeeds(ISpecies species, ActiveSite site)
         {
-            double availableSeed = 0;
+            int availableSeed = 0;
             int totalseed_m_timestep = SpeciesDensity[species].TotalSeed * Timestep;
             if (SpeciesDensity[species].SpType < 0)
-                availableSeed += (uint)totalseed_m_timestep; //site.cs Ln 1971
+                availableSeed += totalseed_m_timestep; //site.cs Ln 1971
             else
             {
                 if (SpeciesDensity[species].MaxSeedDist < 0)
@@ -555,13 +551,14 @@ namespace Landis.Extension.Succession.BiomassPnET
                         double loc_term = Math.Pow(cohort.Diameter / 25.4, 1.605);
                         //wenjuan changed on mar 30 2011
                         double double_val = loc_term * cohort.Treenumber * totalseed_m_timestep; //site.cs Ln 1991
-                        availableSeed += double_val;
+                        availableSeed += (int)double_val;
                     }
                 }
                 else
                 {
                     SiteCohorts mySiteCohorts = sitecohorts[site];
-                    double matureTrees = 0;
+                    int matureTrees = 0;
+                    List<Cohort> spCohorts = mySiteCohorts.AllCohorts;
                     if (mySiteCohorts[species] != null)
                     {
                         foreach (Cohort cohort in mySiteCohorts[species])
@@ -576,17 +573,26 @@ namespace Landis.Extension.Succession.BiomassPnET
                     int local_tseed = SpeciesDensity[species].TotalSeed;
 
                     double double_val = matureTrees * totalseed_m_timestep;  //modified from site.cs Ln 2024
-                    availableSeed += double_val;
+                    availableSeed += (int)double_val;
                 }
             }
             float float_rand = (float)ModelCore.ContinuousUniformDistribution.NextDouble();
             double double_value = availableSeed * (0.95 + float_rand * 0.1);  //from site.cs Ln 2045
-            availableSeed = (uint)double_value;
+            availableSeed = (int)double_value;
 
             return availableSeed;
         }
         //---------------------------------------------------------------------
 
+        public double EstabProbability(ISpecies species, ActiveSite site)
+        {
+            if (PlugIn.ModelCore.CurrentTime <= 0)
+                return 1.0;
+            else
+            {
+                return DynamicEcoregions.EstablishProbability[species, sitecohorts[site].Ecoregion];
+            }
+        }
     }
 }
 

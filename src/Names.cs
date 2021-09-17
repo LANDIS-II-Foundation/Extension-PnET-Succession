@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
 
     public static class Names
     {
-        public const string ExtensionName = "PnET-Succession";
+        public const string ExtensionName = "Density-Succession";
         public const string PNEToutputsites = "PNEToutputsites";
         public const string EcoregionParameters = "EcoregionParameters";
         public const string DisturbanceReductions = "DisturbanceReductions";

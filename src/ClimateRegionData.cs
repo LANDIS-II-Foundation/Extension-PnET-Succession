@@ -5,7 +5,7 @@ using Landis.Library.Climate;
 using System.Linq;
 using Landis.Library.DensityCohorts;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
     public class ClimateRegionData
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Landis.Extension.Succession.BiomassPnET 
+namespace Landis.Extension.Succession.Density
 {
     public interface IObservedClimate: IEnumerable<ObservedClimate>  
     {

@@ -1,0 +1,102 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Landis.Extension.Succession.Density</RootNamespace>
+    <AssemblyName>Landis.Extension.Succession.Density-v2</AssemblyName>
+    <AssemblyTitle>Landis.Extension.Succession.Density-v2</AssemblyTitle>
+    <AssemblyCopyright>Landis-II-Foundation</AssemblyCopyright>
+    <AssemblyVersion>2.0</AssemblyVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://www.landis-ii.org</PackageProjectUrl>
+    <NeutralLanguage>English</NeutralLanguage>
+    <Authors>Jacob Fraser, Brian Miranda</Authors>
+    <Product>Landis.Extension.Succession.Density</Product>
+    <Copyright>Landis-II-Foundation</Copyright>
+    <Version>2.0</Version>
+    <PackageTags>LANDIS-II;Landis;Extension;Succession;Density</PackageTags>
+    <Description></Description>
+    <PackageReleaseNotes>.NET Standard 2.0 update</PackageReleaseNotes>
+    <FileVersion>2.0</FileVersion>
+    <Company>USDA Forest Service</Company>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <OutputPath>C:\Users\jacobfraser\source\repos\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>
+	  <!--<OutputPath>C:\BRM\LANDIS_II\GitCode\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions</OutputPath>-->
+	  <!--<OutputPath>bin\Debug\</OutputPath>-->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\deploy\release</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="lib\**" />
+    <EmbeddedResource Remove="lib\**" />
+    <None Remove="lib\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ClimateRegionPnETVariables.cs" />
+    <Compile Remove="EcoregionClimateVariables.cs" />
+    <Compile Remove="Hydrology.cs" />
+    <Compile Remove="IEcoregionClimateVariables.cs" />
+    <Compile Remove="IHydrology.cs" />
+    <Compile Remove="PressureHeadSaxton_Rawls.cs" />
+    <Compile Remove="SpeciesPnETVariables.cs" />
+    <Compile Remove="WaterStressTable.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Library.Biomass-v2">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Biomass-v2.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Library.BiomassCohorts-v3">
+		<HintPath>..\..\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.BiomassCohorts-v3.dll</HintPath>
+		<!--<HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.BiomassCohorts-v3.dll</HintPath>-->
+	</Reference>
+	  <Reference Include="Landis.Library.DensityCohorts-v1">
+		  <HintPath>..\..\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.DensityCohorts-v1.dll</HintPath>
+		  <!--<HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.BiomassCohorts-v3.dll</HintPath>-->
+	  </Reference>
+    <Reference Include="Landis.Library.Climate-v4">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Climate-v4.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Library.Cohorts-v2">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Library.InitialCommunity-vBiomassCohorts">
+		<HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.InitialCommunity-vBiomassCohorts.dll</HintPath>
+		<!--<HintPath>..\..\brmiranda\Support-Library-Dlls-v7\Landis.Library.InitialCommunity-vBiomassCohorts.dll</HintPath>-->
+	</Reference>
+    <Reference Include="Landis.Library.Metadata-v2">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Metadata-v2.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Library.Parameters-v2">
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Parameters-v2.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Library.Succession-v9">
+		<HintPath>..\..\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Succession-v9.dll</HintPath>
+		<!--<HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Succession-v9.dll</HintPath>-->
+	</Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Landis.Core" Version="2.0.0" />
+    <PackageReference Include="Landis.SpatialModeling" Version="2.0.0" />
+  </ItemGroup>
+
+</Project>

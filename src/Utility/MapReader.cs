@@ -6,7 +6,7 @@ using Landis.SpatialModeling;
 using Landis.Utilities;
 using System.IO;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
     /// <summary>
     /// Methods to read maps in lieu of spin-up

@@ -1,7 +1,7 @@
 ﻿using Landis.Core;
 using System;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
     /// <summary>
     ///   <para>John McNabb: This is a record of monthly climate data based on the climate library.</para>

@@ -1,5 +1,5 @@
 ﻿
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
     // Mimicks the functionality of .Net 4 Tuple. 
     class Tuple<T1, T2>

@@ -10,13 +10,11 @@ Stands      "ecoregion.img"
 >> -----------------------------------------
 >> PRESCRIPTIONS
 
-Prescription MaxAgeClearcut
-    StandRanking 	MaxCohortAge
+Prescription TestDiameterRemoval
+    StandRanking 	BasalAreaRank
     SiteSelection 	Complete
-    >>CohortsRemoved 	ClearCut
-    CohortsRemoved	SpeciesList
+    CohortsRemoved	DiameterBasalRemoval
   querrubr	10-100  (50%)
-  >>querrubr	10-100  (100%)
 
 
 >>-----------------------------------------------------------------
@@ -25,7 +23,7 @@ Prescription MaxAgeClearcut
     HarvestImplementations
 >>  Mgmt Area   Prescription    		Harvest Area    Begin Time  End Time
 >>  ---------   ------------    		------------    ----------  --------
-	1	MaxAgeClearcut			100%
+	1	TestDiameterRemoval			100%
 	
 >>-----------------------------------------------------------------
 >> OUTPUTS

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Landis.Library.DensityCohorts;
 
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
     /// <summary>
     /// Allocates litters that result from disturbanches. 

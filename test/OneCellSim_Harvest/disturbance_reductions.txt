@@ -1,9 +1,0 @@
-LandisData 	DisturbanceReductions
->>--------------------------------------				
-DisturbanceReductions	fire	wind	harvest	bda
-WoodReduction		0.33	0	0.70	0
-FolReduction		1	0	0	0
-RootReduction		0	0	0	0
-DeadWoodReduction  	0.7	0	0	0
-LitterReduction		0.9	0	0.1	0
-	

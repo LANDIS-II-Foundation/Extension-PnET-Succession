@@ -1,5 +1,5 @@
 ﻿
-namespace Landis.Extension.Succession.BiomassPnET
+namespace Landis.Extension.Succession.Density
 {
     public class OutputHeaders
     {

@@ -25,7 +25,7 @@ namespace Landis.Extension.Output.Density
         /// </summary>
         public static void Initialize()
         {
-            cohorts = PlugIn.ModelCore.GetSiteVar<ISiteCohorts>("Succession.CohortsDensity");
+            cohorts = PlugIn.ModelCore.GetSiteVar<ISiteCohorts>("Succession.DensityCohorts");
 
             if (cohorts == null)
             {

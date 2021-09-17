@@ -2,7 +2,7 @@
 using Landis.Library.DensityCohorts;
 using Landis.SpatialModeling;
 
-namespace Landis.Extension.Succession.BiomassPnET.DisturbanceReductions
+namespace Landis.Extension.Succession.Density.DisturbanceReductions
 {
     class Events
     {

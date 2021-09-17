@@ -1,4 +1,0 @@
-LandisData "Initial Communities"
-MapCode    0
-MapCode    1
-querrubr	70
