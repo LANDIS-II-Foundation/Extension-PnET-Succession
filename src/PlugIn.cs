@@ -394,6 +394,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (!SiteVars.SiteCohorts[site].SpeciesEstablishedBySeed.Contains(species))
                         SiteVars.SiteCohorts[site].SpeciesEstablishedBySeed.Add(species);
                 }
+
+                // Recalculate BiomassLayerProp for layer 0 after adding new cohort?? Should only apply to biomass
             }
         }
         //---------------------------------------------------------------------
