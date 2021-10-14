@@ -21,5 +21,6 @@ CellLength  100 << meters, 100 x 100 m = 1 ha
 
 >> Other Extensions         Initialization File
 >> ----------------         -------------------
->>  "Output-PnET"		biomass.outputPnET.txt
+  "Output-PnET"		biomass.outputPnET.txt
+  "Output Biomass"		output_Biomass.txt
 

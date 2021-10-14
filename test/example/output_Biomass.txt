@@ -10,8 +10,11 @@ Species    abiebals
 	   betualle
 	   betupapy
 	   fraxamer
+	   pinubank
+	   pinuresi
 	   pinustro
 	   poputrem
+	   querelli
 	   querrubr
 	   thujocci
 	   tiliamer
