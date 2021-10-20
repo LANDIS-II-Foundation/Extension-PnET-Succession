@@ -6,5 +6,5 @@ Type         succession
 Assembly     Landis.Extension.Succession.BiomassPnET-v4
 
 Class        Landis.Extension.Succession.BiomassPnET.PlugIn
-Description  "PnET Succession with permafrost and waterlogging"
+Description  "PnET Succession with permafrost and Root Rot support"
 CoreVersion  7.0
