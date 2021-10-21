@@ -1,7 +1,7 @@
 ; LANDIS-II Extension infomation
 #define CoreRelease "LANDIS-II-V7"
 #define ExtensionName "PnET-Succession"
-#define AppVersion "4.0.1"
+#define AppVersion "4.1"
 #define AppPublisher "LANDIS-II Foundation"
 #define AppURL "http://www.landis-ii.org/"
 
@@ -28,7 +28,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-DefaultDirName={pf}\{#ExtensionName}
+DefaultDirName={commonpf}\{#ExtensionName}
 DisableDirPage=yes
 DefaultGroupName={#ExtensionName}
 DisableProgramGroupPage=yes

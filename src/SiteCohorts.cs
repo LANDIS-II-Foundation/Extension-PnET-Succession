@@ -824,12 +824,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                             depthTempDict[testDepth] = zTemp;
                         if ((zTemp <= 0) && (testDepth < topFreezeDepth))
                             topFreezeDepth = testDepth;
+                        if (testDepth == 0f)
+                            testDepth = 0.10f;
+                        else if (testDepth == 0.10f)
+                            testDepth = 0.25f;
+                        else
                             testDepth += 0.25F;
                         }
-
+                   
                 }
                 depthTempDict = Permafrost.CalculateMonthlySoilTemps(depthTempDict,Ecoregion, daysOfWinter, snowPack, hydrology, lastTempBelowSnow);
-                SortedList<float, float> monthlyDepthTempDict = new SortedList<float, float>(depthTempDict);
+                SortedList<float, float> monthlyDepthTempDict = new SortedList<float, float>();
+                monthlyDepthTempDict.Add(0.1f, depthTempDict[0.1f]);
 
                 lastTempBelowSnow = depthTempDict[0];
 

@@ -91,10 +91,15 @@ namespace Landis.Extension.Succession.BiomassPnET
                     float DRz = (float)Math.Exp(-1.0F * testDepth * d); // adapted from Kang et al. (2000) and Liang et al. (2014)
                     float zTemp = depthTempDict[testDepth] + (tempBelowSnow - depthTempDict[testDepth]) * DRz;
                     depthTempDict[testDepth] = zTemp;
-                    //if ((zTemp <= 0) && (testDepth < freezeDepth))
-                    //    freezeDepth = testDepth;
+                //if ((zTemp <= 0) && (testDepth < freezeDepth))
+                //    freezeDepth = testDepth;
+                if (testDepth == 0f)
+                    testDepth = 0.10f;
+                else if (testDepth == 0.10f)
+                    testDepth = 0.25f;
+                else
                     testDepth += 0.25F;
-                }
+            }
             //}
             return depthTempDict;
         }
