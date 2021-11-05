@@ -8,5 +8,9 @@ SpinUpClimateTimeSeries	Monthly_SequencedYears	<<Monthly_Temp-C_Precip-mmMonth
 SpinUpClimateFile	GFDL_Spinup-Climate-File_mesic.csv
 SpinUpClimateFileFormat	Monthly_Temp-C_Precip-mmMonth
 
-UsingFireClimate	no
-
+UsingFireClimate	yes
+FineFuelMoistureCode	85
+DuffMoistureCode	6
+DroughtCode		15
+FirstDayFire		100
+LastDayFire		300

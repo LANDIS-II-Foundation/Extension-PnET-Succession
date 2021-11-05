@@ -13,6 +13,7 @@ PNEToutputsites 	PnEToutputsites_onecell.txt
 									
 InitialCommunities      initial-communities.txt											
 InitialCommunitiesMap   initial-communities.img	
+InitialCommunitiesSpinup	NoSpinup
 
 PnETSpeciesParameters	LandscapeExpt-PnET_Oconto_Species_OptTemps_OriginalHalfSat_LoLAI.txt		
 											

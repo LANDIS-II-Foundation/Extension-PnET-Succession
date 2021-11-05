@@ -9,7 +9,7 @@ DNSC				0.05 <<target NSCfraction 0.05
 MaintResp			0.002	<<0.0027
 >>FracBelowG			0.33
 PrecipEvents			11
-PreventEstablishment		true
+PreventEstablishment		false
 Wythers				true
 DTEMP				true
 Permafrost			false
