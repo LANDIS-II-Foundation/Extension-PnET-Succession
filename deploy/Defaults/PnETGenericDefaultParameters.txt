@@ -61,3 +61,4 @@ NSCReserve			0.00
 Lifeform			tree
 EvapDepth			25	>> mm
 Parallel			1
+InitialCommunitiesSpinup	SpinupLayers
