@@ -17,7 +17,7 @@ CellLength  100 << meters, 100 x 100 m = 1 ha
 
 >> Disturbance Extensions   Initialization File
 >> ----------------------   -------------------
-"Land Use"
+"Land Use Change"		land-use.txt
 
 >> Other Extensions         Initialization File
 >> ----------------         -------------------	

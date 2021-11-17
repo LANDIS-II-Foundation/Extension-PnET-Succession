@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31727.386
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PnET-Succession", "PnET-Succession.csproj", "{17896667-BAB5-4F18-9DDF-8761E06C55E0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3F22334-B0DD-403A-B82B-3DD91E31C4EF} = {B3F22334-B0DD-403A-B82B-3DD91E31C4EF}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extension_Admin", "..\..\brmiranda\Core-Model-v7\Tool-Extension-Admin\src\Extension_Admin.csproj", "{03181433-7266-4F5A-BF44-42DA7CAD036B}"
 EndProject
@@ -20,6 +23,21 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Biomass Library", "..\..\Library-Biomass\src\Biomass Library.csproj", "{CFD0A8AA-B411-43B4-BFA1-B151A4F1F7BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "biomass-cohort", "..\..\Library-Biomass-Cohort\src\biomass-cohort.csproj", "{B3F22334-B0DD-403A-B82B-3DD91E31C4EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "land-use", "..\..\Extension-Land-Use-Plus\src\land-use.csproj", "{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3F22334-B0DD-403A-B82B-3DD91E31C4EF} = {B3F22334-B0DD-403A-B82B-3DD91E31C4EF}
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8} = {0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F} = {1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "library-biomass-harvest", "..\..\Library-Biomass-Harvest\src\library-biomass-harvest.csproj", "{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B3F22334-B0DD-403A-B82B-3DD91E31C4EF} = {B3F22334-B0DD-403A-B82B-3DD91E31C4EF}
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F} = {1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "site-harvest-lib", "..\..\Library-Site-Harvest\src\site-harvest-lib.csproj", "{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +119,30 @@ Global
 		{B3F22334-B0DD-403A-B82B-3DD91E31C4EF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3F22334-B0DD-403A-B82B-3DD91E31C4EF}.Release|x64.ActiveCfg = Release|Any CPU
 		{B3F22334-B0DD-403A-B82B-3DD91E31C4EF}.Release|x64.Build.0 = Release|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Debug|x64.Build.0 = Debug|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Release|x64.ActiveCfg = Release|Any CPU
+		{10F70B38-DDBC-40F1-8D7E-493E1AEC7DD1}.Release|x64.Build.0 = Release|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Debug|x64.Build.0 = Debug|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{0BEE5EE5-A85B-4985-8A30-13AA9B66F0B8}.Release|x64.Build.0 = Release|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Release|x64.ActiveCfg = Release|Any CPU
+		{1B8D9EF1-8A1C-40D2-9BDA-3D071372CE8F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
