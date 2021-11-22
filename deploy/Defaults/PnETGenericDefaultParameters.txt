@@ -62,3 +62,4 @@ Lifeform			tree
 EvapDepth			25	>> mm
 Parallel			1
 InitialCommunitiesSpinup	SpinupLayers
+FrostFactor			1
