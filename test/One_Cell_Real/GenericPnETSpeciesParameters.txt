@@ -12,7 +12,7 @@ PrecipEvents			11
 PreventEstablishment		false
 Wythers				true
 DTEMP				true
-Permafrost			false
+Permafrost			true
 LeakageFrostDepth  		3000
 >>CohortBinSize			10
 SpinUpWaterStress		true	<<default	The following used w v4.1
@@ -20,3 +20,4 @@ PARunits			umol	<<default
 AmaxFrac			0.75	<<default=0.75
 PrecipEventsWithReplacement	true	<<default
 EvapDepth			200
+FrostFactor			1.0

@@ -26,4 +26,5 @@ SubCanopyPAR 		output/SubCanopyPar/SCpar-{timestep}.img
 CohortBalance		output/TotalCohorts.csv
 EstablishmentTable	output/EstablishmentTable.csv
 MortalityTable		output/MortalityTable.csv
+MonthlyAverageAlbedo		output/Albedo/albedo-{timestep}.img
                    
