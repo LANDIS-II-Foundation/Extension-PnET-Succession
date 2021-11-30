@@ -14,5 +14,5 @@ MapCode    0
 
 MapCode    1 << B
 abiebals  1 (200) 11 (4000)
-poputrem  1 (1000) 85 (2000)
+<<poputrem  1 (1000) 85 (2000)
 <<pinustro  1
