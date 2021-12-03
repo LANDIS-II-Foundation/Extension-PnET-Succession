@@ -63,3 +63,7 @@ EvapDepth			25	>> mm
 Parallel			1
 InitialCommunitiesSpinup	SpinupLayers
 FrostFactor			1
+RefolMinimumTrigger		0.60
+RefolMaximum			0.70
+RefolCost			0.95
+NonRefolCost			0.10

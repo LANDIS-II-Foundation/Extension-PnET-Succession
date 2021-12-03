@@ -2,7 +2,7 @@ LandisData	PnETSpeciesParameters
 																																										
 >>calibrated	for	Wythers=true																																								
 PnETSpeciesParameters	FolN	SLWmax	SLWDel	BFolResp	TOfol	TOwood	TOroot	AmaxA	AmaxB	HalfSat	H1	H2	H3	H4	PsnAgeRed	LeafOnMinT	PsnTMin	PsnTOpt	PsnTMax	k	FracFol	MaxFracFol	FracFolShape	FrActWd	FracBelowG	EstMoist	EstRad	ColdTol	Lifeform													
-abiebals	0.9	130	0	0.1	0.25	0.01	0.02	5.3	21.5	100	-1.5	3	100	140	5	2.1	1	22.15	31	0.5	0.075	0.08	6	0.000044	0.37	1	0.996	-65	tree_dark <<abiebal	drt	tol=1.0	|1-1.75	drt	intol	Calibrate	PsnT:	6.5	23.1	30	5.9	21.5	29
+abiebals	0.9	130	0	0.1	0.25	0.01	0.02	5.3	21.5	100	-1.5	3	100	140	5	2.1	1	22.15	31	0.5	0.075	0.08	6	0.000044	0.37	1	0.996	-30	tree_dark <<abiebal	drt	tol=1.0	|1-1.75	drt	intol	Calibrate	PsnT:	6.5	23.1	30	5.9	21.5	29
 acerrubr	1.8	73	0.2	0.095	1	0.02	0.02	-46	71.9	150	-1.9	2.75	105	145	5	2.1	1	22.15	31	0.58	0.023	0.027	6	0.000038	0.35	1	0.976	-50	tree_decid <<acerrub	1.8	|1.76-2.5=somewhat	intol										
 acersacc	1.7	68	0.2	0.09	1	0.01	0.02	-46	71.9	100	0	4	111	152	5	2.1	1	22.15	31	0.58	0.024	0.025	6	0.00004	0.37	1	0.996	-55	tree_decid <<acersac	2.25	|2.51-3.25=somewaht	tol										
 betualle	1.8	63	0.2	0.095	1	0.01	0.02	-46	71.9	150	-0.75	3	111	152	5	2.1	1	22.15	31	0.58	0.024	0.026	6	0.000047	0.35	1	0.976	-55	tree_decid <<betuall	3	|3.26-4=drt	tolerant										

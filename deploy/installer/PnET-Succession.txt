@@ -1,7 +1,7 @@
 LandisData   Extension
 
 Name         "PnET-Succession"
-Version      "5.0 (beta release 13)"
+Version      "5.0 (beta release 14)"
 Type         succession
 Assembly     Landis.Extension.Succession.BiomassPnET-v5
 

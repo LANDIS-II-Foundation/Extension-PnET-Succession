@@ -21,3 +21,7 @@ AmaxFrac			0.75	<<default=0.75
 PrecipEventsWithReplacement	true	<<default
 EvapDepth			200
 FrostFactor			1.0
+>>RefolMinimumTrigger		0.60
+>>RefolMaximum			0.70
+>>RefolCost			0.95
+>>NonRefolCost			0.10
