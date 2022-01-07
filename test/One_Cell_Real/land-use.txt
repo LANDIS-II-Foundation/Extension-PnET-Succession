@@ -1,0 +1,49 @@
+LandisData   "Land Use"
+
+Timestep    10
+InputMaps   land-use-{timestep}.img
+
+SiteLog     landuse/site-log.csv   << optional: default = don't generate log
+
+>>------------------------------------
+LandUse          forest
+>>------------------------------------
+MapCode          1
+AllowHarvest?    yes
+LandCoverChange  NoChange
+
+>>------------------------------------
+LandUse          "partial removal"
+>>------------------------------------
+MapCode          10
+AllowHarvest?    no
+PreventEstablishment   << Optional
+LandCoverChange  RemoveTrees
+		<<abiebals     1-200(50%)
+		acerrubr     1-150(50%)
+		acersacc     1-300(50%)
+		betualle     1-300(50%)
+		betupapy     1-100(50%)
+		fraxamer     1-300(50%)
+		piceglau     1-300(50%)
+                pinubank     1-100(50%)
+		pinuresi     1-200(50%)
+		pinustro     1-400(50%)
+		poputrem     1-100(100%)
+                querelli     1-300(50%)
+		querrubr     1-250(50%)
+		thujocci     1-400(50%)
+		tiliamer     1-250(50%)
+		tsugcana     1-500(50%)
+
+
+>>------------------------------------
+LandUse          "harvest & plant"
+>>------------------------------------
+MapCode          12
+AllowHarvest?    yes
+LandCoverChange  RemoveTrees
+                   pinubank  100(55%) 110-200
+                   querelli  1-250
+		Plant pinubank
+

@@ -1,0 +1,10 @@
+LandisData	PNEToutputsites
+
+>>PNEToutputsites	MapCoordinatesX	MapCoordinatesY	MapCoordinatesMaxX	MapCoordinatesMaxY	
+>>----------------------------------------------------------------------------------------
+>>Site1		715,187.037 4,413,258.694	734284.375 4413934	
+ 
+
+PNEToutputsites	Row	Column	
+>>----------------------------------------------------------------------------------------
+Site	9 	9

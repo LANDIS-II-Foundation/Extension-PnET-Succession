@@ -1,0 +1,33 @@
+LandisData   "Land Use"
+
+Timestep    10
+InputMaps   land-use-{timestep}.img
+
+SiteLog     landuse/site-log.csv   << optional: default = don't generate log
+
+>>------------------------------------
+LandUse          forest
+>>------------------------------------
+MapCode          1
+AllowHarvest?    yes
+LandCoverChange  NoChange
+
+>>------------------------------------
+>>LandUse          "complete removal"
+>>------------------------------------
+>>MapCode          10
+>>AllowHarvest?    no
+>>PreventEstablishment   << Optional
+>>LandCoverChange  RemoveTrees		
+>>		pinustr1     1-400(100%)
+
+
+>>------------------------------------
+LandUse          "partial removal"
+>>------------------------------------
+MapCode          10
+AllowHarvest?    no
+>>PreventEstablishment   << Optional
+LandCoverChange  RemoveTrees		
+		pinustr1     1-400(50%)
+

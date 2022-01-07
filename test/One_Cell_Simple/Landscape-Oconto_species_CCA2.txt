@@ -1,0 +1,7 @@
+LandisData  Species
+
+>>                      Sexual    Shade  Fire  Seed Dispersal Dist  Vegetative   Sprout Age  Post-Fire
+>> Name      Longevity  Maturity  Tol.   Tol.  Effective  Maximum  Reprod Prob  Min   Max   Regen 
+>> ----      ---------  --------  -----  ----  ---------  -------  -----------  ----------  -------- <<actual longevity in single-spp test
+pinustr1 	300 	25 	   3 	  3 	30 	  120  		0.0 	0	0	none
+pinustr2 	300 	25 	   3 	  3 	30 	  120  		0.0 	0	0	none

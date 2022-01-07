@@ -1,0 +1,16 @@
+LandisData "Climate Config"
+
+ClimateTimeSeries	Monthly_SequencedYears
+ClimateFile		Future-Climate-File-RCP2_6-400y_mesic.csv
+ClimateFileFormat	Monthly_Temp-C_Precip-mmMonth
+
+SpinUpClimateTimeSeries	Monthly_SequencedYears	<<Monthly_Temp-C_Precip-mmMonth
+SpinUpClimateFile	GFDL_Spinup-Climate-File_mesic.csv
+SpinUpClimateFileFormat	Monthly_Temp-C_Precip-mmMonth
+
+UsingFireClimate	yes
+FineFuelMoistureCode	85
+DuffMoistureCode	6
+DroughtCode		15
+FirstDayFire		100
+LastDayFire		300
