@@ -6,7 +6,7 @@
 #define AppURL "http://www.landis-ii.org/"
 
 ; Build directory
-#define BuildDir "..\..\src\bin\Debug"
+#define BuildDir "..\..\src\bin\Release"
 ;#define BuildDir ".."
 
 ; LANDIS-II installation directories
@@ -28,7 +28,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-DefaultDirName={commonpf}\{#ExtensionName}
+DefaultDirName={pf}\{#ExtensionName}
 DisableDirPage=yes
 DefaultGroupName={#ExtensionName}
 DisableProgramGroupPage=yes
