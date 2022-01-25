@@ -57,13 +57,14 @@ PARunits			umol	>> Default umol/m2/s
 SpinUpWaterStress		false  
 PrecipEventsWithReplacement	true
 AmaxFrac			0.75
-NSCReserve			0.00 
+NSCReserve			0.00
 Lifeform			tree
-EvapDepth			25	>> mm
+EvapDepth			25  	>> mm
 Parallel			1
 InitialCommunitiesSpinup	SpinupLayers
 FrostFactor			1
 RefolMinimumTrigger		0.60
 RefolMaximum			0.70
-RefolCost			0.95
+RefolCost			0.90
 NonRefolCost			0.10
+MaxLAI				-9999  >> Optional parameter
