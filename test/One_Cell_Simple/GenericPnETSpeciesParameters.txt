@@ -1,0 +1,27 @@
+LandisData PnETGenericParameters
+PnETGenericParameters 		Value
+MaxCanopyLayers			3	<<3
+>>MaxDevLyrAv 			10000	<<obsolete in v5.0
+LayerThreshRatio		0.5	<<added in v5.0
+>>WUEcnst			10.9	<<obsolete in v3.0
+IMAX				5
+>>DNSC				0.05	<<target NSCfraction
+MaintResp			0.002	<<0.0027
+>>FracBelowG			0.33
+PrecipEvents			11
+PreventEstablishment		true
+Wythers				true
+DTEMP				true
+Permafrost			false
+>>LeakageFrostDepth  		3000
+SpinUpWaterStress		true	<<false	<<default	The following used w v4.1
+PARunits			umol	<<default
+>>PAR_W_m2			false
+AmaxFrac			0.75	<<default=0.75
+PrecipEventsWithReplacement	true	<<default
+InvertPest			false
+MaxPest 			0.1	<<0.1; Establishment tuning knob
+>>Parallel			2	<<7; 3 best, 4 too many, 2 slightly worse; 3 concurrent sims on laptop
+Lifeform			tree	<<anything else can be demoted to a lower canopy layer
+EvapDepth			25	<<20-25 mm ~1 inch?
+>>CohortBinSize			10

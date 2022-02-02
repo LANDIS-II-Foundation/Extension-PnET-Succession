@@ -1,0 +1,15 @@
+LandisData  "Output Biomass"
+
+Timestep  10
+
+MakeTable yes  << Optional parameter
+
+Species    pinustr1
+	   pinustr2
+
+
+MapNames  outputs/biomass/biomass-{species}-{timestep}.img
+
+DeadPools both
+	  
+MapNames  outputs/biomass/biomass-{pool}-{timestep}.img
