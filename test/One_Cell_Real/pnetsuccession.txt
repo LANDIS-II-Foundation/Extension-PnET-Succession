@@ -13,7 +13,7 @@ PNEToutputsites 	PnEToutputsites_onecell.txt
 									
 InitialCommunities      initial-communities.txt											
 InitialCommunitiesMap   initial-communities.img	
-InitialCommunitiesSpinup	SpinupLayers
+InitialCommunitiesSpinup	SpinupLayers << NoSpinup 
 
 PnETSpeciesParameters	LandscapeExpt-PnET_Oconto_Species_CompressedHalfsat_new_temps_LowLAI.txt		
 											
