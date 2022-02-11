@@ -53,6 +53,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static string InitialCommunitiesSpinup;
         public static int CohortBinSize;
         public static int ParallelThreads;
+        public static float MinFolRatioFactor;
 
         MyClock m = null;
         //---------------------------------------------------------------------
@@ -273,6 +274,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             string InitialCommunitiesTXTFile = Names.GetParameter(Names.InitialCommunities).Value;
             string InitialCommunitiesMapFile = Names.GetParameter(Names.InitialCommunitiesMap).Value;
             InitialCommunitiesSpinup = Names.GetParameter(Names.InitialCommunitiesSpinup).Value;
+            MinFolRatioFactor = ((Parameter<float>)Names.GetParameter(Names.MinFolRatioFactor,0,float.MaxValue)).Value;
             Parameter<string> LitterMapFile;
             bool litterMapFile = Names.TryGetParameter(Names.LitterMap, out LitterMapFile);
             Parameter<string> WoodyDebrisMapFile;
@@ -418,7 +420,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             m.WriteUpdate();
 
             // Create new sitecohorts
-            SiteVars.SiteCohorts[site] = new SiteCohorts(StartDate, site, initialCommunity, UsingClimateLibrary, PlugIn.InitialCommunitiesSpinup, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+            SiteVars.SiteCohorts[site] = new SiteCohorts(StartDate, site, initialCommunity, UsingClimateLibrary, PlugIn.InitialCommunitiesSpinup,PlugIn.MinFolRatioFactor, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
         }
         //---------------------------------------------------------------------
         public override void InitializeSites(string initialCommunitiesText, string initialCommunitiesMap, ICore modelCore)

@@ -1,7 +1,7 @@
 LandisData	PnETGenericDefaultParameters
 PnETGenericDefaultParameters		Value
 >>----------------------------------------
-MaxCanopyLayers			5
+MaxCanopyLayers			3
 LayerThreshRatio		0.5
 IMAX				5
 PsnAgeRed			5.0
@@ -68,3 +68,4 @@ RefolMaximum			0.70
 RefolCost			0.90
 NonRefolCost			0.10
 MaxLAI				-9999  >> Optional parameter
+MinFolRatioFactor		0

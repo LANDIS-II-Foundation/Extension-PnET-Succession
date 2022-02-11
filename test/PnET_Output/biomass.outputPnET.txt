@@ -4,8 +4,9 @@ Timestep  10
 
 Species ALL
 	  
-Biomass			output/biomass/{species}/biomass-{timestep}.img
-AbovegroundBiomass	output/AGbiomass/{species}AG/biomass-{timestep}.img
+Biomass			output/TotalBiomass/{species}_Total/biomass-{timestep}.img
+AbovegroundBiomass	output/AGbiomass/{species}_AG/biomass-{timestep}.img
+WoodBiomass		output/WoodBiomass/{species}_Wood/biomass-{timestep}.img
 BelowgroundBiomass 	output/BelowGroundBiom/BGB-{timestep}.img
 WoodySenescence		output/WoodySenescence/{species}/WoodySen-{timestep}.img
 FoliageSenescence	output/FolSenescence/{species}/FolSen-{timestep}.img
