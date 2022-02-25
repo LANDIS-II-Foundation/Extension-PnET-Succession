@@ -1,7 +1,7 @@
 LandisData  Scenario
 	  
 Duration  200
-Species   Landscape-Oconto_species_CCA2.txt
+Species   Landscape-Oconto_species_GLRI.txt
 
 Ecoregions      One_cell_ecoregion.txt
 EcoregionsMap   ecoregion.img
@@ -18,7 +18,7 @@ CellLength  30 << meters, so cell area = 900 m2
 
 >> Disturbance Extensions   Initialization File
 >> ----------------------   -------------------
-  "Land Use Change"		land-use.txt
+>>  "Land Use Change"		land-use.txt
 
 >> Output Extensions        Initialization File
 >> -----------------        -------------------

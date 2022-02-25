@@ -6,20 +6,20 @@ PnET-Succession		Value
 Timestep  1	
 StartYear	2010															
 SeedingAlgorithm	WardSeedDispersal						
-Latitude	42										
+>>Latitude	42										
 >>MaxDevLyrAv	8000	
 
 PNEToutputsites 	PnEToutputsites_onecell.txt
 									
 InitialCommunities      initial-communities.txt											
 InitialCommunitiesMap   initial-communities.img	
-InitialCommunitiesSpinup	SpinupLayers << NoSpinup 
+InitialCommunitiesSpinup	SpinupLayersRescale << NoSpinup 
 
-PnETSpeciesParameters	LandscapeExpt-PnET_Oconto_Species_CompressedHalfsat_new_temps_LowLAI.txt		
+PnETSpeciesParameters	SpeciesParams_LandscapeExpt-PnET_Oconto_Species_CompressedHalfsat_new_temps_LowLAI_GLRI.txt		
 											
 EcoregionParameters	Oconto_landscape_ecoregionparameters.txt
    								
-PnETGenericParameters	GenericPnETSpeciesParameters.txt
+PnETGenericParameters	PnET_GenericSpeciesParameters.txt
 ClimateConfigFile	ClimateConfigFile_RCP2_6.txt
 
 DisturbanceReductions	disturbance_reductions.txt

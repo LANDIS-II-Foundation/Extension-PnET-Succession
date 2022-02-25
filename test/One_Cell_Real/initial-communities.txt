@@ -12,10 +12,26 @@ MapCode    0
 <<querrubr  30 60
 <<tiliamer  60
 
-MapCode    1 << B
+<<MapCode    1 << B
 <<abiebals  1
-poputrem  1 (1000) 85 (2000)
-acersacc  11 (2000)
+<<poputrem  1 (1000) 85 (2000)
+<<acersacc  11 (2000)
 <<poputrem  11
 <<acersacc 1
 <<pinustro  1
+
+<<MapCode  14862
+MapCode  1
+abiebals  	30  (28)  50  (318)  60  (663)
+popubals   	40  (177)  60  (2200)  80  (698)
+fraxnigr 	80  (1402)
+betupapy	60  (204)  70  (244)
+thujocci	40  (3276)  50  (2192)  60  (2260)
+
+MapCode  30331
+<<MapCode  1
+abiebals  60  (1116)  80  (39)
+fraxnigr 50  (819)  80  (675)  120  (4482)  140  (853)
+picemari  140  (1179)
+betupapy	90  (982)
+thujocci	80  (4080)  100  (2711)  120  (1155)

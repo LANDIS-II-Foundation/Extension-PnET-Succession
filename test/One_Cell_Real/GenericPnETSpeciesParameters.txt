@@ -25,3 +25,5 @@ MaxPest 			0.1	<<0.1; Establishment tuning knob
 Lifeform			tree	<<anything else can be demoted to a lower canopy layer
 EvapDepth			25	<<20-25 mm ~1 inch?
 >>CohortBinSize			10
+ColdTol 			-10
+WinterSTD			3.0
