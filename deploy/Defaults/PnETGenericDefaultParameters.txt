@@ -44,7 +44,7 @@ MaxFracFol			-9999	>> Optional parameter, set to FracFol if not provided
 FracFolShape			0.0
 ColdTol				-9999	>> Optional parameter
 WinterSTD			0.0
-Permafrost			false
+SoilIceDepth			false
 LeakageFrostDepth		0.0
 RunOffCapture			0.0
 >>RunOffFrac			1.0
