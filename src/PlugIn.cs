@@ -34,7 +34,7 @@ using Landis.Library.Climate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Diagnostics;
 
 
@@ -49,10 +49,12 @@ namespace Landis.Extension.Succession.BiomassPnET
         private static Dictionary<ActiveSite, string> SiteOutputNames;
         public static float FTimeStep;
         public static bool UsingClimateLibrary;
-        private ICommunity initialCommunity;
+        private Dictionary<ActiveSite, ICommunity> sitesAndCommunities;
         public static string InitialCommunitiesSpinup;
         public static int CohortBinSize;
         public static int ParallelThreads;
+        private static readonly object threadLock = new object();
+        private Dictionary<ActiveSite, uint> allKeys;
         public static float MinFolRatioFactor;
 
         MyClock m = null;
@@ -88,6 +90,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             //this.ThreadCount = 3;
             //this.ThreadCount = 1;
 
+            allKeys = new Dictionary<ActiveSite, uint>();
+            sitesAndCommunities = new Dictionary<ActiveSite, ICommunity>();
         }
         //---------------------------------------------------------------------
         public override void LoadParameters(string InputParameterFile, ICore mCore)
@@ -411,16 +415,36 @@ namespace Landis.Extension.Succession.BiomassPnET
         //---------------------------------------------------------------------
         protected override void InitializeSite(ActiveSite site)//,ICommunity initialCommunity)
         {
-            if (m == null)
+            lock (threadLock)
             {
-                m = new MyClock(PlugIn.ModelCore.Landscape.ActiveSiteCount);
+                if (m == null)
+                {
+                    m = new MyClock(PlugIn.ModelCore.Landscape.ActiveSiteCount);
+                }
+
+                m.Next();
+                m.WriteUpdate();
             }
 
-            m.Next();
-            m.WriteUpdate();
+            uint key = 0;
+            allKeys.TryGetValue(site, out key);
+            ICommunity initialCommunity = null;
 
-            // Create new sitecohorts
-            SiteVars.SiteCohorts[site] = new SiteCohorts(StartDate, site, initialCommunity, UsingClimateLibrary, PlugIn.InitialCommunitiesSpinup,PlugIn.MinFolRatioFactor, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+            if (!sitesAndCommunities.TryGetValue(site, out initialCommunity))
+            {
+                throw new ApplicationException(string.Format("Unable to retrieve initialCommunity for site: {0}", site.Location.Row + "," + site.Location.Column));
+            }
+
+            if (!SiteCohorts.InitialSitesContainsKey(key))
+            {
+                // Create new sitecohorts from scratch
+                SiteVars.SiteCohorts[site] = new SiteCohorts(StartDate, site, initialCommunity, UsingClimateLibrary, PlugIn.InitialCommunitiesSpinup, MinFolRatioFactor, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+            }
+            else
+            {
+                // Create new sitecohorts using initialcommunities data
+                SiteVars.SiteCohorts[site] = new SiteCohorts(StartDate, site, initialCommunity, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+            }
         }
         //---------------------------------------------------------------------
         public override void InitializeSites(string initialCommunitiesText, string initialCommunitiesMap, ICore modelCore)
@@ -431,27 +455,36 @@ namespace Landis.Extension.Succession.BiomassPnET
             //Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
             Landis.Library.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, parser);
 
+            List<ActiveSite> processFirst = new List<ActiveSite>();
+            List<ActiveSite> processSecond = new List<ActiveSite>();
+
             ModelCore.UI.WriteLine("   Reading initial communities map \"{0}\" ...", initialCommunitiesMap);
-            IInputRaster<uintPixel> map;
-            map = ModelCore.OpenRaster<uintPixel>(initialCommunitiesMap);
-            using (map)
+            ProcessInitialCommunitiesMap(initialCommunitiesMap, communities, ref processFirst, ref processSecond);
+
+            if (this.ThreadCount != 1)
             {
-                uintPixel pixel = map.BufferPixel;
-                foreach (Site site in ModelCore.Landscape.AllSites)
+                // Handle creation of initial community sites first
+                Parallel.ForEach(processFirst, new ParallelOptions { MaxDegreeOfParallelism = this.ThreadCount }, site =>
                 {
-                    map.ReadBufferPixel();
-                    uint mapCode = pixel.MapCode.Value;
-                    if (!site.IsActive)
-                        continue;
+                    InitializeSite(site);
+                });
 
-                    ActiveSite activeSite = (ActiveSite)site;
-                    initialCommunity = communities.Find(mapCode);
-                    if (initialCommunity == null)
-                    {
-                        throw new ApplicationException(string.Format("Unknown map code for initial community: {0}", mapCode));
-                    }
+                Parallel.ForEach(processSecond, new ParallelOptions { MaxDegreeOfParallelism = this.ThreadCount }, site =>
+                {
+                    InitializeSite(site);
+                });
+            }
+            else
+            {
+                // First, process sites so that the initial communities are set up
+                foreach (ActiveSite site in processFirst)
+                {
+                    InitializeSite(site);
+                }
 
-                    InitializeSite(activeSite);
+                foreach (ActiveSite site in processSecond)
+                {
+                    InitializeSite((ActiveSite)site);
                 }
             }
         }
@@ -527,10 +560,58 @@ namespace Landis.Extension.Succession.BiomassPnET
         public bool PlantingEstablish(ISpecies species, ActiveSite site)
         {
             return true;
-           
         }
         //---------------------------------------------------------------------
 
+        //---------------------------------------------------------------------
+        /// <summary>
+        /// Reads the initial communities map, finds all unique site keys, and sets aside sites to process first and second
+        /// </summary>
+        private void ProcessInitialCommunitiesMap(string initialCommunitiesMap, 
+            Landis.Library.InitialCommunities.IDataset communities, ref List<ActiveSite> processFirst,
+            ref List<ActiveSite> processSecond)
+        {
+            IInputRaster<uintPixel> map = ModelCore.OpenRaster<uintPixel>(initialCommunitiesMap);
+            Dictionary<uint, ActiveSite> uniqueKeys = new Dictionary<uint, ActiveSite>();
+
+            using (map)
+            {
+                uintPixel pixel = map.BufferPixel;
+                foreach (Site site in ModelCore.Landscape.AllSites)
+                {
+                    map.ReadBufferPixel();
+                    uint mapCode = pixel.MapCode.Value;
+                    if (!site.IsActive)
+                        continue;
+
+                    ActiveSite activeSite = (ActiveSite)site;
+                    var initialCommunity = communities.Find(mapCode);
+                    if (initialCommunity == null)
+                    {
+                        throw new ApplicationException(string.Format("Unknown map code for initial community: {0}", mapCode));
+                    }
+
+                    sitesAndCommunities.Add(activeSite, initialCommunity);
+                    uint key = SiteCohorts.ComputeKey((ushort)initialCommunity.MapCode, Globals.ModelCore.Ecoregion[site].MapCode);
+
+                    if (!uniqueKeys.ContainsKey(key))
+                    {
+                        uniqueKeys.Add(key, activeSite);
+                        processFirst.Add(activeSite);
+                    }
+                    else
+                    {
+                        processSecond.Add(activeSite);
+                    }
+
+                    if (!allKeys.ContainsKey(activeSite))
+                    {
+                        allKeys.Add(activeSite, key);
+                    }
+                }
+            }
+        }
+        //---------------------------------------------------------------------
     }
 }
 
