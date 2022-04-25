@@ -428,6 +428,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             uint key = 0;
             allKeys.TryGetValue(site, out key);
+
             ICommunity initialCommunity = null;
 
             if (!sitesAndCommunities.TryGetValue(site, out initialCommunity))
