@@ -246,8 +246,6 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             FTimeStep = 1.0F / Timestep;
 
-            //Latitude = ((Parameter<float>)PlugIn.GetParameter(Names.Latitude, 0, 90)).Value; // Now an ecoregion parameter
-
             ObservedClimate.Initialize();
             SpeciesPnET = new SpeciesPnET();
             Landis.Library.PnETCohorts.SpeciesParameters.LoadParameters(SpeciesPnET);
@@ -360,9 +358,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
         }
         //---------------------------------------------------------------------
-        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType)
+        public void AddNewCohort(ISpecies species, ActiveSite site, string reproductionType, double propBiomass)
         {
-            ISpeciesPnET spc = SpeciesPnET[species];
+            ISpeciesPnET spc = PlugIn.SpeciesPnET[species];
             bool addCohort = true;
             if (SiteVars.SiteCohorts[site].cohorts.ContainsKey(species))
             {
@@ -376,7 +374,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             bool addSiteOutput = false;
             addSiteOutput = (SiteOutputNames.ContainsKey(site) && addCohort);
-            Cohort cohort = new Cohort(species, spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null);
+            Cohort cohort = new Cohort(species, spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null, propBiomass);
             
             addCohort = SiteVars.SiteCohorts[site].AddNewCohort(cohort);
 
