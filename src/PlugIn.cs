@@ -204,7 +204,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                         throw new System.Exception("CohortBinSize cannot be smaller than Timestep.");
                     }
                     else
-                        PlugIn.ModelCore.UI.WriteLine("Succession timestep = " + Timestep + "; CohortBinSize = " + CohortBinSize + ".");
+                        PlugIn.ModelCore.UI.WriteLine("  Succession timestep = " + Timestep + "; CohortBinSize = " + CohortBinSize + ".");
                 }
                 else
                 {
@@ -245,8 +245,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             this.ThreadCount = ParallelThreads;
 
             FTimeStep = 1.0F / Timestep;
-
-            ObservedClimate.Initialize();
+            if(!Names.TryGetParameter(Names.ClimateConfigFile, out var climateLibraryFileName))
+            {
+                PlugIn.ModelCore.UI.WriteLine($"  No ClimateConfigFile provided. Using climate files in ecoregion parameters: {Names.parameters["EcoregionParameters"].Value}.");
+                ObservedClimate.Initialize();
+            }
             SpeciesPnET = new SpeciesPnET();
             Landis.Library.PnETCohorts.SpeciesParameters.LoadParameters(SpeciesPnET);
 
