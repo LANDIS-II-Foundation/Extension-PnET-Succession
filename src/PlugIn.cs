@@ -341,10 +341,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 Climate.Initialize(climateLibraryFileName.Value, false, ModelCore);
                 ClimateRegionData.Initialize();
             }
-            else
-            {
-                PlugIn.ModelCore.UI.WriteLine($"Using climate files in ecoregion parameters: {Names.parameters["EcoregionParameters"].Value}.");
-            }
+            //else
+            //{  
+            //    PlugIn.ModelCore.UI.WriteLine($"Using climate files in ecoregion parameters: {Names.parameters["EcoregionParameters"].Value}.");
+            //}
 
             string PARunits = ((Parameter<string>)Names.GetParameter(Names.PARunits)).Value;
 
