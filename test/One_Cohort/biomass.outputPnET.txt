@@ -4,15 +4,16 @@ Timestep  10
 
 Species ALL
 	  
-Biomass			output/biomass/{species}/biomass-{timestep}.img
-AbovegroundBiomass	output/AGbiomass/{species}AG/biomass-{timestep}.img
-BelowgroundBiomass 	output/BelowGroundBiom/BGB-{timestep}.img
+WoodBiomass		output/WoodBiomass/{species}/WoodBio-{timestep}.img
+Wood-FoliageBiomass	output/AGBiomass/{species}/AGBio-{timestep}.img
+RootBiomass 		output/BGBiomass/{species}/BGBio-{timestep}.img
 WoodySenescence		output/WoodySenescence/{species}/WoodySen-{timestep}.img
 FoliageSenescence	output/FolSenescence/{species}/FolSen-{timestep}.img
-LeafAreaIndex 		output/LeafAreaIndex/lai-{timestep}.img
+LeafAreaIndex 		output/LeafAreaIndex/{species}/lai-{timestep}.img
+NSC	 		output/NSC/{species}/NSC-{timestep}.img
 Establishment 		output/Establishments/{species}/Est-{species}-{timestep}.img
 EstablishmentProbability	output/EstabProb/{species}/EstProb-{species}-{timestep}.img
-MonthlyNetPsn		output/MonthlyNetPsn/MonthlyNetPsn-{timestep}.img
+MonthlyNetPsn		output/MonthlyNetPsn/MonthlyNetPsn_{timestep}.img
 MonthlyFolResp		output/MonthlyFolResp/MonthlyFolResp-{timestep}.img
 MonthlyGrossPsn		output/MonthlyGrossPsn/MonthlyGrossPsn-{timestep}.img
 MonthlyMaintResp	output/MonthlyMaintResp/MonthlyMaintResp-{timestep}.img

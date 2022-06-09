@@ -4,19 +4,25 @@ Timestep  10
 
 Species ALL
 	  
-Biomass			output/TotalBiomass/{species}_Total/biomass-{timestep}.img
-AbovegroundBiomass	output/AGbiomass/{species}_AG/biomass-{timestep}.img
-WoodBiomass		output/WoodBiomass/{species}_Wood/biomass-{timestep}.img
-BelowgroundBiomass 	output/BelowGroundBiom/BGB-{timestep}.img
-WoodySenescence		output/WoodySenescence/{species}/WoodySen-{timestep}.img
-FoliageSenescence	output/FolSenescence/{species}/FolSen-{timestep}.img
-LeafAreaIndex 		output/LeafAreaIndex/lai-{timestep}.img
-Establishment 		output/Establishments/{species}/Est-{species}-{timestep}.img
-EstablishmentProbability	output/EstabProb/{species}/EstProb-{species}-{timestep}.img
+Wood-RootBiomass	output/TotalBiomass/TotalBiomass-{species}-{timestep}.img
+Wood-FoliageBiomass	output/AGbiomass/AGBiomass-{species}-{timestep}.img
+WoodBiomass		output/WoodBiomass/WoodBiomass-{species}-{timestep}.img
+RootBiomass 		output/RootBiomass-{species}-{timestep}.img
+WoodySenescence		output/WoodySenescence/WoodySen-{species}-{timestep}.img
+FoliageSenescence	output/FolSenescence/FolSen-{species}-{timestep}.img
+LeafAreaIndex 		output/LeafAreaIndex/LAI-{species}-{timestep}.img
+Establishment 		output/Establishments/Est-{species}-{timestep}.img
+EstablishmentProbability	output/EstabProb/EstProb-{species}-{timestep}.img
 MonthlyNetPsn		output/MonthlyNetPsn/MonthlyNetPsn-{timestep}.img
 MonthlyFolResp		output/MonthlyFolResp/MonthlyFolResp-{timestep}.img
 MonthlyGrossPsn		output/MonthlyGrossPsn/MonthlyGrossPsn-{timestep}.img
 MonthlyMaintResp	output/MonthlyMaintResp/MonthlyMaintResp-{timestep}.img
+Albedo			output/Albedo/Albedo-{timestep}.img
+MonthlyActiveLayerDepth	output/MonthlyActiveLayerDepth/MonthlyActiveLayerDepth-{timestep}.img
+MonthlyFrostDepth	output/MonthlyFrostDepth/MonthlyFrostDepth-{timestep}.img
+MonthlyAvgSnowPack	output/MonthlyAvgSnowPack/MonthlyAvgSnowPack-{timestep}.img
+MonthlyAvgWater		output/MonthlyAvgWater/MonthlyAvgWater-{timestep}.img
+MonthlyAvgLAI		output/MonthlyAvgLAI/MonthlyAvgLAI-{timestep}.img
 Water 			output/SoilWater/water-{timestep}.img
 SubCanopyPAR 		output/SubCanopyPar/SCpar-{timestep}.img
 CohortsPerSpecies	output/CohortsPerspecies/{species}/cohorts-{timestep}.img
@@ -24,6 +30,8 @@ AnnualPsn		output/AnnualPsn/{species}/AnnualPsn-{timestep}.img
 WoodyDebris 		output/WoodyDebris/WoodyDebris-{timestep}.img
 Litter			output/NonWoodyDebris/Litter-{timestep}.img
 AgeDistribution 	output/AgeDist/Age-{timestep}.img
+NSC			output/NSC/NSC-{timestep}.img
+PET			output/PET/PET-{timestep}.img
 CohortBalance		output/TotalCohorts.csv
 EstablishmentTable	output/EstablishmentTable.csv
 MortalityTable		output/MortalityTable.csv
