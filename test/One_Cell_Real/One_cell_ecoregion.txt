@@ -5,6 +5,6 @@ LandisData  Ecoregions
 >> ------  ----  -----  -----------
       no    0   eco0   "inactive"
 >>      yes    1   eco1   "active"
-      yes    1   mesic	"active"
->>      yes    1   xeric	"active"
+>>      yes    1   mesic	"active"
+      yes    1   xeric	"active"
   

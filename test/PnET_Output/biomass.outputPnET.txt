@@ -7,7 +7,8 @@ Species ALL
 Wood-RootBiomass	output/TotalBiomass/TotalBiomass-{species}-{timestep}.img
 Wood-FoliageBiomass	output/AGbiomass/AGBiomass-{species}-{timestep}.img
 WoodBiomass		output/WoodBiomass/WoodBiomass-{species}-{timestep}.img
-RootBiomass 		output/RootBiomass-{species}-{timestep}.img
+RootBiomass 		output/RootBiomass/RootBiomass-{species}-{timestep}.img
+FoliageBiomass 		output/FoliageBiomass/FoliageBiomass-{species}-{timestep}.img
 WoodySenescence		output/WoodySenescence/WoodySen-{species}-{timestep}.img
 FoliageSenescence	output/FolSenescence/FolSen-{species}-{timestep}.img
 LeafAreaIndex 		output/LeafAreaIndex/LAI-{species}-{timestep}.img

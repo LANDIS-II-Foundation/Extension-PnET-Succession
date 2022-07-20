@@ -15,4 +15,5 @@ LandisData EcoregionParameters
 
 EcoregionParameters	SoilType	RootingDepth	PrecLossFrac	LeakageFrac	RunoffCapture	PrecIntConst	WinterSTD	ClimateFileName             
 >>eco4 			SALO		1000		0.0		1.00		0		0.1	6.67	Climate.txt
-mesic 			SALO		1000		0.0		1.00		0		0.1	10.0	Climate.txt
+>>mesic 			SALO		1000		0.0		1.00		0		0.1	10.0	Climate.txt
+xeric 			SAND		1000		0.0		1.00		0		0.1	10.0	Climate.txt

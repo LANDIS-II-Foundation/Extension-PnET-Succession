@@ -4,8 +4,8 @@ Timestep  10
 
 Species ALL
 	  
-Biomass			output/biomass/{species}/biomass-{timestep}.img
-AbovegroundBiomass	output/AGbiomass/{species}AG/biomass-{timestep}.img
+WoodBiomass			output/WoodBiomass/{species}/biomass-{timestep}.img
+Wood-FoliageBiomass		output/AGbiomass/{species}AG/biomass-{timestep}.img
 >>BelowgroundBiomass 	output/BelowGroundBiom/BGB-{timestep}.img
 >>WoodySenescence		output/WoodySenescence/{species}/WoodySen-{timestep}.img
 FoliageSenescence	output/FolSenescence/{species}/FolSen-{timestep}.img
@@ -26,5 +26,5 @@ SubCanopyPAR 		output/SubCanopyPar/SCpar-{timestep}.img
 CohortBalance		output/TotalCohorts.csv
 EstablishmentTable	output/EstablishmentTable.csv
 MortalityTable		output/MortalityTable.csv
-MonthlyAverageAlbedo		output/Albedo/albedo-{timestep}.img
+>>Albedo			output/Albedo/albedo-{timestep}.img
                    
