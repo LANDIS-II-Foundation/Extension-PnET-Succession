@@ -69,3 +69,4 @@ RefolCost			0.90
 NonRefolCost			0.10
 MaxLAI				-9999  >> Optional parameter
 MinFolRatioFactor		0
+MossScalar			-9999  >> Optional parameter
