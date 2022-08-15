@@ -378,6 +378,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             bool addSiteOutput = false;
             addSiteOutput = (SiteOutputNames.ContainsKey(site) && addCohort);
             Cohort cohort = new Cohort(species, spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null, propBiomass);
+            if (((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value)
+            {
+                cohort.CanopyGrowingSpace = 1.0f;
+                cohort.CanopyLayerProp = 1.0f;
+            }
             
             addCohort = SiteVars.SiteCohorts[site].AddNewCohort(cohort);
 

@@ -1,0 +1,26 @@
+LandisData PnETGenericParameters
+PnETGenericParameters 		Value
+MaxCanopyLayers			5
+LayerThreshRatio		0.5
+>>MaxDevLyrAv 			10000	<<obsolete in v5.0
+>>WUEcnst			10.9	<<obsolete in v3.0
+IMAX				5
+DNSC				0.05 	<<target NSCfraction
+MaintResp			0.002	<< previously 0.0027
+>>FracBelowG			0.33
+PrecipEvents			11
+PreventEstablishment		false	<<set to true during calibrations
+Wythers				true
+DTEMP				true
+SoilIceDepth			false
+LeakageFrostDepth  		3000
+SpinUpWaterStress		false	<<default	The following used w v4.1
+PARunits			umol	<<default
+>>PAR_W_m2			false
+AmaxFrac			0.75	<<default=0.75
+PrecipEventsWithReplacement	true	<<default
+>>InvertPest			false
+MaxPest 			0.02	<<Establishment tuning knob
+>>ParallelThreads		8
+Latitude			47
+EvapDepth			200
