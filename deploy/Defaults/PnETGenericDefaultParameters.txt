@@ -71,3 +71,4 @@ MaxLAI				-9999  >> Optional parameter
 MinFolRatioFactor		0
 CohortStacking			false
 MossScalar			-9999   >> Optional parameter
+ETMethod			Original
