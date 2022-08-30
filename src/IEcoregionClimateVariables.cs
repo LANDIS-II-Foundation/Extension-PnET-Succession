@@ -18,6 +18,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         float Tmax { get; }
         float CO2 { get; }
         float O3 { get; }
+        float SPEI { get; }
         
         SpeciesPnETVariables this[string species] { get; }
     }

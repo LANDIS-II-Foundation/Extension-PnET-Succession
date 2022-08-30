@@ -70,6 +70,10 @@ namespace Landis.Extension.Succession.BiomassPnET
                 return _date;
             }
         }
+        public float SPEI
+        {
+            get { return obs_clim.SPEI; }
+        }
 
         // Number of days in the month
         public float DaySpan
