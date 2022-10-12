@@ -12,7 +12,7 @@ PrecipEvents			11
 PreventEstablishment		true
 Wythers				true
 DTEMP				true
-Permafrost			false
+>>Permafrost			false
 >>LeakageFrostDepth  		3000
 SpinUpWaterStress		true	<<false	<<default	The following used w v4.1
 PARunits			umol	<<default
@@ -23,5 +23,5 @@ InvertPest			false
 MaxPest 			0.1	<<0.1; Establishment tuning knob
 >>Parallel			2	<<7; 3 best, 4 too many, 2 slightly worse; 3 concurrent sims on laptop
 Lifeform			tree	<<anything else can be demoted to a lower canopy layer
-EvapDepth			25	<<20-25 mm ~1 inch?
+EvapDepth			500	<<20-25 mm ~1 inch?
 >>CohortBinSize			10

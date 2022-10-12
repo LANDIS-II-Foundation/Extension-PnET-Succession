@@ -2,5 +2,5 @@ LandisData	PnETSpeciesParameters
 >>CCA2																																												
 >>calibrated	for	Wythers=true																																																	
 PnETSpeciesParameters	FolN	SLWmax	SLWDel	BFolResp	DNSC	TOfol	TOwood	TOroot	AmaxA	AmaxB	HalfSat	H1	H2	H3	H4	PsnAgeRed	LeafOnMinT	PsnTMin	PsnTOpt	PsnTMax	k	FracFol	MaxFracFol	FracFolShape	FrActWd	FracBelowG	EstMoist	EstRad	ColdTol	KWdLit	FolLignin																				
-pinustr1	1.2	193	0	0.1	0.06	0.33	0.01	0.02	5.3	21.5	197	-0.75	3	111	152	5	2.3	1.4	21.5	30	0.5	0.08	0.092	6	0.000044	0.33	1	0.943	-53	0.125	0.25	<<pinustr	2.3																		
-pinustr2	1.2	193	0	0.1	0.06	0.33	0.01	0.02	5.3	21.5	197	-0.75	3	111	152	5	2.3	1.4	21.5	30	0.5	0.08	0.092	6	0.000044	0.33	1	0.943	-53	0.125	0.25	<<pinustr	2.3																		
+pinustr1		1.2	193	0	0.1		0.06	0.33	0.01	0.02	5.3	21.5	197	-0.75	3	111	152	5	2.3	1.4	21.5	30	0.5	0.08	0.092	6	0.000044	0.33	1	0.943	-53	0.125	0.25	<<pinustr	2.3																		
+pinustr2		1.8	193	0	0.1		0.06	0.33	0.01	0.02	5.3	21.5	197	-0.75	3	111	152	5	2.3	1.4	21.5	30	0.5	0.08	0.092	6	0.000044	0.33	1	0.943	-53	0.125	0.25	<<pinustr	2.3																		
