@@ -14,3 +14,4 @@ DTEMP				true
 CO2AmaxBeff			1.0
 ETMethod			Radiation
 EvapDepth			500
+ETExtCoeff			0.55
