@@ -10,6 +10,10 @@ The PnET-Succession extension is based on the Biomass Succession extension of Sc
 - [View User Guide](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/docs/LANDIS-II%20PnET-Succession%20v4.1%20User%20Guide.pdf).
 - Full release details found in the User Guide and on GitHub.
 
+- Beta release of Version 5.0 - December 2022
+- [View User Guide](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/docs/LANDIS-II%20PnET-Succession%20v5.0b18%20User%20Guide.pdf).
+
+
 # Requirements
 
 To use PnET-Succession, you need:
@@ -20,6 +24,9 @@ To use PnET-Succession, you need:
 # Download
 
 Version 4.1 can be downloaded [here](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/installer/LANDIS-II-V7%20PnET-Succession%204.1-RC1-setup.exe). To install it on your computer, launch the installer.
+
+Version 5.0-b18 can be downloaded [here](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/installer/LANDIS-II-V7%20PnET-Succession%205.0-b18-setup.exe). To install it on your computer, launch the installer.
+
 
 # Example Files
 
