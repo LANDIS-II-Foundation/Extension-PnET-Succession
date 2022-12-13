@@ -320,7 +320,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 SiteVars.FineFuels[site] = SiteVars.Litter[site].Mass;
                 IEcoregionPnET ecoregion = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
                 IHydrology hydrology = new Hydrology(ecoregion.FieldCap);
-                SiteVars.PressureHead[site] = hydrology.GetPressureHead(ecoregion);
+                SiteVars.PressureHead[site] = hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water, ecoregion.SoilType);
                 if (UsingClimateLibrary)
                 {
                     SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyTemp) - (float)(3.0 * ecoregion.WinterSTD));  
