@@ -38,7 +38,9 @@ namespace Landis.Extension.Output.Density
             if (makeTable)
             {
                 CreateDirectory(summaryLogName);
+                CreateDirectory("Density_cohort_log.csv");
                 PlugIn.summaryLog = new MetadataTable<SummaryLog>(summaryLogName);
+                PlugIn.summaryLogCohort = new MetadataTable<SummaryLogCohort>("Density_cohort_log.csv");
 
                 PlugIn.ModelCore.UI.WriteLine("   Generating summary table...");
                 OutputMetadata tblOut_summary = new OutputMetadata()

@@ -1,62 +1,80 @@
-﻿// JSF - FIX
-/*using System;
+﻿/*// JSF - FIX
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Landis.Library.Metadata;
+using Landis.Core;
+using Landis.Utilities;
+using System.IO;
+using Flel = Landis.Utilities;
 
-namespace Landis.Extension.Succession.Density
+namespace Landis.Library.DensityCohorts
 {
-    class MetadataHandler
+    public static class MetadataHandler
     {
         public static ExtensionMetadata Extension { get; set; }
 
-        public static void InitializeMetadata(string summaryLogFileName)
+        public static void InitializeMetadata(int Timestep, string summaryLogName, bool makeTable)
         {
+
             ScenarioReplicationMetadata scenRep = new ScenarioReplicationMetadata()
             {
-                RasterOutCellArea = PlugIn.ModelCore.CellArea,
-                TimeMin = PlugIn.ModelCore.StartTime,
-                TimeMax = PlugIn.ModelCore.EndTime,
+                RasterOutCellArea = EcoregionData.ModelCore.CellArea,
+                TimeMin = EcoregionData.ModelCore.StartTime,
+                TimeMax = EcoregionData.ModelCore.EndTime,
             };
 
-            Extension = new ExtensionMetadata(PlugIn.ModelCore)
+            Extension = new ExtensionMetadata(EcoregionData.ModelCore)
             {
-                Name = PlugIn.ExtensionName,
-                TimeInterval = PlugIn.ModelCore.CurrentTime, //change this to PlugIn.TimeStep for other extensions
+                Name = Names.ExtensionName,
+                TimeInterval = Timestep,
                 ScenarioReplicationMetadata = scenRep
             };
 
-            CreateDirectory(summaryLogFileName);
-            PlugIn.summaryLog = new MetadataTable<SummaryLog>(summaryLogFileName);
-
-            PlugIn.ModelCore.UI.WriteLine("   Generating summary table...");
-            OutputMetadata tblOut_summary = new OutputMetadata()
-            {
-                Type = OutputType.Table,
-                Name = "SummaryLog",
-                FilePath = PlugIn.summaryLog.FilePath,
-                Visualize = true,
-            };
-            tblOut_summary.RetriveFields(typeof(SummaryLog));
-            Extension.OutputMetadatas.Add(tblOut_summary);
-
             //---------------------------------------
-            MetadataProvider mp = new MetadataProvider(Extension);
-            mp.WriteMetadataToXMLFile("Metadata", Extension.Name, Extension.Name);
+            //          table outputs:   
+            //---------------------------------------
+
+            if (makeTable)
+            {
+                CreateDirectory(summaryLogName);
+
+                SiteVars.summaryLogMortality = new MetadataTable<SummaryLogMortality>(summaryLogName);
+
+                EcoregionData.ModelCore.UI.WriteLine("   Generating summary table...");
+                OutputMetadata tblOut_summary = new OutputMetadata()
+                {
+                    Type = OutputType.Table,
+                    Name = "SummaryLog",
+                    FilePath = PlugIn.summaryLogMortality.FilePath,
+                    Visualize = true,
+                };
+                tblOut_summary.RetriveFields(typeof(SummaryLogMortality));
+                Extension.OutputMetadatas.Add(tblOut_summary);
+            }
+
+
         }
+
+        //---------------------------------------
+        //          create directory:   
+        //---------------------------------------
+
         public static void CreateDirectory(string path)
         {
-            //Require.ArgumentNotNull(path);
             path = path.Trim(null);
             if (path.Length == 0)
                 throw new ArgumentException("path is empty or just whitespace");
 
-            string dir = System.IO.Path.GetDirectoryName(path);
+            string dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir))
             {
-                Landis.Utilities.Directory.EnsureExists(dir);
+                Flel.Directory.EnsureExists(dir);
             }
 
-            //return new StreamWriter(path);
             return;
         }
     }
+
 }*/

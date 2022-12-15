@@ -3,7 +3,7 @@
 using Landis.Core;
 using Landis.Utilities;
 using Landis.Library.Succession;
-using Landis.Library.BiomassCohorts;
+//using Landis.Library.BiomassCohorts;
 using Landis.Library.DensityCohorts;
 using Landis.SpatialModeling;
 using Landis.Library.Biomass;
@@ -31,6 +31,7 @@ namespace Landis.Extension.Output.Density
         private static ICore modelCore;
         private bool makeTable;
         public static MetadataTable<SummaryLog> summaryLog;
+        public static MetadataTable<SummaryLogCohort> summaryLogCohort;
 
         //---------------------------------------------------------------------
 
@@ -82,14 +83,15 @@ namespace Landis.Extension.Output.Density
 
         public override void Run()
         {
-            WriteMapForAllSpecies();
+            //WriteMapForAllSpecies();
 
             if (makeTable)
-                WriteLogFile();
+                WriteCohortLogFile();
+            //WriteLogFile();
 
             if (selectedSpecies != null)
             {
-                WriteSpeciesMaps();
+                //WriteSpeciesMaps();
                 
             }
         }
@@ -194,6 +196,40 @@ namespace Landis.Extension.Output.Density
 
         //---------------------------------------------------------------------
 
+        private void WriteCohortLogFile()
+        {
+            foreach (ActiveSite site in ModelCore.Landscape)
+            {
+                IEcoregion ecoregion = ModelCore.Ecoregion[site];
+
+                
+                foreach (ISpeciesCohorts speciesCohorts in SiteVars.Cohorts[site])
+                {
+                    foreach (Cohort cohort in speciesCohorts)
+                    {
+                        summaryLogCohort.Clear();
+
+                        SummaryLogCohort slc = new SummaryLogCohort();
+
+                        slc.Time = modelCore.CurrentTime;
+                        slc.SiteIndex = site.DataIndex;
+                        slc.EcoName = ecoregion.Name;
+                        slc.Species = cohort.Species.Name;
+                        slc.Age = cohort.Age;
+                        slc.TreeNumber = cohort.Treenumber;
+                        slc.Diameter = Math.Round(cohort.Diameter, 1);
+                        slc.Biomass = cohort.Biomass;
+
+                        summaryLogCohort.AddObject(slc);
+                        summaryLogCohort.WriteToFile();
+                    }
+                }
+                
+
+                
+            }
+        }
+        //---------------------------------------------------------------------
 
         private void WriteLogFile()
         {

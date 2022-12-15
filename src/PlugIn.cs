@@ -48,8 +48,8 @@ namespace Landis.Extension.Succession.Density
         private static ISiteVar<SiteCohorts> sitecohorts;
         private static DateTime StartDate;
         private static Dictionary<ActiveSite, string> SiteOutputNames;
-        //public static ushort IMAX;
-        //public static float FTimeStep;
+
+        //public static MetadataTable<SummaryLogMortality> summaryLogMortality;
 
         public static biomassUtil biomass_util = new biomassUtil();
         public static bool UsingClimateLibrary;
@@ -274,6 +274,10 @@ namespace Landis.Extension.Succession.Density
             DiameterInputs.Initialize(DiameterInputFile, false);
 
             DynamicEcoregions.ChangeDynamicParameters(0);  // Year 0
+
+            //Initialize metadata output
+            //MetadataHandler.InitializeMetadata(Timestep, "Density_mortality_output.csv", true);
+            Landis.Library.DensityCohorts.MetadataHandler.InitializeMetadata(Timestep, "Density_mortality_output.csv", true);
 
             Landis.Library.DensityCohorts.Cohorts.Initialize(Timestep);
             // This creates the cohorts - FIXME
