@@ -58,7 +58,7 @@
       <HintPath>..\..\..\Support-Library-Dlls-v7\Landis.Library.Biomass-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.BiomassCohorts-v3">
-      <HintPath>..\..\..\Support-Library-Dlls-v7\Landis.Library.BiomassCohorts-v3.dll</HintPath>
+      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.BiomassCohorts-v3.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Climate-v4.4">
       <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Climate-v4.4.dll</HintPath>
