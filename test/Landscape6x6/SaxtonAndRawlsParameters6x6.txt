@@ -1,0 +1,35 @@
+LandisData   SaxtonAndRawlsParameters					
+SaxtonAndRawlsParameters	Sand	clay	pctOM	densFactor	gravel
+>>---------------------------------------					
+25				0.00	0.00	0.00	0.00	0
+25Peat				0.05	0.05	13.00	0.90	0
+25Muck				0.05	0.05	11.00	0.90	0
+50FineSandyLoam			0.69	0.12	1.48	1.00	0
+50SandyLoam			0.53	0.10	0.92	1.00	0
+75Loam				0.45	0.15	0.96	0.98	0
+75CoarseSandyLoam		0.65	0.12	1.14	1.02	0
+75SandyLoam			0.58	0.07	1.18	1.04	0
+100Peat				0.05	0.02	12.50	0.90	0
+100MuckyPeat			0.14	0.14	12.70	0.90	0  <<0.14	0.14	15.00	0.90	0
+100Marl				0.27	0.10	10.00	0.90	0
+100Muck				0.25	0.14	15.00	0.90	0
+100Clay				0.12	0.61	0.90	1.18	0
+100SiltyClay			0.09	0.42	0.66	1.09	0
+100ClayLoam			0.28	0.38	3.61	1.10	0
+100LoamyCoarseSand		0.79	0.06	0.65	0.94	0
+100SandyClayLoam		0.51	0.23	3.20	1.04	0
+100CoarseSand			0.89	0.03	0.38	0.99	0
+100CoarseSandyLoam		0.63	0.07	7.28	1.43	0
+100SandyLoam			0.60	0.08	1.45	1.03	0
+100SiltyClayLoam		0.16	0.37	4.21	1.29	0
+100FineSand			0.90	0.05	0.82	1.07	0
+100Loam				0.38	0.20	2.39	1.14	0
+100LoamyVeryFineSand		0.78	0.05	3.49	1.19	0
+100Sand				0.91	0.04	0.87	1.10	0
+100LoamySand			0.80	0.05	0.87	1.10	0
+100SiltLoam			0.27	0.15	5.30	1.50	0
+100FineSandyLoam		0.62	0.07	1.40	1.21	0
+100LoamyFineSand		0.81	0.06	1.17	1.23	0
+100VeryFineSandyLoam		0.60	0.09	3.90	1.50	0
+
+

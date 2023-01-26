@@ -1,0 +1,113 @@
+2023-01-17 14:09:50,639 - LANDIS-II 7.0 (7)
+2023-01-17 14:09:50,646 - 
+2023-01-17 14:09:50,795 - Loading scenario from file "scenario_6x6.txt" ...
+2023-01-17 14:09:50,869 - Initialized random number generator with user-supplied seed = 2
+2023-01-17 14:09:50,870 - Loading species data from file "Species_LifeTraits.txt" ...
+2023-01-17 14:09:50,898 - Loading ecoregions from file "ecoregions6x6.txt" ...
+2023-01-17 14:09:50,920 - Initializing landscape from ecoregions map "EcoReg6x6.img" ...
+2023-01-17 14:09:50,960 - Cell length = 100 m, cell area = 1 ha
+2023-01-17 14:09:50,962 - Map dimensions: 6 rows by 6 columns = 36 cells
+2023-01-17 14:09:50,968 - Sites: 36 active (100.0%), 0 inactive (0.0%)
+2023-01-17 14:09:50,974 - Loading PnET-Succession extension ...
+2023-01-17 14:09:51,573 - Initializing PnET-Succession version 5.0.0.0
+2023-01-17 14:09:51,599 -    Registering Data:  Succession.WoodyDebris.
+2023-01-17 14:09:51,599 -    Registering Data:  Succession.Litter.
+2023-01-17 14:09:51,599 -    Registering Data:  Succession.FineFuels.
+2023-01-17 14:09:51,599 -    Registering Data:  Succession.PressureHead.
+2023-01-17 14:09:51,599 -    Registering Data:  Succession.ExtremeMinTemp.
+2023-01-17 14:09:51,599 -    Registering Data:  Succession.PET.
+2023-01-17 14:09:51,599 -    Registering Data:  Succession.CWD.
+2023-01-17 14:09:51,600 -    Registering Data:  Succession.SmolderConsumption.
+2023-01-17 14:09:51,600 -    Registering Data:  Succession.FlamingConsumption.
+2023-01-17 14:09:51,601 -   Succession timestep = 10; CohortBinSize = 10.
+2023-01-17 14:09:51,601 -   MaxParallelThreads = 1.
+2023-01-17 14:09:51,601 -   No ClimateConfigFile provided. Using climate files in ecoregion parameters: EcoParam6x6.txt.
+2023-01-17 14:09:51,629 - Eco	Soiltype	WiltPnt		FieldCap	FC-WP		Porosity
+2023-01-17 14:09:51,630 - 100MuckyPeat_1-1-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,630 - 100MuckyPeat_1-1-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,630 - 100MuckyPeat_1-1-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,630 - 100MuckyPeat_1-2-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,630 - 100MuckyPeat_1-2-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,630 - 100MuckyPeat_1-2-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,630 - 100MuckyPeat_1-3-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,631 - 100MuckyPeat_1-3-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,631 - 100MuckyPeat_1-3-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,631 - 100MuckyPeat_2-1-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,631 - 100MuckyPeat_2-1-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,631 - 100MuckyPeat_2-1-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,632 - 100MuckyPeat_2-2-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,632 - 100MuckyPeat_2-2-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,632 - 100MuckyPeat_2-2-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,632 - 100MuckyPeat_2-3-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,632 - 100MuckyPeat_2-3-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,632 - 100MuckyPeat_2-3-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,633 - 100MuckyPeat_3-1-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,633 - 100MuckyPeat_3-1-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,633 - 100MuckyPeat_3-1-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,633 - 100MuckyPeat_3-2-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,633 - 100MuckyPeat_3-2-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,633 - 100MuckyPeat_3-2-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,634 - 100MuckyPeat_3-3-1	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,634 - 100MuckyPeat_3-3-2	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,634 - 100MuckyPeat_3-3-3	100MuckyPeat		0.1614068	0.4471503	0.2857434	0.8862275
+2023-01-17 14:09:51,634 - 100Clay_1--	100Clay		0.3550265	0.4521188	0.0970923	0.4619603
+2023-01-17 14:09:51,634 - 100Clay_2--	100Clay		0.3550265	0.4521188	0.0970923	0.4619603
+2023-01-17 14:09:51,635 - 100Clay_3--	100Clay		0.3550265	0.4521188	0.0970923	0.4619603
+2023-01-17 14:09:51,635 - 100CoarseSand_1--	100CoarseSand		0.01407278	0.06108445	0.04701167	0.4271437
+2023-01-17 14:09:51,635 - 100CoarseSand_2--	100CoarseSand		0.01407278	0.06108445	0.04701167	0.4271437
+2023-01-17 14:09:51,635 - 100CoarseSand_3--	100CoarseSand		0.01407278	0.06108445	0.04701167	0.4271437
+2023-01-17 14:09:51,635 - 100SiltLoam_1--	100SiltLoam		0.1269962	0.2794275	0.1524314	0.3492637
+2023-01-17 14:09:51,635 - 100SiltLoam_2--	100SiltLoam		0.1269962	0.2794275	0.1524314	0.3492637
+2023-01-17 14:09:51,636 - 100SiltLoam_3--	100SiltLoam		0.1269962	0.2794275	0.1524314	0.3492637
+2023-01-17 14:09:51,644 - Using PAR units of umol/m2/s.
+2023-01-17 14:09:51,646 -    Registering Data:  TimeOfLastSuccession.
+2023-01-17 14:09:51,647 -    Registering Data:  Shade.
+2023-01-17 14:09:51,647 -    Creating Dispersal Neighborhood List.
+2023-01-17 14:09:51,648 -    Dispersal:  NeighborRadius=250, CellLength=100, numCellRadius=2
+2023-01-17 14:09:51,651 - Spinning up biomass or reading from maps...
+2023-01-17 14:09:51,659 -    Loading initial communities from file "initcom6x6.txt" ...
+2023-01-17 14:09:51,678 -    Reading initial communities map "InitCom6x6.img" ...
+2023-01-17 14:09:53,043 -    Registering Data:  Succession.BiomassCohorts.
+2023-01-17 14:09:53,044 -    Registering Data:  Succession.AgeCohorts.
+2023-01-17 14:09:53,045 -    Registering Data:  Succession.CohortsPnET.
+2023-01-17 14:09:53,047 - Loading Output-PnET extension ...
+2023-01-17 14:09:53,204 -    Generating summary table...
+2023-01-17 14:09:53,218 - Using the following extensions ...
+   Extension Name            Extension Filename       
+   --------------            ------------------       
+   PnET-Succession           ControlPnETsuccession.txt
+   Output-PnET               biomass.outputPnET.txt   
+
+2023-01-17 14:09:53,219 - Running Output-PnET ...
+2023-01-17 14:09:53,247 - Current time: 10
+2023-01-17 14:09:53,247 - Running PnET-Succession ...
+2023-01-17 14:09:54,081 - Running Output-PnET ...
+2023-01-17 14:09:54,084 - Current time: 20
+2023-01-17 14:09:54,084 - Running PnET-Succession ...
+2023-01-17 14:09:54,860 - Running Output-PnET ...
+2023-01-17 14:09:54,862 - Current time: 30
+2023-01-17 14:09:54,863 - Running PnET-Succession ...
+2023-01-17 14:09:55,609 - Running Output-PnET ...
+2023-01-17 14:09:55,611 - Current time: 40
+2023-01-17 14:09:55,611 - Running PnET-Succession ...
+2023-01-17 14:09:56,368 - Running Output-PnET ...
+2023-01-17 14:09:56,370 - Current time: 50
+2023-01-17 14:09:56,370 - Running PnET-Succession ...
+2023-01-17 14:09:57,076 - Running Output-PnET ...
+2023-01-17 14:09:57,078 - Current time: 60
+2023-01-17 14:09:57,079 - Running PnET-Succession ...
+2023-01-17 14:09:57,805 - Running Output-PnET ...
+2023-01-17 14:09:57,808 - Current time: 70
+2023-01-17 14:09:57,808 - Running PnET-Succession ...
+2023-01-17 14:09:58,534 - Running Output-PnET ...
+2023-01-17 14:09:58,535 - Current time: 80
+2023-01-17 14:09:58,536 - Running PnET-Succession ...
+2023-01-17 14:09:59,266 - Running Output-PnET ...
+2023-01-17 14:09:59,269 - Current time: 90
+2023-01-17 14:09:59,270 - Running PnET-Succession ...
+2023-01-17 14:10:00,023 - Running Output-PnET ...
+2023-01-17 14:10:00,025 - Current time: 100
+2023-01-17 14:10:00,026 - Running PnET-Succession ...
+2023-01-17 14:10:00,747 - Running Output-PnET ...
+2023-01-17 14:10:00,749 - Current time: 110
+2023-01-17 14:10:00,750 - Running PnET-Succession ...

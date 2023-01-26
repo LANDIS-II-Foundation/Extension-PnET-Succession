@@ -1,0 +1,24 @@
+LandisData  "PnET-Succession"											
+
+PnET-Succession		Value											
+>>-----------------------------										
+
+Timestep  10	
+StartYear 1800									
+										
+SeedingAlgorithm  WardSeedDispersal											
+>>SeedingAlgorithm  UniversalDispersal
+																				
+
+PNEToutputsites	PnETOutput6x6.txt
+																						
+InitialCommunities	initcom6x6.txt	
+InitialCommunitiesMap	InitCom6x6.img
+
+PnETGenericParameters	GenericPnETSpeciesParameters.txt
+PnETSpeciesParameters	SpeciesParamsAdjusted_SM_BA_11022022.txt
+
+EcoregionParameters	EcoParam6x6.txt
+>>ClimateConfigFile	ClimateConfigFile_Historic.txt
+
+SaxtonAndRawlsParameters	SaxtonAndRawlsParameters6x6.txt

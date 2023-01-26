@@ -1,0 +1,32 @@
+LandisData  Scenario
+
+Duration                          400        <<years
+Species                           "Species_LifeTraits.txt"
+
+Ecoregions                        "ecoregions6x6.txt"
+EcoregionsMap                     "EcoReg6x6.img"
+
+CellLength                        100 <<meters, so cell area = 1 ha
+
+
+>> Succession Extension     	Initialization File
+>>     --------------------             -------------------
+   "PnET-Succession"            ControlPnETsuccession.txt
+
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------              -------------------
+
+
+>>DisturbancesRandomOrder yes << optional parameter, default is NO
+
+
+>> Output Extensions        Initialization File
+>> -----------------                   -------------------
+   "Output-PnET"		biomass.outputPnET.txt
+
+
+
+RandomNumberSeed  2  << optional parameter; default = the seed is randomly generated using the current time 
+
+

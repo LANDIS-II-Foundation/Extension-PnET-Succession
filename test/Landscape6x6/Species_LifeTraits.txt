@@ -1,0 +1,8 @@
+LandisData	Species										
+>>Species Calibration Set																						
+>>                      Sexual    Shade  Fire  Seed Dispersal Dist  Vegetative  Sprout Age  	Post-Fire										
+>> Name      Longevity  Maturity  Tol.   Tol.  Effective  Maximum  Reprod Prob  Min   Max   	Regen 										
+>> ----      ---------  --------  -----  ----  ---------  -------  -----------  ----------  -------- 									
+SugarMaple 	300	40	5	1	100	200	0.6	0	25	resprout
+BlackAsh 	150	40	3	1	100	200	0.75	0	25	none
+

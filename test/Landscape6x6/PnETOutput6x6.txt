@@ -1,0 +1,47 @@
+LandisData	PNEToutputsites
+
+>>PNEToutputsites	MapCoordinatesX	MapCoordinatesY	MapCoordinatesMaxX	MapCoordinatesMaxY	
+>>----------------------------------------------------------------------------------------
+>>Site1		715,187.037 4,413,258.694	734284.375 4413934	
+ 
+
+PNEToutputsites	Row	Column	
+>>----------------------------------------------------------------------------------------
+Site1-EvapDepth100_Leak0.01_Runoff100	1	1	<<Site1
+Site2-EvapDepth100_Leak0.01_Runoff75	1	2	<<Site2
+Site3-EvapDepth100_Leak0.01_Runoff50	1	3	<<Site3
+Site4-EvapDepth100_Leak0.1_Runoff100	1	4	<<Site4
+Site5-EvapDepth100_Leak0.1_Runoff75	1	5	<<Site5
+Site6-EvapDepth100_Leak0.1_Runoff50	1	6	<<Site6
+Site7-EvapDepth100_Leak0.5_Runoff100	2	1	<<Site7
+Site8-EvapDepth100_Leak0.5_Runoff75	2	2	<<Site8
+Site9-EvapDepth100_Leak0.5_Runoff50	2	3	<<Site9
+Site10-EvapDepth500_Leak0.01_Runoff100	2	4	<<Site10
+Site11-EvapDepth500_Leak0.01_Runoff75	2	5	<<Site11
+Site12-EvapDepth500_Leak0.01_Runoff50	2	6	<<Site12
+Site13-EvapDepth500_Leak0.1_Runoff100	3	1	<<Site13
+Site14-EvapDepth500_Leak0.1_Runoff75	3	2	<<Site14
+Site15-EvapDepth500_Leak0.1_Runoff50	3	3	<<Site15
+Site16-EvapDepth500_Leak0.5_Runoff100	3	4	<<Site16
+Site17-EvapDepth500_Leak0.5_Runoff75	3	5	<<Site17
+Site18-EvapDepth500_Leak0.5_Runoff50	3	6	<<Site18
+Site19-EvapDepth1000_Leak0.01_Runoff100	4	1	<<Site19
+Site20-EvapDepth1000_Leak0.01_Runoff75	4	2	<<Site20
+Site21-EvapDepth1000_Leak0.01_Runoff50	4	3	<<Site21
+Site22-EvapDepth1000_Leak0.1_Runoff100	4	4	<<Site22
+Site23-EvapDepth1000_Leak0.1_Runoff75	4	5	<<Site23
+Site24-EvapDepth1000_Leak0.1_Runoff50	4	6	<<Site24
+Site25-EvapDepth1000_Leak0.5_Runoff100	5	1	<<Site25
+Site26-EvapDepth1000_Leak0.5_Runoff75	5	2	<<Site26
+Site27-EvapDepth1000_Leak0.5_Runoff50	5	3	<<Site27
+Site28-EvapDepth100_Leak1_Runoff0	5	4	<<Site28
+Site29-EvapDepth500_Leak1_Runoff0	5	5	<<Site29
+Site30-EvapDepth1000_Leak1_Runoff0	5	6	<<Site30
+Site31-EvapDepth100_Leak1_Runoff0	6	1	<<Site31
+Site32-EvapDepth500_Leak1_Runoff0	6	2	<<Site32
+Site33-EvapDepth1000_Leak1_Runoff0	6	3	<<Site33
+Site34-EvapDepth100_Leak1_Runoff0	6	4	<<Site34
+Site35-EvapDepth500_Leak1_Runoff0	6	5	<<Site35
+Site36-EvapDepth1000_Leak1_Runoff0	6	6	<<Site36
+
+	

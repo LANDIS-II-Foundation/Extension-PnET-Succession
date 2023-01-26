@@ -265,8 +265,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 throw new System.Exception("ETMethod is not 'Original' or 'Radiation' or 'WATER' or 'WEPP'.");
             }
-
-            InitializeClimateLibrary(); // John McNabb: initialize climate library after EcoregionPnET has been initialized
+            StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
+            InitializeClimateLibrary(StartDate.Year); // John McNabb: initialize climate library after EcoregionPnET has been initialized
             //EstablishmentProbability.Initialize(Timestep);  // Not used
 
             // Initialize Reproduction routines:
@@ -278,7 +278,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             SeedingAlgorithms SeedAlgorithm = (SeedingAlgorithms)Enum.Parse(typeof(SeedingAlgorithms), Names.parameters["SeedingAlgorithm"].Value);
             base.Initialize(ModelCore, SeedAlgorithm);
              
-            StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
+            
 
             PlugIn.ModelCore.UI.WriteLine("Spinning up biomass or reading from maps...");
 
@@ -336,7 +336,7 @@ namespace Landis.Extension.Succession.BiomassPnET
         }
         //---------------------------------------------------------------------
         /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>
-        private void InitializeClimateLibrary()
+        private void InitializeClimateLibrary(int startYear = 0)
         {
             // John McNabb: initialize ClimateRegionData after initializing EcoregionPnet
             Parameter<string> climateLibraryFileName;
@@ -344,7 +344,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (UsingClimateLibrary)
             {
                 PlugIn.ModelCore.UI.WriteLine($"Using climate library: {climateLibraryFileName.Value}.");
-                Climate.Initialize(climateLibraryFileName.Value, false, ModelCore);
+                Climate.Initialize(climateLibraryFileName.Value, false, ModelCore, startYear);
                 ClimateRegionData.Initialize();
             }
             //else

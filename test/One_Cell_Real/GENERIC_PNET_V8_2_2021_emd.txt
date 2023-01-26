@@ -1,0 +1,58 @@
+LandisData PnETGenericParameters
+PnETGenericParameters Value
+
+
+TOroot				0.0225 << 80x50 was 0.016  << GUSTAFSTON uses .02 ? (0.008  my value pre 7/30/2015) (0.008,  my value pre 11/4/2015) 
+
+DNSC				0.05 << 80x50 was 0.09  <<target NSCfraction (GUSTAFSTON=0.05) has little effect on cohort competition unless so low that cohort has minimal reserves to survive stress, or so high that species can rarely be stressed enough to die.
+MaintResp			0.0015 <<eric had 0.002 # 80x50 was 0.0002 <<affects total biomass in single cell.  lower values increase biomass. 
+
+PreventEstablishment	false
+MaxCanopyLayers			3 <<eric had 3
+IMAX 5
+
+>>deactivate for pnet 4
+>>LayerThreshRatio 0.5  << default is 0.5
+>>Lifeform			tree	<<anything else can be demoted
+>>
+>>MaxDevLyrAv  9000
+MaxPest 0.05
+
+wythers 				true 
+PrecipEvents	11
+InvertPest FALSE << added 1/26/2021 necessary for PnETv4
+Dtemp true  >> True=eric's "new" way of doing it like pnet-II.  False="Arjan's" old way of doing it using ftemp. 
+
+Permafrost 		false
+
+SpinUpWaterStress 				true
+PARunits umol
+AmaxFrac 0.75	<<default=0.75
+PrecipEventsWithReplacement	true	<<default
+
+>>EstMoist	2.8
+>>EstRad	2.6 <<between 7/18/2019 and 8/13/2019, was species-specific in the species-pnet filebased on MJD calib using fia. 8/13 back to generic  
+
+>>maxfolo3red 0
+>>o3_halfsat 1
+>>PrecIntConst 0.1 >> defines how much precipitation is intercepted with each increment of LAI.  Default value=0.1 according to B. Miranda.  
+>>DVPD1				0.02
+>>Q10					2
+>>FolLignin			0.2
+>>KWdLit				0.01
+>>InitialNSC 			7
+>>DNSC				0.15 <<target NSCfraction (0.18 seemed to work good for New England sites). (0.1, my value pre 11/4/2015)
+>>DVPD2				1
+>>WUEcnst				10.9
+>>CFracBiomass			0.5 << C content of biomass
+>>FrActWd				0.00008 << lower value results in a higher fraction of active wood
+>>FracFol				0.05 <<fraction of wood biomass representing max foliage that can be allocated
+>>FolAddResp			1
+>>H1				0	>> generic: waterlogging threshold. pressure head below which Psn stops because of waterlogging.  Ommitted from model now
+>>H2				0 >> generic: waterlogging stress threshold. pressure head below which Psn begins to slow because of waterlogging
+>>H3				100 >> species specific water stress threshold (m of pressure head); pressure head above which Psn begins to slow because of water stress. 0.0- < Wiltg point (higher values=more drought tolerant)
+>>H4				150  >> species specific wilting point (m of pressure head); pressure head above which Psn stops because of water stress. (higher values=more drought tolerant)
+>>PressureHeadCalculationMethod	SaxtonAndRawls
+>>BFolResp			0.1 << 0.1 prior to 4/14/2015 (lower values=higher biomass, hi values=lower biomass).  Aber et al. 1996 says 0.1
+>>TOwood				0.01 << 80x50 was 0.008 <<GUSTAFSTON uses .01 ?  (0.016 my value pre 7/30/2015) (0.008,  my value pre 11/4/2015) 
+>>PsnAgeRed			5

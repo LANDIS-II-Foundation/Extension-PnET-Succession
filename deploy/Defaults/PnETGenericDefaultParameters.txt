@@ -73,3 +73,4 @@ CohortStacking			false
 MossScalar			-9999   >> Optional parameter
 ETMethod			Original
 ETExtCoeff			0.55
+RETCropCoeff			1.0

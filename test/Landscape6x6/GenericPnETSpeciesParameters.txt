@@ -1,0 +1,28 @@
+LandisData PnETGenericParameters
+PnETGenericParameters 		Value
+MaxCanopyLayers			5
+LayerThreshRatio		0.5
+IMAX				5
+>>BFolResp			0.1
+>>MaintResp			0.0015
+>>DNSC				0.05
+PrecipEvents			5
+PreventEstablishment		true	<<set to true during calibrations
+Wythers				true
+DTEMP				true
+>>Permafrost			false
+LeakageFrostDepth  		3000
+SpinUpWaterStress		false	<<default	The following used w v4.1
+PARunits			umol	<<default
+>>AmaxFrac			0.75	<<default=0.75
+PrecipEventsWithReplacement	true	<<default
+MaxPest 			0.05	<<Establishment tuning knob
+>>ParallelThreads		8
+Latitude			47
+Lifeform			tree	<<anything else can be demoted to a lower canopy layer
+>>EvapDepth			25	<<20-25 mm ~1 inch?
+ETMethod			Original  <<is also Radiation
+CohortBinSize			10
+CO2AmaxBeff			1.0
+ETExtCoeff			0.25 <<was 0.55 originally
+RETCropCoeff			1 <<new as of rc16

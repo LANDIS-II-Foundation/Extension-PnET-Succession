@@ -1,0 +1,10 @@
+LandisData  "Output-PnET"
+
+Timestep  1
+
+Species ALL
+Wood-FoliageBiomass	output/AGbiomass/AGBiomass-{species}-{timestep}.img
+
+EstablishmentTable	output/EstablishmentTable.csv
+MortalityTable		output/MortalityTable.csv
+                   

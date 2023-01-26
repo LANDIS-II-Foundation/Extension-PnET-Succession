@@ -1,0 +1,6 @@
+LandisData	PnETSpeciesParameters
+>>CCA2
+>>calibrated	for	Wythers=true
+PnETSpeciesParameters	FolN	SLWmax	SLWDel	BFolResp	DNSC	TOfol	TOwood	TOroot	AmaxA	AmaxB	HalfSat	H1	H2	H3	H4	PsnAgeRed	LeafOnMinT	PsnTMin	PsnTOpt	PsnTMax	k	FracFol	MaxFracFol	FracFolShape	FrActWd	FracBelowG	EstMoist	EstRad	ColdTol	KWdLit	FolLignin	AmaxFrac	MaintResp
+BlackAsh	2.1	47	0.2	0.1	0.05	1	0.03	0.03	-46	71.9	214	-5	0	142	142	5	2.1	1	21	29.5	0.58	0.015	0.018	4	0.000040	0.31	1	0.922	-60	0.075	0.12	0.99	0.0022
+SugarMaple	2.0	48.0	0.2	0.09	0.06	1	0.03	0.03	-46	71.9	149	-2	2.8	150	150	5	2.5	1.8	25.5	31	0.58	0.015	0.022	3	0.000040	0.37	1	0.996	-55	0.075	0.11	0.99	0.0022	
