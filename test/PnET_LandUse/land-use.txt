@@ -11,7 +11,29 @@ LandUse          forest
 MapCode          1
 AllowHarvest?    yes
 LandCoverChange  NoChange
-
+>>------------------------------------
+LandUse          "clearcut & plant"
+>>------------------------------------
+MapCode          10
+AllowHarvest?    yes
+LandCoverChange  RemoveTrees
+                abiebals     1-200
+		acerrubr     1-150
+		acersacc     1-300
+		betualle     1-300
+		betupapy     1-100
+		fraxamer     1-300
+		piceglau     1-300
+                pinubank     1-100
+		pinuresi     1-200
+		pinustro     1-400
+		poputrem     1-100
+                querelli     1-300
+		querrubr     1-250
+		thujocci     1-400
+		tiliamer     1-250
+		tsugcana     1-500
+		Plant  pinustro (0.5) pinuresi (0.5) << (0.5)
 >>------------------------------------
 LandUse          "partial removal"
 >>------------------------------------
@@ -70,26 +92,3 @@ LandCoverChange  RemoveTrees
 		tiliamer     1-250
 		tsugcana     1-500
 
->>------------------------------------
-LandUse          "clearcut & plant"
->>------------------------------------
-MapCode          10
-AllowHarvest?    yes
-LandCoverChange  RemoveTrees
-                abiebals     1-200
-		acerrubr     1-150
-		acersacc     1-300
-		betualle     1-300
-		betupapy     1-100
-		fraxamer     1-300
-		piceglau     1-300
-                pinubank     1-100
-		pinuresi     1-200
-		pinustro     1-400
-		poputrem     1-100
-                querelli     1-300
-		querrubr     1-250
-		thujocci     1-400
-		tiliamer     1-250
-		tsugcana     1-500
-		Plant  pinustro << (0.5)
