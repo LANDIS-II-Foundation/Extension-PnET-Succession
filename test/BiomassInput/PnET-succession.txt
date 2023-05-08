@@ -9,7 +9,7 @@ Latitude		42
 
 PNEToutputsites		PNEToutputsites.txt
  	
-InitialCommunities      "./initial-communities.txt"
+InitialCommunities      "./initial-communities-simple.txt"
 InitialCommunitiesMap   "./initial-communities.gis"
 
 PnETGenericParameters		GenericPnETParameters.txt
