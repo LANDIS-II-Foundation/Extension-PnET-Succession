@@ -24,6 +24,14 @@ MonthlyFrostDepth	output/MonthlyFrostDepth/MonthlyFrostDepth-{timestep}.img
 MonthlyAvgSnowPack	output/MonthlyAvgSnowPack/MonthlyAvgSnowPack-{timestep}.img
 MonthlyAvgWater		output/MonthlyAvgWater/MonthlyAvgWater-{timestep}.img
 MonthlyAvgLAI		output/MonthlyAvgLAI/MonthlyAvgLAI-{timestep}.img
+MonthlyEvap		output/MonthlyEvap/MonthlyEvap-{timestep}.img
+MonthlyInterception	output/MonthlyInterception/MonthlyInterception-{timestep}.img
+MonthlyActualTrans	output/MonthlyActualTrans/MonthlyActualTrans-{timestep}.img
+MonthlyLeakage		output/MonthlyLeakage/MonthlyLeakage-{timestep}.img
+MonthlyRunoff		output/MonthlyRunoff/MonthlyRunoff-{timestep}.img
+MonthlyAET		output/MonthlyAET/MonthlyAET-{timestep}.img
+MonthlyPotentialEvap	output/MonthlyPotentialEvap/MonthlyPotentialEvap-{timestep}.img
+MonthlyPotentialTrans	output/MonthlyPotentialTrans/MonthlyPotentialTrans-{timestep}.img
 Water 			output/SoilWater/water-{timestep}.img
 SubCanopyPAR 		output/SubCanopyPar/SCpar-{timestep}.img
 CohortsPerSpecies	output/CohortsPerspecies/{species}/cohorts-{timestep}.img
