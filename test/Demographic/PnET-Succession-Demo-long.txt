@@ -1,0 +1,14 @@
+LandisData  "PnET-Succession"											
+		
+
+PnET-Succession		Value
+>>--------------------------									
+Timestep  		1	
+StartYear		2000																			
+SeedingAlgorithm  	DemographicSeeding											
+Latitude		39
+InitialCommunities      InitComm_long-disperser.txt											
+InitialCommunitiesMap   center1_med.img							
+PnETSpeciesParameters	PnETSpeciesParameters.txt
+EcoregionParameters	EcoregionParameters.txt	
+PnETGenericParameters	GenericPnETSpeciesParameters.txt

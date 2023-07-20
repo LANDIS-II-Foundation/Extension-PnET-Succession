@@ -1,0 +1,6 @@
+LandisData	PnETSpeciesParameters							 	 											
+																				
+PnETSpeciesParameters	FolN	SLWmax	SLWDel	TOfol	AmaxA	AmaxB	HalfSat	H3	H4	PsnAgeRed	PsnTMin	PsnTOpt	k	FracBelowG	FracFol	FrActWd	KWdLit	FolLignin
+longdisp	2.2	50	0.2	1	-46	71.9	150	105	143	5	3	21	0.58	0.33	0.02	0.00004	0.045	0.2	<<betuall*		
+shrtdisp	2.7	70	0.2	1	-46	71.9	250	118	153	5	2	26	0.58	0.33	0.02	0.00004	0.063	0.17	<<queralba		
+<<betupapy	2.4	75	0.2	1	-46	71.9	250	100	140	5	3	21	0.58	0.33	0.022	0.00004	0.045	0.2	<<betupapy	

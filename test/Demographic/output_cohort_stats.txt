@@ -1,0 +1,11 @@
+LandisData "Output Cohort Statistics"
+
+Timestep 1
+
+SiteAgeStats
+
+MapNames output/AGE-{statistic}-{timestep}.img
+
+
+RICH <<count of cohorts
+

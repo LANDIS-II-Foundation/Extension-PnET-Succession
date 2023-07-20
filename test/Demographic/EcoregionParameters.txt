@@ -1,0 +1,3 @@
+LandisData	EcoregionParameters					
+EcoregionParameters	RootingDepth	SoilType	PrecLossFrac	LeakageFrac 	SnowSublimFrac	ClimateFileName
+1	1000	LOAM	0	1	0.15	SRSF_historical_weather.txt

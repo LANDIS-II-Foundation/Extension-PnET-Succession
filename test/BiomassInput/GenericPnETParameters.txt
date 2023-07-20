@@ -1,6 +1,6 @@
 LandisData	PnETGenericParameters
 PnETGenericParameters		Value
-MaxCanopyLayers			2
+MaxCanopyLayers			3
 LayerThreshRatio		0.5
 IMAX				5
 BFolResp			0.1
@@ -12,3 +12,5 @@ PrecipEvents			11
 Wythers				true
 DTEMP				true
 CO2AmaxBeff			1.0
+CohortStacking			false
+InitialCommunitiesSpinup	SpinupLayers

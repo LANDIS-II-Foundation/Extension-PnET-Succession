@@ -1,0 +1,7 @@
+LandisData	Ecoregions			
+				
+>>	Map			
+>>	Active	Code	Name	Description
+>>	------	----	-----	-----------
+	no	0	0	na
+	yes	1	1	Mesic

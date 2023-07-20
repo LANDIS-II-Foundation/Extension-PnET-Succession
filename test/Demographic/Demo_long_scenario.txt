@@ -1,0 +1,25 @@
+LandisData  Scenario
+	  
+Duration  1
+
+Species   species.txt
+
+Ecoregions      Ecoregion.txt
+EcoregionsMap   all1_med.img
+
+CellLength  10 << meters
+
+
+
+>> Succession Extension     Initialization File
+>> --------------------     -------------------
+   "PnET-Succession"   PnET-Succession-Demo-long.txt
+
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------   -------------------
+>>	None 
+
+>> Output Extensions        Initialization File
+>> -----------------        -------------------
+  "Output Cohort Statistics"    output_cohort_stats.txt

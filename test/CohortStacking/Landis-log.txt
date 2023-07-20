@@ -1,0 +1,48 @@
+2022-08-12 16:16:14,902 - LANDIS-II 7.0 (7)
+2022-08-12 16:16:14,907 - 
+2022-08-12 16:16:15,022 - Loading scenario from file "scenario.txt" ...
+2022-08-12 16:16:15,093 - Initialized random number generator with seed = 99,484,632
+2022-08-12 16:16:15,094 - Loading species data from file "species.txt" ...
+2022-08-12 16:16:15,120 - Loading ecoregions from file "./ecoregions.txt" ...
+2022-08-12 16:16:15,136 - Initializing landscape from ecoregions map "./ecoregions.gis" ...
+2022-08-12 16:16:15,156 - Cell length = 100 m, cell area = 1 ha
+2022-08-12 16:16:15,157 - Map dimensions: 99 rows by 99 columns = 9,801 cells
+2022-08-12 16:16:15,163 - Sites: 9,801 active (100.0%), 0 inactive (0.0%)
+2022-08-12 16:16:15,169 - Loading PnET-Succession extension ...
+2022-08-12 16:16:15,999 - Initializing PnET-Succession version 5.0.0.0
+2022-08-12 16:16:16,020 -    Registering Data:  Succession.WoodyDebris.
+2022-08-12 16:16:16,020 -    Registering Data:  Succession.Litter.
+2022-08-12 16:16:16,020 -    Registering Data:  Succession.FineFuels.
+2022-08-12 16:16:16,020 -    Registering Data:  Succession.PressureHead.
+2022-08-12 16:16:16,020 -    Registering Data:  Succession.ExtremeMinTemp.
+2022-08-12 16:16:16,021 -    Registering Data:  Succession.PET.
+2022-08-12 16:16:16,021 -    Registering Data:  Succession.CWD.
+2022-08-12 16:16:16,021 -    Registering Data:  Succession.SmolderConsumption.
+2022-08-12 16:16:16,021 -    Registering Data:  Succession.FlamingConsumption.
+2022-08-12 16:16:16,022 -   MaxParallelThreads = 1.
+2022-08-12 16:16:16,022 -   No ClimateConfigFile provided. Using climate files in ecoregion parameters: EcoregionParameters.txt.
+2022-08-12 16:16:16,041 - Eco	Soiltype	WiltPnt		FieldCap	FC-WP		Porosity
+2022-08-12 16:16:16,042 - eco1	CLAY		0.3210333	0.4358929	0.1148596	0.5309595
+2022-08-12 16:16:16,042 - eco2	SAND		0.03999865	0.09784552	0.05784687	0.454455
+2022-08-12 16:16:16,052 - Using PAR units of umol/m2/s.
+2022-08-12 16:16:16,054 -    Registering Data:  TimeOfLastSuccession.
+2022-08-12 16:16:16,054 -    Registering Data:  Shade.
+2022-08-12 16:16:16,055 -    Creating Dispersal Neighborhood List.
+2022-08-12 16:16:16,055 -    Dispersal:  NeighborRadius=5050, CellLength=100, numCellRadius=50
+2022-08-12 16:16:16,064 - Spinning up biomass or reading from maps...
+2022-08-12 16:16:16,071 -    Loading initial communities from file "./initial-communities.txt" ...
+2022-08-12 16:16:16,091 -    Reading initial communities map "./initial-communities.gis" ...
+2022-08-12 18:27:30,476 -    Registering Data:  Succession.BiomassCohorts.
+2022-08-12 18:27:30,482 -    Registering Data:  Succession.AgeCohorts.
+2022-08-12 18:27:30,483 -    Registering Data:  Succession.CohortsPnET.
+2022-08-12 18:27:30,485 - Loading Output-PnET extension ...
+2022-08-12 18:27:31,223 -    Generating summary table...
+2022-08-12 18:27:31,248 - Using the following extensions ...
+   Extension Name            Extension Filename       
+   --------------            ------------------       
+   PnET-Succession           pnet-succession.txt      
+   Output-PnET               biomass.outputPnET.txt   
+
+2022-08-12 18:27:31,248 - Running Output-PnET ...
+2022-08-12 18:27:44,887 - Current time: 10
+2022-08-12 18:27:44,888 - Running PnET-Succession ...

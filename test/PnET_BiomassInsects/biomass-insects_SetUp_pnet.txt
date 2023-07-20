@@ -1,0 +1,21 @@
+LandisData "Biomass Insects"
+
+
+
+Timestep		1
+
+MapNames		outputs/insects/{insectName}-{timestep}.bin		<<this is an output!
+
+LogFile			outputs/insects/Insect-log.csv				<<this is an output!
+
+InsectInputFiles	./biomass-insects_InsectDefoliator1_pnet.txt
+			./biomass-insects_InsectDefoliator2_pnet.txt
+			./biomass-insects_InsectDefoliator3_pnet.txt
+
+
+
+
+
+
+
+

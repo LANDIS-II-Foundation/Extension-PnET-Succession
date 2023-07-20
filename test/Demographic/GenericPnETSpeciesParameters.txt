@@ -1,0 +1,21 @@
+LandisData PnETGenericParameters
+PnETGenericParameters 		Value
+BFolResp			0.1
+TOroot				0.02
+TOwood				0.01
+MaxCanopyLayers			2
+IMAX				5
+DNSC				0.05 <<target NSCfraction
+MaintResp			0.003 <<Use 0.003; was 0.002
+PreventEstablishment		false
+wythers				true
+PrecipEvents			11
+>>PsnTMin				1
+>>PsnTOpt				19
+EstMoist			1
+EstRad				1
+DTEMP				true
+
+>>O3HaltPsn 			120
+>>PsnO3Red 			1
+>>NoO3Effect			30

@@ -74,3 +74,4 @@ MossScalar			-9999   >> Optional parameter
 ETMethod			Original
 ETExtCoeff			0.55
 RETCropCoeff			1.0
+CanopySumScale			1.0
