@@ -76,7 +76,13 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             get
             {
-                return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Defaults");
+                string defaultPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Defaults");
+                // If Linux, correct the path string
+                if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
+                {
+                    defaultPath = defaultPath.Replace('\\', '/');
+                }
+                return defaultPath;
             }
         }
         //---------------------------------------------------------------------
@@ -136,7 +142,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //---------------SaxtonAndRawlsParameterFile
             if (Names.parameters.ContainsKey(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters) == false)
             {
-                Parameter<string> SaxtonAndRawlsParameterFile = new Parameter<string>(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, (string)PnETDefaultsFolder + "\\SaxtonAndRawlsParameters.txt");
+                Parameter<string> SaxtonAndRawlsParameterFile = new Parameter<string>(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, (string)PnETDefaultsFolder + System.IO.Path.DirectorySeparatorChar + "SaxtonAndRawlsParameters.txt");
                 Names.parameters.Add(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, SaxtonAndRawlsParameterFile);
             }
             Dictionary<string, Parameter<string>> SaxtonAndRawlsParameters = Names.LoadTable(PressureHeadSaxton_Rawls.SaxtonAndRawlsParameters, null, PressureHeadSaxton_Rawls.ParameterNames);
@@ -162,7 +168,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
 
             //----------Load in default parameters to fill the gaps
-            Parameter<string> PnETGenericDefaultParameterFile = new Parameter<string>(Names.PnETGenericDefaultParameters, (string)PnETDefaultsFolder + "\\PnETGenericDefaultParameters.txt");
+            Parameter<string> PnETGenericDefaultParameterFile = new Parameter<string>(Names.PnETGenericDefaultParameters, (string)PnETDefaultsFolder + System.IO.Path.DirectorySeparatorChar + "PnETGenericDefaultParameters.txt");
             Names.parameters.Add(Names.PnETGenericDefaultParameters, PnETGenericDefaultParameterFile);
             Dictionary<string, Parameter<string>> genericdefaultparameters = Names.LoadTable(Names.PnETGenericDefaultParameters, RowLabels, null, true);
 
