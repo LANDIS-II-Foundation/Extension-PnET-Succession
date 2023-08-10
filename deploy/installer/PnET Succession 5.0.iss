@@ -6,7 +6,7 @@
 #define AppURL "http://www.landis-ii.org/"
 
 ; Build directory
-;#define BuildDir "..\..\src\bin\Release"
+;define BuildDir "..\..\src\bin\Release"
 #define BuildDir "..\..\src\bin\Debug"
 ;#define BuildDir ".."
 
@@ -61,6 +61,10 @@ Source: {#BuildDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: u
 Source: {#BuildDir}\Landis.Library.Parameters-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion   
 Source: {#BuildDir}\Landis.Library.PnETCohorts-v1.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion 
 Source: {#BuildDir}\Landis.Library.Succession-v9.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Accord.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Accord.Math.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Accord.Math.Core.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Accord.Statistics.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 
 ; Complete example for testing the extension
 Source: ..\examples\biomass-Pnet-succession-example\*.txt; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: ignoreversion

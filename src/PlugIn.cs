@@ -260,11 +260,11 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 throw new System.Exception("PARunits are not 'umol' or 'W/m2'.");
             }
-            string ETMethod = ((Parameter<string>)Names.GetParameter(Names.ETMethod)).Value;
-            if (ETMethod != "Original" && ETMethod != "Radiation" && ETMethod != "WATER" && ETMethod != "WEPP")
+            //string ETMethod = ((Parameter<string>)Names.GetParameter(Names.ETMethod)).Value;
+            /*if (ETMethod != "Original" && ETMethod != "Radiation" && ETMethod != "WATER" && ETMethod != "WEPP")
             {
                 throw new System.Exception("ETMethod is not 'Original' or 'Radiation' or 'WATER' or 'WEPP'.");
-            }
+            }*/
             StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
             InitializeClimateLibrary(StartDate.Year); // John McNabb: initialize climate library after EcoregionPnET has been initialized
             //EstablishmentProbability.Initialize(Timestep);  // Not used

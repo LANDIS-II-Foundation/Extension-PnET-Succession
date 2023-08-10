@@ -1,6 +1,5 @@
 LandisData	PnETGenericParameters
 PnETGenericParameters		Value
-MaxCanopyLayers			2
 LayerThreshRatio		0.5
 IMAX				5
 BFolResp			0.1
@@ -12,3 +11,4 @@ PreventEstablishment		true
 Wythers				true
 DTEMP				true
 CO2AmaxBeff			1.0
+MaxCanopyLayers			2

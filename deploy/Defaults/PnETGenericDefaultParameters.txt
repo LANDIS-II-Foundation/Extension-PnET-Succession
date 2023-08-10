@@ -47,7 +47,6 @@ WinterSTD			0.0
 SoilIceDepth			false
 LeakageFrostDepth		0.0
 RunOffCapture			0.0
->>RunOffFrac			1.0
 LeafOnMinT			-9999	>> Optional parameter, set to PsnMinT if not provided
 PsnTMax				-9999	>> Optional parameter, set to PsnTOpt + (PsnTOpt - PsnTMin)
 MaxPest				1.0
@@ -59,7 +58,7 @@ PrecipEventsWithReplacement	true
 AmaxFrac			0.75
 NSCReserve			0.00
 Lifeform			tree
-EvapDepth			25  	>> mm
+EvapDepth			500  	>> mm
 Parallel			1
 InitialCommunitiesSpinup	SpinupLayers
 FrostFactor			1
@@ -71,7 +70,6 @@ MaxLAI				-9999  >> Optional parameter
 MinFolRatioFactor		0
 CohortStacking			false
 MossScalar			-9999   >> Optional parameter
-ETMethod			Original
-ETExtCoeff			0.55
-RETCropCoeff			1.0
-CanopySumScale			1.0
+ETExtCoeff			0.65
+RETCropCoeff			0.3
+CanopySumScale			0.206
