@@ -21,5 +21,5 @@ CellLength  100 << meters, 100 x 100 m = 1 ha
 
 >> Other Extensions         Initialization File
 >> ----------------         -------------------
-  "Output Biomass Community"	output_Biomass_Community.txt	
+  "Output Biomass Community v2.1"	output_Biomass_Community.txt	
 
