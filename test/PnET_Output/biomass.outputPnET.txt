@@ -41,6 +41,7 @@ Litter			output/NonWoodyDebris/Litter-{timestep}.img
 AgeDistribution 	output/AgeDist/Age-{timestep}.img
 NSC			output/NSC/NSC-{timestep}.img
 PET			output/PET/PET-{timestep}.img
+SiteMossDepth		output/MossDepth/MossDepth-{timestep}.img
 CohortBalance		output/TotalCohorts.csv
 EstablishmentTable	output/EstablishmentTable.csv
 MortalityTable		output/MortalityTable.csv

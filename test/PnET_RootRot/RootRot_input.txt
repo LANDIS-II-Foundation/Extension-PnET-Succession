@@ -1,0 +1,34 @@
+LandisData	"Root Rot"
+
+Timestep	5
+
+>>InputMap	rootrot_init_map.img << Optional
+
+SpeciesSusceptibility
+>> species	1st	2nd
+pinustro	0.5	0.05
+pinubank	0.5	0.05
+pinuresi	0.5	0.05
+
+LethalTemp	-30
+MinSoilTemp	10 	<<degrees C
+>>SoilTempDepth	0.10	<< meters
+PhWet		51
+PhDry		102
+PhMax		250
+MinProbID	0.10
+MaxProbDI	0.85
+
+OutputMapName		"RootRot/RootRot-{timestep}.img"
+TOLDMapName		"RootRot/TOLD-{timestep}.img"
+LethalTempMapName	"RootRot/LethalTemp-{timestep}.img"
+SoilTempMapName		"RootRot/SoilTemp-{timestep}.img"
+WetnessIndexMapName	"RootRot/WetnessIndex-{timestep}.img"
+pUIMapName		"RootRot/pUI-{timestep}.img"
+pIDMapName		"RootRot/pID-{timestep}.img"
+TotalBiomassRemovedMapName  "RootRot/BiomassRemoved-{timestep}.img"
+SpeciesBiomassRemovedMapName  "RootRot/BiomassRemoved-{species}-{timestep}.img"
+
+EventLog	"RootRot/RootRot-events.csv"
+SummaryLog	"RootRot/RootRot-summary.csv"
+
