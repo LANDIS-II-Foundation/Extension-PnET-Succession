@@ -40,6 +40,11 @@
     <EmbeddedResource Remove="lib\**" />
     <None Remove="lib\**" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <Compile Remove="Permafrost.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <Folder Include="Properties\" />

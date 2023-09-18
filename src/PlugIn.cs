@@ -43,6 +43,9 @@ namespace Landis.Extension.Succession.BiomassPnET
     public class PlugIn  : Landis.Library.Succession.ExtensionBase 
     {
         public static SpeciesPnET SpeciesPnET;
+        //public static ISiteVar<float[]> MonthlyPressureHead;
+        //public static ISiteVar<SortedList<float, float>[]> MonthlySoilTemp;
+        //public static ISiteVar<float> FieldCapacity;
         public static DateTime Date;
         public static ICore ModelCore;
         private static DateTime StartDate;
@@ -197,6 +200,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             EcoregionData.Initialize();
             SiteVars.Initialize();
 
+            //MonthlyPressureHead = ModelCore.Landscape.NewSiteVar<float[]>();
+            //MonthlySoilTemp = ModelCore.Landscape.NewSiteVar<SortedList<float, float>[]>();
+            //FieldCapacity = ModelCore.Landscape.NewSiteVar<float>();
             Landis.Utilities.Directory.EnsureExists("output");
 
             Timestep = ((Parameter<int>)Names.GetParameter(Names.Timestep)).Value;
@@ -326,10 +332,134 @@ namespace Landis.Extension.Succession.BiomassPnET
                 SiteVars.FineFuels[site] = SiteVars.Litter[site].Mass;
                 IEcoregionPnET ecoregion = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
                 IHydrology hydrology = new Hydrology(ecoregion.FieldCap);
-                SiteVars.PressureHead[site] = hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water, ecoregion.SoilType);
+                float currentPressureHead = hydrology.PressureHeadTable.CalculateWaterPressure(hydrology.Water, ecoregion.SoilType);
+                SiteVars.PressureHead[site] = currentPressureHead;
+
+                //PressureHead[site] = currentPressureHead;
+                SiteVars.FieldCapacity[site] = ecoregion.FieldCap / 10.0F; // cm volume (accounts for rooting depth)
+
+
+
                 if (UsingClimateLibrary)
                 {
-                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyTemp) - (float)(3.0 * ecoregion.WinterSTD));  
+                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyTemp) - (float)(3.0 * ecoregion.WinterSTD));
+                    if (((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value)
+                    {
+                        // Soil calcs for soil temp
+                        float waterContent = hydrology.Water;// volumetric m/m
+                        float porosity = ecoregion.Porosity;  // volumetric m/m 
+                        float ga = 0.035F + 0.298F * (waterContent / porosity);
+                        float Fa = ((2.0F / 3.0F) / (1.0F + ga * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))) + ((1.0F / 3.0F) / (1.0F + (1.0F - 2.0F * ga) * ((Constants.lambda_a / Constants.lambda_w) - 1.0F))); // ratio of air temp gradient
+                        float Fs = PressureHeadSaxton_Rawls.GetFs(ecoregion.SoilType);
+                        float lambda_s = PressureHeadSaxton_Rawls.GetLambda_s(ecoregion.SoilType);
+                        float lambda_theta = (Fs * (1.0F - porosity) * lambda_s + Fa * (porosity - waterContent) * Constants.lambda_a + waterContent * Constants.lambda_w) / (Fs * (1.0F - porosity) + Fa * (porosity - waterContent) + waterContent); //soil thermal conductivity (kJ/m/d/K)
+                        float D = lambda_theta / PressureHeadSaxton_Rawls.GetCTheta(ecoregion.SoilType);  //m2/day
+                        float Dmms = D * 1000000 / 86400; //mm2/s
+                        float d = (float)Math.Sqrt(2 * Dmms / Constants.omega);
+                        float maxDepth = ecoregion.RootingDepth + ecoregion.LeakageFrostDepth;
+                        float bottomFreezeDepth = maxDepth / 1000;
+
+                        foreach (var year in Climate.Spinup_MonthlyData.Keys)
+                        {
+                            double[] monthlyAirT = Climate.Spinup_MonthlyData[year][ecoregion.Index].MonthlyTemp;
+                            double annualAirTemp = Climate.Spinup_MonthlyData[year][ecoregion.Index].MeanAnnualTemperature;
+                            double[] monthlyPrecip = Climate.Spinup_MonthlyData[year][ecoregion.Index].MonthlyPrecip;
+                            SortedList<float, float> depthTempDict = new SortedList<float, float>();
+
+                            for (int m = 0; m < monthlyAirT.Count(); m++)
+                            {
+                                SiteVars.MonthlyPressureHead[site][m] = currentPressureHead;
+
+                                float DRz_snow = 1F; // Assume no snow in initialization
+
+                                float mossDepth = ecoregion.MossDepth;
+                                float cv = 2500; // heat capacity moss - kJ/m3/K (Sazonova and Romanovsky 2003)
+                                float lambda_moss = 432; // kJ/m/d/K - converted from 0.2 W/mK (Sazonova and Romanovsky 2003)
+                                float moss_diffusivity = lambda_moss / cv;
+                                float damping_moss = (float)Math.Sqrt((2.0F * moss_diffusivity) / Constants.omega);
+                                float DRz_moss = (float)Math.Exp(-1.0F * mossDepth * damping_moss); // Damping ratio for moss - adapted from Kang et al. (2000) and Liang et al. (2014)
+
+
+                                // Fill the tempDict with values
+                                float testDepth = 0;
+                                float zTemp = 0;
+                                int month = m + 1;
+                                int maxMonth = 0;
+                                int minMonth = 0;
+                                int mCount = 0;
+                                float tSum = 0;
+                                float pSum = 0;
+                                float tMax = float.MinValue;
+                                float tMin = float.MaxValue;
+
+                                if (m < 12)
+                                {
+                                    mCount = Math.Min(12, monthlyAirT.Count());
+                                    foreach (int z in Enumerable.Range(0, mCount))
+                                    {
+                                        tSum += (float)monthlyAirT[z];
+                                        pSum += (float)monthlyPrecip[z];
+                                        if (monthlyAirT[z] > tMax)
+                                        {
+                                            tMax = (float)monthlyAirT[z];
+                                            maxMonth = z + 1;
+                                        }
+                                        if (monthlyAirT[z] < tMin)
+                                        {
+                                            tMin = (float)monthlyAirT[z];
+                                            minMonth = z + 1;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    mCount = 12;
+                                    foreach (int z in Enumerable.Range(m - 11, 12))
+                                    {
+                                        tSum += (float)monthlyAirT[z];
+                                        pSum += (float)monthlyPrecip[z];
+                                        if ((float)monthlyAirT[z] > tMax)
+                                        {
+                                            tMax = (float)monthlyAirT[z];
+                                            maxMonth = month + z;
+                                        }
+                                        if ((float)monthlyAirT[z] < tMin)
+                                        {
+                                            tMin = (float)monthlyAirT[z];
+                                            minMonth = month + z;
+                                        }
+                                    }
+                                }
+                                float annualTavg = tSum / mCount;
+                                float annualPcpAvg = pSum / mCount;
+                                float tAmplitude = (tMax - tMin) / 2;
+
+                                // Calculate depth to bottom of ice lens with FrostDepth
+                                while (testDepth <= bottomFreezeDepth)
+                                {
+                                    float DRz = (float)Math.Exp(-1.0F * testDepth * d * ecoregion.FrostFactor); // adapted from Kang et al. (2000) and Liang et al. (2014); added FrostFactor for calibration
+                                                                                                                //float zTemp = annualTavg + (tempBelowSnow - annualTavg) * DRz;
+                                                                                                                // Calculate lag months from both max and min temperature months
+                                    int lagMax = (month + (3 - maxMonth));
+                                    int lagMin = (month + (minMonth - 5));
+                                    if (minMonth >= 9)
+                                        lagMin = (month + (minMonth - 12 - 5));
+                                    float lagAvg = ((float)lagMax + (float)lagMin) / 2f;
+
+                                    zTemp = (float)(annualAirTemp + tAmplitude * DRz_snow * DRz_moss * DRz * Math.Sin(Constants.omega * lagAvg - testDepth / d));
+                                    depthTempDict[testDepth] = zTemp;
+
+                                    if (testDepth == 0f)
+                                        testDepth = 0.10f;
+                                    else if (testDepth == 0.10f)
+                                        testDepth = 0.25f;
+                                    else
+                                        testDepth += 0.25F;
+                                }
+                                SiteVars.MonthlySoilTemp[site][m] = Permafrost.CalculateMonthlySoilTemps(depthTempDict, ecoregion, 0, 0, hydrology, (float)monthlyAirT[m]);
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -339,6 +469,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
             ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
+         
+
+
         }
         //---------------------------------------------------------------------
         /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>

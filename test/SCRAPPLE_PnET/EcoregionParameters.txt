@@ -1,0 +1,8 @@
+LandisData  EcoregionParameters
+
+EcoregionParameters ClimateFileName
+eco1	Climate.txt
+eco2	Climate.txt
+eco3	Climate.txt
+eco4	Climate.txt
+eco5	Climate.txt

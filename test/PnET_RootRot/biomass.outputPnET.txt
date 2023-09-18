@@ -5,7 +5,7 @@ Timestep  10
 Species ALL
 
 	  
-Biomass	output/biomass/{species}/biomass{timestep}.img
+WoodBiomass	output/biomass/{species}/biomass{timestep}.img
 
 CohortsPerSpecies	output/CohortsPerspecies/{species}/cohorts{timestep}.img
 
@@ -18,7 +18,7 @@ Water output/SoilWater/water{timestep}.img
 
 SubCanopyPAR output/SubCanopyPar/SCpar-{timestep}.img
 
-BelowgroundBiomass output/BelowGroundBiom/BGB{timestep}.img
+RootBiomass output/BelowGroundBiom/BGB{timestep}.img
 
 WoodyDebris output/WoodyDebris/WoodyDebris{timestep}.img
 
