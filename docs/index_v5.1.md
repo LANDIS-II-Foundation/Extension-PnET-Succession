@@ -2,21 +2,22 @@
 
 The  PnET-Succession extension implements succession with cohorts defined by age ranges and including biomass per cohort. Most parameters are able to change over time, due to climate change for example.
 
-The PnET-Succession extension is based on the Biomass Succession extension of Scheller and Mladenoff (2004), embedding elements of the PnET-II ecophysiology model of Aber et al (1995) to simulate growth as a competition for available light and water, replacing the existing competition for “growing space” algorithms (De Bruijn et al. 2014). PnET (Photosynthesis and EvapoTranspiration) is a simple, lumped parameter model of carbon and water balances of forests (Aber and Federer 1992), built on two principal relationships: 1) maximum photo-synthetic rate is a function of foliar nitrogen concentration, and 2) stomatal conductance is a function of realized photosynthetic rate. PnET-Succession uses one PnET simulation for each tree species-age cohort and uses water and light consumption by these cohorts to implement competition. PnET-Succession calculates resources in terms of Non-Structural Carbon (NSC) for each cohort in its PnET part and assumes that cohorts die when their NSC level drops below a threshold. The PnET-Succession extension also tracks dead biomass over time, divided into two pools: woody and leaf litter.
+The PnET-Succession extension was originally based on the Biomass Succession extension of Scheller and Mladenoff (2004), embedding elements of the PnET-II ecophysiology model of Aber et al (1995) to simulate growth as a competition for available light and water, replacing the existing competition for “growing space” algorithms (De Bruijn et al. 2014). PnET (Photosynthesis and EvapoTranspiration) is a simple, lumped parameter model of carbon and water balances of forests (Aber and Federer 1992), built on two principal relationships: 1) maximum photo-synthetic rate is a function of foliar nitrogen concentration, and 2) stomatal conductance is a function of realized photosynthetic rate. PnET-Succession uses one PnET simulation for each tree species-age cohort and uses water and light consumption by these cohorts to implement competition. PnET-Succession calculates resources in terms of Non-Structural Carbon (NSC) for each cohort in its PnET part and assumes that cohorts die when their NSC level drops below a threshold. The PnET-Succession extension also tracks dead biomass over time, divided into two pools: woody and leaf litter.
 
 # Release Notes
 
 - Latest official release: Version 5.1 — September 2023
 - Download the User Guide here: [PnET-Succession v5.1 User Guide](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/docs/LANDIS-II%20PnET-Succession%20v5.1%20User%20Guide.pdf).
 - Full release details found in the User Guide and on GitHub.
-- This version uses custom code libraries that make it incompatible with some other "Official Release" versions of extensions available on the LANDIS-II site.  There are not compatibility issues for base (age-only) extensions, but only for "biomass-compatible" extensions.  To allow users to use these biomass extensions with this version of PnET-Succession, we have compiled compatible versions of multiple extensions.  These extension versions are not "official releases" and are meant to temporarily fulfill the needs of users until the next official release occurs.  The compatible extension installers can be found on GitHub in this folder: []()  Please read the ReadMe.txt file for important installation and usage information.
+- A detailed description of the model can be found in this updated document: [Description of PnET-Succession v5.1.pdf](https://github.com/LANDIS-II-Foundation/Foundation-Publications/blob/main/Description%20of%20PnET-Succession%20v5.1.pdf)
+- This version uses custom code libraries that make it incompatible with some other "Official Release" versions of extensions available on the LANDIS-II site.  There are not compatibility issues for base (age-only) extensions, but only for "biomass-compatible" extensions.  To allow users to use these biomass extensions with this version of PnET-Succession, we have compiled compatible versions of multiple extensions.  These extension versions are not "official releases" and are meant to temporarily fulfill the needs of users until the next official release occurs.  The compatible extension installers can be found on GitHub in this folder: [v5.1_installers](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/tree/master/deploy/v5.1_installers)  Please read the ReadMe.txt file for important installation and usage information.
 
 # Requirements
 
 To use PnET-Succession, you need:
 
 - The [LANDIS-II model v7.0](http://www.landis-ii.org/install) installed on your computer.
-- Example files (see below)
+
 
 # Download
 
