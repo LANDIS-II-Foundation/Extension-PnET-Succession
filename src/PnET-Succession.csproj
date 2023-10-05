@@ -56,34 +56,34 @@
   
   <ItemGroup>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
-      <HintPath>..\..\..\Support-Library-Dlls-v7\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Biomass-v2.1">
-      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Biomass-v2.1.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Biomass-v2.1.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.BiomassCohorts-v4">
-      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.BiomassCohorts-v4.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.BiomassCohorts-v4.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Climate-v4.4">
-      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Climate-v4.4.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Climate-v4.4.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Cohorts-v2">
-      <HintPath>..\..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Cohorts-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.InitialCommunity-vBiomassCohorts2">
-      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.InitialCommunity-vBiomassCohorts2.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.InitialCommunity-vBiomassCohorts2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Metadata-v2">
-      <HintPath>..\..\..\Support-Library-Dlls-v7\Landis.Library.Metadata-v2.dll</HintPath>
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Parameters-v2">
-      <HintPath>..\..\..\Support-Library-Dlls-v7\Landis.Library.Parameters-v2.dll</HintPath>
+      <HintPath>..\..\Support-Library-Dlls-v7\Landis.Library.Parameters-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.PnETCohorts-v1">
-      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.PnETCohorts-v1.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.PnETCohorts-v1.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Succession-v9">
-      <HintPath>..\..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Succession-v9.dll</HintPath>
+      <HintPath>..\..\brmiranda\Core-Model-v7\Tool-Console\src\bin\extensions\Landis.Library.Succession-v9.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "site-harvest-lib", "..\..\L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "root-rot", "..\..\Extension-Root-Rot\src\root-rot.csproj", "{9F754BCA-9FB9-4B04-BDEA-98A4CAB74F13}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library-PnET-Cohort", "..\..\Library-PnET-Cohort\src\Library-PnET-Cohort.csproj", "{69C24656-EA4F-412C-9D25-6FC9AC014C0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,14 @@ Global
 		{9F754BCA-9FB9-4B04-BDEA-98A4CAB74F13}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F754BCA-9FB9-4B04-BDEA-98A4CAB74F13}.Release|x64.ActiveCfg = Release|Any CPU
 		{9F754BCA-9FB9-4B04-BDEA-98A4CAB74F13}.Release|x64.Build.0 = Release|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Debug|x64.Build.0 = Debug|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Release|x64.ActiveCfg = Release|Any CPU
+		{69C24656-EA4F-412C-9D25-6FC9AC014C0D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
