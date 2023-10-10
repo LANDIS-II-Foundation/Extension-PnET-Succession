@@ -38,6 +38,11 @@ Version: 3.2-b1
 Official extension name: "Output Biomass Reclass v3.2"
 This version is the same as the most recent official release of v3.1.
 
+** Root Rot **
+Version: 1.1-b1
+Official extension name: "Root Rot v1.1"
+This version is the same as the most recent official release of v1.0.
+
 ** SCRAPPLE **
 Version: 3.3-b1
 Official extension name: "SCRAPPLE v3.3"
