@@ -337,7 +337,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (UsingClimateLibrary)
                 {
-                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyTemp) - (float)(3.0 * ecoregion.WinterSTD));
+                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.FutureEcoregionYearClimate[ecoregion.Index].Min(x => x.MonthlyTemp)) - (float)(3.0 * ecoregion.WinterSTD));
                     if (((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value)
                     { 
                         if(SiteVars.MonthlySoilTemp[site].Count() == 0)
@@ -356,11 +356,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                         float maxDepth = ecoregion.RootingDepth + ecoregion.LeakageFrostDepth;
                         float bottomFreezeDepth = maxDepth / 1000;
 
-                            foreach (var year in Climate.Spinup_MonthlyData.Keys)
+                            foreach (var year in Climate.SpinupEcoregionYearClimate[ecoregion.Index])
                             {
-                                double[] monthlyAirT = Climate.Spinup_MonthlyData[year][ecoregion.Index].MonthlyTemp;
-                                double annualAirTemp = Climate.Spinup_MonthlyData[year][ecoregion.Index].MeanAnnualTemperature;
-                                double[] monthlyPrecip = Climate.Spinup_MonthlyData[year][ecoregion.Index].MonthlyPrecip;
+                                List<double> monthlyAirT = Climate.SpinupEcoregionYearClimate[ecoregion.Index][year.CalendarYear].MonthlyTemp;
+                                double annualAirTemp = Climate.SpinupEcoregionYearClimate[ecoregion.Index][year.CalendarYear].MeanAnnualTemperature;
+                                List<double> monthlyPrecip = Climate.SpinupEcoregionYearClimate[ecoregion.Index][year.CalendarYear].MonthlyPrecip;
                                 SortedList<float, float> depthTempDict = new SortedList<float, float>();
                                 SiteVars.MonthlyPressureHead[site] = new float [monthlyAirT.Count()];
                                 SiteVars.MonthlySoilTemp[site] = new SortedList<float, float>[monthlyAirT.Count()];
