@@ -26,7 +26,7 @@
 //   NOTE: This uses a version (v4?) of the climate library that exposes AnnualClimate_Monthly.MonthlyOzone[] and .MonthlyCO2[].
 
 using Landis.Core;
-using Landis.Library.InitialCommunities;
+using Landis.Library.InitialCommunities.Universal;
 using Landis.Library.PnETCohorts;
 using Landis.Library.Succession;
 using Landis.SpatialModeling;
@@ -309,25 +309,22 @@ namespace Landis.Extension.Succession.BiomassPnET
                 MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
 
             // Convert PnET cohorts to biomasscohorts
-            ISiteVar<Landis.Library.BiomassCohorts.ISiteCohorts> biomassCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.BiomassCohorts.ISiteCohorts>();
+            ISiteVar<Landis.Library.UniversalCohorts.ISiteCohorts> universalCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.UniversalCohorts.ISiteCohorts>();
             
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                biomassCohorts[site] = SiteVars.SiteCohorts[site];
+                universalCohorts[site] = SiteVars.SiteCohorts[site];
                 
-                if (SiteVars.SiteCohorts[site] != null && biomassCohorts[site] == null)
+                if (SiteVars.SiteCohorts[site] != null && universalCohorts[site] == null)
                 {
                     throw new System.Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
                 }
             }
-            ModelCore.RegisterSiteVar(biomassCohorts, "Succession.BiomassCohorts");
-
-            ISiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts> AgeCohortSiteVar = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.AgeOnlyCohorts.ISiteCohorts>();
+            ModelCore.RegisterSiteVar(universalCohorts, "Succession.UniversalCohorts");
             ISiteVar<ISiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<ISiteCohorts>();
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                AgeCohortSiteVar[site] = SiteVars.SiteCohorts[site];
                 PnETCohorts[site] = SiteVars.SiteCohorts[site];
                 SiteVars.FineFuels[site] = SiteVars.Litter[site].Mass;
                 IEcoregionPnET ecoregion = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
@@ -340,7 +337,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (UsingClimateLibrary)
                 {
-                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.Future_MonthlyData[Climate.Future_MonthlyData.Keys.Min()][ecoregion.Index].MonthlyTemp) - (float)(3.0 * ecoregion.WinterSTD));
+                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.FutureEcoregionYearClimate[ecoregion.Index].Min(x => x.MonthlyTemp)) - (float)(3.0 * ecoregion.WinterSTD));
                     if (((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value)
                     { 
                         if(SiteVars.MonthlySoilTemp[site].Count() == 0)
@@ -359,11 +356,11 @@ namespace Landis.Extension.Succession.BiomassPnET
                         float maxDepth = ecoregion.RootingDepth + ecoregion.LeakageFrostDepth;
                         float bottomFreezeDepth = maxDepth / 1000;
 
-                            foreach (var year in Climate.Spinup_MonthlyData.Keys)
+                            foreach (var year in Climate.SpinupEcoregionYearClimate[ecoregion.Index])
                             {
-                                double[] monthlyAirT = Climate.Spinup_MonthlyData[year][ecoregion.Index].MonthlyTemp;
-                                double annualAirTemp = Climate.Spinup_MonthlyData[year][ecoregion.Index].MeanAnnualTemperature;
-                                double[] monthlyPrecip = Climate.Spinup_MonthlyData[year][ecoregion.Index].MonthlyPrecip;
+                                List<double> monthlyAirT = Climate.SpinupEcoregionYearClimate[ecoregion.Index][year.CalendarYear].MonthlyTemp;
+                                double annualAirTemp = Climate.SpinupEcoregionYearClimate[ecoregion.Index][year.CalendarYear].MeanAnnualTemperature;
+                                List<double> monthlyPrecip = Climate.SpinupEcoregionYearClimate[ecoregion.Index][year.CalendarYear].MonthlyPrecip;
                                 SortedList<float, float> depthTempDict = new SortedList<float, float>();
                                 SiteVars.MonthlyPressureHead[site] = new float [monthlyAirT.Count()];
                                 SiteVars.MonthlySoilTemp[site] = new SortedList<float, float>[monthlyAirT.Count()];
@@ -469,8 +466,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     SiteVars.ExtremeMinTemp[site] = 999;
                 }
             }
-
-            ModelCore.RegisterSiteVar(AgeCohortSiteVar, "Succession.AgeCohorts");
             ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
          
 
@@ -486,7 +481,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (UsingClimateLibrary)
             {
                 PlugIn.ModelCore.UI.WriteLine($"Using climate library: {climateLibraryFileName.Value}.");
-                Climate.Initialize(climateLibraryFileName.Value, false, ModelCore, startYear);
+                Climate.Initialize(climateLibraryFileName.Value, false, ModelCore);
                 ClimateRegionData.Initialize();
             }
             //else
@@ -605,10 +600,10 @@ namespace Landis.Extension.Succession.BiomassPnET
         public override void InitializeSites(string initialCommunitiesText, string initialCommunitiesMap, ICore modelCore)
         {
             ModelCore.UI.WriteLine("   Loading initial communities from file \"{0}\" ...", initialCommunitiesText);
-            Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(CohortBinSize, ModelCore.Species);
+            DatasetParser parser = new DatasetParser(Timestep, modelCore.Species, additionalCohortParameters, initialCommunitiesText);
 
             //Landis.Library.InitialCommunities.DatasetParser parser = new Landis.Library.InitialCommunities.DatasetParser(Timestep, ModelCore.Species);
-            Landis.Library.InitialCommunities.IDataset communities = Landis.Data.Load<Landis.Library.InitialCommunities.IDataset>(initialCommunitiesText, parser);
+            IDataset communities = Landis.Data.Load<IDataset>(initialCommunitiesText, parser);
 
             List<ActiveSite> processFirst = new List<ActiveSite>();
             List<ActiveSite> processSecond = new List<ActiveSite>();
@@ -723,15 +718,15 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// Reads the initial communities map, finds all unique site keys, and sets aside sites to process first and second
         /// </summary>
         private void ProcessInitialCommunitiesMap(string initialCommunitiesMap, 
-            Landis.Library.InitialCommunities.IDataset communities, ref List<ActiveSite> processFirst,
+            IDataset communities, ref List<ActiveSite> processFirst,
             ref List<ActiveSite> processSecond)
         {
-            IInputRaster<uintPixel> map = ModelCore.OpenRaster<uintPixel>(initialCommunitiesMap);
+            IInputRaster<UIntPixel> map = ModelCore.OpenRaster<UIntPixel>(initialCommunitiesMap);
             Dictionary<uint, ActiveSite> uniqueKeys = new Dictionary<uint, ActiveSite>();
 
             using (map)
             {
-                uintPixel pixel = map.BufferPixel;
+                UIntPixel pixel = map.BufferPixel;
                 foreach (Site site in ModelCore.Landscape.AllSites)
                 {
                     map.ReadBufferPixel();
@@ -765,6 +760,12 @@ namespace Landis.Extension.Succession.BiomassPnET
                     }
                 }
             }
+        }
+
+        public override void AddCohortData()
+        {
+            // CUSTOM DYNAMIC PARAMETERS GO HERE
+            return;
         }
         //---------------------------------------------------------------------
     }
