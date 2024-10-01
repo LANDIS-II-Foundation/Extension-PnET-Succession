@@ -650,7 +650,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             IEcoregionPnET ecoregion_pnet = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
-            List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionData.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionData.GetData(ecoregion_pnet, date, EndDate);
+            List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionData.GetClimateRegionData(ecoregion_pnet, date, EndDate) : EcoregionData.GetData(ecoregion_pnet, date, EndDate);
 
             SiteVars.SiteCohorts[site].Grow(climate_vars);
             SiteVars.SiteCohorts[site].DisturbanceTypesReduced.Clear();
