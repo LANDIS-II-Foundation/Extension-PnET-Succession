@@ -196,7 +196,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
             Cohort.DeathEvent += DeathEvent;
-            Globals.InitializeCore(ModelCore, ((Parameter<ushort>)Names.GetParameter(Names.IMAX)).Value);
+            StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
+            Globals.InitializeCore(ModelCore, ((Parameter<ushort>)Names.GetParameter(Names.IMAX)).Value, StartDate);
             EcoregionData.Initialize();
             SiteVars.Initialize();
 
@@ -277,7 +278,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 throw new System.Exception("ETMethod is not 'Original' or 'Radiation' or 'WATER' or 'WEPP'.");
             }*/
-            StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
             InitializeClimateLibrary(StartDate.Year); // John McNabb: initialize climate library after EcoregionPnET has been initialized
             //EstablishmentProbability.Initialize(Timestep);  // Not used
 
@@ -337,7 +337,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (UsingClimateLibrary)
                 {
-                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.FutureEcoregionYearClimate[ecoregion.Index].Min(x => x.MonthlyTemp)) - (float)(3.0 * ecoregion.WinterSTD));
+                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.FutureEcoregionYearClimate[ecoregion.Index].First(x => x != null).MonthlyMinTemp) - (float)(3.0 * ecoregion.WinterSTD));
                     if (((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value)
                     { 
                         if(SiteVars.MonthlySoilTemp[site].Count() == 0)
@@ -666,6 +666,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         //---------------------------------------------------------------------
         public override void Run()
         {
+            if (Timestep > 0)
+                ClimateRegionData.SetAllEcoregionsFutureAnnualClimate(ModelCore.CurrentTime);
             base.Run();
         }
         //---------------------------------------------------------------------
