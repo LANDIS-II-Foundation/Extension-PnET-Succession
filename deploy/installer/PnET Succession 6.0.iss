@@ -52,7 +52,7 @@ Source: {#BuildDir}\Landis.Extension.Succession.BiomassPnET-v6.dll; DestDir: {#E
 ; Requisite auxiliary libraries
 ; NB. These libraries are used by other extensions and thus are never uninstalled.
 Source: {#BuildDir}\Landis.Library.UniversalCohorts-v1.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion  
-Source: {#BuildDir}\Landis.Library.Climate-v4.4.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Landis.Library.Climate-v5.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Library.InitialCommunity.Universal.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Library.Parameters-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion   

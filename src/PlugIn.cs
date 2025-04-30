@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Landis.Library.Succession.DensitySeeding;
 
 
 namespace Landis.Extension.Succession.BiomassPnET
@@ -62,7 +63,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         MyClock m = null;
         //---------------------------------------------------------------------
-        public void DeathEvent(object sender, Landis.Library.PnETCohorts.DeathEventArgs eventArgs)
+        public void DeathEvent(object sender, Landis.Library.UniversalCohorts.DeathEventArgs eventArgs)
         {
             ExtensionType disturbanceType = eventArgs.DisturbanceType;
             if (disturbanceType != null)
@@ -196,7 +197,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         {
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
             Cohort.DeathEvent += DeathEvent;
-            Globals.InitializeCore(ModelCore, ((Parameter<ushort>)Names.GetParameter(Names.IMAX)).Value);
+            StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
+            Globals.InitializeCore(ModelCore, ((Parameter<ushort>)Names.GetParameter(Names.IMAX)).Value, StartDate);
             EcoregionData.Initialize();
             SiteVars.Initialize();
 
@@ -277,7 +279,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 throw new System.Exception("ETMethod is not 'Original' or 'Radiation' or 'WATER' or 'WEPP'.");
             }*/
-            StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
             InitializeClimateLibrary(StartDate.Year); // John McNabb: initialize climate library after EcoregionPnET has been initialized
             //EstablishmentProbability.Initialize(Timestep);  // Not used
 
@@ -309,19 +310,18 @@ namespace Landis.Extension.Succession.BiomassPnET
                 MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
 
             // Convert PnET cohorts to biomasscohorts
-            ISiteVar<Landis.Library.UniversalCohorts.ISiteCohorts> universalCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<Landis.Library.UniversalCohorts.ISiteCohorts>();
-            
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
-                universalCohorts[site] = SiteVars.SiteCohorts[site];
-                
-                if (SiteVars.SiteCohorts[site] != null && universalCohorts[site] == null)
+                SiteVars.UniversalCohorts[site] = SiteVars.SiteCohorts[site];
+
+                if (SiteVars.SiteCohorts[site] != null && SiteVars.UniversalCohorts[site] == null)
                 {
                     throw new System.Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
                 }
             }
-            ModelCore.RegisterSiteVar(universalCohorts, "Succession.UniversalCohorts");
-            ISiteVar<ISiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<ISiteCohorts>();
+
+            ModelCore.RegisterSiteVar(SiteVars.UniversalCohorts, "Succession.UniversalCohorts");
+            ISiteVar<SiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
             {
@@ -337,7 +337,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (UsingClimateLibrary)
                 {
-                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.FutureEcoregionYearClimate[ecoregion.Index].Min(x => x.MonthlyTemp)) - (float)(3.0 * ecoregion.WinterSTD));
+                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable.Min(Climate.FutureEcoregionYearClimate[ecoregion.Index].First(x => x != null).MonthlyMinTemp) - (float)(3.0 * ecoregion.WinterSTD));
                     if (((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value)
                     { 
                         if(SiteVars.MonthlySoilTemp[site].Count() == 0)
@@ -466,11 +466,35 @@ namespace Landis.Extension.Succession.BiomassPnET
                     SiteVars.ExtremeMinTemp[site] = 999;
                 }
             }
-            ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
-         
+            PlugIn.ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
+
 
 
         }
+        /*
+        private void ConvertToUniversalCohorts()
+        {
+            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
+            {
+                SiteVars.UniversalCohorts[site] = new Library.UniversalCohorts.SiteCohorts();
+
+                foreach(Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohort in SiteVars.SiteCohorts[site])
+                {
+                    foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohort)
+                    {
+                        SiteVars.UniversalCohorts[site].AddNewCohort(cohort.Species, cohort.Data.Age, (int)cohort.Data.Biomass, 
+                            cohort.Data.ANPP, cohort.Data.AdditionalParameters);
+                    }
+                }
+
+                if (SiteVars.SiteCohorts[site] != null && SiteVars.UniversalCohorts[site] == null)
+                {
+                    throw new System.Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
+                }
+            }
+        }
+        */
+
         //---------------------------------------------------------------------
         /// <summary>This must be called after EcoregionPnET.Initialize() has been called</summary>
         private void InitializeClimateLibrary(int startYear = 0)
@@ -650,7 +674,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
             IEcoregionPnET ecoregion_pnet = EcoregionData.GetPnETEcoregion(PlugIn.ModelCore.Ecoregion[site]);
 
-            List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionData.GetClimateRegionData(ecoregion_pnet, date, EndDate, Climate.Phase.Future_Climate) : EcoregionData.GetData(ecoregion_pnet, date, EndDate);
+            List<IEcoregionPnETVariables> climate_vars = UsingClimateLibrary ? EcoregionData.GetClimateRegionData(ecoregion_pnet, date, EndDate) : EcoregionData.GetData(ecoregion_pnet, date, EndDate);
 
             SiteVars.SiteCohorts[site].Grow(climate_vars);
             SiteVars.SiteCohorts[site].DisturbanceTypesReduced.Clear();
@@ -666,6 +690,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         //---------------------------------------------------------------------
         public override void Run()
         {
+            if (Timestep > 0)
+                ClimateRegionData.SetAllEcoregionsFutureAnnualClimate(ModelCore.CurrentTime);
             base.Run();
         }
         //---------------------------------------------------------------------
