@@ -208,3 +208,7 @@ FakesAssemblies/
 # LANDIS-II
 /src/lib/*.dll
 /src/.vs
+/deploy/examples/biomass-Pnet-succession-example-v8/Metadata
+/deploy/examples/biomass-Pnet-succession-example-v8/output
+deploy/examples/biomass-Pnet-succession-example-v8/Landis-log.txt
+deploy/examples/biomass-Pnet-succession-example-v8/Landis-log.txt
