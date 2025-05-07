@@ -1,10 +1,10 @@
 LandisData   Extension
 
 Name         "PnET-Succession"
-Version      "6.0.2"
+Version      "6.0.3"
 Type         succession
 Assembly     Landis.Extension.Succession.BiomassPnET-v6
 
 Class        Landis.Extension.Succession.BiomassPnET.PlugIn
-Description  "PnET-Succession Version 6.0.2"
+Description  "PnET-Succession Version 6.0.3"
 CoreVersion  8.0

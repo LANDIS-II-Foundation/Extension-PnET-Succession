@@ -337,9 +337,8 @@ namespace Landis.Extension.Succession.BiomassPnET
 
                 if (UsingClimateLibrary)
                 {
-                    SiteVars.ExtremeMinTemp[site] = ((float)Enumerable
-                        .Min(Climate.FutureEcoregionYearClimate[ecoregion.Index]
-                        .Min(x => x.MonthlyTemp)) - (float)(3.0 * ecoregion.WinterSTD));
+                    SiteVars.ExtremeMinTemp[site] = ((float)Climate.FutureEcoregionYearClimate[ecoregion.Index][1].MonthlyTemp.Min()
+                        - (float)(3.0 * ecoregion.WinterSTD));
 
                     if (((Parameter<bool>)Names.GetParameter(Names.SoilIceDepth)).Value)
                     { 
