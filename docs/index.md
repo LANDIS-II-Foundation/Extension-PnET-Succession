@@ -6,7 +6,7 @@ The PnET-Succession extension was originally based on the Biomass Succession ext
 
 # Release Notes
 
-- Latest official release: Version 5.1 — September 2023
+- Latest official release: Version 6.0.3 — January 2026
 - Download the User Guide here: [PnET-Succession v5.1 User Guide](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/docs/LANDIS-II%20PnET-Succession%20v5.1%20User%20Guide.pdf).
 - Full release details can be found in the User Guide and on [GitHub](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession).
 - A detailed description of the model can be found in this updated document: [Description of PnET-Succession v5.1.pdf](https://github.com/LANDIS-II-Foundation/Foundation-Publications/blob/main/Description%20of%20PnET-Succession%20v5.1.pdf)
@@ -17,22 +17,22 @@ The PnET-Succession extension was originally based on the Biomass Succession ext
 
 To use PnET-Succession, you need:
 
-- The [LANDIS-II model v7.0](http://www.landis-ii.org/install) installed on your computer.
+- The [LANDIS-II model v8.0](http://www.landis-ii.org/install) installed on your computer.
 
 
 # Download
 
-Version 5.1 installer can be downloaded here:  [PnET-Succession v5.1 Installer](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/installer/LANDIS-II-V7%20PnET-Succession%205.1-setup.exe). To install it on your computer, launch the installer.
+Version 6.0.3 installer can be downloaded here:  [PnET-Succession v6.0.3 Installer](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/installer/LANDIS-II-V8%20PnET-Succession%206.0.3-setup.exe). To install it on your computer, launch the installer.
 
 # Example Files
 
 LANDIS-II requires a global parameter file for your scenario, and separate parameter files for each extension.
 
-Example files using PnET-Succession are here: [Examples](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/tree/master/deploy/examples/biomass-Pnet-succession-example/PnET-succession-example.zip).
+Example files using PnET-Succession are here: [Examples](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/tree/master/deploy/examples/biomass-Pnet-succession-example-v8).
 
 # Citation
 
-Gustafson, Eric J., Brian R. Sturtevant, Brian R. Miranda, Zaixing Zhou.  2023.  PnET-Succession v 5.1:  Comprehensive description of an ecophysiological succession extension within the LANDIS-II forest landscape model.  Published by the LANDIS-II Foundation.  URL: [https://github.com/LANDIS-II-Foundation/Foundation-Publications/blob/main/Description of PnET-Succession v5.1.pdf](https://github.com/LANDIS-II-Foundation/Foundation-Publications/blob/main/Description%20of%20PnET-Succession%20v5.1.pdf).
+Gustafson, Eric J., Brian R. Sturtevant, Brian R. Miranda, Zaixing Zhou.  2023.  PnET-Succession v 6.0.3:  Comprehensive description of an ecophysiological succession extension within the LANDIS-II forest landscape model.  Published by the LANDIS-II Foundation.  URL: [https://github.com/LANDIS-II-Foundation/Foundation-Publications/blob/main/Description of PnET-Succession v5.1.pdf](https://github.com/LANDIS-II-Foundation/Foundation-Publications/blob/main/Description%20of%20PnET-Succession%20v5.1.pdf).
 
 # Support
 
