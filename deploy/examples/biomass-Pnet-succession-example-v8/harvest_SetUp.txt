@@ -1,0 +1,59 @@
+LandisData  "Biomass Harvest"
+
+
+>>----------------
+>> REQUIRED INPUTS
+>>-----------------
+Timestep		10
+
+ManagementAreas 	./ecoregions.gis
+
+Stands     		./ecoregions.gis
+
+
+
+>> -------------------------
+>> HARVESTING PRESCRIPTIONS
+>> -------------------------
+
+>>---- PRESCRIPTION_1 ---------------------------------------
+Prescription TestPrescription1
+    StandRanking 	Random
+    SiteSelection 	Complete
+    CohortsRemoved 	ClearCut
+	
+>>---- PRESCRIPTION_2 ---------------------------------------
+Prescription TestPrescription2
+    StandRanking 	Random
+    SiteSelection 	Complete
+    CohortsRemoved 	SpeciesList
+		>>Species 	Selection
+		>>-------	---------
+        acerrubr    1-200 (75%)
+        pinubank    1-200 (75%)
+        pinuresi    1-200 (75%)
+        querelli    1-200 (75%)
+        poputrem    1-200 (75%)
+        pinustro    1-200 (75%)
+        acersacc    1-200 (75%)
+
+	
+>> ----------------------------------
+>> HARVESTING IMPLEMENTATION 
+>> ---------------------------------
+
+    HarvestImplementations
+>>	Mgmt Area	Prescription		Harvest Area	BeginTime	EndTime
+>> 	---------   	------------   		------------   	---------- 	--------
+	1		TestPrescription1		100%		5  	    	50
+	2		TestPrescription2		100%		5  	    	50
+
+
+>> ------------
+>> OUTPUTS
+>> ----------
+
+PrescriptionMaps    harvest/biomass-harvest-prescripts-{timestep}.tif
+BiomassMaps         harvest/biomass-removed-{timestep}.tif
+EventLog            harvest/biomass-harvest-event-log.csv
+SummaryLog	    harvest/biomass-harvest-summary-log.csv
