@@ -1,0 +1,34 @@
+LandisData  "Output-PnET"
+
+Timestep  10
+
+Species ALL
+
+	  
+WoodBiomass		output/WoodBiomass/WoodBiomass-{species}-{timestep}.img
+
+CohortsPerSpecies	output/CohortsPerspecies/{species}/cohorts{timestep}.img
+
+LeafAreaIndex 		output/LeafAreaIndex/lai{timestep}.img
+
+Establishment 		output/Establishments/{species}/Est{species}{timestep}.img
+
+Water 			output/SoilWater/water{timestep}.img
+
+SubCanopyPAR 		output/SubCanopyPar/SCpar-{timestep}.img
+
+RootBiomass 		output/RootBiomass/RootBiomass-{species}-{timestep}.img
+
+WoodyDebris 		output/WoodyDebris/WoodyDebris{timestep}.img
+
+Litter			output/NonWoodyDebris/Litter{timestep}.img
+
+AgeDistribution 	output/AgeDist/Age{timestep}.img
+
+
+CohortBalance		output/TotalCohorts.csv
+EstablishmentTable	output/EstablishmentTable.csv
+MortalityTable		output/MortalityTable.csv
+     
+                
+                    
