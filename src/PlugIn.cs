@@ -320,7 +320,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
             }
 
-            ModelCore.RegisterSiteVar(SiteVars.UniversalCohorts, "Succession.UniversalCohorts");
+            //MG20260909 ModelCore.RegisterSiteVar(SiteVars.UniversalCohorts, "Succession.UniversalCohorts");
             ISiteVar<SiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
@@ -468,7 +468,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     SiteVars.ExtremeMinTemp[site] = 999;
                 }
             }
-            PlugIn.ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
+            //MG20260909 PlugIn.ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
 
 
 
