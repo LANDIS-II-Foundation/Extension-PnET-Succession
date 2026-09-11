@@ -438,7 +438,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             }
             //MG20260909 commented out registration in favor of having SiteVars.Initialize() do this (called above)
             //MG20260909 PlugIn.ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
-            SiteVars.UpdateUniversalCohorts()  //MG20260911 added call, see immediately below
+            SiteVars.UpdateUniversalCohorts();  //MG20260911 added call, see immediately below
         }
 
         //MG20260911 this ConvertToUniversalCohorts() function was already commented out when I started working on this
