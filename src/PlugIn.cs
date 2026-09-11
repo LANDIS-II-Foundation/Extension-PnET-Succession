@@ -623,7 +623,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (Timestep > 0)
                 ClimateRegionData.SetAllEcoregionsFutureAnnualClimate(ModelCore.CurrentTime);
             base.Run();
-            ModelCore.UI.WriteLine("End of PnET time step, other extensions' operations should follow");  //MG20260911 trying to find the right spot to call SiteVars.UpdateUniversalCohorts() at the very end of each time step
+            SiteVars.UpdateUniversalCohorts();  //MG20260911 end of PnET operations step, time to update
         }
 
         // Required delegate method to base succession - not used within PnET-Succession
