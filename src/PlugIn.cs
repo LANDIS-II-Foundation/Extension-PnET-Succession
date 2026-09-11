@@ -1,6 +1,6 @@
 //  Authors:    Arjan de Bruijn
 //              Brian R. Miranda
-
+//
 // John McNabb: (02.04.2019)
 //
 //  Summary of changes to allow the climate library to be used with PnET-Succession:
@@ -14,7 +14,7 @@
 //       IMPORTANT NOTE: The climate library precipation is in cm/month, so that it is converted to mm/month in MonthlyClimateRecord.
 //   (4) Modified Plugin.AgeCohorts() and SiteCohorts.SiteCohorts() to call either EcoregionPnET.GetClimateRegoinData() or EcoregionPnET.GetData()
 //       depending on whether the climate library is enabled.
-
+//
 //   Enabling the climate library with PnET:
 //   (1) Indicate the climate library configuration file in the 'PnET-succession' configuration file using the 'ClimateConfigFile' parameter, e.g.
 //        ClimateConfigFile	"./climate-generator-baseline.txt"
@@ -24,6 +24,27 @@
 //   given in the 'PnET-succession' configuration file.
 //
 //   NOTE: This uses a version (v4?) of the climate library that exposes AnnualClimate_Monthly.MonthlyOzone[] and .MonthlyCO2[].
+//
+// - - - - - - - - - - - -
+//
+// Matthew Garcia 20260911
+//
+// Moved ModelCore variable registrations to PnET Cohort Library in SiteVars.cs
+// Restored code to update UniversalCohorts sites/cohorts with PnET sites/cohorts and moved that to SiteVars.cs
+//     (it was present in one location and part of it was present in another, but commented out in both locations,
+//      and with no evidence when/where it was called in the PnET processing timeline)
+// Initialization of sites now calls PnETCohorts.SiteVars.UpdateUniversalCohorts() at its end, 
+//     and then UpdateUniversalCohorts() is called again at the end of each PnET time step.
+// That update occurs at every PnET time step, regardless of the Succession time step.
+// This ensures that other Extensions can access UniversalCohorts and get the most updated site/cohort information.
+// This process has been checked with a test scenario provided by Eric Gustafson, who found that Dynamic Fuels was
+//     not getting initial or updated sites/cohorts information (e.g. Age and Biomass) from PnET-Succession.
+//
+// NOTE that using this fix properly requires updating TWO files:
+//     Library-PnET-Cohort/SiteVars.cs and
+//     Extension-PnET-Succession/PlugIn.cs (this file)
+//
+// - - - - - - - - - - - -
 
 using System;
 using System.Collections.Generic;
@@ -272,23 +293,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             if(woodyDebrisMapFile)
                 MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
 
-            //MG20260911 commented out conversion in favor of having new SiteVars.UpdateUniversalCohorts() function do this
-            /*
-            // Convert PnET cohorts to biomasscohorts
-            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
-            {
-                SiteVars.UniversalCohorts[site] = SiteVars.SiteCohorts[site];
-
-                if (SiteVars.SiteCohorts[site] != null && SiteVars.UniversalCohorts[site] == null)
-                {
-                    throw new System.Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
-                }
-            }
-            */
-
-            //MG20260909 commented out registration in favor of having SiteVars.Initialize() do this
-            //MG20260909 ModelCore.RegisterSiteVar(SiteVars.UniversalCohorts, "Succession.UniversalCohorts");
-
             ISiteVar<SiteCohorts> PnETCohorts = PlugIn.ModelCore.Landscape.NewSiteVar<SiteCohorts>();
 
             foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
@@ -436,39 +440,8 @@ namespace Landis.Extension.Succession.BiomassPnET
                     SiteVars.ExtremeMinTemp[site] = 999;
                 }
             }
-            //MG20260909 commented out registration in favor of having SiteVars.Initialize() do this (called above)
-            //MG20260909 PlugIn.ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
-            SiteVars.UpdateUniversalCohorts();  //MG20260911 added call, see immediately below
+            SiteVars.UpdateUniversalCohorts();  //MG20260911 added call
         }
-
-        //MG20260911 this ConvertToUniversalCohorts() function was already commented out when I started working on this
-        //MG20260911 -- now reproduced in SiteVars.UpdateUniversalCohorts(), adjusted for new location
-        //MG20260911 -- called above at very end of PlugIn.Initialize
-        //MG20260911 -- trying to figure out when to call at end of timestep execution
-        
-        /*
-        private void ConvertToUniversalCohorts()
-        {
-            foreach (ActiveSite site in PlugIn.ModelCore.Landscape)
-            {
-                SiteVars.UniversalCohorts[site] = new Library.UniversalCohorts.SiteCohorts();
-
-                foreach(Landis.Library.UniversalCohorts.ISpeciesCohorts speciesCohort in SiteVars.SiteCohorts[site])
-                {
-                    foreach (Landis.Library.UniversalCohorts.ICohort cohort in speciesCohort)
-                    {
-                        SiteVars.UniversalCohorts[site].AddNewCohort(cohort.Species, cohort.Data.Age, (int)cohort.Data.Biomass, 
-                            cohort.Data.ANPP, cohort.Data.AdditionalParameters);
-                    }
-                }
-
-                if (SiteVars.SiteCohorts[site] != null && SiteVars.UniversalCohorts[site] == null)
-                {
-                    throw new System.Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
-                }
-            }
-        }
-        */
 
         /// <summary>
         /// This must be called after EcoregionPnET.Initialize() has been called
