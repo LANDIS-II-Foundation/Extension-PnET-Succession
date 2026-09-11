@@ -33,6 +33,7 @@
 // Restored code to update UniversalCohorts sites/cohorts with PnET sites/cohorts and moved that to SiteVars.cs
 //     (it was present in one location and part of it was present in another, but commented out in both locations,
 //      and with no evidence when/where it was called in the PnET processing timeline)
+// That required adding a PackageReference line in the Library-PnET-Cohort.csproj file.
 // Initialization of sites now calls PnETCohorts.SiteVars.UpdateUniversalCohorts() at its end, 
 //     and then UpdateUniversalCohorts() is called again at the end of each PnET time step.
 // That update occurs at every PnET time step, regardless of the Succession time step.
@@ -40,8 +41,9 @@
 // This process has been checked with a test scenario provided by Eric Gustafson, who found that Dynamic Fuels was
 //     not getting initial or updated sites/cohorts information (e.g. Age and Biomass) from PnET-Succession.
 //
-// NOTE that using this fix properly requires updating TWO files:
-//     Library-PnET-Cohort/SiteVars.cs and
+// NOTE that using this fix properly requires updating THREE files:
+//     Library-PnET-Cohort/Library-PnET-Cohort.csproj, 
+//     Library-PnET-Cohort/SiteVars.cs, and
 //     Extension-PnET-Succession/PlugIn.cs (this file)
 //
 // - - - - - - - - - - - -
