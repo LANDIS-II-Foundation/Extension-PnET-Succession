@@ -204,6 +204,9 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public override void Initialize()
         {
+            //Console.WriteLine("Attach process to Visual Studio for debugging and hit return");
+            //Console.ReadLine();     // JM:  added for debugging.  use this to stop the run to allow me to attach visual studio to the dotnet process      
+            
             PlugIn.ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
             Cohort.DeathEvent += DeathEvent;
             StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
