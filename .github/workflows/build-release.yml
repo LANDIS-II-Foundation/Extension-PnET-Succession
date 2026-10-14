@@ -1,0 +1,251 @@
+name: Build Extension, Installer, and Release
+
+permissions:
+  contents: write
+  actions: write
+  id-token: write
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+      notes:
+        type: string
+        required: false
+
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+      notes:
+        type: string
+        required: false
+
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+    steps:
+      # --------------------------------------------------------------
+      # CHECKOUT + PERSIST CREDENTIALS FOR COMMITS
+      # --------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      # --------------------------------------------------------------
+      # DETERMINE VERSION
+      # --------------------------------------------------------------
+      - name: Determine version
+        id: version
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch" -or "${{ github.event_name }}" -eq "workflow_call") {
+            echo "v=${{ inputs.version }}" >> $env:GITHUB_OUTPUT
+            exit 0
+          }
+
+          if ("${{ github.ref }}".StartsWith("refs/tags/")) {
+            $clean = "${{ github.ref_name }}".TrimStart("v")
+            echo "v=$clean" >> $env:GITHUB_OUTPUT
+            exit 0
+          }
+
+          Write-Error "No valid version source available."
+
+
+      # --------------------------------------------------------------
+      # STAMP VERSION FIELDS INTO .csproj
+      # --------------------------------------------------------------
+      - name: Update csproj version fields
+        run: |
+          $v = "${{ steps.version.outputs.v }}"
+          $csproj = "./src/PnET-Succession.csproj"
+
+          $xml = Get-Content $csproj
+          $xml = $xml -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>$v</AssemblyVersion>"
+          $xml = $xml -replace '<Version>.*?</Version>', "<Version>$v</Version>"
+          $xml = $xml -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>$v</FileVersion>"
+          Set-Content $csproj $xml
+
+      # --------------------------------------------------------------
+      # Install .NET SDK
+      # --------------------------------------------------------------
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # --------------------------------------------------------------
+      # MYGET (Landis.Core)
+      # --------------------------------------------------------------
+      - name: Add MyGet LANDIS-II feed
+        run: dotnet nuget add source "https://www.myget.org/F/landis-ii-v8/api/v3/index.json" --name "LANDIS-II-V8"
+
+      - name: List NuGet sources
+        run: dotnet nuget list source
+
+      # --------------------------------------------------------------
+      # DOWNLOAD SUPPORT DLLs TO src/lib (except PnETCohorts)
+      # --------------------------------------------------------------
+      - name: Download LANDIS-II Support Libraries
+        run: |
+          $base = "https://github.com/LANDIS-II-Foundation/Support-Library-Dlls-v8/raw/main/"
+          $dlls = @(
+            "Landis.Library.Climate-v6.dll",
+            "Landis.Library.InitialCommunity.Universal-v2.dll",
+            "Landis.Library.UniversalCohorts-v2.dll",
+            "Landis.Library.Parameters-v2.dll",
+            "Landis.Library.Metadata-v2.dll",
+            "Landis.Library.Succession-v10.dll"
+          )
+
+          $target = "./src/lib"
+          if (!(Test-Path $target)) {
+            New-Item -ItemType Directory -Path $target | Out-Null
+          }
+
+          foreach ($name in $dlls) {
+            $url = $base + $name
+            $dest = "$target/$name"
+            Write-Host "Downloading $name ..."
+            Invoke-WebRequest -Uri $url -OutFile $dest
+          }
+
+      # --------------------------------------------------------------
+      # DOWNLOAD PnETCohorts FROM LATEST RELEASE
+      # --------------------------------------------------------------
+      - name: Download latest Landis.Library.PnETCohorts-v2.dll from GitHub release
+        run: |
+          $apiUrl = "https://api.github.com/repos/jacobf37/Library-PnET-Cohort/releases/latest"
+          $json = Invoke-WebRequest -UseBasicParsing -Uri $apiUrl | ConvertFrom-Json
+          $asset = $json.assets | Where-Object { $_.name -match "Landis.Library.PnETCohorts-v2.dll" }
+
+          if ($asset -eq $null) {
+            Write-Error "PnETCohorts DLL not found in latest release."
+          }
+
+          $downloadUrl = $asset.browser_download_url
+          Write-Host "Downloading PnETCohorts from: $downloadUrl"
+          Invoke-WebRequest -Uri $downloadUrl -OutFile "./src/lib/Landis.Library.PnETCohorts-v2.dll"
+
+      # --------------------------------------------------------------
+      # RESTORE + BUILD EXTENSION
+      # --------------------------------------------------------------
+      - name: Restore project
+        run: dotnet restore ./src/PnET-Succession.csproj
+
+      - name: Build project
+        run: dotnet build ./src/PnET-Succession.csproj --configuration Release
+
+      # --------------------------------------------------------------
+      # INSTALL INNO SETUP
+      # --------------------------------------------------------------
+      - name: Install Inno Setup
+        run: choco install innosetup --yes
+
+      # --------------------------------------------------------------
+      # GENERATE DYNAMIC .ISS
+      # --------------------------------------------------------------
+      - name: Generate dynamic .iss script
+        id: issfile
+        run: |
+          $v = "${{ steps.version.outputs.v }}"
+          $template = "./deploy/installer/PnET-Succession-template.iss"
+          $outfile  = "./deploy/installer/PnET_Succession_${v}.iss"
+
+          if (!(Test-Path $template)) {
+            Write-Error "Template file missing: $template"
+          }
+
+          $content = (Get-Content $template) -replace "\{VERSION\}", $v
+          Set-Content $outfile $content
+
+          echo "path=$outfile" >> $env:GITHUB_OUTPUT
+
+      # --------------------------------------------------------------
+      # BUILD INSTALLER
+      # --------------------------------------------------------------
+      - name: Build installer
+        run: |
+          $installer = "${{ steps.issfile.outputs.path }}"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "$installer"
+
+      # --------------------------------------------------------------
+      # CREATE RELEASE W/ INSTALLER + NOTES
+      # --------------------------------------------------------------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', steps.version.outputs.v) || github.ref_name }}
+          name: "PnET-Succession v${{ steps.version.outputs.v }}"
+          body: ${{ inputs.notes }}
+          files: |
+            deploy/installer/LANDIS-II-V8_PnET-Succession_${{ steps.version.outputs.v }}_setup.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # --------------------------------------------------------------
+      # UPDATE index.md RELEASE NOTES BLOCK (new structured format)
+      # --------------------------------------------------------------
+      - name: Update Documentation
+        run: |
+          $v     = "${{ steps.version.outputs.v }}"
+          $notes = "${{ inputs.notes }}"
+          $tag   = "v$($v)"
+          $exe   = "LANDIS-II-V8_PnET-Succession_${v}_setup.exe"
+          $url   = "https://github.com/${{ github.repository }}/releases/download/$tag/$exe"
+
+          $path = "./docs/index.md"
+          $content = Get-Content $path
+
+          $releaseBlock = "# Release Notes`n<br>`n"
+          $releaseBlock += "- Latest official release: Version $v — $(Get-Date -Format 'MMMM yyyy')`n"
+          if ($notes -ne "") {
+            $releaseBlock += "  - $notes`n"
+          }
+          $releaseBlock += "- This version has functionality identical to v5.1, with documentation below. The new release is simply for compatibility with LANDIS-II v.8.  This also means that calibrations performed for v5.1 should apply to simulations using this version."
+
+          $content = $content -replace "(?s)# Release Notes.*?# Requirements", "$releaseBlock`n# Requirements"
+
+          $downloadLine = "Version $v installer can be downloaded here: $url. To install it on your computer, launch the installer."
+          $content = $content -replace "Version .* installer can be downloaded here:.*", $downloadLine
+
+          Set-Content $path $content
+
+      # --------------------------------------------------------------
+      # UPDATE PnET-Succession.txt METADATA
+      # --------------------------------------------------------------
+      - name: Update metadata file
+        run: |
+          $v = "${{ steps.version.outputs.v }}"
+          $filePath = "./deploy/installer/PnET-Succession.txt"
+
+          $content = Get-Content $filePath
+          $content = $content -replace 'Version\s+"[^"]+"',     "Version      `"$v`""
+          $content = $content -replace 'Description\s+"[^"]+"', "Description  `"PnET-Succession Version $v`""
+          Set-Content $filePath $content
+
+      # --------------------------------------------------------------
+      # COMMIT UPDATED FILES
+      # --------------------------------------------------------------
+      - name: Commit updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          if (git diff --cached --quiet) {
+              Write-Host "No changes to commit."
+          } else {
+              git commit -m "Finalize release ${{ steps.version.outputs.v }} — version stamped, installer built, docs updated"
+              git push
+          }
