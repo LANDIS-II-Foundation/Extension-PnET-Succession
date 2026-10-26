@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Math;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
