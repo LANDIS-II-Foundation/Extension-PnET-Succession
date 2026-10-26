@@ -230,12 +230,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (Parallel == "false")
             {
                 ParallelThreads = 1;
-                ModelCore.UI.WriteLine("  MaxParallelThreads = " + ParallelThreads.ToString() + ".");
+                ModelCore.UI.WriteLine("   MaxParallelThreads = " + ParallelThreads.ToString() + ".");
             }
             else if (Parallel == "true")
             {
                 ParallelThreads = -1;
-                ModelCore.UI.WriteLine("  MaxParallelThreads determined by system.");
+                ModelCore.UI.WriteLine("   MaxParallelThreads determined by system.");
             }
             else
             {
@@ -244,7 +244,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (ParallelThreads < 1)
                         throw new Exception("Parallel cannot be < 1.");
                     else
-                        ModelCore.UI.WriteLine("  MaxParallelThreads = " + ParallelThreads.ToString() + ".");
+                        ModelCore.UI.WriteLine("   MaxParallelThreads = " + ParallelThreads.ToString() + ".");
                 }
                 else
                     throw new Exception("Parallel must be 'true', 'false' or an integer >= 1.");
@@ -288,6 +288,17 @@ namespace Landis.Extension.Succession.BiomassPnET
                 MapReader.ReadLitterFromMap(LitterMapFile.Value);
             if (woodyDebrisMapFile)
                 MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
+            
+            //MG20261026 trying this
+            foreach (ActiveSite site in ModelCore.Landscape)
+            {
+                SiteVars.UniversalCohorts[site] = SiteVars.SiteCohorts[site];
+                if ((SiteVars.SiteCohorts[site] != null) && (SiteVars.UniversalCohorts[site] == null))
+                    throw new Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
+            }
+            ModelCore.RegisterSiteVar(SiteVars.UniversalCohorts, "Succession.UniversalCohorts");
+            //MG20261026 end
+
             ISiteVar<Library.PnETCohorts.SiteCohorts> PnETCohorts = ModelCore.Landscape.NewSiteVar<Library.PnETCohorts.SiteCohorts>();
             foreach (ActiveSite site in ModelCore.Landscape)
             {
@@ -433,8 +444,13 @@ namespace Landis.Extension.Succession.BiomassPnET
                 else
                     SiteVars.ExtremeMinTemp[site] = 999;
             }
-            ModelCore.UI.WriteLine("\n");
-            SiteVars.UpdateUniversalCohorts();  //MG20260911 added call
+            //MG20261026 trying this
+            ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
+            //MG20261026 end
+
+            // ModelCore.UI.WriteLine("\n");
+            //MG20260911 end of PnET initialization step, time to update Universal Cohorts
+            // SiteVars.UpdateUniversalCohorts();
         }
 
         /// <summary>
@@ -577,8 +593,8 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (Timestep > 0)
                 ClimateRegionData.SetAllEcoregionsFutureAnnualClimate(ModelCore.CurrentTime);
             base.Run();
-            //MG20260911 end of PnET operations step, time to update
-            SiteVars.UpdateUniversalCohorts();
+            //MG20260911 end of PnET operations step, time to update Universal Cohorts
+            // SiteVars.UpdateUniversalCohorts();
         }
 
         // Required delegate method to base succession - not used within PnET-Succession
