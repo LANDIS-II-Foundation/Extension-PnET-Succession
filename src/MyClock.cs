@@ -53,7 +53,7 @@ namespace Landis.Extension.Succession.BiomassPnET
 
         public void WriteUpdate()
         {
-            Console.Write("  \r\t" + Update);
+            Console.Write("  \r\t\t" + Update);
         }
 
         public void Next()
