@@ -152,7 +152,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (Names.TryGetParameter(Names.DisturbanceReductions, out DisturbanceReductionsParameterFile))
             {
                 Allocation.Initialize(DisturbanceReductionsParameterFile.Value, Names.parameters);
-                Cohort.AgeOnlyDeathEvent += DisturbanceReductions.Events.CohortDied;
+                Library.PnETCohorts.Cohort.AgeOnlyDeathEvent += DisturbanceReductions.Events.CohortDied;
             }
              
             //---------------SaxtonAndRawlsParameterFile
@@ -204,7 +204,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             //Console.WriteLine("Attach process to Visual Studio for debugging and hit return");
             //Console.ReadLine();     // JM:  added for debugging.  use this to stop the run to allow me to attach visual studio to the dotnet process      
             ModelCore.UI.WriteLine("Initializing " + Names.ExtensionName + " version " + typeof(PlugIn).Assembly.GetName().Version);
-            Cohort.DeathEvent += DeathEvent;
+            Library.PnETCohorts.Cohort.DeathEvent += DeathEvent;
             StartDate = new DateTime(((Parameter<int>)Names.GetParameter(Names.StartYear)).Value, 1, 15);
             Globals.InitializeCore(ModelCore, ((Parameter<ushort>)Names.GetParameter(Names.IMAX)).Value, StartDate);
             EcoregionData.Initialize();
@@ -261,7 +261,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             SpeciesPnET = new SpeciesPnET();
             Library.PnETCohorts.SpeciesParameters.LoadParameters(SpeciesPnET);
             Hydrology.Initialize();
-            SiteCohorts.Initialize();
+            Library.PnETCohorts.SiteCohorts.Initialize();
             string PARunits = ((Parameter<string>)Names.GetParameter(Names.PARunits)).Value;
             if (PARunits != "umol" && PARunits != "W/m2")
                 throw new Exception("PARunits are not 'umol' or 'W/m2'.");
@@ -288,7 +288,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 MapReader.ReadLitterFromMap(LitterMapFile.Value);
             if (woodyDebrisMapFile)
                 MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
-            ISiteVar<SiteCohorts> PnETCohorts = ModelCore.Landscape.NewSiteVar<SiteCohorts>();
+            ISiteVar<Library.PnETCohorts.SiteCohorts> PnETCohorts = ModelCore.Landscape.NewSiteVar<Library.PnETCohorts.SiteCohorts>();
             foreach (ActiveSite site in ModelCore.Landscape)
             {
                 PnETCohorts[site] = SiteVars.SiteCohorts[site];
@@ -465,14 +465,14 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (SiteVars.SiteCohorts[site].cohorts.ContainsKey(species))
             {
                 // This should deliver only one KeyValuePair
-                KeyValuePair<ISpecies, List<Cohort>> i = new List<KeyValuePair<ISpecies, List<Cohort>>>(SiteVars.SiteCohorts[site].cohorts.Where(o => o.Key == species))[0];
-                List<Cohort> Cohorts = new List<Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
+                KeyValuePair<ISpecies, List<Library.PnETCohorts.Cohort>> i = new List<KeyValuePair<ISpecies, List<Library.PnETCohorts.Cohort>>>(SiteVars.SiteCohorts[site].cohorts.Where(o => o.Key == species))[0];
+                List<Library.PnETCohorts.Cohort> Cohorts = new List<Library.PnETCohorts.Cohort>(i.Value.Where(o => o.Age < CohortBinSize));
                 if (Cohorts.Count() > 0)
                     addCohort = false;
             }
             bool addSiteOutput = false;
             addSiteOutput = SiteOutputNames.ContainsKey(site) && addCohort;
-            Cohort cohort = new Cohort(species, spc, (ushort)Date.Year, (addSiteOutput) ? SiteOutputNames[site] : null, propBiomass, false);
+            Library.PnETCohorts.Cohort cohort = new Library.PnETCohorts.Cohort(species, spc, (ushort)Date.Year, addSiteOutput ? SiteOutputNames[site] : null, propBiomass, false);
             if (((Parameter<bool>)Names.GetParameter(Names.CohortStacking)).Value)
             {
                 cohort.CanopyGrowingSpace = 1.0f;
@@ -516,12 +516,12 @@ namespace Landis.Extension.Succession.BiomassPnET
             ICommunity initialCommunity = null;
             if (!sitesAndCommunities.TryGetValue(site, out initialCommunity))
                 throw new ApplicationException(string.Format("Unable to retrieve initialCommunity for site: {0}", site.Location.Row + "," + site.Location.Column));
-            if (SiteCohorts.InitialSitesContainsKey(key))
+            if (Library.PnETCohorts.SiteCohorts.InitialSitesContainsKey(key))
                 // Create new SiteCohorts using InitialCommunities data
-                SiteVars.SiteCohorts[site] = new SiteCohorts(StartDate, site, initialCommunity, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+                SiteVars.SiteCohorts[site] = new Library.PnETCohorts.SiteCohorts(StartDate, site, initialCommunity, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
             else
                 // Create new SiteCohorts from scratch
-                SiteVars.SiteCohorts[site] = new SiteCohorts(StartDate, site, initialCommunity, UsingClimateLibrary, InitialCommunitiesSpinup, MinFolRatioFactor, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
+                SiteVars.SiteCohorts[site] = new Library.PnETCohorts.SiteCohorts(StartDate, site, initialCommunity, UsingClimateLibrary, InitialCommunitiesSpinup, MinFolRatioFactor, SiteOutputNames.ContainsKey(site) ? SiteOutputNames[site] : null);
         }
 
         public override void InitializeSites(string initialCommunitiesText, string initialCommunitiesMap, ICore modelCore)
@@ -630,7 +630,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                     if (initialCommunity == null)
                         throw new ApplicationException(string.Format("Unknown map code for initial community: {0}", mapCode));
                     sitesAndCommunities.Add(activeSite, initialCommunity);
-                    uint key = SiteCohorts.ComputeKey((ushort)initialCommunity.MapCode, Globals.ModelCore.Ecoregion[site].MapCode);
+                    uint key = Library.PnETCohorts.SiteCohorts.ComputeKey((ushort)initialCommunity.MapCode, Globals.ModelCore.Ecoregion[site].MapCode);
                     if (!uniqueKeys.ContainsKey(key))
                     {
                         uniqueKeys.Add(key, activeSite);
