@@ -433,6 +433,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 else
                     SiteVars.ExtremeMinTemp[site] = 999;
             }
+            ModelCore.UI.WriteLine("\n");
             SiteVars.UpdateUniversalCohorts();  //MG20260911 added call
         }
 
