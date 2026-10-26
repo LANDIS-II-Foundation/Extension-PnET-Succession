@@ -254,7 +254,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             if(!Names.TryGetParameter(Names.ClimateConfigFile, out var climateLibraryFileName))
             {
                 //MG20261026 using the Climate Library will soon be the default operation
-                //           so this path to climate date input will soon be removed
+                //           so this path for climate data input will soon be removed
                 ModelCore.UI.WriteLine($"  No ClimateConfigFile provided. Using climate files in ecoregion parameters: {Names.parameters["EcoregionParameters"].Value}.");
                 ObservedClimate.Initialize();
             }
@@ -289,7 +289,6 @@ namespace Landis.Extension.Succession.BiomassPnET
             if (woodyDebrisMapFile)
                 MapReader.ReadWoodyDebrisFromMap(WoodyDebrisMapFile.Value);
             
-            //MG20261026 trying this
             foreach (ActiveSite site in ModelCore.Landscape)
             {
                 SiteVars.UniversalCohorts[site] = SiteVars.SiteCohorts[site];
@@ -297,7 +296,6 @@ namespace Landis.Extension.Succession.BiomassPnET
                     throw new Exception("Cannot convert PnET SiteCohorts to biomass site cohorts");
             }
             ModelCore.RegisterSiteVar(SiteVars.UniversalCohorts, "Succession.UniversalCohorts");
-            //MG20261026 end
 
             ISiteVar<Library.PnETCohorts.SiteCohorts> PnETCohorts = ModelCore.Landscape.NewSiteVar<Library.PnETCohorts.SiteCohorts>();
             foreach (ActiveSite site in ModelCore.Landscape)
@@ -444,13 +442,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 else
                     SiteVars.ExtremeMinTemp[site] = 999;
             }
-            //MG20261026 trying this
             ModelCore.RegisterSiteVar(PnETCohorts, "Succession.CohortsPnET");
-            //MG20261026 end
-
-            // ModelCore.UI.WriteLine("\n");
-            //MG20260911 end of PnET initialization step, time to update Universal Cohorts
-            // SiteVars.UpdateUniversalCohorts();
         }
 
         /// <summary>
