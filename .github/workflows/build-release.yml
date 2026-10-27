@@ -120,14 +120,26 @@ jobs:
       # --------------------------------------------------------------
       - name: Download latest Landis.Library.PnETCohorts-v2.dll
         run: |
-          $api = "https://api.github.com/repos/jacobf37/Library-PnET-Cohort/releases/latest"
-          $json = Invoke-WebRequest -UseBasicParsing -Uri $api | ConvertFrom-Json
+          $apiUrl = "https://api.github.com/repos/LANDIS-II-Foundation/Library-PnET-Cohort/releases/latest"
+
+          $headers = @{
+            "Authorization" = "token $env:GITHUB_TOKEN"
+            "User-Agent"    = "GitHubActions"
+          }
+
+          $json = Invoke-RestMethod -Uri $apiUrl -Headers $headers
+
           $asset = $json.assets | Where-Object { $_.name -eq "Landis.Library.PnETCohorts-v2.dll" }
 
-          if ($asset -eq $null) { Write-Error "PnETCohorts DLL not found in latest release." }
+          if ($null -eq $asset) {
+            Write-Error "PnETCohorts DLL not found in latest release."
+            exit 1
+          }
 
           Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "./src/lib/Landis.Library.PnETCohorts-v2.dll"
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
       # --------------------------------------------------------------
       # RESTORE AND BUILD
       # --------------------------------------------------------------
