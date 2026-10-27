@@ -24,7 +24,7 @@ To use PnET-Succession, you need:
 
 # Download
 
-Version 6.1.1 installer can be downloaded here:  [PnET-Succession v6.1 Installer](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/releases/download/v6.1.1/LANDIS-II-V8.PnET-Succession.6.1.1-setup.exe). To install it on your computer, launch the installer.
+Version 6.1.2 installer can be downloaded here: https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/releases/download/v6.1.2/LANDIS-II-V8 PnET-Succession 6.1.2-setup.exe. To install it on your computer, launch the installer.
 
 # Example Files
 
