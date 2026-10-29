@@ -184,14 +184,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', steps.version.outputs.v) || github.ref_name }}
-
+      
           name: "PnET-Succession v${{ steps.version.outputs.v }}"
           body: ${{ inputs.notes }}
-
-          # EXACT MATCH for .iss OutputBaseFilename (spaces)
+      
           files: |
-            deploy/installer/LANDIS-II-V8 PnET-Succession ${{ steps.version.outputs.v }}-setup.exe
-
+            deploy/installer/LANDIS-II-V8_PnET-Succession_${{ steps.version.outputs.v }}_setup.exe
+      
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
