@@ -202,22 +202,35 @@ jobs:
           $v     = "${{ steps.version.outputs.v }}"
           $notes = "${{ inputs.notes }}"
           $tag   = "v$($v)"
-          $exe   = "LANDIS-II-V8 PnET-Succession $v-setup.exe"
+          $exe   = "LANDIS-II-V8_PnET-Succession_${v}_setup.exe"
           $url   = "https://github.com/${{ github.repository }}/releases/download/$tag/$exe"
 
           $path = "./docs/index.md"
-          $content = Get-Content $path
+          $content = Get-Content $path -Raw
 
-          $block = "# Release Notes`n<br>`n"
-          $block += "- Latest official release: Version $v — $(Get-Date -Format 'MMMM yyyy')`n"
-          if ($notes -ne "") { $block += "  - $notes`n" }
-          $block += "- This version has functionality identical to v5.1, with documentation below. The new release is simply for compatibility with LANDIS-II v.8. This also means that calibrations performed for v5.1 should apply to simulations using this version."
+          # ---------------------------------------------------------
+          # 1. Build the new Release Notes block
+          # ---------------------------------------------------------
+          $newReleaseNotes  = "# Release Notes`n`n"
+          $newReleaseNotes += "- Latest official release: Version $v — $(Get-Date -Format 'MMMM yyyy')`n"
+          if ($notes -ne "") {
+            $newReleaseNotes += "  - $notes`n"
+          }
+          $newReleaseNotes += "- This version has functionality identical to v5.1, with documentation below. The new release is simply for compatibility with LANDIS-II v.8. This also means that calibrations performed for v5.1 should apply to simulations using this version.`n"
 
-          $content = $content -replace "(?s)# Release Notes.*?# Requirements", "$block`n# Requirements"
+          # Replace everything between "# Release Notes" and "# Requirements"
+          $content = $content -replace "(?s)# Release Notes.*?# Requirements", "$newReleaseNotes`n# Requirements"
 
-          $downloadLine = "Version $v installer can be downloaded here: $url. To install it on your computer, launch the installer."
-          $content = $content -replace "Version .* installer can be downloaded here:.*", $downloadLine
+          # ---------------------------------------------------------
+          # 2. Update the Download section link
+          # ---------------------------------------------------------
+          $newDownloadLine = "Version $v installer can be downloaded here: $url. To install it on your computer, launch the installer."
 
+          $content = $content -replace "Version .* installer can be downloaded here:.*?(?=# Example Files)", "$newDownloadLine`n`n# Example Files"
+
+          # ---------------------------------------------------------
+          # 3. Save file
+          # ---------------------------------------------------------
           Set-Content $path $content
 
       # --------------------------------------------------------------
