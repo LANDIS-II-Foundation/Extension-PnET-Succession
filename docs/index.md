@@ -6,7 +6,7 @@ The PnET-Succession extension was originally based on the Biomass Succession ext
 
 # Release Notes
 
-- Latest official release: Version 6.1.1 — September 2026
+- Latest official release: Version 6.1.2 — October 2026
 - This version has functionality identical to v5.1, with documentation below. The new release is simply for compatibility with LANDIS-II v.8.  This also means that calibrations performed for v5.1 should apply to simulations using this version.
 - Download the User Guide here: [PnET-Succession v6.0 User Guide](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/docs/LANDIS-II%20PnET-Succession%20v6.0%20User%20Guide%20Jan21%202026.pdf).
 - Download the Climate Library guide here: [User guide for Climate Library](https://github.com/LANDIS-II-Foundation/Library-Climate/blob/7b180e69851fa1709f54b525ada07fb2877bd504/docs/LANDIS-II%20Climate%20Library%20v6.0%20User%20Guide.pdf)
@@ -24,7 +24,7 @@ To use PnET-Succession, you need:
 
 # Download
 
-Version 6.1.2 installer can be downloaded here: https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/releases/download/v6.1.2/LANDIS-II-V8 PnET-Succession 6.1.2-setup.exe. To install it on your computer, launch the installer.
+Version 6.1.2 installer can be downloaded here: [PnET Succession v6.1.2 Installer](<https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/releases/download/v6.1.2/LANDIS-II-V8_PnET-Succession_6.1.2_setup.exe>). To install it on your computer, launch the installer.
 
 # Example Files
 
