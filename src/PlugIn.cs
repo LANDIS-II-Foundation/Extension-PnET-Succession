@@ -575,6 +575,8 @@ namespace Landis.Extension.Succession.BiomassPnET
         /// <summary>
         /// Required delegate method to base succession.
         /// Determines if a species can establish on a site.
+        //MG20261110: incorrect -- it reports whether a species *has established* on a site.
+        //            --> if it has, then it can; just because it can, that doesn't mean it has
         /// </summary>
         public bool Establish(ISpecies species, ActiveSite site)
         {
