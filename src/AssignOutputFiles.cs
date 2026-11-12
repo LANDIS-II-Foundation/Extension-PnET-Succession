@@ -6,12 +6,16 @@ using Landis.SpatialModeling;
 
 namespace Landis.Extension.Succession.BiomassPnET
 {
+    /// <summary>
+    /// Maps the output files by pixel that are prescribed by the user
+    /// with the term "PnETOutputSites", i.e. cohort and location specific 
+    /// output files. The user can supply the location through the row 
+    /// and column number of the map location where they want to see output, 
+    /// or though coordinates X and Y. If using coordinates, the user should 
+    /// supply the border X, Y coordinates of the map. 
+    /// </summary>
     public static class AssignOutputFiles
     {
-        // Maps the output files by pixel that are prescribed by the user with the term "PnETOutputSites", i.e. cohort and 
-        // location specific output files. The  user can supply the location through the row and column number of the map
-        // location where she wants to see output, or though coordinates X and Y. If using coordinates, the user 
-        // should supply the border X, Y coorninates of the map. 
         public struct ParameterNames
         {
             // Output location supplied by row, column: row
@@ -32,8 +36,9 @@ namespace Landis.Extension.Succession.BiomassPnET
             // Output location supplied by border location: Y
             public const string MapCoordinatesMaxY = "MapCoordinatesMaxY";
 
-            // This is used to get the parameter names that the user can supply; the model checks if the input parameters supplied by the user 
-            // are known by the model. 
+            // This is used to get the parameter names that the user can supply;
+            // the model checks if the input parameters supplied by the user are 
+            // known by the model. 
             public static List<string> AllNames
             {
                 get

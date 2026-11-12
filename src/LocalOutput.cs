@@ -9,17 +9,17 @@ namespace Landis.Extension.Succession.BiomassPnET
         public static string PNEToutputsites;
         public string FileName { get; private set; }
         public string SiteName { get; private set; }
-        public string Path { get; private set; }
+        public string OutputPath { get; private set; }
 
         public LocalOutput(string SiteName, string FileName, string Header)
         {
             this.SiteName = SiteName;
-            this.Path = "Output" + System.IO.Path.DirectorySeparatorChar + PNEToutputsites + System.IO.Path.DirectorySeparatorChar + SiteName + +System.IO.Path.DirectorySeparatorChar;
+            this.OutputPath = "Output" + Path.DirectorySeparatorChar + PNEToutputsites + Path.DirectorySeparatorChar + SiteName + Path.DirectorySeparatorChar;
             this.FileName = FileName;
-            if (File.Exists(Path + FileName))
-                File.Delete(Path + FileName);
-            if (Directory.Exists(Path) == false)
-                Directory.CreateDirectory(Path);
+            if (File.Exists(OutputPath + FileName))
+                File.Delete(OutputPath + FileName);
+            if (!Directory.Exists(OutputPath))
+                Directory.CreateDirectory(OutputPath);
             FileContent = new List<string>(new string[] { Header });
             Write();
         }
@@ -35,7 +35,7 @@ namespace Landis.Extension.Succession.BiomassPnET
             {
                 try
                 {
-                    StreamWriter sw = new StreamWriter(System.IO.Path.Combine(Path, FileName), true);
+                    StreamWriter sw = new StreamWriter(Path.Combine(OutputPath, FileName), true);
                     foreach (string line in FileContent)
                         sw.WriteLine(line);
                     sw.Close();
@@ -44,7 +44,7 @@ namespace Landis.Extension.Succession.BiomassPnET
                 }
                 catch (IOException e)
                 {
-                    PlugIn.ModelCore.UI.WriteLine("Cannot write to " + System.IO.Path.Combine(Path, FileName) + " " + e.Message);
+                    PlugIn.ModelCore.UI.WriteLine("Cannot write to " + Path.Combine(OutputPath, FileName) + " " + e.Message);
                 }
             }
         }
