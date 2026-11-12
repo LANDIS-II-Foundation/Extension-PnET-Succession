@@ -6,14 +6,9 @@ The PnET-Succession extension was originally based on the Biomass Succession ext
 
 # Release Notes
 
-- Latest official release: Version 6.1.2 — October 2026
-- This version has functionality identical to v5.1, with documentation below. The new release is simply for compatibility with LANDIS-II v.8.  This also means that calibrations performed for v5.1 should apply to simulations using this version.
-- Download the User Guide here: [PnET-Succession v6.0 User Guide](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/docs/LANDIS-II%20PnET-Succession%20v6.0%20User%20Guide%20Jan21%202026.pdf).
-- Download the Climate Library guide here: [User guide for Climate Library](https://github.com/LANDIS-II-Foundation/Library-Climate/blob/7b180e69851fa1709f54b525ada07fb2877bd504/docs/LANDIS-II%20Climate%20Library%20v6.0%20User%20Guide.pdf)
-- Full release details can be found in the User Guide and on [GitHub](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession).
-- A detailed description of the model can be found in this updated document: [Description of PnET-Succession v5.1.pdf](https://github.com/LANDIS-II-Foundation/Foundation-Publications/blob/main/Description%20of%20PnET-Succession%20v5.1.pdf)
-- A spreadsheet that demonstrates some of the specific model functions is available to explore the impacts of certain parameter choices: [PnET-Succession function worksheet v6.0.xlsx](https://github.com/LANDIS-II-Foundation/Extension-PnET-Succession/blob/master/deploy/docs/PnET-Succession%20function%20worksheet%20v6.0.xlsx)
-- This version is compatible with all officially released extensions – unless a restriction to a specific extension is otherwise identified. 
+- Latest official release: Version 6.1.3 — November 2026
+  - Update to UCL v2.0.2 and PnET Cohort Library v2.4.2
+- This version has functionality identical to v5.1, with documentation below. The new release is simply for compatibility with LANDIS-II v.8. This also means that calibrations performed for v5.1 should apply to simulations using this version.
 
 # Requirements
 
@@ -47,3 +42,4 @@ If you come across any issue or suspected bug, please post about it in the [issu
 Arjan de Bruijn: originally Purdue University; Eric Gustafson (emeritus), Brian Miranda, Brian Sturtevant:; US Forest Service, and Zaixing Zhou (University of New Hampshire)
 
 Mail : brian.r.sturtevant@usda.gov
+
